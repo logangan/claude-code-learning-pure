@@ -1,4 +1,4 @@
-/**
+/*    *
  * Pure-TypeScript port of yoga-layout (Meta's flexbox engine).
  *
  * This matches the `yoga-layout/load` API surface used by src/ink/layout/yoga.ts.
@@ -35,8 +35,8 @@
  *   - box-sizing: content-box
  *   - RTL direction (Ink always passes Direction.LTR)
  *
- * Upstream: https://github.com/facebook/yoga
- */
+ * Upstream: https:// github.com/facebook/yoga
+     */
 
 import {
   Align,
@@ -2138,15 +2138,14 @@ function computeFlexBasis(
   // would force siblings to shrink and the text to wrap at the wrong width.
   // Passing Undefined here made Ink's <Text> inside <Box flexGrow={1}> get
   // width = intrinsic instead of available, dropping chars at wrap boundaries.
-  //
-  // Two constraints on when this applies:
-  //   - Width only. Height is never constrained during basis measurement —
-  //     column containers must measure children at natural height so
-  //     scrollable content can overflow (constraining height clips ScrollBox).
-  //   - Subtree has a measure-func. Pure layout subtrees (no measure-func)
-  //     with flex-grow children would grow into the AtMost constraint,
-  //     inflating the basis (breaks YGMinMaxDimensionTest flex_grow_in_at_most
-  //     where a flexGrow:1 child should stay at basis 0, not grow to 100).
+  // // Two constraints on when this applies:
+  // - Width only. Height is never constrained during basis measurement —
+  // column containers must measure children at natural height so
+  // scrollable content can overflow (constraining height clips ScrollBox).
+  // - Subtree has a measure-func. Pure layout subtrees (no measure-func)
+  // with flex-grow children would grow into the AtMost constraint,
+  // inflating the basis (breaks YGMinMaxDimensionTest flex_grow_in_at_most
+  // where a flexGrow:1 child should stay at basis 0, not grow to 100).
   let mainConstraint = NaN
   let mainConstraintMode: MeasureMode = MeasureMode.Undefined
   if (isMainRow && isDefined(availableMain) && hasMeasureFuncInSubtree(child)) {

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Transforms SDK messages for streamlined output mode.
  *
  * Streamlined mode is a "distillation-resistant" output format that:
@@ -6,7 +6,7 @@
  * - Summarizes tool calls with cumulative counts (resets when text appears)
  * - Omits thinking content
  * - Strips tool list and model info from init messages
- */
+     */
 
 import type { SDKAssistantMessage } from 'src/entrypoints/agentSdkTypes.js'
 import type { StdoutMessage } from 'src/entrypoints/sdk/controlTypes.js'
@@ -32,9 +32,9 @@ type ToolCounts = {
   other: number
 }
 
-/**
+/*    *
  * Tool categories for summarization.
- */
+     */
 const SEARCH_TOOLS = [
   GREP_TOOL_NAME,
   GLOB_TOOL_NAME,
@@ -67,9 +67,9 @@ function createEmptyToolCounts(): ToolCounts {
   }
 }
 
-/**
+/*    *
  * Generate a summary text for tool counts.
- */
+     */
 function getToolSummaryText(counts: ToolCounts): string | undefined {
   const parts: string[] = []
 
@@ -103,9 +103,9 @@ function getToolSummaryText(counts: ToolCounts): string | undefined {
   return capitalize(parts.join(', '))
 }
 
-/**
+/*    *
  * Count tool uses in an assistant message and add to existing counts.
- */
+     */
 function accumulateToolUses(
   message: SDKAssistantMessage,
   counts: ToolCounts,
@@ -123,10 +123,10 @@ function accumulateToolUses(
   }
 }
 
-/**
+/*    *
  * Create a stateful transformer that accumulates tool counts between text messages.
  * Tool counts reset when a message with text content is encountered.
- */
+     */
 export function createStreamlinedTransformer(): (
   message: StdoutMessage,
 ) => StdoutMessage | null {
@@ -192,10 +192,10 @@ export function createStreamlinedTransformer(): (
   }
 }
 
-/**
+/*    *
  * Check if a message should be included in streamlined output.
  * Useful for filtering before transformation.
- */
+     */
 export function shouldIncludeInStreamlined(message: StdoutMessage): boolean {
   return message.type === 'assistant' || message.type === 'result'
 }

@@ -33,9 +33,9 @@ export type File = {
   content: string
 }
 
-/**
+/*    *
  * Check if a path exists asynchronously.
- */
+     */
 export async function pathExists(path: string): Promise<boolean> {
   try {
     await stat(path)
@@ -57,23 +57,23 @@ export function readFileSafe(filepath: string): string | null {
   }
 }
 
-/**
+/*    *
  * Get the normalized modification time of a file in milliseconds.
  * Uses Math.floor to ensure consistent timestamp comparisons across file operations,
  * reducing false positives from sub-millisecond precision changes (e.g., from IDE
  * file watchers that touch files without changing content).
- */
+     */
 export function getFileModificationTime(filePath: string): number {
   const fs = getFsImplementation()
   return Math.floor(fs.statSync(filePath).mtimeMs)
 }
 
-/**
+/*    *
  * Async variant of getFileModificationTime. Same floor semantics.
  * Use this in async paths (getChangedFiles runs every turn on every readFileState
  * entry — sync statSync there triggers the slow-operation indicator on network/
  * slow disks).
- */
+     */
 export async function getFileModificationTimeAsync(
   filePath: string,
 ): Promise<number> {
@@ -169,11 +169,11 @@ export function getDisplayPath(filePath: string): string {
   return filePath
 }
 
-/**
+/*    *
  * Find files with the same name but different extensions in the same directory
  * @param filePath The path to the file that doesn't exist
  * @returns The found file with a different extension, or undefined if none found
- */
+     */
 
 export function findSimilarFile(filePath: string): string | undefined {
   const fs = getFsImplementation()
@@ -206,13 +206,13 @@ export function findSimilarFile(filePath: string): string | undefined {
   }
 }
 
-/**
+/*    *
  * Marker included in file-not-found error messages that contain a cwd note.
  * UI renderers check for this to show a short "File not found" message.
- */
+     */
 export const FILE_NOT_FOUND_CWD_NOTE = 'Note: your current working directory is'
 
-/**
+/*    *
  * Suggests a corrected path under the current working directory when a file/directory
  * is not found. Detects the "dropped repo folder" pattern where the model constructs
  * an absolute path missing the repo directory component.
@@ -224,7 +224,7 @@ export const FILE_NOT_FOUND_CWD_NOTE = 'Note: your current working directory is'
  *
  * @param requestedPath - The absolute path that was not found
  * @returns The corrected path if found under cwd, undefined otherwise
- */
+     */
 export async function suggestPathUnderCwd(
   requestedPath: string,
 ): Promise<string | undefined> {
@@ -266,7 +266,7 @@ export async function suggestPathUnderCwd(
   }
 }
 
-/**
+/*    *
  * Whether to use the compact line-number prefix format (`N\t` instead of
  * `     N→`). The padded-arrow format costs 9 bytes/line overhead; at
  * 1.35B Read calls × 132 lines avg this is 2.18% of fleet uncached input
@@ -274,7 +274,7 @@ export async function suggestPathUnderCwd(
  *
  * Ant soak validated no Edit error regression (6.29% vs 6.86% baseline).
  * Killswitch pattern: GB can disable if issues surface externally.
- */
+     */
 export function isCompactLinePrefixEnabled(): boolean {
   // 3P default: killswitch off = compact format enabled. Client-side only —
   // no server support needed, safe for Bedrock/Vertex/Foundry.
@@ -284,9 +284,9 @@ export function isCompactLinePrefixEnabled(): boolean {
   )
 }
 
-/**
+/*    *
  * Adds cat -n style line numbers to the content.
- */
+     */
 export function addLineNumbers({
   content,
   // 1-indexed
@@ -318,20 +318,20 @@ export function addLineNumbers({
     .join('\n')
 }
 
-/**
+/*    *
  * Inverse of addLineNumbers — strips the `N→` or `N\t` prefix from a single
  * line. Co-located so format changes here and in addLineNumbers stay in sync.
- */
+     */
 export function stripLineNumberPrefix(line: string): string {
   const match = line.match(/^\s*\d+[\u2192\t](.*)$/)
   return match?.[1] ?? line
 }
 
-/**
+/*    *
  * Checks if a directory is empty.
  * @param dirPath The path to the directory to check
  * @returns true if the directory is empty or does not exist, false otherwise
- */
+     */
 export function isDirEmpty(dirPath: string): boolean {
   try {
     return getFsImplementation().isDirEmptySync(dirPath)
@@ -342,23 +342,23 @@ export function isDirEmpty(dirPath: string): boolean {
   }
 }
 
-/**
+/*    *
  * Reads a file with caching to avoid redundant I/O operations.
  * This is the preferred method for FileEditTool operations.
- */
+     */
 export function readFileSyncCached(filePath: string): string {
   const { content } = fileReadCache.readFile(filePath)
   return content
 }
 
-/**
+/*    *
  * Writes to a file and flushes the file to disk
  * @param filePath The path to the file to write to
  * @param content The content to write to the file
  * @param options Options for writing the file, including encoding and mode
  * @deprecated Use `fs.promises.writeFile` with flush option instead for non-blocking writes.
  * Sync file writes block the event loop and cause performance issues.
- */
+     */
 export function writeFileSyncAndFlush_DEPRECATED(
   filePath: string,
   content: string,
@@ -536,14 +536,14 @@ export function getDesktopPath(): string {
   return homeDir
 }
 
-/**
+/*    *
  * Validates that a file size is within the specified limit.
  * Returns true if the file is within the limit, false otherwise.
  *
  * @param filePath The path to the file to validate
  * @param maxSizeBytes The maximum allowed file size in bytes
  * @returns true if file size is within limit, false otherwise
- */
+     */
 export function isFileWithinReadSizeLimit(
   filePath: string,
   maxSizeBytes: number = MAX_OUTPUT_SIZE,
@@ -557,11 +557,11 @@ export function isFileWithinReadSizeLimit(
   }
 }
 
-/**
+/*    *
  * Normalize a file path for comparison, handling platform differences.
  * On Windows, normalizes path separators and converts to lowercase for
  * case-insensitive comparison.
- */
+     */
 export function normalizePathForComparison(filePath: string): string {
   // Use path.normalize() to clean up redundant separators and resolve . and ..
   let normalized = normalize(filePath)
@@ -570,15 +570,15 @@ export function normalizePathForComparison(filePath: string): string {
   // - Convert forward slashes to backslashes (path.normalize only does this on actual Windows)
   // - Convert to lowercase (Windows paths are case-insensitive)
   if (getPlatform() === 'windows') {
-    normalized = normalized.replace(/\//g, '\\').toLowerCase()
+    normalized = normalized.replace(/\// g, '\\').toLowerCase()
   }
 
   return normalized
 }
 
-/**
+/*    *
  * Compare two file paths for equality, handling Windows case-insensitivity.
- */
+     */
 export function pathsEqual(path1: string, path2: string): boolean {
   return normalizePathForComparison(path1) === normalizePathForComparison(path2)
 }

@@ -453,7 +453,7 @@ export function getParentSessionId(): SessionId | undefined {
   return STATE.parentSessionId
 }
 
-/**
+/*    *
  * Atomically switch the active session. `sessionId` and `sessionProjectDir`
  * always change together — there is no separate setter for either, so they
  * cannot drift out of sync (CC-34).
@@ -464,7 +464,7 @@ export function getParentSessionId(): SessionId | undefined {
  *   session lives in a different project directory (git worktrees,
  *   cross-project resume). Every call resets the project dir; it never
  *   carries over from the previous session.
- */
+     */
 export function switchSession(
   sessionId: SessionId,
   projectDir: string | null = null,
@@ -480,19 +480,19 @@ export function switchSession(
 
 const sessionSwitched = createSignal<[id: SessionId]>()
 
-/**
+/*    *
  * Register a callback that fires when switchSession changes the active
  * sessionId. bootstrap can't import listeners directly (DAG leaf), so
  * callers register themselves. concurrentSessions.ts uses this to keep the
  * PID file's sessionId in sync with --resume.
- */
+     */
 export const onSessionSwitch = sessionSwitched.subscribe
 
-/**
+/*    *
  * Project directory the current session's transcript lives in, or `null` if
  * the session was created in the current project (common case — derive from
  * originalCwd). See `switchSession()`.
- */
+     */
 export function getSessionProjectDir(): string | null {
   return STATE.sessionProjectDir
 }
@@ -501,13 +501,13 @@ export function getOriginalCwd(): string {
   return STATE.originalCwd
 }
 
-/**
+/*    *
  * Get the stable project root directory.
  * Unlike getOriginalCwd(), this is never updated by mid-session EnterWorktreeTool
  * (so skills/history stay stable when entering a throwaway worktree).
  * It IS set at startup by --worktree, since that worktree is the session's project.
  * Use for project identity (history, skills, sessions) not file operations.
- */
+     */
 export function getProjectRoot(): string {
   return STATE.projectRoot
 }
@@ -516,10 +516,10 @@ export function setOriginalCwd(cwd: string): void {
   STATE.originalCwd = cwd.normalize('NFC')
 }
 
-/**
+/*    *
  * Only for --worktree startup flag. Mid-session EnterWorktreeTool must NOT
  * call this — skills/history should stay anchored to where the session started.
- */
+     */
 export function setProjectRoot(cwd: string): void {
   STATE.projectRoot = cwd.normalize('NFC')
 }
@@ -650,7 +650,7 @@ export function setStatsStore(
   STATE.statsStore = store
 }
 
-/**
+/*    *
  * Marks that an interaction occurred.
  *
  * By default the actual Date.now() call is deferred until the next Ink render
@@ -661,7 +661,7 @@ export function setStatsStore(
  * other code that runs *after* the Ink render cycle has already flushed.
  * Without it the timestamp stays stale until the next render, which may never
  * come if the user is idle (e.g. permission dialog waiting for input).
- */
+     */
 let interactionTimeDirty = false
 
 export function updateLastInteractionTime(immediate?: boolean): void {
@@ -672,11 +672,11 @@ export function updateLastInteractionTime(immediate?: boolean): void {
   }
 }
 
-/**
+/*    *
  * If an interaction was recorded since the last flush, update the timestamp
  * now. Called by Ink before each render cycle so we batch many keypresses into
  * a single Date.now() call.
- */
+     */
 export function flushInteractionTime(): void {
   if (interactionTimeDirty) {
     flushInteractionTime_inner()
@@ -766,14 +766,14 @@ export function setLastApiCompletionTimestamp(timestamp: number): void {
   STATE.lastApiCompletionTimestamp = timestamp
 }
 
-/** Mark that a compaction just occurred. The next API success event will
- *  include isPostCompaction=true, then the flag auto-resets. */
+/*    * Mark that a compaction just occurred. The next API success event will
+ *  include isPostCompaction=true, then the flag auto-resets.     */
 export function markPostCompaction(): void {
   STATE.pendingPostCompaction = true
 }
 
-/** Consume the post-compaction flag. Returns true once after compaction,
- *  then returns false until the next compaction. */
+/*    * Consume the post-compaction flag. Returns true once after compaction,
+ *  then returns false until the next compaction.     */
 export function consumePostCompaction(): boolean {
   const was = STATE.pendingPostCompaction
   STATE.pendingPostCompaction = false
@@ -793,8 +793,8 @@ let scrollDraining = false
 let scrollDrainTimer: ReturnType<typeof setTimeout> | undefined
 const SCROLL_DRAIN_IDLE_MS = 150
 
-/** Mark that a scroll event just happened. Background intervals gate on
- *  getIsScrollDraining() and skip their work until the debounce clears. */
+/*    * Mark that a scroll event just happened. Background intervals gate on
+ *  getIsScrollDraining() and skip their work until the debounce clears.     */
 export function markScrollActivity(): void {
   scrollDraining = true
   if (scrollDrainTimer) clearTimeout(scrollDrainTimer)
@@ -805,16 +805,16 @@ export function markScrollActivity(): void {
   scrollDrainTimer.unref?.()
 }
 
-/** True while scroll is actively draining (within 150ms of last event).
+/*    * True while scroll is actively draining (within 150ms of last event).
  *  Intervals should early-return when this is set — the work picks up next
- *  tick after scroll settles. */
+ *  tick after scroll settles.     */
 export function getIsScrollDraining(): boolean {
   return scrollDraining
 }
 
-/** Await this before expensive one-shot work (network, subprocess) that could
+/*    * Await this before expensive one-shot work (network, subprocess) that could
  *  coincide with scroll. Resolves immediately if not scrolling; otherwise
- *  polls at the idle interval until the flag clears. */
+ *  polls at the idle interval until the flag clears.     */
 export async function waitForScrollIdle(): Promise<void> {
   while (scrollDraining) {
     // bootstrap-isolation forbids importing sleep() from src/utils/
@@ -831,10 +831,10 @@ export function getUsageForModel(model: string): ModelUsage | undefined {
   return STATE.modelUsage[model]
 }
 
-/**
+/*    *
  * Gets the model override set from the --model CLI flag or after the user
  * updates their configured model.
- */
+     */
 export function getMainLoopModelOverride(): ModelSetting | undefined {
   return STATE.mainLoopModelOverride
 }
@@ -874,10 +874,10 @@ export function resetCostState(): void {
   STATE.promptId = null
 }
 
-/**
+/*    *
  * Sets cost state values for session restore.
  * Called by restoreCostStateForSession in cost-tracker.ts.
- */
+     */
 export function setCostStateForRestore({
   totalCostUSD,
   totalAPIDuration,
@@ -1283,11 +1283,11 @@ export type SessionCronTask = {
   prompt: string
   createdAt: number
   recurring?: boolean
-  /**
+  /*    *
    * When set, the task was created by an in-process teammate (not the team lead).
    * The scheduler routes fires to that teammate's pendingUserMessages queue
    * instead of the main REPL command queue. Session-only — never written to disk.
-   */
+       */
   agentId?: string
 }
 
@@ -1299,11 +1299,11 @@ export function addSessionCronTask(task: SessionCronTask): void {
   STATE.sessionCronTasks.push(task)
 }
 
-/**
+/*    *
  * Returns the number of tasks actually removed. Callers use this to skip
  * downstream work (e.g. the disk read in removeCronTasks) when all ids
  * were accounted for here.
- */
+     */
 export function removeSessionCronTasks(ids: readonly string[]): number {
   if (ids.length === 0) return 0
   const idSet = new Set(ids)
@@ -1737,10 +1737,10 @@ export function setThinkingClearLatched(v: boolean): void {
   STATE.thinkingClearLatched = v
 }
 
-/**
+/*    *
  * Reset beta header latches to null. Called on /clear and /compact so a
  * fresh conversation gets fresh header evaluation.
- */
+     */
 export function clearBetaHeaderLatches(): void {
   STATE.afkModeHeaderLatched = null
   STATE.fastModeHeaderLatched = null

@@ -11,16 +11,16 @@ type OnHookSuccess = (
   result: AggregatedHookResult,
 ) => void
 
-/** Function hook callback - returns true if check passes, false to block */
+/*    * Function hook callback - returns true if check passes, false to block     */
 export type FunctionHookCallback = (
   messages: Message[],
   signal?: AbortSignal,
 ) => boolean | Promise<boolean>
 
-/**
+/*    *
  * Function hook type with callback embedded.
  * Session-scoped only, cannot be persisted to settings.json.
- */
+     */
 export type FunctionHook = {
   type: 'function'
   id?: string // Optional unique ID for removal
@@ -45,7 +45,7 @@ export type SessionStore = {
   }
 }
 
-/**
+/*    *
  * Map (not Record) so .set/.delete don't change the container's identity.
  * Mutator functions mutate the Map and return prev unchanged, letting
  * store.ts's Object.is(next, prev) check short-circuit and skip listener
@@ -58,13 +58,13 @@ export type SessionStore = {
  * tick. With a Record + spread, each call cost O(N) to copy the growing
  * map (O(N²) total) plus fired all ~30 store listeners. With Map: .set()
  * is O(1), return prev means zero listener fires.
- */
+     */
 export type SessionHooksState = Map<string, SessionStore>
 
-/**
+/*    *
  * Add a command or prompt hook to the session.
  * Session hooks are temporary, in-memory only, and cleared when session ends.
- */
+     */
 export function addSessionHook(
   setAppState: (updater: (prev: AppState) => AppState) => void,
   sessionId: string,
@@ -85,11 +85,11 @@ export function addSessionHook(
   )
 }
 
-/**
+/*    *
  * Add a function hook to the session.
  * Function hooks execute TypeScript callbacks in-memory for validation.
  * @returns The hook ID (for removal)
- */
+     */
 export function addFunctionHook(
   setAppState: (updater: (prev: AppState) => AppState) => void,
   sessionId: string,
@@ -114,9 +114,9 @@ export function addFunctionHook(
   return id
 }
 
-/**
+/*    *
  * Remove a function hook by ID from the session.
- */
+     */
 export function removeFunctionHook(
   setAppState: (updater: (prev: AppState) => AppState) => void,
   sessionId: string,
@@ -161,9 +161,9 @@ export function removeFunctionHook(
   )
 }
 
-/**
+/*    *
  * Internal helper to add a hook to session state
- */
+     */
 function addHookToSession(
   setAppState: (updater: (prev: AppState) => AppState) => void,
   sessionId: string,
@@ -215,13 +215,13 @@ function addHookToSession(
   )
 }
 
-/**
+/*    *
  * Remove a specific hook from the session
  * @param setAppState The function to update the app state
  * @param sessionId The session ID
  * @param event The hook event
  * @param hook The hook command to remove
- */
+     */
 export function removeSessionHook(
   setAppState: (updater: (prev: AppState) => AppState) => void,
   sessionId: string,
@@ -274,11 +274,11 @@ export type SessionDerivedHookMatcher = {
   skillRoot?: string
 }
 
-/**
+/*    *
  * Convert session hook matchers to regular hook matchers
  * @param sessionMatchers The session hook matchers to convert
  * @returns Regular hook matchers (with optional skillRoot preserved)
- */
+     */
 function convertToHookMatchers(
   sessionMatchers: SessionHookMatcher[],
 ): SessionDerivedHookMatcher[] {
@@ -292,13 +292,13 @@ function convertToHookMatchers(
   }))
 }
 
-/**
+/*    *
  * Get all session hooks for a specific event (excluding function hooks)
  * @param appState The app state
  * @param sessionId The session ID
  * @param event Optional event to filter by
  * @returns Hook matchers for the event, or all hooks if no event specified
- */
+     */
 export function getSessionHooks(
   appState: AppState,
   sessionId: string,
@@ -334,14 +334,14 @@ type FunctionHookMatcher = {
   hooks: FunctionHook[]
 }
 
-/**
+/*    *
  * Get all session function hooks for a specific event
  * Function hooks are kept separate because they can't be persisted to HookMatcher format.
  * @param appState The app state
  * @param sessionId The session ID
  * @param event Optional event to filter by
  * @returns Function hook matchers for the event
- */
+     */
 export function getSessionFunctionHooks(
   appState: AppState,
   sessionId: string,
@@ -391,9 +391,9 @@ export function getSessionFunctionHooks(
   return result
 }
 
-/**
+/*    *
  * Get the full hook entry (including callbacks) for a specific session hook
- */
+     */
 export function getSessionHookCallback(
   appState: AppState,
   sessionId: string,
@@ -429,11 +429,11 @@ export function getSessionHookCallback(
   return undefined
 }
 
-/**
+/*    *
  * Clear all session hooks for a specific session
  * @param setAppState The function to update the app state
  * @param sessionId The session ID
- */
+     */
 export function clearSessionHooks(
   setAppState: (updater: (prev: AppState) => AppState) => void,
   sessionId: string,

@@ -100,10 +100,10 @@ export function editFileInEditor(filePath: string): EditorResult {
   }
 }
 
-/**
+/*    *
  * Re-collapse expanded pasted text by finding content that matches
  * pastedContents and replacing it with references.
- */
+     */
 function recollapsePastedContent(
   editedPrompt: string,
   originalPrompt: string,

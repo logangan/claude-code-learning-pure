@@ -1,14 +1,14 @@
-/**
+/*    *
  * Utility functions for detecting code indexing tool usage.
  *
  * Tracks usage of common code indexing solutions like Sourcegraph, Cody, etc.
  * both via CLI commands and MCP server integrations.
- */
+     */
 
-/**
+/*    *
  * Known code indexing tool identifiers.
  * These are the normalized names used in analytics events.
- */
+     */
 export type CodeIndexingTool =
   // Code search engines
   | 'sourcegraph'
@@ -40,10 +40,10 @@ export type CodeIndexingTool =
   // Context providers
   | 'openctx'
 
-/**
+/*    *
  * Mapping of CLI command prefixes to code indexing tools.
  * The key is the command name (first word of the command).
- */
+     */
 const CLI_COMMAND_MAPPING: Record<string, CodeIndexingTool> = {
   // Sourcegraph ecosystem
   src: 'sourcegraph',
@@ -66,10 +66,10 @@ const CLI_COMMAND_MAPPING: Record<string, CodeIndexingTool> = {
   gemini: 'gemini',
 }
 
-/**
+/*    *
  * Mapping of MCP server name patterns to code indexing tools.
  * Patterns are matched case-insensitively against the server name.
- */
+     */
 const MCP_SERVER_PATTERNS: Array<{
   pattern: RegExp
   tool: CodeIndexingTool
@@ -112,7 +112,7 @@ const MCP_SERVER_PATTERNS: Array<{
   { pattern: /^code[-_]?context$/i, tool: 'claude-context' },
 ]
 
-/**
+/*    *
  * Detects if a bash command is using a code indexing CLI tool.
  *
  * @param command - The full bash command string
@@ -122,7 +122,7 @@ const MCP_SERVER_PATTERNS: Array<{
  * detectCodeIndexingFromCommand('src search "pattern"') // returns 'sourcegraph'
  * detectCodeIndexingFromCommand('cody chat --message "help"') // returns 'cody'
  * detectCodeIndexingFromCommand('ls -la') // returns undefined
- */
+     */
 export function detectCodeIndexingFromCommand(
   command: string,
 ): CodeIndexingTool | undefined {
@@ -145,7 +145,7 @@ export function detectCodeIndexingFromCommand(
   return CLI_COMMAND_MAPPING[firstWord]
 }
 
-/**
+/*    *
  * Detects if an MCP tool is from a code indexing server.
  *
  * @param toolName - The MCP tool name (format: mcp__serverName__toolName)
@@ -155,7 +155,7 @@ export function detectCodeIndexingFromCommand(
  * detectCodeIndexingFromMcpTool('mcp__sourcegraph__search') // returns 'sourcegraph'
  * detectCodeIndexingFromMcpTool('mcp__cody__chat') // returns 'cody'
  * detectCodeIndexingFromMcpTool('mcp__filesystem__read') // returns undefined
- */
+     */
 export function detectCodeIndexingFromMcpTool(
   toolName: string,
 ): CodeIndexingTool | undefined {
@@ -183,7 +183,7 @@ export function detectCodeIndexingFromMcpTool(
   return undefined
 }
 
-/**
+/*    *
  * Detects if an MCP server name corresponds to a code indexing tool.
  *
  * @param serverName - The MCP server name
@@ -192,7 +192,7 @@ export function detectCodeIndexingFromMcpTool(
  * @example
  * detectCodeIndexingFromMcpServerName('sourcegraph') // returns 'sourcegraph'
  * detectCodeIndexingFromMcpServerName('filesystem') // returns undefined
- */
+     */
 export function detectCodeIndexingFromMcpServerName(
   serverName: string,
 ): CodeIndexingTool | undefined {

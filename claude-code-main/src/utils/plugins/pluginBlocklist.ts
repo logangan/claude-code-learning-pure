@@ -1,4 +1,4 @@
-/**
+/*    *
  * Plugin delisting detection.
  *
  * Compares installed plugins against marketplace manifests to find plugins
@@ -6,7 +6,7 @@
  *
  * The security.json fetch was removed (see #25447) — ~29.5M/week GitHub hits
  * for UI reason/text only. If re-introduced, serve from downloads.claude.ai.
- */
+     */
 
 import { uninstallPluginOp } from '../../services/plugins/pluginOperations.js'
 import { logForDebugging } from '../debug.js'
@@ -23,14 +23,14 @@ import {
 } from './pluginFlagging.js'
 import type { InstalledPluginsFileV2, PluginMarketplace } from './schemas.js'
 
-/**
+/*    *
  * Detect plugins installed from a marketplace that are no longer listed there.
  *
  * @param installedPlugins All installed plugins
  * @param marketplace The marketplace to check against
  * @param marketplaceName The marketplace name suffix (e.g. "claude-plugins-official")
  * @returns List of delisted plugin IDs in "name@marketplace" format
- */
+     */
 export function detectDelistedPlugins(
   installedPlugins: InstalledPluginsFileV2,
   marketplace: PluginMarketplace,
@@ -52,7 +52,7 @@ export function detectDelistedPlugins(
   return delisted
 }
 
-/**
+/*    *
  * Detect delisted plugins across all marketplaces, auto-uninstall them,
  * and record them as flagged.
  *
@@ -60,7 +60,7 @@ export function detectDelistedPlugins(
  * mode (useManagePlugins) and headless mode (main.tsx print path).
  *
  * @returns List of newly flagged plugin IDs
- */
+     */
 export async function detectAndUninstallDelistedPlugins(): Promise<string[]> {
   await loadFlaggedPlugins()
 

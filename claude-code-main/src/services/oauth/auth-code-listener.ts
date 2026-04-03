@@ -6,15 +6,15 @@ import { getOauthConfig } from '../../constants/oauth.js'
 import { logError } from '../../utils/log.js'
 import { shouldUseClaudeAIAuth } from './client.js'
 
-/**
+/*    *
  * Temporary localhost HTTP server that listens for OAuth authorization code redirects.
  *
  * When the user authorizes in their browser, the OAuth provider redirects to:
- * http://localhost:[port]/callback?code=AUTH_CODE&state=STATE
+ * http:// localhost:[port]/callback?code=AUTH_CODE&state=STATE
  *
  * This server captures that redirect and extracts the auth code.
  * Note: This is NOT an OAuth server - it's just a redirect capture mechanism.
- */
+     */
 export class AuthCodeListener {
   private localServer: Server
   private port: number = 0
@@ -29,11 +29,11 @@ export class AuthCodeListener {
     this.callbackPath = callbackPath
   }
 
-  /**
+  /*    *
    * Starts listening on an OS-assigned port and returns the port number.
    * This avoids race conditions by keeping the server open until it's used.
    * @param port Optional specific port to use. If not provided, uses OS-assigned port.
-   */
+       */
   async start(port?: number): Promise<number> {
     return new Promise((resolve, reject) => {
       this.localServer.once('error', err => {
@@ -71,12 +71,12 @@ export class AuthCodeListener {
     })
   }
 
-  /**
+  /*    *
    * Completes the OAuth flow by redirecting the user's browser to a success page.
    * Different success pages are shown based on the granted scopes.
    * @param scopes The OAuth scopes that were granted
    * @param customHandler Optional custom handler to serve response instead of redirecting
-   */
+       */
   handleSuccessRedirect(
     scopes: string[],
     customHandler?: (res: ServerResponse, scopes: string[]) => void,
@@ -104,10 +104,10 @@ export class AuthCodeListener {
     logEvent('tengu_oauth_automatic_redirect', {})
   }
 
-  /**
+  /*    *
    * Handles error case by sending a redirect to the appropriate success page with an error indicator,
    * ensuring the browser flow is completed properly.
-   */
+       */
   handleErrorRedirect(): void {
     if (!this.pendingResponse) return
 
@@ -134,7 +134,7 @@ export class AuthCodeListener {
   private handleRedirect(req: IncomingMessage, res: ServerResponse): void {
     const parsedUrl = new URL(
       req.url || '',
-      `http://${req.headers.host || 'localhost'}`,
+      `http:// ${req.headers.host || 'localhost'}`,
     )
 
     if (parsedUrl.pathname !== this.callbackPath) {

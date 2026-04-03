@@ -1,4 +1,4 @@
-/**
+/*    *
  * Hook Zod schemas extracted to break import cycles.
  *
  * This file contains hook-related schema definitions that were originally
@@ -6,7 +6,7 @@
  * circular dependency between settings/types.ts and plugins/schemas.ts.
  *
  * Both files now import from this shared location instead of each other.
- */
+     */
 
 import { HOOK_EVENTS, type HookEvent } from 'src/entrypoints/agentSdkTypes.js'
 import { z } from 'zod/v4'
@@ -170,9 +170,9 @@ function buildHookSchemas() {
   }
 }
 
-/**
+/*    *
  * Schema for hook command (excludes function hooks - they can't be persisted)
- */
+     */
 export const HookCommandSchema = lazySchema(() => {
   const {
     BashCommandHookSchema,
@@ -188,9 +188,9 @@ export const HookCommandSchema = lazySchema(() => {
   ])
 })
 
-/**
+/*    *
  * Schema for matcher configuration with multiple hooks
- */
+     */
 export const HookMatcherSchema = lazySchema(() =>
   z.object({
     matcher: z
@@ -203,11 +203,11 @@ export const HookMatcherSchema = lazySchema(() =>
   }),
 )
 
-/**
+/*    *
  * Schema for hooks configuration
  * The key is the hook event. The value is an array of matcher configurations.
  * Uses partialRecord since not all hook events need to be defined.
- */
+     */
 export const HooksSchema = lazySchema(() =>
   z.partialRecord(z.enum(HOOK_EVENTS), z.array(HookMatcherSchema())),
 )

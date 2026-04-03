@@ -1,11 +1,11 @@
-/**
+/*    *
  * Shared permission rule matching utilities for shell tools.
  *
  * Extracts common logic for:
  * - Parsing permission rules (exact, prefix, wildcard)
  * - Matching commands against rules
  * - Generating permission suggestions
- */
+     */
 
 import type { PermissionUpdate } from './PermissionUpdateSchema.js'
 
@@ -19,9 +19,9 @@ const ESCAPED_BACKSLASH_PLACEHOLDER_RE = new RegExp(
   'g',
 )
 
-/**
+/*    *
  * Parsed permission rule discriminated union.
- */
+     */
 export type ShellPermissionRule =
   | {
       type: 'exact'
@@ -36,10 +36,10 @@ export type ShellPermissionRule =
       pattern: string
     }
 
-/**
+/*    *
  * Extract prefix from legacy :* syntax (e.g., "npm:*" -> "npm")
  * This is maintained for backwards compatibility.
- */
+     */
 export function permissionRuleExtractPrefix(
   permissionRule: string,
 ): string | null {
@@ -47,10 +47,10 @@ export function permissionRuleExtractPrefix(
   return match?.[1] ?? null
 }
 
-/**
+/*    *
  * Check if a pattern contains unescaped wildcards (not legacy :* syntax).
  * Returns true if the pattern contains * that are not escaped with \ or part of :* at the end.
- */
+     */
 export function hasWildcards(pattern: string): boolean {
   // If it ends with :*, it's legacy prefix syntax, not wildcard
   if (pattern.endsWith(':*')) {
@@ -77,7 +77,7 @@ export function hasWildcards(pattern: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Match a command against a wildcard pattern.
  * Wildcards (*) match any sequence of characters.
  * Use \* to match a literal asterisk character.
@@ -86,7 +86,7 @@ export function hasWildcards(pattern: string): boolean {
  * @param pattern - The permission rule pattern with wildcards
  * @param command - The command to match against
  * @returns true if the command matches the pattern
- */
+     */
 export function matchWildcardPattern(
   pattern: string,
   command: string,
@@ -153,9 +153,9 @@ export function matchWildcardPattern(
   return regex.test(command)
 }
 
-/**
+/*    *
  * Parse a permission rule string into a structured rule object.
- */
+     */
 export function parsePermissionRule(
   permissionRule: string,
 ): ShellPermissionRule {
@@ -183,9 +183,9 @@ export function parsePermissionRule(
   }
 }
 
-/**
+/*    *
  * Generate permission update suggestion for an exact command match.
- */
+     */
 export function suggestionForExactCommand(
   toolName: string,
   command: string,
@@ -205,9 +205,9 @@ export function suggestionForExactCommand(
   ]
 }
 
-/**
+/*    *
  * Generate permission update suggestion for a prefix match.
- */
+     */
 export function suggestionForPrefix(
   toolName: string,
   prefix: string,

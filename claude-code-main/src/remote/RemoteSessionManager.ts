@@ -16,9 +16,9 @@ import {
   type SessionsWebSocketCallbacks,
 } from './SessionsWebSocket.js'
 
-/**
+/*    *
  * Type guard to check if a message is an SDKMessage (not a control message)
- */
+     */
 function isSDKMessage(
   message:
     | SDKMessage
@@ -33,10 +33,10 @@ function isSDKMessage(
   )
 }
 
-/**
+/*    *
  * Simple permission response for remote sessions.
  * This is a simplified version of PermissionResult for CCR communication.
- */
+     */
 export type RemotePermissionResponse =
   | {
       behavior: 'allow'
@@ -51,47 +51,47 @@ export type RemoteSessionConfig = {
   sessionId: string
   getAccessToken: () => string
   orgUuid: string
-  /** True if session was created with an initial prompt that's being processed */
+  /*    * True if session was created with an initial prompt that's being processed     */
   hasInitialPrompt?: boolean
-  /**
+  /*    *
    * When true, this client is a pure viewer. Ctrl+C/Escape do NOT send
    * interrupt to the remote agent; 60s reconnect timeout is disabled;
    * session title is never updated. Used by `claude assistant`.
-   */
+       */
   viewerOnly?: boolean
 }
 
 export type RemoteSessionCallbacks = {
-  /** Called when an SDKMessage is received from the session */
+  /*    * Called when an SDKMessage is received from the session     */
   onMessage: (message: SDKMessage) => void
-  /** Called when a permission request is received from CCR */
+  /*    * Called when a permission request is received from CCR     */
   onPermissionRequest: (
     request: SDKControlPermissionRequest,
     requestId: string,
   ) => void
-  /** Called when the server cancels a pending permission request */
+  /*    * Called when the server cancels a pending permission request     */
   onPermissionCancelled?: (
     requestId: string,
     toolUseId: string | undefined,
   ) => void
-  /** Called when connection is established */
+  /*    * Called when connection is established     */
   onConnected?: () => void
-  /** Called when connection is lost and cannot be restored */
+  /*    * Called when connection is lost and cannot be restored     */
   onDisconnected?: () => void
-  /** Called on transient WS drop while reconnect backoff is in progress */
+  /*    * Called on transient WS drop while reconnect backoff is in progress     */
   onReconnecting?: () => void
-  /** Called on error */
+  /*    * Called on error     */
   onError?: (error: Error) => void
 }
 
-/**
+/*    *
  * Manages a remote CCR session.
  *
  * Coordinates:
  * - WebSocket subscription for receiving messages from CCR
  * - HTTP POST for sending user messages to CCR
  * - Permission request/response flow
- */
+     */
 export class RemoteSessionManager {
   private websocket: SessionsWebSocket | null = null
   private pendingPermissionRequests: Map<string, SDKControlPermissionRequest> =
@@ -102,9 +102,9 @@ export class RemoteSessionManager {
     private readonly callbacks: RemoteSessionCallbacks,
   ) {}
 
-  /**
+  /*    *
    * Connect to the remote session via WebSocket
-   */
+       */
   connect(): void {
     logForDebugging(
       `[RemoteSessionManager] Connecting to session ${this.config.sessionId}`,
@@ -140,9 +140,9 @@ export class RemoteSessionManager {
     void this.websocket.connect()
   }
 
-  /**
+  /*    *
    * Handle messages from WebSocket
-   */
+       */
   private handleMessage(
     message:
       | SDKMessage
@@ -183,9 +183,9 @@ export class RemoteSessionManager {
     }
   }
 
-  /**
+  /*    *
    * Handle control requests from CCR (e.g., permission requests)
-   */
+       */
   private handleControlRequest(request: SDKControlRequest): void {
     const { request_id, request: inner } = request
 
@@ -213,9 +213,9 @@ export class RemoteSessionManager {
     }
   }
 
-  /**
+  /*    *
    * Send a user message to the remote session via HTTP POST
-   */
+       */
   async sendMessage(
     content: RemoteMessageContent,
     opts?: { uuid?: string },
@@ -241,9 +241,9 @@ export class RemoteSessionManager {
     return success
   }
 
-  /**
+  /*    *
    * Respond to a permission request from CCR
-   */
+       */
   respondToPermissionRequest(
     requestId: string,
     result: RemotePermissionResponse,
@@ -281,31 +281,31 @@ export class RemoteSessionManager {
     this.websocket?.sendControlResponse(response)
   }
 
-  /**
+  /*    *
    * Check if connected to the remote session
-   */
+       */
   isConnected(): boolean {
     return this.websocket?.isConnected() ?? false
   }
 
-  /**
+  /*    *
    * Send an interrupt signal to cancel the current request on the remote session
-   */
+       */
   cancelSession(): void {
     logForDebugging('[RemoteSessionManager] Sending interrupt signal')
     this.websocket?.sendControlRequest({ subtype: 'interrupt' })
   }
 
-  /**
+  /*    *
    * Get the session ID
-   */
+       */
   getSessionId(): string {
     return this.config.sessionId
   }
 
-  /**
+  /*    *
    * Disconnect from the remote session
-   */
+       */
   disconnect(): void {
     logForDebugging('[RemoteSessionManager] Disconnecting')
     this.websocket?.close()
@@ -313,19 +313,19 @@ export class RemoteSessionManager {
     this.pendingPermissionRequests.clear()
   }
 
-  /**
+  /*    *
    * Force reconnect the WebSocket.
    * Useful when the subscription becomes stale after container shutdown.
-   */
+       */
   reconnect(): void {
     logForDebugging('[RemoteSessionManager] Reconnecting WebSocket')
     this.websocket?.reconnect()
   }
 }
 
-/**
+/*    *
  * Create a remote session config from OAuth tokens
- */
+     */
 export function createRemoteSessionConfig(
   sessionId: string,
   getAccessToken: () => string,

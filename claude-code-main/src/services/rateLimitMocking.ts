@@ -1,7 +1,7 @@
-/**
+/*    *
  * Facade for rate limit header processing
  * This isolates mock logic from production code
- */
+     */
 
 import { APIError } from '@anthropic-ai/sdk'
 import {
@@ -13,9 +13,9 @@ import {
   shouldProcessMockLimits,
 } from './mockRateLimits.js'
 
-/**
+/*    *
  * Process headers, applying mocks if /mock-limits command is active
- */
+     */
 export function processRateLimitHeaders(
   headers: globalThis.Headers,
 ): globalThis.Headers {
@@ -26,19 +26,19 @@ export function processRateLimitHeaders(
   return headers
 }
 
-/**
+/*    *
  * Check if we should process rate limits (either real subscriber or /mock-limits command)
- */
+     */
 export function shouldProcessRateLimits(isSubscriber: boolean): boolean {
   return isSubscriber || shouldProcessMockLimits()
 }
 
-/**
+/*    *
  * Check if mock rate limits should throw a 429 error
  * Returns the error to throw, or null if no error should be thrown
  * @param currentModel The model being used for the current request
  * @param isFastModeActive Whether fast mode is currently active (for fast-mode-only mocks)
- */
+     */
 export function checkMockRateLimitError(
   currentModel: string,
   isFastModeActive?: boolean,
@@ -131,14 +131,14 @@ export function checkMockRateLimitError(
   return null
 }
 
-/**
+/*    *
  * Check if this is a mock 429 error that shouldn't be retried
- */
+     */
 export function isMockRateLimitError(error: APIError): boolean {
   return shouldProcessMockLimits() && error.status === 429
 }
 
-/**
+/*    *
  * Check if /mock-limits command is currently active (for UI purposes)
- */
+     */
 export { shouldProcessMockLimits }

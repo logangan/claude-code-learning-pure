@@ -65,13 +65,13 @@ import { getCurrentUsage } from './tokens.js'
 const RESERVED_CATEGORY_NAME = 'Autocompact buffer'
 const MANUAL_COMPACT_BUFFER_NAME = 'Compact buffer'
 
-/**
+/*    *
  * Fixed token overhead added by the API when tools are present.
  * The API adds a tool prompt preamble (~500 tokens) once per API call when tools are present.
  * When we count tools individually via the token counting API, each call includes this overhead,
  * leading to N × overhead instead of 1 × overhead for N tools.
  * We subtract this overhead from per-tool counts to show accurate tool content sizes.
- */
+     */
 export const TOOL_TOKEN_COUNT_OVERHEAD = 500
 
 async function countTokensWithFallback(
@@ -112,7 +112,7 @@ interface ContextCategory {
   name: string
   tokens: number
   color: keyof Theme
-  /** When true, these tokens are deferred and don't count toward context usage */
+  /*    * When true, these tokens are deferred and don't count toward context usage     */
   isDeferred?: boolean
 }
 
@@ -166,24 +166,24 @@ interface SlashCommandInfo {
   readonly tokens: number
 }
 
-/** Individual skill detail for context display */
+/*    * Individual skill detail for context display     */
 interface SkillFrontmatter {
   name: string
   source: SettingSource | 'plugin'
   tokens: number
 }
 
-/**
+/*    *
  * Information about skills included in the context window.
- */
+     */
 interface SkillInfo {
-  /** Total number of available skills */
+  /*    * Total number of available skills     */
   readonly totalSkills: number
-  /** Number of skills included within token budget */
+  /*    * Number of skills included within token budget     */
   readonly includedSkills: number
-  /** Total tokens consumed by skills */
+  /*    * Total tokens consumed by skills     */
   readonly tokens: number
-  /** Individual skill details */
+  /*    * Individual skill details     */
   readonly skillFrontmatter: SkillFrontmatter[]
 }
 
@@ -197,15 +197,15 @@ export interface ContextData {
   readonly model: string
   readonly memoryFiles: MemoryFile[]
   readonly mcpTools: McpTool[]
-  /** Ant-only: per-tool breakdown of deferred built-in tools */
+  /*    * Ant-only: per-tool breakdown of deferred built-in tools     */
   readonly deferredBuiltinTools?: DeferredBuiltinTool[]
-  /** Ant-only: per-tool breakdown of always-loaded built-in tools */
+  /*    * Ant-only: per-tool breakdown of always-loaded built-in tools     */
   readonly systemTools?: SystemToolDetail[]
-  /** Ant-only: per-section breakdown of system prompt */
+  /*    * Ant-only: per-section breakdown of system prompt     */
   readonly systemPromptSections?: SystemPromptSectionDetail[]
   readonly agents: Agent[]
   readonly slashCommands?: SlashCommandInfo
-  /** Skill statistics */
+  /*    * Skill statistics     */
   readonly skills?: SkillInfo
   readonly autoCompactThreshold?: number
   readonly isAutoCompactEnabled: boolean
@@ -222,7 +222,7 @@ export interface ContextData {
     }>
     attachmentsByType: Array<{ name: string; tokens: number }>
   }
-  /** Actual token usage from last API response (if available) */
+  /*    * Actual token usage from last API response (if available)     */
   readonly apiUsage: {
     input_tokens: number
     output_tokens: number
@@ -257,7 +257,7 @@ export async function countToolDefinitionTokens(
   return result ?? 0
 }
 
-/** Extract a human-readable name from a system prompt section's content */
+/*    * Extract a human-readable name from a system prompt section's content     */
 function extractSectionName(content: string): string {
   // Try to find first markdown heading
   const headingMatch = content.match(/^#+\s+(.+)$/m)
@@ -924,7 +924,7 @@ export async function analyzeContextUsage(
   terminalWidth?: number,
   toolUseContext?: Pick<ToolUseContext, 'options'>,
   mainThreadAgentDefinition?: AgentDefinition,
-  /** Original messages before microcompact, used to extract API usage */
+  /*    * Original messages before microcompact, used to extract API usage     */
   originalMessages?: Message[],
 ): Promise<ContextData> {
   const runtimeModel = getRuntimeMainLoopModel({
@@ -1117,10 +1117,10 @@ export async function analyzeContextUsage(
     }
   }
   if (feature('CONTEXT_COLLAPSE')) {
-    /* eslint-disable @typescript-eslint/no-require-imports */
+    /*     eslint-disable @typescript-eslint/no-require-imports     */
     const { isContextCollapseEnabled } =
       require('../services/contextCollapse/index.js') as typeof import('../services/contextCollapse/index.js')
-    /* eslint-enable @typescript-eslint/no-require-imports */
+    /*     eslint-enable @typescript-eslint/no-require-imports     */
     if (isContextCollapseEnabled()) {
       skipReservedBuffer = true
     }

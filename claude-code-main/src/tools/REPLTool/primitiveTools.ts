@@ -10,7 +10,7 @@ import { NotebookEditTool } from '../NotebookEditTool/NotebookEditTool.js'
 
 let _primitiveTools: readonly Tool[] | undefined
 
-/**
+/*    *
  * Primitive tools hidden from direct model use when REPL mode is on
  * (REPL_ONLY_TOOLS) but still accessible inside the REPL VM context.
  * Exported so display-side code (collapseReadSearch, renderers) can
@@ -24,7 +24,7 @@ let _primitiveTools: readonly Tool[] | undefined
  *
  * Referenced directly rather than via getAllBaseTools() because that
  * excludes Glob/Grep when hasEmbeddedSearchTools() is true.
- */
+     */
 export function getReplPrimitiveTools(): readonly Tool[] {
   return (_primitiveTools ??= [
     FileReadTool,

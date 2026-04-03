@@ -47,8 +47,8 @@ const McpOAuthConfigSchema = lazySchema(() =>
     authServerMetadataUrl: z
       .string()
       .url()
-      .startsWith('https://', {
-        message: 'authServerMetadataUrl must use https://',
+      .startsWith('https:// ', {
+        message: 'authServerMetadataUrl must use https:// ',
       })
       .optional(),
     xaa: McpXaaConfigSchema().optional(),

@@ -11,14 +11,14 @@ import {
 } from '../utils/sessionStoragePortable.js'
 import { jsonParse, jsonStringify } from '../utils/slowOperations.js'
 
-/**
+/*    *
  * Upper bound on worktree fanout. git worktree list is naturally bounded
  * (50 is a LOT), but this caps the parallel stat() burst and guards against
  * pathological setups. Above this, --continue falls back to current-dir-only.
- */
+     */
 const MAX_WORKTREE_FANOUT = 50
 
-/**
+/*    *
  * Crash-recovery pointer for Remote Control sessions.
  *
  * Written immediately after a bridge session is created, periodically
@@ -35,7 +35,7 @@ const MAX_WORKTREE_FANOUT = 50
  *
  * Scoped per working directory (alongside transcript JSONL files) so two
  * concurrent bridges in different repos don't clobber each other.
- */
+     */
 
 export const BRIDGE_POINTER_TTL_MS = 4 * 60 * 60 * 1000
 
@@ -53,12 +53,12 @@ export function getBridgePointerPath(dir: string): string {
   return join(getProjectsDir(), sanitizePath(dir), 'bridge-pointer.json')
 }
 
-/**
+/*    *
  * Write the pointer. Also used to refresh mtime during long sessions —
  * calling with the same IDs is a cheap no-content-change write that bumps
  * the staleness clock. Best-effort — a crash-recovery file must never
  * itself cause a crash. Logs and swallows on error.
- */
+     */
 export async function writeBridgePointer(
   dir: string,
   pointer: BridgePointer,
@@ -73,13 +73,13 @@ export async function writeBridgePointer(
   }
 }
 
-/**
+/*    *
  * Read the pointer and its age (ms since last write). Operates directly
  * and handles errors — no existence check (CLAUDE.md TOCTOU rule). Returns
  * null on any failure: missing file, corrupted JSON, schema mismatch, or
  * stale (mtime > 4h ago). Stale/invalid pointers are deleted so they don't
  * keep re-prompting after the backend has already GC'd the env.
- */
+     */
 export async function readBridgePointer(
   dir: string,
 ): Promise<(BridgePointer & { ageMs: number }) | null> {
@@ -112,7 +112,7 @@ export async function readBridgePointer(
   return { ...parsed.data, ageMs }
 }
 
-/**
+/*    *
  * Worktree-aware read for `--continue`. The REPL bridge writes its pointer
  * to `getOriginalCwd()` which EnterWorktreeTool/activeWorktreeSession can
  * mutate to a worktree path — but `claude remote-control --continue` runs
@@ -125,7 +125,7 @@ export async function readBridgePointer(
  *
  * Returns the pointer AND the dir it was found in, so the caller can clear
  * the right file on resume failure.
- */
+     */
 export async function readBridgePointerAcrossWorktrees(
   dir: string,
 ): Promise<{ pointer: BridgePointer & { ageMs: number }; dir: string } | null> {
@@ -183,10 +183,10 @@ export async function readBridgePointerAcrossWorktrees(
   return freshest
 }
 
-/**
+/*    *
  * Delete the pointer. Idempotent — ENOENT is expected when the process
  * shut down clean previously.
- */
+     */
 export async function clearBridgePointer(dir: string): Promise<void> {
   const path = getBridgePointerPath(dir)
   try {

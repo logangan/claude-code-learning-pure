@@ -14,18 +14,18 @@ export { asSystemPrompt, type SystemPrompt } from './systemPromptType.js'
 // Dead code elimination: conditional import for proactive mode.
 // Same pattern as prompts.ts — lazy require to avoid pulling the module
 // into non-proactive builds.
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const proactiveModule =
   feature('PROACTIVE') || feature('KAIROS')
     ? (require('../proactive/index.js') as typeof import('../proactive/index.js'))
     : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 function isProactiveActive_SAFE_TO_CALL_ANYWHERE(): boolean {
   return proactiveModule?.isProactiveActive() ?? false
 }
 
-/**
+/*    *
  * Builds the effective system prompt array based on priority:
  * 0. Override system prompt (if set, e.g., via loop mode - REPLACES all other prompts)
  * 1. Coordinator system prompt (if coordinator mode is active)
@@ -37,7 +37,7 @@ function isProactiveActive_SAFE_TO_CALL_ANYWHERE(): boolean {
  * 4. Default system prompt (the standard Claude Code prompt)
  *
  * Plus appendSystemPrompt is always added at the end if specified (except when override is set).
- */
+     */
 export function buildEffectiveSystemPrompt({
   mainThreadAgentDefinition,
   toolUseContext,

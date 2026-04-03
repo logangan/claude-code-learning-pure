@@ -163,10 +163,10 @@ export function useDiffInIDE({
   }
 }
 
-/**
+/*    *
  * Re-computes the edits from the old and new contents. This is necessary
  * to apply any edits the user may have made to the new contents.
- */
+     */
 export function computeEditsFromContents(
   filePath: string,
   oldContent: string,
@@ -199,7 +199,7 @@ export function computeEditsFromContents(
   return getEditsForPatch(patch)
 }
 
-/**
+/*    *
  * Done if:
  *
  * 1. Tab is closed in IDE
@@ -212,7 +212,7 @@ export function computeEditsFromContents(
  * TODO: Time out after 5 mins of inactivity?
  * TODO: Update auto-approval UI when IDE exits
  * TODO: Close the IDE tab when the approval prompt is unmounted
- */
+     */
 async function showDiffInIDE(
   file_path: string,
   edits: FileEdit[],

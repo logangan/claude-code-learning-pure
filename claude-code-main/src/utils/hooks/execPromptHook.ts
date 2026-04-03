@@ -15,9 +15,9 @@ import type { PromptHook } from '../settings/types.js'
 import { asSystemPrompt } from '../systemPromptType.js'
 import { addArgumentsToPrompt, hookResponseSchema } from './hookHelpers.js'
 
-/**
+/*    *
  * Execute a prompt-based hook using an LLM
- */
+     */
 export async function execPromptHook(
   hook: PromptHook,
   hookName: string,

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Synchronous state machine for the query lifecycle, compatible with
  * React's `useSyncExternalStore`.
  *
@@ -23,7 +23,7 @@
  *     queryGuard.subscribe,
  *     queryGuard.getSnapshot,
  *   )
- */
+     */
 import { createSignal } from './signal.js'
 
 export class QueryGuard {
@@ -31,10 +31,10 @@ export class QueryGuard {
   private _generation = 0
   private _changed = createSignal()
 
-  /**
+  /*    *
    * Reserve the guard for queue processing. Transitions idle → dispatching.
    * Returns false if not idle (another query or dispatch in progress).
-   */
+       */
   reserve(): boolean {
     if (this._status !== 'idle') return false
     this._status = 'dispatching'
@@ -42,22 +42,22 @@ export class QueryGuard {
     return true
   }
 
-  /**
+  /*    *
    * Cancel a reservation when processQueueIfReady had nothing to process.
    * Transitions dispatching → idle.
-   */
+       */
   cancelReservation(): void {
     if (this._status !== 'dispatching') return
     this._status = 'idle'
     this._notify()
   }
 
-  /**
+  /*    *
    * Start a query. Returns the generation number on success,
    * or null if a query is already running (concurrent guard).
    * Accepts transitions from both idle (direct user submit)
    * and dispatching (queue processor path).
-   */
+       */
   tryStart(): number | null {
     if (this._status === 'running') return null
     this._status = 'running'
@@ -66,11 +66,11 @@ export class QueryGuard {
     return this._generation
   }
 
-  /**
+  /*    *
    * End a query. Returns true if this generation is still current
    * (meaning the caller should perform cleanup). Returns false if a
    * newer query has started (stale finally block from a cancelled query).
-   */
+       */
   end(generation: number): boolean {
     if (this._generation !== generation) return false
     if (this._status !== 'running') return false
@@ -79,12 +79,12 @@ export class QueryGuard {
     return true
   }
 
-  /**
+  /*    *
    * Force-end the current query regardless of generation.
    * Used by onCancel where any running query should be terminated.
    * Increments generation so stale finally blocks from the cancelled
    * query's promise rejection will see a mismatch and skip cleanup.
-   */
+       */
   forceEnd(): void {
     if (this._status === 'idle') return
     this._status = 'idle'
@@ -92,10 +92,10 @@ export class QueryGuard {
     this._notify()
   }
 
-  /**
+  /*    *
    * Is the guard active (dispatching or running)?
    * Always synchronous — not subject to React state batching delays.
-   */
+       */
   get isActive(): boolean {
     return this._status !== 'idle'
   }
@@ -107,10 +107,10 @@ export class QueryGuard {
   // --
   // useSyncExternalStore interface
 
-  /** Subscribe to state changes. Stable reference — safe as useEffect dep. */
+  /*    * Subscribe to state changes. Stable reference — safe as useEffect dep.     */
   subscribe = this._changed.subscribe
 
-  /** Snapshot for useSyncExternalStore. Returns `isActive`. */
+  /*    * Snapshot for useSyncExternalStore. Returns `isActive`.     */
   getSnapshot = (): boolean => {
     return this._status !== 'idle'
   }

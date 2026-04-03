@@ -13,7 +13,7 @@ export type Progress = {
   percentage?: number
 }
 
-/**
+/*    *
  * Checks if the terminal supports OSC 9;4 progress reporting.
  * Supported terminals:
  * - ConEmu (Windows) - all versions
@@ -21,7 +21,7 @@ export type Progress = {
  * - iTerm2 3.6.6+
  *
  * Note: Windows Terminal interprets OSC 9;4 as notifications, not progress.
- */
+     */
 export function isProgressReportingAvailable(): boolean {
   // Only available if we have a TTY (not piped)
   if (!process.stdout.isTTY) {
@@ -63,10 +63,10 @@ export function isProgressReportingAvailable(): boolean {
   return false
 }
 
-/**
+/*    *
  * Checks if the terminal supports DEC mode 2026 (synchronized output).
  * When supported, BSU/ESU sequences prevent visible flicker during redraws.
- */
+     */
 export function isSynchronizedOutputSupported(): boolean {
   // tmux parses and proxies every byte but doesn't implement DEC 2026.
   // BSU/ESU pass through to the outer terminal but tmux has already
@@ -118,8 +118,7 @@ export function isSynchronizedOutputSupported(): boolean {
 }
 
 // -- XTVERSION-detected terminal name (populated async at startup) --
-//
-// TERM_PROGRAM is not forwarded over SSH by default, so env-based detection
+// // TERM_PROGRAM is not forwarded over SSH by default, so env-based detection
 // fails when claude runs remotely inside a VS Code integrated terminal.
 // XTVERSION (CSI > 0 q → DCS > | name ST) goes through the pty — the query
 // reaches the *client* terminal and the reply comes back through stdin.
@@ -129,17 +128,17 @@ export function isSynchronizedOutputSupported(): boolean {
 
 let xtversionName: string | undefined
 
-/** Record the XTVERSION response. Called once from App.tsx when the reply
- *  arrives on stdin. No-op if already set (defend against re-probe). */
+/*    * Record the XTVERSION response. Called once from App.tsx when the reply
+ *  arrives on stdin. No-op if already set (defend against re-probe).     */
 export function setXtversionName(name: string): void {
   if (xtversionName === undefined) xtversionName = name
 }
 
-/** True if running in an xterm.js-based terminal (VS Code, Cursor, Windsurf
+/*    * True if running in an xterm.js-based terminal (VS Code, Cursor, Windsurf
  *  integrated terminals). Combines TERM_PROGRAM env check (fast, sync, but
  *  not forwarded over SSH) with the XTVERSION probe result (async, survives
  *  SSH — query/reply goes through the pty). Early calls may miss the probe
- *  reply — call lazily (e.g. in an event handler) if SSH detection matters. */
+ *  reply — call lazily (e.g. in an event handler) if SSH detection matters.     */
 export function isXtermJs(): boolean {
   if (process.env.TERM_PROGRAM === 'vscode') return true
   return xtversionName?.startsWith('xterm.js') ?? false
@@ -162,18 +161,18 @@ const EXTENDED_KEYS_TERMINALS = [
   'windows-terminal',
 ]
 
-/** True if this terminal correctly handles extended key reporting
- *  (Kitty keyboard protocol + xterm modifyOtherKeys). */
+/*    * True if this terminal correctly handles extended key reporting
+ *  (Kitty keyboard protocol + xterm modifyOtherKeys).     */
 export function supportsExtendedKeys(): boolean {
   return EXTENDED_KEYS_TERMINALS.includes(env.terminal ?? '')
 }
 
-/** True if the terminal scrolls the viewport when it receives cursor-up
+/*    * True if the terminal scrolls the viewport when it receives cursor-up
  *  sequences that reach above the visible area. On Windows, conhost's
  *  SetConsoleCursorPosition follows the cursor into scrollback
  *  (microsoft/terminal#14774), yanking users to the top of their buffer
  *  mid-stream. WT_SESSION catches WSL-in-Windows-Terminal where platform
- *  is linux but output still routes through conhost. */
+ *  is linux but output still routes through conhost.     */
 export function hasCursorUpViewportYankBug(): boolean {
   return process.platform === 'win32' || !!process.env.WT_SESSION
 }

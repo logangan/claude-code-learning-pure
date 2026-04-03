@@ -1,4 +1,4 @@
-/**
+/*    *
  * Lightweight parser for .git/config files.
  *
  * Verified against git's config.c:
@@ -6,15 +6,15 @@
  *   - Subsection names (quoted): case-sensitive, backslash escapes (\\ and \")
  *   - Key names: case-insensitive, alphanumeric + hyphen
  *   - Values: optional quoting, inline comments (# or ;), backslash escapes
- */
+     */
 
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 
-/**
+/*    *
  * Parse a single value from .git/config.
  * Finds the first matching key under the given section/subsection.
- */
+     */
 export async function parseGitConfigValue(
   gitDir: string,
   section: string,
@@ -29,10 +29,10 @@ export async function parseGitConfigValue(
   }
 }
 
-/**
+/*    *
  * Parse a config value from an in-memory config string.
  * Exported for testing.
- */
+     */
 export function parseConfigString(
   config: string,
   section: string,
@@ -72,9 +72,9 @@ export function parseConfigString(
   return null
 }
 
-/**
+/*    *
  * Parse a key = value line. Returns null if the line doesn't contain a valid key.
- */
+     */
 function parseKeyValue(line: string): { key: string; value: string } | null {
   // Read key: alphanumeric + hyphen, starting with alpha
   let i = 0
@@ -107,10 +107,10 @@ function parseKeyValue(line: string): { key: string; value: string } | null {
   return { key, value }
 }
 
-/**
+/*    *
  * Parse a config value starting at position i.
  * Handles quoted strings, escape sequences, and inline comments.
- */
+     */
 function parseValue(line: string, start: number): string {
   let result = ''
   let inQuote = false
@@ -191,10 +191,10 @@ function trimTrailingWhitespace(s: string): string {
   return s.slice(0, end)
 }
 
-/**
+/*    *
  * Check if a config line like `[remote "origin"]` matches the given section/subsection.
  * Section matching is case-insensitive; subsection matching is case-sensitive.
- */
+     */
 function matchesSectionHeader(
   line: string,
   sectionLower: string,

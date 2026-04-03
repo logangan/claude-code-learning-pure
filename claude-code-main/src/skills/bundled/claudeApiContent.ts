@@ -31,8 +31,8 @@ import typescriptClaudeApiToolUse from './claude-api/typescript/claude-api/tool-
 // @[MODEL LAUNCH]: Update the model IDs/names below. These are substituted into {{VAR}}
 // placeholders in the .md files at runtime before the skill prompt is sent.
 // After updating these constants, manually update the two files that still hardcode models:
-//   - claude-api/SKILL.md (Current Models pricing table)
-//   - claude-api/shared/models.md (full model catalog with legacy versions and alias mappings)
+// - claude-api/SKILL.md (Current Models pricing table)
+// - claude-api/shared/models.md (full model catalog with legacy versions and alias mappings)
 export const SKILL_MODEL_VARS = {
   OPUS_ID: 'claude-opus-4-6',
   OPUS_NAME: 'Claude Opus 4.6',

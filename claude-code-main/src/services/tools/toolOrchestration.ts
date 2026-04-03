@@ -83,11 +83,11 @@ export async function* runTools(
 
 type Batch = { isConcurrencySafe: boolean; blocks: ToolUseBlock[] }
 
-/**
+/*    *
  * Partition tool calls into batches where each batch is either:
  * 1. A single non-read-only tool, or
  * 2. Multiple consecutive read-only tools
- */
+     */
 function partitionToolCalls(
   toolUseMessages: ToolUseBlock[],
   toolUseContext: ToolUseContext,

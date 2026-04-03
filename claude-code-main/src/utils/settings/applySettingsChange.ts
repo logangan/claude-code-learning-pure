@@ -13,7 +13,7 @@ import { loadAllPermissionRulesFromDisk } from '../permissions/permissionsLoader
 import type { SettingSource } from './constants.js'
 import { getInitialSettings } from './settings.js'
 
-/**
+/*    *
  * Apply a settings change to app state. Re-reads settings from disk,
  * reloads permissions and hooks, and pushes the new state.
  *
@@ -29,7 +29,7 @@ import { getInitialSettings } from './settings.js'
  *
  * Side-effects like clearing auth caches and applying env vars are handled by
  * `onChangeAppState` which fires when `settings` changes in state.
- */
+     */
 export function applySettingsChange(
   source: SettingSource,
   setAppState: (f: (prev: AppState) => AppState) => void,

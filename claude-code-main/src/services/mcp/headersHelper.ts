@@ -13,22 +13,22 @@ import type {
   ScopedMcpServerConfig,
 } from './types.js'
 
-/**
+/*    *
  * Check if the MCP server config comes from project settings (projectSettings or localSettings)
  * This is important for security checks
- */
+     */
 function isMcpServerFromProjectOrLocalSettings(
   config: ScopedMcpServerConfig,
 ): boolean {
   return config.scope === 'project' || config.scope === 'local'
 }
 
-/**
+/*    *
  * Get dynamic headers for an MCP server using the headersHelper script
  * @param serverName The name of the MCP server
  * @param config The MCP server configuration
  * @returns Headers object or null if not configured or failed
- */
+     */
 export async function getMcpHeadersFromHelper(
   serverName: string,
   config: McpSSEServerConfig | McpHTTPServerConfig | McpWebSocketServerConfig,
@@ -116,12 +116,12 @@ export async function getMcpHeadersFromHelper(
   }
 }
 
-/**
+/*    *
  * Get combined headers for an MCP server (static + dynamic)
  * @param serverName The name of the MCP server
  * @param config The MCP server configuration
  * @returns Combined headers object
- */
+     */
 export async function getMcpServerHeaders(
   serverName: string,
   config: McpSSEServerConfig | McpHTTPServerConfig | McpWebSocketServerConfig,

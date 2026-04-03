@@ -88,13 +88,13 @@ export function getRateLimitDisplayName(type: RateLimitType): string {
   return RATE_LIMIT_DISPLAY_NAMES[type] || type
 }
 
-/**
+/*    *
  * Calculate what fraction of a time window has elapsed.
  * Used for time-relative early warning fallback.
  * @param resetsAt - Unix epoch timestamp in seconds when the limit resets
  * @param windowSeconds - Duration of the window in seconds
  * @returns fraction (0-1) of the window that has elapsed
- */
+     */
 function computeTimeProgress(resetsAt: number, windowSeconds: number): number {
   const nowSeconds = Date.now() / 1000
   const windowStart = resetsAt - windowSeconds
@@ -142,11 +142,11 @@ export let currentLimits: ClaudeAILimits = {
   isUsingOverage: false,
 }
 
-/**
+/*    *
  * Raw per-window utilization from response headers, tracked on every API
  * response (unlike currentLimits.utilization which is only set when a warning
  * threshold fires). Exposed to statusline scripts via getRawUtilization().
- */
+     */
 type RawWindowUtilization = {
   utilization: number // 0-1 fraction
   resets_at: number // unix epoch seconds
@@ -248,10 +248,10 @@ export async function checkQuotaStatus(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Check if early warning should be triggered based on surpassed-threshold header.
  * Returns ClaudeAILimits if a threshold was surpassed, null otherwise.
- */
+     */
 function getHeaderBasedEarlyWarning(
   headers: globalThis.Headers,
   unifiedRateLimitFallbackAvailable: boolean,
@@ -293,11 +293,11 @@ function getHeaderBasedEarlyWarning(
   return null
 }
 
-/**
+/*    *
  * Check if time-relative early warning should be triggered for a rate limit type.
  * Fallback when server doesn't send surpassed-threshold header.
  * Returns ClaudeAILimits if thresholds are exceeded, null otherwise.
- */
+     */
 function getTimeRelativeEarlyWarning(
   headers: globalThis.Headers,
   config: EarlyWarningConfig,
@@ -339,11 +339,11 @@ function getTimeRelativeEarlyWarning(
   }
 }
 
-/**
+/*    *
  * Get early warning limits using header-based detection with time-relative fallback.
  * 1. First checks for surpassed-threshold header (new server-side approach)
  * 2. Falls back to time-relative thresholds (client-side calculation)
- */
+     */
 function getEarlyWarningFromHeaders(
   headers: globalThis.Headers,
   unifiedRateLimitFallbackAvailable: boolean,
@@ -435,9 +435,9 @@ function computeNewLimitsFromHeaders(
   }
 }
 
-/**
+/*    *
  * Cache the extra usage disabled reason from API headers.
- */
+     */
 function cacheExtraUsageDisabledReason(headers: globalThis.Headers): void {
   // A null reason means extra usage is enabled (no disabled reason header)
   const reason =

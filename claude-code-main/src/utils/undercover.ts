@@ -1,4 +1,4 @@
-/**
+/*    *
  * Undercover mode — safety utilities for contributing to public/open-source repos.
  *
  * When active, Claude Code adds safety instructions to commit/PR prompts and
@@ -19,7 +19,7 @@
  * a build-time --define, the bundler constant-folds these checks and dead-code-
  * eliminates the ant-only branches from external builds. In external builds every
  * function in this file reduces to a trivial return.
- */
+     */
 
 import { getRepoClassCached } from './commitAttribution.js'
 import { getGlobalConfig } from './config.js'
@@ -71,12 +71,12 @@ BAD (never write these):
   return ''
 }
 
-/**
+/*    *
  * Check whether to show the one-time explainer dialog for auto-undercover.
  * True when: undercover is active via auto-detection (not forced via env),
  * and the user hasn't seen the notice before. Pure — the component marks the
  * flag on mount.
- */
+     */
 export function shouldShowUndercoverAutoNotice(): boolean {
   if (process.env.USER_TYPE === 'ant') {
     // If forced via env, user already knows; don't nag.

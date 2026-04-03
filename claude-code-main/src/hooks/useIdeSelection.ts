@@ -52,10 +52,10 @@ const SelectionChangedSchema = lazySchema(() =>
   }),
 )
 
-/**
+/*    *
  * A hook that tracks IDE text selection information by directly registering
  * with MCP client notification handlers
- */
+     */
 export function useIdeSelection(
   mcpClients: MCPServerConnection[],
   onSelect: (selection: IDESelection) => void,

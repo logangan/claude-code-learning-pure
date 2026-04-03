@@ -1,10 +1,10 @@
-/**
+/*    *
  * Portable session storage utilities.
  *
  * Pure Node.js — no internal dependencies on logging, experiments, or feature
  * flags. Shared between the CLI (src/utils/sessionStorage.ts) and the VS Code
  * extension (packages/claude-vscode/src/common-host/sessionStorage.ts).
- */
+     */
 
 import type { UUID } from 'crypto'
 import { open as fsOpen, readdir, realpath, stat } from 'fs/promises'
@@ -13,7 +13,7 @@ import { getClaudeConfigHomeDir } from './envUtils.js'
 import { getWorktreePathsPortable } from './getWorktreePathsPortable.js'
 import { djb2Hash } from './hash.js'
 
-/** Size of the head/tail buffer for lite metadata reads. */
+/*    * Size of the head/tail buffer for lite metadata reads.     */
 export const LITE_READ_BUF_SIZE = 65536
 
 // ---------------------------------------------------------------------------
@@ -32,10 +32,10 @@ export function validateUuid(maybeUuid: unknown): UUID | null {
 // JSON string field extraction — no full parse, works on truncated lines
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Unescape a JSON string value extracted as raw text.
  * Only allocates a new string when escape sequences are present.
- */
+     */
 export function unescapeJsonString(raw: string): string {
   if (!raw.includes('\\')) return raw
   try {
@@ -45,11 +45,11 @@ export function unescapeJsonString(raw: string): string {
   }
 }
 
-/**
+/*    *
  * Extracts a simple JSON string field value from raw text without full parsing.
  * Looks for `"key":"value"` or `"key": "value"` patterns.
  * Returns the first match, or undefined if not found.
- */
+     */
 export function extractJsonStringField(
   text: string,
   key: string,
@@ -75,10 +75,10 @@ export function extractJsonStringField(
   return undefined
 }
 
-/**
+/*    *
  * Like extractJsonStringField but finds the LAST occurrence.
  * Useful for fields that are appended (customTitle, tag, etc.).
- */
+     */
 export function extractLastJsonStringField(
   text: string,
   key: string,
@@ -114,24 +114,24 @@ export function extractLastJsonStringField(
 // First prompt extraction from head chunk
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Pattern matching auto-generated or system messages that should be skipped
  * when looking for the first meaningful user prompt. Matches anything that
  * starts with a lowercase XML-like tag (IDE context, hook output, task
  * notifications, channel messages, etc.) or a synthetic interrupt marker.
- */
+     */
 const SKIP_FIRST_PROMPT_PATTERN =
   /^(?:\s*<[a-z][\w-]*[\s>]|\[Request interrupted by user[^\]]*\])/
 
 const COMMAND_NAME_RE = /<command-name>(.*?)<\/command-name>/
 
-/**
+/*    *
  * Extracts the first meaningful user prompt from a JSONL head chunk.
  *
  * Skips tool_result messages, isMeta, isCompactSummary, command-name messages,
  * and auto-generated patterns (session hooks, tick, IDE metadata, etc.).
  * Truncates to 200 chars.
- */
+     */
 export function extractFirstPromptFromHead(head: string): string {
   let start = 0
   let commandFallback = ''
@@ -205,13 +205,13 @@ export function extractFirstPromptFromHead(head: string): string {
 // File I/O — read head and tail of a file
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Reads the first and last LITE_READ_BUF_SIZE bytes of a file.
  *
  * For small files where head covers tail, `tail === head`.
  * Accepts a shared Buffer to avoid per-file allocation overhead.
  * Returns `{ head: '', tail: '' }` on any error.
- */
+     */
 export async function readHeadAndTail(
   filePath: string,
   fileSize: number,
@@ -248,11 +248,11 @@ export type LiteSessionFile = {
   tail: string
 }
 
-/**
+/*    *
  * Opens a single session file, stats it, and reads head + tail in one fd.
  * Allocates its own buffer — safe for concurrent use with Promise.all.
  * Returns null on any error.
- */
+     */
 export async function readSessionLite(
   filePath: string,
 ): Promise<LiteSessionFile | null> {
@@ -285,18 +285,18 @@ export async function readSessionLite(
 // Path sanitization
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Maximum length for a single filesystem path component (directory or file name).
  * Most filesystems (ext4, APFS, NTFS) limit individual components to 255 bytes.
  * We use 200 to leave room for the hash suffix and separator.
- */
+     */
 export const MAX_SANITIZED_LENGTH = 200
 
 function simpleHash(str: string): string {
   return Math.abs(djb2Hash(str)).toString(36)
 }
 
-/**
+/*    *
  * Makes a string safe for use as a directory or file name.
  * Replaces all non-alphanumeric characters with hyphens.
  * This ensures compatibility across all platforms, including Windows
@@ -307,7 +307,7 @@ function simpleHash(str: string): string {
  *
  * @param name - The string to make safe (e.g., '/Users/foo/my-project' or 'plugin:name:server')
  * @returns A safe name (e.g., '-Users-foo-my-project' or 'plugin-name-server')
- */
+     */
 export function sanitizePath(name: string): string {
   const sanitized = name.replace(/[^a-zA-Z0-9]/g, '-')
   if (sanitized.length <= MAX_SANITIZED_LENGTH) {
@@ -330,12 +330,12 @@ export function getProjectDir(projectDir: string): string {
   return join(getProjectsDir(), sanitizePath(projectDir))
 }
 
-/**
+/*    *
  * Resolves a directory path to its canonical form using realpath + NFC
  * normalization. Falls back to NFC-only if realpath fails (e.g., the
  * directory doesn't exist yet). Ensures symlinked paths (e.g.,
  * /tmp → /private/tmp on macOS) resolve to the same project directory.
- */
+     */
 export async function canonicalizePath(dir: string): Promise<string> {
   try {
     return (await realpath(dir)).normalize('NFC')
@@ -344,13 +344,13 @@ export async function canonicalizePath(dir: string): Promise<string> {
   }
 }
 
-/**
+/*    *
  * Finds the project directory for a given path, tolerating hash mismatches
  * for long paths (>200 chars). The CLI uses Bun.hash while the SDK under
  * Node.js uses simpleHash — for paths that exceed MAX_SANITIZED_LENGTH,
  * these produce different directory suffixes. This function falls back to
  * prefix-based scanning when the exact match doesn't exist.
- */
+     */
 export async function findProjectDir(
   projectPath: string,
 ): Promise<string | undefined> {
@@ -379,7 +379,7 @@ export async function findProjectDir(
   }
 }
 
-/**
+/*    *
  * Resolve a sessionId to its on-disk JSONL file path.
  *
  * When `dir` is provided: canonicalize it, look in that project's directory
@@ -399,7 +399,7 @@ export async function findProjectDir(
  * Shared by getSessionInfoImpl and getSessionMessagesImpl — the caller
  * invokes its own reader (readSessionLite / loadSessionBuffer) on the
  * resolved path.
- */
+     */
 export async function resolveSessionFilePath(
   sessionId: string,
   dir?: string,
@@ -469,27 +469,27 @@ export async function resolveSessionFilePath(
 // Compact-boundary chunked read (shared by loadTranscriptFile & SDK getSessionMessages)
 // ---------------------------------------------------------------------------
 
-/** Chunk size for the forward transcript reader. 1 MB balances I/O calls vs buffer growth. */
+/*    * Chunk size for the forward transcript reader. 1 MB balances I/O calls vs buffer growth.     */
 const TRANSCRIPT_READ_CHUNK_SIZE = 1024 * 1024
 
-/**
+/*    *
  * File size below which precompact filtering is skipped.
  * Large sessions (>5 MB) almost always have compact boundaries — they got big
  * because of many turns triggering auto-compact.
- */
+     */
 export const SKIP_PRECOMPACT_THRESHOLD = 5 * 1024 * 1024
 
-/** Marker bytes searched for when locating the boundary. Lazy: allocated on
- * first use, not at module load. Most sessions never resume. */
+/*    * Marker bytes searched for when locating the boundary. Lazy: allocated on
+ * first use, not at module load. Most sessions never resume.     */
 let _compactBoundaryMarker: Buffer | undefined
 function compactBoundaryMarker(): Buffer {
   return (_compactBoundaryMarker ??= Buffer.from('"compact_boundary"'))
 }
 
-/**
+/*    *
  * Confirm a byte-matched line is a real compact_boundary (marker can appear
  * inside user content) and check for preservedSegment.
- */
+     */
 function parseBoundaryLine(
   line: string,
 ): { hasPreservedSegment: boolean } | null {
@@ -510,7 +510,7 @@ function parseBoundaryLine(
   }
 }
 
-/**
+/*    *
  * Single forward chunked read for the --resume load path. Attr-snap lines
  * are skipped at the fd level; compact boundaries truncate in-stream. Peak
  * is the output size, not the file size.
@@ -518,7 +518,7 @@ function parseBoundaryLine(
  * The surviving (last) attr-snap is appended at EOF instead of in-place;
  * restoreAttributionStateFromSnapshots only reads [length-1] so position
  * doesn't matter.
- */
+     */
 
 type Sink = { buf: Buffer; len: number; cap: number }
 

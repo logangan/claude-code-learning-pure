@@ -29,7 +29,7 @@ import { getPlatform } from './platform.js'
 import { lt } from './semver.js'
 
 // Lazy: IdeOnboardingDialog.tsx pulls React/ink; only needed in interactive onboarding path
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const ideOnboardingDialog =
   (): typeof import('src/components/IdeOnboardingDialog.js') =>
     require('src/components/IdeOnboardingDialog.js')
@@ -38,7 +38,7 @@ import { createAbortController } from './abortController.js'
 import { logForDebugging } from './debug.js'
 import { envDynamic } from './envDynamic.js'
 import { errorMessage, isFsInaccessible } from './errors.js'
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import {
   checkWSLDistroMatch,
   WindowsToWSLConverter,
@@ -291,10 +291,10 @@ export function getTerminalIdeType(): IdeType | null {
   return env.terminal as IdeType
 }
 
-/**
+/*    *
  * Gets sorted IDE lockfiles from ~/.claude/ide directory
  * @returns Array of full lockfile paths sorted by modification time (newest first)
- */
+     */
 export async function getSortedIdeLockfiles(): Promise<string[]> {
   try {
     const ideLockFilePaths = await getIdeLockfilesPaths()
@@ -392,13 +392,13 @@ async function readIdeLockfile(path: string): Promise<IdeLockfileInfo | null> {
   }
 }
 
-/**
+/*    *
  * Checks if the IDE connection is responding by testing if the port is open
  * @param host Host to connect to
  * @param port Port to connect to
  * @param timeout Optional timeout in milliseconds (defaults to 500ms)
  * @returns true if the port is open, false otherwise
- */
+     */
 async function checkIdeConnection(
   host: string,
   port: number,
@@ -432,11 +432,11 @@ async function checkIdeConnection(
   }
 }
 
-/**
+/*    *
  * Resolve the Windows USERPROFILE path. WSL often doesn't pass USERPROFILE
  * through, so fall back to shelling out to powershell.exe. That spawn is
  * ~500ms–2s cold; the value is static per session.
- */
+     */
 const getWindowsUserProfile = memoize(async (): Promise<string | undefined> => {
   if (process.env.USERPROFILE) return process.env.USERPROFILE
   const { stdout, code } = await execFileNoThrow('powershell.exe', [
@@ -452,13 +452,13 @@ const getWindowsUserProfile = memoize(async (): Promise<string | undefined> => {
   return undefined
 })
 
-/**
+/*    *
  * Gets the potential IDE lockfiles directories path based on platform.
  * Paths are not pre-checked for existence — the consumer readdirs each
  * and handles ENOENT. Pre-checking with stat() would double syscalls,
  * and on WSL (where /mnt/c access is 2-10x slower) the per-user-dir
  * stat loop compounded startup latency.
- */
+     */
 export async function getIdeLockfilesPaths(): Promise<string[]> {
   const paths: string[] = [join(getClaudeConfigHomeDir(), 'ide')]
 
@@ -514,11 +514,11 @@ export async function getIdeLockfilesPaths(): Promise<string[]> {
   return paths
 }
 
-/**
+/*    *
  * Cleans up stale IDE lockfiles
  * - Removes lockfiles for processes that are no longer running
  * - Removes lockfiles for ports that are not responding
- */
+     */
 export async function cleanupStaleIdeLockfiles(): Promise<void> {
   try {
     const lockfiles = await getSortedIdeLockfiles()
@@ -656,11 +656,11 @@ export async function findAvailableIDE(): Promise<DetectedIDEInfo | null> {
   return null
 }
 
-/**
+/*    *
  * Detects IDEs that have a running extension/plugin.
  * @param includeInvalid If true, also return IDEs that are invalid (ie. where
  * the workspace directory does not match the cwd)
- */
+     */
 export async function detectIDEs(
   includeInvalid: boolean,
 ): Promise<DetectedIDEInfo[]> {
@@ -792,9 +792,9 @@ export async function detectIDEs(
       )
       let url
       if (lockfileInfo.useWebSocket) {
-        url = `ws://${host}:${lockfileInfo.port}`
+        url = `ws:// ${host}:${lockfileInfo.port}`
       } else {
-        url = `http://${host}:${lockfileInfo.port}/sse`
+        url = `http:// ${host}:${lockfileInfo.port}/sse`
       }
 
       detectedIDEs.push({
@@ -1069,9 +1069,9 @@ export async function isVSCodeInstalled(): Promise<boolean> {
 // Cache for IDE detection results
 let cachedRunningIDEs: IdeType[] | null = null
 
-/**
+/*    *
  * Internal implementation of IDE detection.
- */
+     */
 async function detectRunningIDEsImpl(): Promise<IdeType[]> {
   const runningIDEs: IdeType[] = []
 
@@ -1146,21 +1146,21 @@ async function detectRunningIDEsImpl(): Promise<IdeType[]> {
   return runningIDEs
 }
 
-/**
+/*    *
  * Detects running IDEs and returns an array of IdeType for those that are running.
  * This performs fresh detection (~150ms) and updates the cache for subsequent
  * detectRunningIDEsCached() calls.
- */
+     */
 export async function detectRunningIDEs(): Promise<IdeType[]> {
   const result = await detectRunningIDEsImpl()
   cachedRunningIDEs = result
   return result
 }
 
-/**
+/*    *
  * Returns cached IDE detection results, or performs detection if cache is empty.
  * Use this for performance-sensitive paths like tips where fresh results aren't needed.
- */
+     */
 export async function detectRunningIDEsCached(): Promise<IdeType[]> {
   if (cachedRunningIDEs === null) {
     return detectRunningIDEs()
@@ -1168,10 +1168,10 @@ export async function detectRunningIDEsCached(): Promise<IdeType[]> {
   return cachedRunningIDEs
 }
 
-/**
+/*    *
  * Resets the cache for detectRunningIDEsCached.
  * Exported for testing - allows resetting state between tests.
- */
+     */
 export function resetDetectRunningIDEs(): void {
   cachedRunningIDEs = null
 }
@@ -1243,11 +1243,11 @@ export function toIDEDisplayName(terminal: string | null): string {
 
 export { callIdeRpc }
 
-/**
+/*    *
  * Gets the connected IDE client from a list of MCP clients
  * @param mcpClients - Array of wrapped MCP clients
  * @returns The connected IDE client, or undefined if not found
- */
+     */
 export function getConnectedIdeClient(
   mcpClients?: MCPServerConnection[],
 ): ConnectedMCPServer | undefined {
@@ -1263,10 +1263,10 @@ export function getConnectedIdeClient(
   return ideClient?.type === 'connected' ? ideClient : undefined
 }
 
-/**
+/*    *
  * Notifies the IDE that a new prompt has been submitted.
  * This triggers IDE-specific actions like closing all diff tabs.
- */
+     */
 export async function closeOpenDiffs(
   ideClient: ConnectedMCPServer,
 ): Promise<void> {
@@ -1278,13 +1278,13 @@ export async function closeOpenDiffs(
   }
 }
 
-/**
+/*    *
  * Initializes IDE detection and extension installation, then calls the provided callback
  * with the detected IDE information and installation status.
  * @param ideToInstallExtension The ide to install the extension to (if installing from external terminal)
  * @param onIdeDetected Callback to be called when an IDE is detected (including null)
  * @param onInstallationComplete Callback to be called when extension installation is complete
- */
+     */
 export async function initializeIdeIntegration(
   onIdeDetected: (ide: DetectedIDEInfo | null) => void,
   ideToInstallExtension: IdeType | null,
@@ -1347,9 +1347,9 @@ export async function initializeIdeIntegration(
   }
 }
 
-/**
+/*    *
  * Detects the host IP to use to connect to the extension.
- */
+     */
 const detectHostIP = memoize(
   async (isIdeRunningInWindows: boolean, port: number) => {
     if (process.env.CLAUDE_CODE_IDE_HOST_OVERRIDE) {
@@ -1421,7 +1421,7 @@ async function installFromArtifactory(command: string): Promise<string> {
 
   // Fetch the version from artifactory
   const versionUrl =
-    'https://artifactory.infra.ant.dev/artifactory/armorcode-claude-code-internal/claude-vscode-releases/stable'
+    'https:// artifactory.infra.ant.dev/artifactory/armorcode-claude-code-internal/claude-vscode-releases/stable'
 
   try {
     const versionResponse = await axios.get(versionUrl, {
@@ -1436,7 +1436,7 @@ async function installFromArtifactory(command: string): Promise<string> {
     }
 
     // Download the .vsix file from artifactory
-    const vsixUrl = `https://artifactory.infra.ant.dev/artifactory/armorcode-claude-code-internal/claude-vscode-releases/${version}/claude-code.vsix`
+    const vsixUrl = `https:// artifactory.infra.ant.dev/artifactory/armorcode-claude-code-internal/claude-vscode-releases/${version}/claude-code.vsix`
     const tempVsixPath = join(
       os.tmpdir(),
       `claude-code-${version}-${Date.now()}.vsix`,

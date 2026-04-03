@@ -318,7 +318,7 @@ export async function* runPostToolUseFailureHooks<Input extends AnyObject>(
   }
 }
 
-/**
+/*    *
  * Resolve a PreToolUse hook's permission result into a final PermissionDecision.
  *
  * Encapsulates the invariant that hook 'allow' does NOT bypass settings.json
@@ -328,7 +328,7 @@ export async function* runPostToolUseFailureHooks<Input extends AnyObject>(
  *
  * Shared by toolExecution.ts (main query loop) and REPLTool/toolWrappers.ts
  * (REPL inner calls) so the permission semantics stay in lockstep.
- */
+     */
 export async function resolveHookPermissionDecision(
   hookPermissionResult: PermissionResult | undefined,
   tool: Tool,

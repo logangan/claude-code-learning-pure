@@ -89,10 +89,10 @@ const SWARM_FIELDS_BY_TOOL: Record<string, string[]> = {
   [AGENT_TOOL_NAME]: ['name', 'team_name', 'mode'],
 }
 
-/**
+/*    *
  * Filter swarm-related fields from a tool's input schema.
  * Called at runtime when isAgentSwarmsEnabled() returns false.
- */
+     */
 function filterSwarmFieldsFromSchema(
   toolName: string,
   schema: Anthropic.Tool.InputSchema,
@@ -124,7 +124,7 @@ export async function toolToAPISchema(
     agents: AgentDefinition[]
     allowedAgentTypes?: string[]
     model?: string
-    /** When true, mark this tool with defer_loading for tool search */
+    /*    * When true, mark this tool with defer_loading for tool search     */
     deferLoading?: boolean
     cacheControl?: {
       type: 'ephemeral'
@@ -138,8 +138,7 @@ export async function toolToAPISchema(
   // prevent mid-session GrowthBook flips (tengu_tool_pear, tengu_fgts) or
   // tool.prompt() drift from churning the serialized tool array bytes.
   // See toolSchemaCache.ts for rationale.
-  //
-  // Cache key includes inputJSONSchema when present. StructuredOutput instances
+  // // Cache key includes inputJSONSchema when present. StructuredOutput instances
   // share the name 'StructuredOutput' but carry different schemas per workflow
   // call — name-only keying returned a stale schema (5.4% → 51% err rate, see
   // PR#25424). MCP tools also set inputJSONSchema but each has a stable schema,
@@ -181,7 +180,7 @@ export async function toolToAPISchema(
     // 1. Feature flag is enabled
     // 2. Tool has strict: true
     // 3. Model is provided and supports it (not all models support it right now)
-    //    (if model is not provided, assume we can't use strict tools)
+    // (if model is not provided, assume we can't use strict tools)
     if (
       strictToolsEnabled &&
       tool.strict === true &&
@@ -274,10 +273,10 @@ function logStripOnce(stripped: string[]): void {
   )
 }
 
-/**
+/*    *
  * Log stats about first block for analyzing prefix matching config
- * (see https://console.statsig.com/4aF3Ewatb6xPVpCwxb5nA3/dynamic_configs/claude_cli_system_prompt_prefixes)
- */
+ * (see https:// console.statsig.com/4aF3Ewatb6xPVpCwxb5nA3/dynamic_configs/claude_cli_system_prompt_prefixes)
+     */
 export function logAPIPrefix(systemPrompt: SystemPrompt): void {
   const [firstSyspromptBlock] = splitSysPromptPrefix(systemPrompt)
   const firstSystemPrompt = firstSyspromptBlock?.text
@@ -293,9 +292,9 @@ export function logAPIPrefix(systemPrompt: SystemPrompt): void {
   })
 }
 
-/**
+/*    *
  * Split system prompt blocks by content type for API matching and cache control.
- * See https://console.statsig.com/4aF3Ewatb6xPVpCwxb5nA3/dynamic_configs/claude_cli_system_prompt_prefixes
+ * See https:// console.statsig.com/4aF3Ewatb6xPVpCwxb5nA3/dynamic_configs/claude_cli_system_prompt_prefixes
  *
  * Behavior depends on feature flags and options:
  *
@@ -317,7 +316,7 @@ export function logAPIPrefix(systemPrompt: SystemPrompt): void {
  *    - Attribution header (cacheScope=null)
  *    - System prompt prefix (cacheScope='org')
  *    - Everything else concatenated (cacheScope='org')
- */
+     */
 export function splitSysPromptPrefix(
   systemPrompt: SystemPrompt,
   options?: { skipGlobalCacheForSystemPrompt?: boolean },
@@ -473,9 +472,9 @@ export function prependUserContext(
   ]
 }
 
-/**
+/*    *
  * Log metrics about context and system prompt size
- */
+     */
 export async function logContextMetrics(
   mcpConfigs: Record<string, ScopedMcpServerConfig>,
   toolPermissionContext: ToolPermissionContext,

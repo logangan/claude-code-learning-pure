@@ -1,12 +1,10 @@
 // GrowthBook-backed cron jitter configuration.
-//
-// Separated from cronScheduler.ts so the scheduler can be bundled in the
+// // Separated from cronScheduler.ts so the scheduler can be bundled in the
 // Agent SDK public build without pulling in analytics/growthbook.ts and
 // its large transitive dependency set (settings/hooks/config cycle).
-//
-// Usage:
-//   REPL (useScheduledTasks.ts): pass `getJitterConfig: getCronJitterConfig`
-//   Daemon/SDK: omit getJitterConfig → DEFAULT_CRON_JITTER_CONFIG applies.
+// // Usage:
+// REPL (useScheduledTasks.ts): pass `getJitterConfig: getCronJitterConfig`
+// Daemon/SDK: omit getJitterConfig → DEFAULT_CRON_JITTER_CONFIG applies.
 
 import { z } from 'zod/v4'
 import { getFeatureValue_CACHED_WITH_REFRESH } from '../services/analytics/growthbook.js'
@@ -52,7 +50,7 @@ const cronJitterConfigSchema = lazySchema(() =>
     .refine(c => c.oneShotFloorMs <= c.oneShotMaxMs),
 )
 
-/**
+/*    *
  * Read `tengu_kairos_cron_config` from GrowthBook, validate, fall back to
  * defaults on absent/malformed/out-of-bounds config. Called from check()
  * every tick via the `getJitterConfig` callback — cheap (synchronous cache
@@ -63,7 +61,7 @@ const cronJitterConfigSchema = lazySchema(() =>
  *
  * Pass this as `getJitterConfig` when calling createCronScheduler in REPL
  * contexts. Daemon/SDK callers omit getJitterConfig and get defaults.
- */
+     */
 export function getCronJitterConfig(): CronJitterConfig {
   const raw = getFeatureValue_CACHED_WITH_REFRESH<unknown>(
     'tengu_kairos_cron_config',

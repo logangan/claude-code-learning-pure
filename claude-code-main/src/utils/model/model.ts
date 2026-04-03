@@ -1,10 +1,10 @@
 // biome-ignore-all assist/source/organizeImports: ANT-ONLY import markers must not be reordered
-/**
+/*    *
  * Ensure that any model codenames introduced here are also added to
  * scripts/excluded-strings.txt to avoid leaking them. Wrap any codename string
  * literals with process.env.USER_TYPE === 'ant' for Bun to remove the codenames
  * during dead code elimination
- */
+     */
 import { getMainLoopModelOverride } from '../../bootstrap/state.js'
 import {
   getSubscriptionType,
@@ -46,7 +46,7 @@ export function isNonCustomOpusModel(model: ModelName): boolean {
   )
 }
 
-/**
+/*    *
  * Helper to get the model from /model (including via /config), the --model flag, environment variable,
  * or the saved settings. The returned value can be a model alias if that's what the user specified.
  * Undefined if the user didn't configure anything, in which case we fall back to
@@ -57,7 +57,7 @@ export function isNonCustomOpusModel(model: ModelName): boolean {
  * 2. Model override at startup (from --model flag)
  * 3. ANTHROPIC_MODEL environment variable
  * 4. Settings (from user's saved settings)
- */
+     */
 export function getUserSpecifiedModelSetting(): ModelSetting | undefined {
   let specifiedModel: ModelSetting | undefined
 
@@ -77,7 +77,7 @@ export function getUserSpecifiedModelSetting(): ModelSetting | undefined {
   return specifiedModel
 }
 
-/**
+/*    *
  * Get the main loop model to use for the current session.
  *
  * Model Selection Priority Order:
@@ -88,7 +88,7 @@ export function getUserSpecifiedModelSetting(): ModelSetting | undefined {
  * 5. Built-in default
  *
  * @returns The resolved model name to use
- */
+     */
 export function getMainLoopModel(): ModelName {
   const model = getUserSpecifiedModelSetting()
   if (model !== undefined && model !== null) {
@@ -137,11 +137,11 @@ export function getDefaultHaikuModel(): ModelName {
   return getModelStrings().haiku45
 }
 
-/**
+/*    *
  * Get the model to use for runtime, depending on the runtime context.
  * @param params Subset of the runtime context to determine the model to use.
  * @returns The model to use
- */
+     */
 export function getRuntimeMainLoopModel(params: {
   permissionMode: PermissionMode
   mainLoopModel: string
@@ -166,7 +166,7 @@ export function getRuntimeMainLoopModel(params: {
   return mainLoopModel
 }
 
-/**
+/*    *
  * Get the default main loop model setting.
  *
  * This handles the built-in default:
@@ -174,7 +174,7 @@ export function getRuntimeMainLoopModel(params: {
  * - Sonnet 4.6 for all other users (including Team Standard, Pro, Enterprise)
  *
  * @returns The default model setting to use
- */
+     */
 export function getDefaultMainLoopModelSetting(): ModelName | ModelAlias {
   // Ants default to defaultModel from flag config, or Opus 1M if not configured
   if (process.env.USER_TYPE === 'ant') {
@@ -199,21 +199,21 @@ export function getDefaultMainLoopModelSetting(): ModelName | ModelAlias {
   return getDefaultSonnetModel()
 }
 
-/**
+/*    *
  * Synchronous operation to get the default main loop model to use
  * (bypassing any user-specified values).
- */
+     */
 export function getDefaultMainLoopModel(): ModelName {
   return parseUserSpecifiedModel(getDefaultMainLoopModelSetting())
 }
 
 // @[MODEL LAUNCH]: Add a canonical name mapping for the new model below.
-/**
+/*    *
  * Pure string-match that strips date/provider suffixes from a first-party model
  * name. Input must already be a 1P-format ID (e.g. 'claude-3-7-sonnet-20250219',
  * 'us.anthropic.claude-opus-4-6-v1:0'). Does not touch settings, so safe at
  * module top-level (see MODEL_COSTS in modelCost.ts).
- */
+     */
 export function firstPartyNameToCanonical(name: ModelName): ModelShortName {
   name = name.toLowerCase()
   // Special cases for Claude 4+ models to differentiate versions
@@ -269,13 +269,13 @@ export function firstPartyNameToCanonical(name: ModelName): ModelShortName {
   return name
 }
 
-/**
+/*    *
  * Maps a full model string to a shorter canonical version that's unified across 1P and 3P providers.
  * For example, 'claude-3-5-haiku-20241022' and 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
  * would both be mapped to 'claude-3-5-haiku'.
  * @param fullModelName The full model name (e.g., 'claude-3-5-haiku-20241022')
  * @returns The short name (e.g., 'claude-3-5-haiku') if found, or the original name if no mapping exists
- */
+     */
 export function getCanonicalName(fullModelName: ModelName): ModelShortName {
   // Resolve overridden model IDs (e.g. Bedrock ARNs) back to canonical names.
   // resolved is always a 1P-format ID, so firstPartyNameToCanonical can handle it.
@@ -342,10 +342,10 @@ export function renderModelSetting(setting: ModelName | ModelAlias): string {
 }
 
 // @[MODEL LAUNCH]: Add display name cases for the new model (base + [1m] variant if applicable).
-/**
+/*    *
  * Returns a human-readable display name for known public models, or null
  * if the model is not recognized as a public model.
- */
+     */
 export function getPublicModelDisplayName(model: ModelName): string | null {
   switch (model) {
     case getModelStrings().opus46:
@@ -414,14 +414,14 @@ export function renderModelName(model: ModelName): string {
   return model
 }
 
-/**
+/*    *
  * Returns a safe author name for public display (e.g., in git commit trailers).
  * Returns "Claude {ModelName}" for publicly known models, or "Claude ({model})"
  * for unknown/internal models so the exact model name is preserved.
  *
  * @param model The full model name
  * @returns "Claude {ModelName}" for public models, or "Claude ({model})" for non-public models
- */
+     */
 export function getPublicModelName(model: ModelName): string {
   const publicName = getPublicModelDisplayName(model)
   if (publicName) {
@@ -430,7 +430,7 @@ export function getPublicModelName(model: ModelName): string {
   return `Claude (${model})`
 }
 
-/**
+/*    *
  * Returns a full model name for use in this session, possibly after resolving
  * a model alias.
  *
@@ -441,7 +441,7 @@ export function getPublicModelName(model: ModelName): string {
  * 1M context window without requiring each variant to be in MODEL_ALIASES.
  *
  * @param modelInput The model alias or name provided by the user.
- */
+     */
 export function parseUserSpecifiedModel(
   modelInput: ModelName | ModelAlias,
 ): ModelName {
@@ -505,7 +505,7 @@ export function parseUserSpecifiedModel(
   return modelInputTrimmed
 }
 
-/**
+/*    *
  * Resolves a skill's `model:` frontmatter against the current model, carrying
  * the `[1m]` suffix over when the target family supports it.
  *
@@ -519,7 +519,7 @@ export function parseUserSpecifiedModel(
  * with `model: haiku` on a 1M session still downgrades — haiku has no 1M variant,
  * so the autocompact that follows is correct. Skills that already specify [1m]
  * are left untouched.
- */
+     */
 export function resolveSkillModelOverride(
   skillModel: string,
   currentModel: string,
@@ -546,9 +546,9 @@ function isLegacyOpusFirstParty(model: string): boolean {
   return LEGACY_OPUS_FIRSTPARTY.includes(model)
 }
 
-/**
+/*    *
  * Opt-out for the legacy Opus 4.0/4.1 → current Opus remap.
- */
+     */
 export function isLegacyModelRemapEnabled(): boolean {
   return !isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP)
 }

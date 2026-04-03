@@ -1,9 +1,9 @@
-/**
+/*    *
  * SGR (Select Graphic Rendition) Parser
  *
  * Parses SGR parameters and applies them to a TextStyle.
  * Handles both semicolon (;) and colon (:) separated parameters.
- */
+     */
 
 import type { NamedColor, TextStyle, UnderlineStyle } from './types.js'
 import { defaultStyle } from './types.js'

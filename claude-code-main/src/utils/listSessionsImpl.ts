@@ -1,11 +1,11 @@
-/**
+/*    *
  * Standalone implementation of listSessions for the Agent SDK.
  *
  * Dependencies are kept minimal and portable — no bootstrap/state.ts,
  * no analytics, no bun:bundle, no module-scope mutable state. This module
  * can be imported safely from the SDK entrypoint without triggering CLI
  * initialization or pulling in expensive dependency chains.
- */
+     */
 
 import type { Dirent } from 'fs'
 import { readdir, stat } from 'fs/promises'
@@ -25,11 +25,11 @@ import {
   validateUuid,
 } from './sessionStoragePortable.js'
 
-/**
+/*    *
  * Session metadata returned by listSessions.
  * Contains only data extractable from stat + head/tail reads — no full
  * JSONL parsing required.
- */
+     */
 export type SessionInfo = {
   sessionId: string
   summary: string
@@ -40,28 +40,28 @@ export type SessionInfo = {
   gitBranch?: string
   cwd?: string
   tag?: string
-  /** Epoch ms — from first entry's ISO timestamp. Undefined if unparseable. */
+  /*    * Epoch ms — from first entry's ISO timestamp. Undefined if unparseable.     */
   createdAt?: number
 }
 
 export type ListSessionsOptions = {
-  /**
+  /*    *
    * Directory to list sessions for. When provided, returns sessions for
    * this project directory (and optionally its git worktrees). When omitted,
    * returns sessions across all projects.
-   */
+       */
   dir?: string
-  /** Maximum number of sessions to return. */
+  /*    * Maximum number of sessions to return.     */
   limit?: number
-  /**
+  /*    *
    * Number of sessions to skip from the start of the sorted result set.
    * Use with `limit` for pagination. Defaults to 0.
-   */
+       */
   offset?: number
-  /**
+  /*    *
    * When `dir` is provided and the directory is inside a git repository,
    * include sessions from all git worktree paths. Defaults to `true`.
-   */
+       */
   includeWorktrees?: boolean
 }
 
@@ -69,13 +69,13 @@ export type ListSessionsOptions = {
 // Field extraction — shared by listSessionsImpl and getSessionInfoImpl
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Parses SessionInfo fields from a lite session read (head/tail/stat).
  * Returns null for sidechain sessions or metadata-only sessions with no
  * extractable summary.
  *
  * Exported for reuse by getSessionInfoImpl.
- */
+     */
 export function parseSessionInfoFromLite(
   sessionId: string,
   lite: LiteSessionFile,
@@ -157,15 +157,15 @@ type Candidate = {
   sessionId: string
   filePath: string
   mtime: number
-  /** Project path for cwd fallback when file lacks a cwd field. */
+  /*    * Project path for cwd fallback when file lacks a cwd field.     */
   projectPath?: string
 }
 
-/**
+/*    *
  * Lists candidate session files in a directory via readdir, optionally
  * stat'ing each for mtime. When `doStat` is false, mtime is set to 0
  * (caller must sort/dedup after reading file contents instead).
- */
+     */
 export async function listCandidates(
   projectDir: string,
   doStat: boolean,
@@ -197,10 +197,10 @@ export async function listCandidates(
   return results.filter((c): c is Candidate => c !== null)
 }
 
-/**
+/*    *
  * Reads a candidate's file contents and extracts full SessionInfo.
  * Returns null if the session should be filtered out (sidechain, no summary).
- */
+     */
 async function readCandidate(c: Candidate): Promise<SessionInfo | null> {
   const lite = await readSessionLite(c.filePath)
   if (!lite) return null
@@ -220,13 +220,13 @@ async function readCandidate(c: Candidate): Promise<SessionInfo | null> {
 // survivors are collected (some candidates filter out on full read).
 // ---------------------------------------------------------------------------
 
-/** Batch size for concurrent reads when walking the sorted candidate list. */
+/*    * Batch size for concurrent reads when walking the sorted candidate list.     */
 const READ_BATCH_SIZE = 32
 
-/**
+/*    *
  * Sort comparator: lastModified desc, then sessionId desc for stable
  * ordering across mtime ties.
- */
+     */
 function compareDesc(a: Candidate, b: Candidate): number {
   if (b.mtime !== a.mtime) return b.mtime - a.mtime
   return b.sessionId < a.sessionId ? -1 : b.sessionId > a.sessionId ? 1 : 0
@@ -270,11 +270,11 @@ async function applySortAndLimit(
   return sessions
 }
 
-/**
+/*    *
  * Read-all path for when no limit/offset is set. Skips the stat pass
  * entirely — reads every candidate, then sorts/dedups on real mtimes
  * from readSessionLite. Matches pre-refactor I/O cost (no extra stats).
- */
+     */
 async function readAllAndSort(candidates: Candidate[]): Promise<SessionInfo[]> {
   const all = await Promise.all(candidates.map(readCandidate))
   const byId = new Map<string, SessionInfo>()
@@ -302,10 +302,10 @@ async function readAllAndSort(candidates: Candidate[]): Promise<SessionInfo[]> {
 // Project directory enumeration (single-project vs all-projects)
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Gathers candidate session files for a specific project directory
  * (and optionally its git worktrees).
- */
+     */
 async function gatherProjectCandidates(
   dir: string,
   includeWorktrees: boolean,
@@ -400,9 +400,9 @@ async function gatherProjectCandidates(
   return all
 }
 
-/**
+/*    *
  * Gathers candidate session files across all project directories.
- */
+     */
 async function gatherAllCandidates(doStat: boolean): Promise<Candidate[]> {
   const projectsDir = getProjectsDir()
 
@@ -422,7 +422,7 @@ async function gatherAllCandidates(doStat: boolean): Promise<Candidate[]> {
   return perProject.flat()
 }
 
-/**
+/*    *
  * Lists sessions with metadata extracted from stat + head/tail reads.
  *
  * When `dir` is provided, returns sessions for that project directory
@@ -435,7 +435,7 @@ async function gatherAllCandidates(doStat: boolean): Promise<Candidate[]> {
  * sessions does ~1000 stats + ~20 content reads, not 1000 content reads.
  * When neither is set, stat is skipped (read-all-then-sort, same I/O cost
  * as the original implementation).
- */
+     */
 export async function listSessionsImpl(
   options?: ListSessionsOptions,
 ): Promise<SessionInfo[]> {

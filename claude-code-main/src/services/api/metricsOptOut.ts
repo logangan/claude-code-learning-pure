@@ -26,10 +26,10 @@ const CACHE_TTL_MS = 60 * 60 * 1000
 // N `claude -p` invocations into ~1 API call/day.
 const DISK_CACHE_TTL_MS = 24 * 60 * 60 * 1000
 
-/**
+/*    *
  * Internal function to call the API and check if metrics are enabled
  * This is wrapped by memoizeWithTTLAsync to add caching behavior
- */
+     */
 async function _fetchMetricsEnabled(): Promise<MetricsEnabledResponse> {
   const authResult = getAuthHeaders()
   if (authResult.error) {
@@ -42,7 +42,7 @@ async function _fetchMetricsEnabled(): Promise<MetricsEnabledResponse> {
     ...authResult.headers,
   }
 
-  const endpoint = `https://api.anthropic.com/api/claude_code/organizations/metrics_enabled`
+  const endpoint = `https:// api.anthropic.com/api/claude_code/organizations/metrics_enabled`
   const response = await axios.get<MetricsEnabledResponse>(endpoint, {
     headers,
     timeout: 5000,
@@ -86,11 +86,11 @@ const memoizedCheckMetrics = memoizeWithTTLAsync(
   CACHE_TTL_MS,
 )
 
-/**
+/*    *
  * Fetch (in-memory memoized) and persist to disk on change.
  * Errors are not persisted — a transient failure should not overwrite a
  * known-good disk value.
- */
+     */
 async function refreshMetricsStatus(): Promise<MetricsStatus> {
   const result = await memoizedCheckMetrics()
   if (result.hasError) {
@@ -115,7 +115,7 @@ async function refreshMetricsStatus(): Promise<MetricsStatus> {
   return result
 }
 
-/**
+/*    *
  * Check if metrics are enabled for the current organization.
  *
  * Two-tier cache:
@@ -124,7 +124,7 @@ async function refreshMetricsStatus(): Promise<MetricsStatus> {
  *
  * The caller (bigqueryExporter) tolerates stale reads — a missed export or
  * an extra one during the 24h window is acceptable.
- */
+     */
 export async function checkMetricsEnabled(): Promise<MetricsStatus> {
   // Service key OAuth sessions lack user:profile scope → would 403.
   // API key users (non-subscribers) fall through and use x-api-key auth.

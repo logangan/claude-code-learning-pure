@@ -17,15 +17,15 @@ export type ExecResult = {
   interrupted: boolean
   backgroundTaskId?: string
   backgroundedByUser?: boolean
-  /** Set when assistant-mode auto-backgrounded a long-running blocking command. */
+  /*    * Set when assistant-mode auto-backgrounded a long-running blocking command.     */
   assistantAutoBackgrounded?: boolean
-  /** Set when stdout was too large to fit inline — points to the output file on disk. */
+  /*    * Set when stdout was too large to fit inline — points to the output file on disk.     */
   outputFilePath?: string
-  /** Total size of the output file in bytes (set when outputFilePath is set). */
+  /*    * Total size of the output file in bytes (set when outputFilePath is set).     */
   outputFileSize?: number
-  /** The task ID for the output file (set when outputFilePath is set). */
+  /*    * The task ID for the output file (set when outputFilePath is set).     */
   outputTaskId?: string
-  /** Error message when the command failed before spawning (e.g., deleted cwd). */
+  /*    * Error message when the command failed before spawning (e.g., deleted cwd).     */
   preSpawnError?: string
 }
 
@@ -34,15 +34,15 @@ export type ShellCommand = {
   result: Promise<ExecResult>
   kill: () => void
   status: 'running' | 'backgrounded' | 'completed' | 'killed'
-  /**
+  /*    *
    * Cleans up stream resources (event listeners).
    * Should be called after the command completes or is killed to prevent memory leaks.
-   */
+       */
   cleanup: () => void
   onTimeout?: (
     callback: (backgroundFn: (taskId: string) => boolean) => void,
   ) => void
-  /** The TaskOutput instance that owns all stdout/stderr data and progress. */
+  /*    * The TaskOutput instance that owns all stdout/stderr data and progress.     */
   taskOutput: TaskOutput
 }
 
@@ -57,12 +57,12 @@ function prependStderr(prefix: string, stderr: string): string {
   return stderr ? `${prefix} ${stderr}` : prefix
 }
 
-/**
+/*    *
  * Thin pipe from a child process stream into TaskOutput.
  * Used in pipe mode (hooks) for stdout and stderr.
  * In file mode (bash commands), both fds go to the output file —
  * the child process streams are null and no wrappers are created.
- */
+     */
 class StreamWrapper {
   #stream: Readable | null
   #isCleanedUp = false
@@ -103,14 +103,14 @@ class StreamWrapper {
   }
 }
 
-/**
+/*    *
  * Implementation of ShellCommand that wraps a child process.
  *
  * For bash commands: both stdout and stderr go to a file fd via
  * stdio[1] and stdio[2] — no JS involvement. Progress is extracted
  * by polling the file tail.
  * For hooks: pipe mode with StreamWrappers for real-time detection.
- */
+     */
 class ShellCommandImpl implements ShellCommand {
   #status: 'running' | 'backgrounded' | 'completed' | 'killed' = 'running'
   #backgroundTaskId: string | undefined
@@ -381,9 +381,9 @@ class ShellCommandImpl implements ShellCommand {
   }
 }
 
-/**
+/*    *
  * Wraps a child process to enable flexible handling of shell command execution.
- */
+     */
 export function wrapSpawn(
   childProcess: ChildProcess,
   abortSignal: AbortSignal,
@@ -402,9 +402,9 @@ export function wrapSpawn(
   )
 }
 
-/**
+/*    *
  * Static ShellCommand implementation for commands that were aborted before execution.
- */
+     */
 class AbortedShellCommand implements ShellCommand {
   readonly status = 'killed' as const
   readonly result: Promise<ExecResult>

@@ -64,7 +64,7 @@ type ChangeSummary = {
   commits: number
 }
 
-/**
+/*    *
  * Returns null when state cannot be reliably determined — callers that use
  * this as a safety gate must treat null as "unknown, assume unsafe"
  * (fail-closed). A silent 0/0 would let cleanupWorktree destroy real work.
@@ -75,7 +75,7 @@ type ChangeSummary = {
  *   hook-based-worktree-wrapping-git case (worktree.ts:525-532 doesn't set
  *   originalHeadCommit). We can see the working tree is git, but cannot count
  *   commits without a baseline, so we cannot prove the branch is clean.
- */
+     */
 async function countWorktreeChanges(
   worktreePath: string,
   originalHeadCommit: string | undefined,
@@ -112,13 +112,13 @@ async function countWorktreeChanges(
   return { changedFiles, commits }
 }
 
-/**
+/*    *
  * Restore session state to reflect the original directory.
  * This is the inverse of the session-level mutations in EnterWorktreeTool.call().
  *
  * keepWorktree()/cleanupWorktree() handle process.chdir and currentWorktreeSession;
  * this handles everything above the worktree utility layer.
- */
+     */
 function restoreSessionToOriginalCwd(
   originalCwd: string,
   projectRootIsWorktree: boolean,

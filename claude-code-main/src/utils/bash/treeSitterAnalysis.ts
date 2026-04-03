@@ -1,4 +1,4 @@
-/**
+/*    *
  * Tree-sitter AST analysis utilities for bash command security validation.
  *
  * These functions extract security-relevant information from tree-sitter
@@ -7,7 +7,7 @@
  * structured data that can be used by security validators.
  *
  * The native NAPI parser returns plain JS objects — no cleanup needed.
- */
+     */
 
 type TreeSitterNode = {
   type: string
@@ -19,46 +19,46 @@ type TreeSitterNode = {
 }
 
 export type QuoteContext = {
-  /** Command text with single-quoted content removed (double-quoted content preserved) */
+  /*    * Command text with single-quoted content removed (double-quoted content preserved)     */
   withDoubleQuotes: string
-  /** Command text with all quoted content removed */
+  /*    * Command text with all quoted content removed     */
   fullyUnquoted: string
-  /** Like fullyUnquoted but preserves quote characters (', ") */
+  /*    * Like fullyUnquoted but preserves quote characters (', ")     */
   unquotedKeepQuoteChars: string
 }
 
 export type CompoundStructure = {
-  /** Whether the command has compound operators (&&, ||, ;) at the top level */
+  /*    * Whether the command has compound operators (&&, ||, ;) at the top level     */
   hasCompoundOperators: boolean
-  /** Whether the command has pipelines */
+  /*    * Whether the command has pipelines     */
   hasPipeline: boolean
-  /** Whether the command has subshells */
+  /*    * Whether the command has subshells     */
   hasSubshell: boolean
-  /** Whether the command has command groups ({...}) */
+  /*    * Whether the command has command groups ({...})     */
   hasCommandGroup: boolean
-  /** Top-level compound operator types found */
+  /*    * Top-level compound operator types found     */
   operators: string[]
-  /** Individual command segments split by compound operators */
+  /*    * Individual command segments split by compound operators     */
   segments: string[]
 }
 
 export type DangerousPatterns = {
-  /** Has $() or backtick command substitution (outside quotes that would make it safe) */
+  /*    * Has $() or backtick command substitution (outside quotes that would make it safe)     */
   hasCommandSubstitution: boolean
-  /** Has <() or >() process substitution */
+  /*    * Has <() or >() process substitution     */
   hasProcessSubstitution: boolean
-  /** Has ${...} parameter expansion */
+  /*    * Has ${...} parameter expansion     */
   hasParameterExpansion: boolean
-  /** Has heredoc */
+  /*    * Has heredoc     */
   hasHeredoc: boolean
-  /** Has comment */
+  /*    * Has comment     */
   hasComment: boolean
 }
 
 export type TreeSitterAnalysis = {
   quoteContext: QuoteContext
   compoundStructure: CompoundStructure
-  /** Whether actual operator nodes (;, &&, ||) exist — if false, \; is just a word argument */
+  /*    * Whether actual operator nodes (;, &&, ||) exist — if false, \; is just a word argument     */
   hasActualOperatorNodes: boolean
   dangerousPatterns: DangerousPatterns
 }
@@ -70,7 +70,7 @@ type QuoteSpans = {
   heredoc: Array<[number, number]> // quoted heredoc_redirect
 }
 
-/**
+/*    *
  * Single-pass collection of all quote-related spans.
  * Previously this was 5 separate tree walks (one per type-set plus
  * allQuoteTypes plus heredoc); fusing cuts tree-traversal ~5x.
@@ -84,7 +84,7 @@ type QuoteSpans = {
  *
  * raw_string / ansi_c_string / quoted-heredoc bodies are literal text
  * in bash (no expansion), so no nested quote nodes exist — return early.
- */
+     */
 function collectQuoteSpans(
   node: TreeSitterNode,
   out: QuoteSpans,
@@ -136,9 +136,9 @@ function collectQuoteSpans(
   }
 }
 
-/**
+/*    *
  * Builds a Set of all character positions covered by the given spans.
- */
+     */
 function buildPositionSet(spans: Array<[number, number]>): Set<number> {
   const set = new Set<number>()
   for (const [start, end] of spans) {
@@ -149,13 +149,13 @@ function buildPositionSet(spans: Array<[number, number]>): Set<number> {
   return set
 }
 
-/**
+/*    *
  * Drops spans that are fully contained within another span, keeping only the
  * outermost. Nested quotes (e.g., `"$(echo 'hi')"`) yield overlapping spans
  * — the inner raw_string is found by recursing into the outer string node.
  * Processing overlapping spans corrupts indices since removing/replacing the
  * outer span shifts the inner span's start/end into stale positions.
- */
+     */
 function dropContainedSpans<T extends readonly [number, number, ...unknown[]]>(
   spans: T[],
 ): T[] {
@@ -171,10 +171,10 @@ function dropContainedSpans<T extends readonly [number, number, ...unknown[]]>(
   )
 }
 
-/**
+/*    *
  * Removes spans from a string, returning the string with those character
  * ranges removed.
- */
+     */
 function removeSpans(command: string, spans: Array<[number, number]>): string {
   if (spans.length === 0) return command
 
@@ -188,9 +188,9 @@ function removeSpans(command: string, spans: Array<[number, number]>): string {
   return result
 }
 
-/**
+/*    *
  * Replaces spans with just the quote delimiters (preserving ' and " characters).
- */
+     */
 function replaceSpansKeepQuotes(
   command: string,
   spans: Array<[number, number, string, string]>,
@@ -206,7 +206,7 @@ function replaceSpansKeepQuotes(
   return result
 }
 
-/**
+/*    *
  * Extract quote context from the tree-sitter AST.
  * Replaces the manual character-by-character extractQuotedContent() function.
  *
@@ -220,7 +220,7 @@ function replaceSpansKeepQuotes(
  *   heredocs (<<EOF) are left in place since bash expands $(...)/${...}
  *   inside them, and validators need to see those patterns. Matches the
  *   sync path's extractHeredocs({ quotedOnly: true }).
- */
+     */
 export function extractQuoteContext(
   rootNode: unknown,
   command: string,
@@ -289,10 +289,10 @@ export function extractQuoteContext(
   return { withDoubleQuotes, fullyUnquoted, unquotedKeepQuoteChars }
 }
 
-/**
+/*    *
  * Extract compound command structure from the AST.
  * Replaces isUnsafeCompoundCommand() and splitCommand() for tree-sitter path.
- */
+     */
 export function extractCompoundStructure(
   rootNode: unknown,
   command: string,
@@ -410,14 +410,14 @@ export function extractCompoundStructure(
   }
 }
 
-/**
+/*    *
  * Check whether the AST contains actual operator nodes (;, &&, ||).
  *
  * This is the key function for eliminating the `find -exec \;` false positive.
  * Tree-sitter parses `\;` as part of a `word` node (an argument to find),
  * NOT as a `;` operator. So if no actual `;` operator nodes exist in the AST,
  * there are no compound operators and hasBackslashEscapedOperator() can be skipped.
- */
+     */
 export function hasActualOperatorNodes(rootNode: unknown): boolean {
   const n = rootNode as TreeSitterNode
 
@@ -442,9 +442,9 @@ export function hasActualOperatorNodes(rootNode: unknown): boolean {
   return walk(n)
 }
 
-/**
+/*    *
  * Extract dangerous pattern information from the AST.
- */
+     */
 export function extractDangerousPatterns(rootNode: unknown): DangerousPatterns {
   const n = rootNode as TreeSitterNode
   let hasCommandSubstitution = false
@@ -488,11 +488,11 @@ export function extractDangerousPatterns(rootNode: unknown): DangerousPatterns {
   }
 }
 
-/**
+/*    *
  * Perform complete tree-sitter analysis of a command.
  * Extracts all security-relevant data from the AST in one pass.
  * This data must be extracted before tree.delete() is called.
- */
+     */
 export function analyzeCommand(
   rootNode: unknown,
   command: string,

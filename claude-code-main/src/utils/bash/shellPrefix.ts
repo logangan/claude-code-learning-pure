@@ -1,6 +1,6 @@
 import { quote } from './shellQuote.js'
 
-/**
+/*    *
  * Parses a shell prefix that may contain an executable path and arguments.
  *
  * Examples:
@@ -11,7 +11,7 @@ import { quote } from './shellQuote.js'
  * @param prefix The shell prefix string containing executable and optional arguments
  * @param command The command to be executed
  * @returns The properly formatted command string with quoted components
- */
+     */
 export function formatShellPrefixCommand(
   prefix: string,
   command: string,

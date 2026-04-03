@@ -92,9 +92,9 @@ export function toSDKCompactMetadata(
   }
 }
 
-/**
+/*    *
  * Shared SDK→internal compact_metadata converter.
- */
+     */
 export function fromSDKCompactMetadata(
   meta: SDKCompactMetadata,
 ): CompactMetadata {
@@ -180,7 +180,7 @@ export function toSDKMessages(messages: Message[]): SDKMessage[] {
   })
 }
 
-/**
+/*    *
  * Converts local command output (e.g. /voice, /cost) to a well-formed
  * SDKAssistantMessage so downstream consumers (mobile apps, session-ingress
  * v1alpha→v1beta converter) can parse it without schema changes.
@@ -189,10 +189,10 @@ export function toSDKMessages(messages: Message[]): SDKMessage[] {
  * because the system/local_command_output subtype is unknown to:
  *   - mobile-apps Android SdkMessageTypes.kt (no local_command_output handler)
  *   - api-go session-ingress convertSystemEvent (only init/compact_boundary)
- * See: https://anthropic.sentry.io/issues/7266299248/ (Android)
+ * See: https:// anthropic.sentry.io/issues/7266299248/ (Android)
  *
  * Strips ANSI (e.g. chalk.dim() in /cost) then unwraps the XML wrapper tags.
- */
+     */
 export function localCommandOutputToSDKAssistantMessage(
   rawContent: string,
   uuid: UUID,
@@ -214,10 +214,10 @@ export function localCommandOutputToSDKAssistantMessage(
   }
 }
 
-/**
+/*    *
  * Maps internal ClaudeAILimits to the SDK-facing SDKRateLimitInfo type,
  * stripping internal-only fields like unifiedRateLimitFallbackAvailable.
- */
+     */
 export function toSDKRateLimitInfo(
   limits: ClaudeAILimits | undefined,
 ): SDKRateLimitInfo | undefined {
@@ -251,12 +251,12 @@ export function toSDKRateLimitInfo(
   }
 }
 
-/**
+/*    *
  * Normalizes tool inputs in assistant message content for SDK consumption.
  * Specifically injects plan content into ExitPlanModeV2 tool inputs since
  * the V2 tool reads plan from file instead of input, but SDK users expect
  * tool_input.plan to exist.
- */
+     */
 function normalizeAssistantMessageForSDK(
   message: AssistantMessage,
 ): AssistantMessage['message'] {

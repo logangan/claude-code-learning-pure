@@ -1,11 +1,11 @@
-/**
+/*    *
  * Marketplace reconciler — makes known_marketplaces.json consistent with
  * declared intent in settings.
  *
  * Two layers:
  * - diffMarketplaces(): comparison (reads .git for worktree canonicalization, memoized)
  * - reconcileMarketplaces(): bundled diff + install (I/O, idempotent, additive)
- */
+     */
 
 import isEqual from 'lodash-es/isEqual.js'
 import { isAbsolute, resolve } from 'path'
@@ -28,25 +28,25 @@ import {
 } from './schemas.js'
 
 export type MarketplaceDiff = {
-  /** Declared in settings, absent from known_marketplaces.json */
+  /*    * Declared in settings, absent from known_marketplaces.json     */
   missing: string[]
-  /** Present in both, but settings source ≠ JSON source (settings wins) */
+  /*    * Present in both, but settings source ≠ JSON source (settings wins)     */
   sourceChanged: Array<{
     name: string
     declaredSource: MarketplaceSource
     materializedSource: MarketplaceSource
   }>
-  /** Present in both, sources match */
+  /*    * Present in both, sources match     */
   upToDate: string[]
 }
 
-/**
+/*    *
  * Compare declared intent (settings) against materialized state (JSON).
  *
  * Resolves relative directory/file paths in `declared` before comparing,
  * so project settings with `./path` match JSON's absolute path. Path
  * resolution reads `.git` to canonicalize worktree paths (memoized).
- */
+     */
 export function diffMarketplaces(
   declared: Record<string, DeclaredMarketplace>,
   materialized: KnownMarketplacesFile,
@@ -83,7 +83,7 @@ export function diffMarketplaces(
 }
 
 export type ReconcileOptions = {
-  /** Skip a declared marketplace. Used by zip-cache mode for unsupported source types. */
+  /*    * Skip a declared marketplace. Used by zip-cache mode for unsupported source types.     */
   skip?: (name: string, source: MarketplaceSource) => boolean
   onProgress?: (event: ReconcileProgressEvent) => void
 }
@@ -107,10 +107,10 @@ export type ReconcileResult = {
   skipped: string[]
 }
 
-/**
+/*    *
  * Make known_marketplaces.json consistent with declared intent.
  * Idempotent. Additive only (never deletes). Does not touch AppState.
- */
+     */
 export async function reconcileMarketplaces(
   opts?: ReconcileOptions,
 ): Promise<ReconcileResult> {
@@ -233,7 +233,7 @@ export async function reconcileMarketplaces(
   return { installed, updated, failed, upToDate: diff.upToDate, skipped }
 }
 
-/**
+/*    *
  * Resolve relative directory/file paths for stable comparison.
  * Settings declared at project scope may use project-relative paths;
  * JSON stores absolute paths.
@@ -245,7 +245,7 @@ export async function reconcileMarketplaces(
  * worktree cwd means each worktree session overwrites the shared entry with
  * its own absolute path, and deleting the worktree leaves a dead
  * installLocation. The canonical root is stable across all worktrees.
- */
+     */
 function normalizeSource(
   source: MarketplaceSource,
   projectRoot?: string,

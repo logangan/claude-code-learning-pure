@@ -15,7 +15,7 @@ import { logForDebugging } from '../../utils/debug.js'
 import { createUserMessage } from '../../utils/messages.js'
 import type { BuiltInAgentDefinition } from './loadAgentsDir.js'
 
-/**
+/*    *
  * Fork subagent feature gate.
  *
  * When enabled:
@@ -28,7 +28,7 @@ import type { BuiltInAgentDefinition } from './loadAgentsDir.js'
  *
  * Mutually exclusive with coordinator mode — coordinator already owns the
  * orchestration role and has its own delegation model.
- */
+     */
 export function isForkSubagentEnabled(): boolean {
   if (feature('FORK_SUBAGENT')) {
     if (isCoordinatorMode()) return false
@@ -38,10 +38,10 @@ export function isForkSubagentEnabled(): boolean {
   return false
 }
 
-/** Synthetic agent type name used for analytics when the fork path fires. */
+/*    * Synthetic agent type name used for analytics when the fork path fires.     */
 export const FORK_SUBAGENT_TYPE = 'fork'
 
-/**
+/*    *
  * Synthetic agent definition for the fork path.
  *
  * Not registered in builtInAgents — used only when `!subagent_type` and the
@@ -56,7 +56,7 @@ export const FORK_SUBAGENT_TYPE = 'fork'
  * bytes, threaded via `toolUseContext.renderedSystemPrompt`. Reconstructing
  * by re-calling getSystemPrompt() can diverge (GrowthBook cold→warm) and
  * bust the prompt cache; threading the rendered bytes is byte-exact.
- */
+     */
 export const FORK_AGENT = {
   agentType: FORK_SUBAGENT_TYPE,
   whenToUse:
@@ -70,11 +70,11 @@ export const FORK_AGENT = {
   getSystemPrompt: () => '',
 } satisfies BuiltInAgentDefinition
 
-/**
+/*    *
  * Guard against recursive forking. Fork children keep the Agent tool in their
  * tool pool for cache-identical tool definitions, so we reject fork attempts
  * at call time by detecting the fork boilerplate tag in conversation history.
- */
+     */
 export function isInForkChild(messages: MessageType[]): boolean {
   return messages.some(m => {
     if (m.type !== 'user') return false
@@ -88,11 +88,11 @@ export function isInForkChild(messages: MessageType[]): boolean {
   })
 }
 
-/** Placeholder text used for all tool_result blocks in the fork prefix.
- * Must be identical across all fork children for prompt cache sharing. */
+/*    * Placeholder text used for all tool_result blocks in the fork prefix.
+ * Must be identical across all fork children for prompt cache sharing.     */
 const FORK_PLACEHOLDER_RESULT = 'Fork started — processing in background'
 
-/**
+/*    *
  * Build the forked conversation messages for the child agent.
  *
  * For prompt cache sharing, all fork children must produce byte-identical
@@ -103,7 +103,7 @@ const FORK_PLACEHOLDER_RESULT = 'Fork started — processing in background'
  *
  * Result: [...history, assistant(all_tool_uses), user(placeholder_results..., directive)]
  * Only the final text block differs per child, maximizing cache hits.
- */
+     */
 export function buildForkedMessages(
   directive: string,
   assistantMessage: AssistantMessage,
@@ -197,11 +197,11 @@ Output format (plain text labels, not markdown headers):
 ${FORK_DIRECTIVE_PREFIX}${directive}`
 }
 
-/**
+/*    *
  * Notice injected into fork children running in an isolated worktree.
  * Tells the child to translate paths from the inherited context, re-read
  * potentially stale files, and that its changes are isolated.
- */
+     */
 export function buildWorktreeNotice(
   parentCwd: string,
   worktreeCwd: string,

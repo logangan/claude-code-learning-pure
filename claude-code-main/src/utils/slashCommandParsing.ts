@@ -1,6 +1,6 @@
-/**
+/*    *
  * Centralized utilities for parsing slash commands
- */
+     */
 
 export type ParsedSlashCommand = {
   commandName: string
@@ -8,7 +8,7 @@ export type ParsedSlashCommand = {
   isMcp: boolean
 }
 
-/**
+/*    *
  * Parses a slash command input string into its component parts
  *
  * @param input - The raw input string (should start with '/')
@@ -21,7 +21,7 @@ export type ParsedSlashCommand = {
  * @example
  * parseSlashCommand('/mcp:tool (MCP) arg1 arg2')
  * // => { commandName: 'mcp:tool (MCP)', args: 'arg1 arg2', isMcp: true }
- */
+     */
 export function parseSlashCommand(input: string): ParsedSlashCommand | null {
   const trimmedInput = input.trim()
 

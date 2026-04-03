@@ -1,10 +1,10 @@
-/**
+/*    *
  * XAA IdP Login — acquires an OIDC id_token from an enterprise IdP via the
  * standard authorization_code + PKCE flow, then caches it by IdP issuer.
  *
  * This is the "one browser pop" in the XAA value prop: one IdP login → N silent
  * MCP server auths. The id_token is cached in the keychain and reused until expiry.
- */
+     */
 
 import {
   exchangeAuthorization,
@@ -39,11 +39,11 @@ export type XaaIdpSettings = {
   callbackPort?: number
 }
 
-/**
+/*    *
  * Typed accessor for settings.xaaIdp. The field is env-gated in SettingsSchema
  * so it doesn't surface in SDK types/docs — which means the inferred settings
  * type doesn't have it at compile time. This is the one cast.
- */
+     */
 export function getXaaIdpSettings(): XaaIdpSettings | undefined {
   return (getInitialSettings() as { xaaIdp?: XaaIdpSettings }).xaaIdp
 }
@@ -55,32 +55,32 @@ const ID_TOKEN_EXPIRY_BUFFER_S = 60
 export type IdpLoginOptions = {
   idpIssuer: string
   idpClientId: string
-  /**
+  /*    *
    * Optional IdP client secret for confidential clients. Auth method
    * (client_secret_post, client_secret_basic, none) is chosen per IdP
    * metadata. Omit for public clients (PKCE only).
-   */
+       */
   idpClientSecret?: string
-  /**
+  /*    *
    * Fixed callback port. If omitted, a random port is chosen.
    * Use this when the IdP client is pre-registered with a specific loopback
    * redirect URI (RFC 8252 §7.3 says IdPs SHOULD accept any port for
-   * http://localhost, but many don't).
-   */
+   * http:// localhost, but many don't).
+       */
   callbackPort?: number
-  /** Called with the authorization URL before (or instead of) opening the browser */
+  /*    * Called with the authorization URL before (or instead of) opening the browser     */
   onAuthorizationUrl?: (url: string) => void
-  /** If true, don't auto-open the browser — just call onAuthorizationUrl */
+  /*    * If true, don't auto-open the browser — just call onAuthorizationUrl     */
   skipBrowserOpen?: boolean
   abortSignal?: AbortSignal
 }
 
-/**
+/*    *
  * Normalize an IdP issuer URL for use as a cache key: strip trailing slashes,
  * lowercase host. Issuers from config and from OIDC discovery may differ
  * cosmetically but should hit the same cache slot. Exported so the setup
  * command can compare issuers using the same normalization as keychain ops.
- */
+     */
 export function issuerKey(issuer: string): string {
   try {
     const u = new URL(issuer)
@@ -92,10 +92,10 @@ export function issuerKey(issuer: string): string {
   }
 }
 
-/**
+/*    *
  * Read a cached id_token for the given IdP issuer from secure storage.
  * Returns undefined if missing or within ID_TOKEN_EXPIRY_BUFFER_S of expiring.
- */
+     */
 export function getCachedIdpIdToken(idpIssuer: string): string | undefined {
   const storage = getSecureStorage()
   const data = storage.read()
@@ -122,14 +122,14 @@ function saveIdpIdToken(
   })
 }
 
-/**
+/*    *
  * Save an externally-obtained id_token into the XAA cache — the exact slot
  * getCachedIdpIdToken/acquireIdpIdToken read from. Used by conformance testing
  * where the mock IdP hands us a pre-signed token but doesn't serve /authorize.
  *
  * Parses the JWT's exp claim for cache TTL (same as acquireIdpIdToken).
  * Returns the expiresAt it computed so the caller can report it.
- */
+     */
 export function saveIdpIdTokenFromJwt(
   idpIssuer: string,
   idToken: string,
@@ -149,13 +149,13 @@ export function clearIdpIdToken(idpIssuer: string): void {
   storage.update(existing)
 }
 
-/**
+/*    *
  * Save an IdP client secret to secure storage, keyed by IdP issuer.
  * Separate from MCP server AS secrets — different trust domain.
  * Returns the storage update result so callers can surface keychain
  * failures (locked keychain, `security` nonzero exit) instead of
  * silently dropping the secret and failing later with invalid_client.
- */
+     */
 export function saveIdpClientSecret(
   idpIssuer: string,
   clientSecret: string,
@@ -171,19 +171,19 @@ export function saveIdpClientSecret(
   })
 }
 
-/**
+/*    *
  * Read the IdP client secret for the given issuer from secure storage.
- */
+     */
 export function getIdpClientSecret(idpIssuer: string): string | undefined {
   const storage = getSecureStorage()
   const data = storage.read()
   return data?.mcpXaaIdpConfig?.[issuerKey(idpIssuer)]?.clientSecret
 }
 
-/**
+/*    *
  * Remove the IdP client secret for the given issuer from secure storage.
  * Used by `claude mcp xaa clear`.
- */
+     */
 export function clearIdpClientSecret(idpIssuer: string): void {
   const storage = getSecureStorage()
   const existing = storage.read()
@@ -236,7 +236,7 @@ export async function discoverOidc(
   return parsed.data
 }
 
-/**
+/*    *
  * Decode the exp claim from a JWT without verifying its signature.
  * Returns undefined if parsing fails or exp is absent. Used only to
  * derive a cache TTL.
@@ -248,7 +248,7 @@ export async function discoverOidc(
  * attacker who can't, hands us garbage and gets a 401 from the IdP. The
  * --id-token injection seam is likewise safe: bad input → rejected later,
  * no privesc. Client-side verification would add code and no security.
- */
+     */
 function jwtExp(jwt: string): number | undefined {
   const parts = jwt.split('.')
   if (parts.length !== 3) return undefined
@@ -262,13 +262,13 @@ function jwtExp(jwt: string): number | undefined {
   }
 }
 
-/**
+/*    *
  * Wait for the OAuth authorization code on a local callback server.
  * Returns the code once /callback is hit with a matching state.
  *
  * `onListening` fires after the socket is actually bound — use it to defer
  * browser-open so EADDRINUSE surfaces before a spurious tab pops open.
- */
+     */
 function waitForCallback(
   port: number,
   expectedState: string,
@@ -394,10 +394,10 @@ function waitForCallback(
   })
 }
 
-/**
+/*    *
  * Acquire an id_token from the IdP: return cached if valid, otherwise run
  * the full OIDC authorization_code + PKCE flow (one browser pop).
- */
+     */
 export async function acquireIdpIdToken(
   opts: IdpLoginOptions,
 ): Promise<string> {

@@ -8,14 +8,14 @@ import {
   permissionRuleSourceDisplayString,
 } from './permissions.js'
 
-/**
+/*    *
  * Type of shadowing that makes a rule unreachable
- */
+     */
 export type ShadowType = 'ask' | 'deny'
 
-/**
+/*    *
  * Represents an unreachable permission rule with explanation
- */
+     */
 export type UnreachableRule = {
   rule: PermissionRule
   reason: string
@@ -24,27 +24,27 @@ export type UnreachableRule = {
   fix: string
 }
 
-/**
+/*    *
  * Options for detecting unreachable rules
- */
+     */
 export type DetectUnreachableRulesOptions = {
-  /**
+  /*    *
    * Whether sandbox auto-allow is enabled for Bash commands.
    * When true, tool-wide Bash ask rules from personal settings don't block
    * specific Bash allow rules because sandboxed commands are auto-allowed.
-   */
+       */
   sandboxAutoAllowEnabled: boolean
 }
 
-/**
+/*    *
  * Result of checking if a rule is shadowed.
  * Uses discriminated union for type safety.
- */
+     */
 type ShadowResult =
   | { shadowed: false }
   | { shadowed: true; shadowedBy: PermissionRule; shadowType: ShadowType }
 
-/**
+/*    *
  * Check if a permission rule source is shared (visible to other users).
  * Shared settings include:
  * - projectSettings: Committed to git, shared with team
@@ -57,7 +57,7 @@ type ShadowResult =
  * - cliArg: Runtime CLI arguments
  * - session: In-memory session rules
  * - flagSettings: From --settings flag (runtime)
- */
+     */
 export function isSharedSettingSource(source: PermissionRuleSource): boolean {
   return (
     source === 'projectSettings' ||
@@ -66,16 +66,16 @@ export function isSharedSettingSource(source: PermissionRuleSource): boolean {
   )
 }
 
-/**
+/*    *
  * Format a rule source for display in warning messages.
- */
+     */
 function formatSource(source: PermissionRuleSource): string {
   return permissionRuleSourceDisplayString(source)
 }
 
-/**
+/*    *
  * Generate a fix suggestion based on the shadow type.
- */
+     */
 function generateFixSuggestion(
   shadowType: ShadowType,
   shadowingRule: PermissionRule,
@@ -91,7 +91,7 @@ function generateFixSuggestion(
   return `Remove the "${toolName}" ask rule from ${shadowingSource}, or remove the specific allow rule from ${shadowedSource}`
 }
 
-/**
+/*    *
  * Check if a specific allow rule is shadowed (unreachable) by an ask rule.
  *
  * An allow rule is unreachable when:
@@ -107,7 +107,7 @@ function generateFixSuggestion(
  * - This only applies to personal settings (userSettings, localSettings, etc.)
  * - Shared settings (projectSettings, policySettings) always warn because
  *   other team members may not have sandbox enabled
- */
+     */
 function isAllowRuleShadowedByAskRule(
   allowRule: PermissionRule,
   askRules: PermissionRule[],
@@ -146,7 +146,7 @@ function isAllowRuleShadowedByAskRule(
   return { shadowed: true, shadowedBy: shadowingAskRule, shadowType: 'ask' }
 }
 
-/**
+/*    *
  * Check if an allow rule is shadowed (completely blocked) by a deny rule.
  *
  * An allow rule is unreachable when:
@@ -156,7 +156,7 @@ function isAllowRuleShadowedByAskRule(
  * Deny rules are checked first in the permission evaluation order,
  * so the allow rule will never be reached - the tool is always denied.
  * This is more severe than ask-shadowing because the rule is truly blocked.
- */
+     */
 function isAllowRuleShadowedByDenyRule(
   allowRule: PermissionRule,
   denyRules: PermissionRule[],
@@ -183,13 +183,13 @@ function isAllowRuleShadowedByDenyRule(
   return { shadowed: true, shadowedBy: shadowingDenyRule, shadowType: 'deny' }
 }
 
-/**
+/*    *
  * Detect all unreachable permission rules in the given context.
  *
  * Currently detects:
  * - Allow rules shadowed by tool-wide deny rules (more severe - completely blocked)
  * - Allow rules shadowed by tool-wide ask rules (will always prompt)
- */
+     */
 export function detectUnreachableRules(
   context: ToolPermissionContext,
   options: DetectUnreachableRulesOptions,

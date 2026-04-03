@@ -20,10 +20,10 @@ export const OFFSET_INSTRUCTION_DEFAULT =
 export const OFFSET_INSTRUCTION_TARGETED =
   '- When you already know which part of the file you need, only read that part. This can be important for larger files.'
 
-/**
+/*    *
  * Renders the Read tool prompt template.  The caller (FileReadTool) supplies
  * the runtime-computed parts.
- */
+     */
 export function renderPromptTemplate(
   lineFormat: string,
   maxSizeInstruction: string,

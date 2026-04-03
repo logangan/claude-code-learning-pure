@@ -1,10 +1,10 @@
-/**
+/*    *
  * Magic Docs automatically maintains markdown documentation files marked with special headers.
  * When a file with "# MAGIC DOC: [title]" is read, it runs periodically in the background
  * using a forked subagent to update the document with new learnings from the conversation.
  *
  * See docs/magic-docs.md for more information.
- */
+     */
 
 import type { Tool, ToolUseContext } from '../../Tool.js'
 import type { BuiltInAgentDefinition } from '../../tools/AgentTool/loadAgentsDir.js'
@@ -45,10 +45,10 @@ export function clearTrackedMagicDocs(): void {
   trackedMagicDocs.clear()
 }
 
-/**
+/*    *
  * Detect if a file content contains a Magic Doc header
  * Returns an object with title and optional instructions, or null if not a magic doc
- */
+     */
 export function detectMagicDocHeader(
   content: string,
 ): { title: string; instructions?: string } | null {
@@ -80,10 +80,10 @@ export function detectMagicDocHeader(
   return { title }
 }
 
-/**
+/*    *
  * Register a file as a Magic Doc when it's read
  * Only registers once per file path - the hook always reads latest content
- */
+     */
 export function registerMagicDoc(filePath: string): void {
   // Only register if not already tracked
   if (!trackedMagicDocs.has(filePath)) {
@@ -93,9 +93,9 @@ export function registerMagicDoc(filePath: string): void {
   }
 }
 
-/**
+/*    *
  * Create Magic Docs agent definition
- */
+     */
 function getMagicDocsAgent(): BuiltInAgentDefinition {
   return {
     agentType: 'magic-docs',
@@ -108,9 +108,9 @@ function getMagicDocsAgent(): BuiltInAgentDefinition {
   }
 }
 
-/**
+/*    *
  * Update a single Magic Doc
- */
+     */
 async function updateMagicDoc(
   docInfo: MagicDocInfo,
   context: REPLHookContext,
@@ -211,9 +211,9 @@ async function updateMagicDoc(
   }
 }
 
-/**
+/*    *
  * Magic Docs post-sampling hook that updates all tracked Magic Docs
- */
+     */
 const updateMagicDocs = sequential(async function (
   context: REPLHookContext,
 ): Promise<void> {

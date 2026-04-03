@@ -1,6 +1,6 @@
 import { isEnvTruthy } from './envUtils.js'
 
-/**
+/*    *
  * Env vars to strip from subprocess environments when running inside GitHub
  * Actions. This prevents prompt-injection attacks from exfiltrating secrets
  * via shell expansion (e.g., ${ANTHROPIC_API_KEY}) in Bash tool commands.
@@ -11,7 +11,7 @@ import { isEnvTruthy } from './envUtils.js'
  * GITHUB_TOKEN / GH_TOKEN are intentionally NOT scrubbed — wrapper scripts
  * (gh.sh) need them to call the GitHub API. That token is job-scoped and
  * expires when the workflow ends.
- */
+     */
 const GHA_SUBPROCESS_SCRUB = [
   // Anthropic auth — claude re-reads these per-request, subprocesses don't need them
   'ANTHROPIC_API_KEY',
@@ -52,7 +52,7 @@ const GHA_SUBPROCESS_SCRUB = [
   'SSH_SIGNING_KEY',
 ] as const
 
-/**
+/*    *
  * Returns a copy of process.env with sensitive secrets stripped, for use when
  * spawning subprocesses (Bash tool, shell snapshot, MCP stdio servers, LSP
  * servers, shell hooks).
@@ -60,16 +60,16 @@ const GHA_SUBPROCESS_SCRUB = [
  * Gated on CLAUDE_CODE_SUBPROCESS_ENV_SCRUB. claude-code-action sets this
  * automatically when `allowed_non_write_users` is configured — the flag that
  * exposes a workflow to untrusted content (prompt injection surface).
- */
+     */
 // Registered by init.ts after the upstreamproxy module is dynamically imported
 // in CCR sessions. Stays undefined in non-CCR startups so we never pull in the
 // upstreamproxy module graph (upstreamproxy.ts + relay.ts) via a static import.
 let _getUpstreamProxyEnv: (() => Record<string, string>) | undefined
 
-/**
+/*    *
  * Called from init.ts to wire up the proxy env function after the upstreamproxy
  * module has been lazily loaded. Must be called before any subprocess is spawned.
- */
+     */
 export function registerUpstreamProxyEnvFn(
   fn: () => Record<string, string>,
 ): void {

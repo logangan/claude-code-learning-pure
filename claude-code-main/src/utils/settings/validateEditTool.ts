@@ -2,7 +2,7 @@ import type { ValidationResult } from 'src/Tool.js'
 import { isClaudeSettingsPath } from '../permissions/filesystem.js'
 import { validateSettingsFileContent } from './validation.js'
 
-/**
+/*    *
  * Validates settings file edits to ensure the result conforms to SettingsSchema.
  * This is used by FileEditTool to avoid code duplication.
  *
@@ -10,7 +10,7 @@ import { validateSettingsFileContent } from './validation.js'
  * @param originalContent - The original file content before edits
  * @param getUpdatedContent - A closure that returns the content after applying edits
  * @returns Validation result with error details if validation fails
- */
+     */
 export function validateInputForSettingsFileEdit(
   filePath: string,
   originalContent: string,

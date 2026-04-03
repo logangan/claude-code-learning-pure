@@ -23,11 +23,11 @@ export const RIGHT_SINGLE_CURLY_QUOTE = '’'
 export const LEFT_DOUBLE_CURLY_QUOTE = '“'
 export const RIGHT_DOUBLE_CURLY_QUOTE = '”'
 
-/**
+/*    *
  * Normalizes quotes in a string by converting curly quotes to straight quotes
  * @param str The string to normalize
  * @returns The string with all curly quotes replaced by straight quotes
- */
+     */
 export function normalizeQuotes(str: string): string {
   return str
     .replaceAll(LEFT_SINGLE_CURLY_QUOTE, "'")
@@ -36,11 +36,11 @@ export function normalizeQuotes(str: string): string {
     .replaceAll(RIGHT_DOUBLE_CURLY_QUOTE, '"')
 }
 
-/**
+/*    *
  * Strips trailing whitespace from each line in a string while preserving line endings
  * @param str The string to process
  * @returns The string with trailing whitespace removed from each line
- */
+     */
 export function stripTrailingWhitespace(str: string): string {
   // Handle different line endings: CRLF, LF, CR
   // Use a regex that matches line endings and captures them
@@ -63,13 +63,13 @@ export function stripTrailingWhitespace(str: string): string {
   return result
 }
 
-/**
+/*    *
  * Finds the actual string in the file content that matches the search string,
  * accounting for quote normalization
  * @param fileContent The file content to search in
  * @param searchString The string to search for
  * @returns The actual string found in the file, or null if not found
- */
+     */
 export function findActualString(
   fileContent: string,
   searchString: string,
@@ -92,7 +92,7 @@ export function findActualString(
   return null
 }
 
-/**
+/*    *
  * When old_string matched via quote normalization (curly quotes in file,
  * straight quotes from model), apply the same curly quote style to new_string
  * so the edit preserves the file's typography.
@@ -100,7 +100,7 @@ export function findActualString(
  * Uses a simple open/close heuristic: a quote character preceded by whitespace,
  * start of string, or opening punctuation is treated as an opening quote;
  * otherwise it's a closing quote.
- */
+     */
 export function preserveQuoteStyle(
   oldString: string,
   actualOldString: string,
@@ -198,11 +198,11 @@ function applyCurlySingleQuotes(str: string): string {
   return result.join('')
 }
 
-/**
+/*    *
  * Transform edits to ensure replace_all always has a boolean value
  * @param edits Array of edits with optional replace_all
  * @returns Array of edits with replace_all guaranteed to be boolean
- */
+     */
 export function applyEditToFile(
   originalContent: string,
   oldString: string,
@@ -227,10 +227,10 @@ export function applyEditToFile(
     : f(originalContent, oldString, newString)
 }
 
-/**
+/*    *
  * Applies an edit to a file and returns the patch and updated file.
  * Does not write the file to disk.
- */
+     */
 export function getPatchForEdit({
   filePath,
   fileContents,
@@ -253,12 +253,12 @@ export function getPatchForEdit({
   })
 }
 
-/**
+/*    *
  * Applies a list of edits to a file and returns the patch and updated file.
  * Does not write the file to disk.
  *
  * NOTE: The returned patch is to be used for display purposes only - it has spaces instead of tabs
- */
+     */
 export function getPatchForEdits({
   filePath,
   fileContents,
@@ -354,11 +354,11 @@ export function getPatchForEdits({
 // tokens/session). 8KB preserves meaningful context while bounding worst case.
 const DIFF_SNIPPET_MAX_BYTES = 8192
 
-/**
+/*    *
  * Used for attachments, to show snippets when files change.
  *
  * TODO: Unify this with the other snippet logic.
- */
+     */
 export function getSnippetForTwoFileDiff(
   fileAContents: string,
   fileBContents: string,
@@ -407,13 +407,13 @@ export function getSnippetForTwoFileDiff(
 
 const CONTEXT_LINES = 4
 
-/**
+/*    *
  * Gets a snippet from a file showing the context around a patch with line numbers.
  * @param originalFile The original file content before applying the patch
  * @param patch The diff hunks to use for determining snippet location
  * @param newFile The file content after applying the patch
  * @returns The snippet text with line numbers and the starting line number
- */
+     */
 export function getSnippetForPatch(
   patch: StructuredPatchHunk[],
   newFile: string,
@@ -456,7 +456,7 @@ export function getSnippetForPatch(
   return { formattedSnippet, startLine }
 }
 
-/**
+/*    *
  * Gets a snippet from a file showing the context around a single edit.
  * This is a convenience function that uses the original algorithm.
  * @param originalFile The original file content
@@ -464,7 +464,7 @@ export function getSnippetForPatch(
  * @param newString The text to replace it with
  * @param contextLines The number of lines to show before and after the change
  * @returns The snippet and the starting line number
- */
+     */
 export function getSnippet(
   originalFile: string,
   oldString: string,
@@ -523,11 +523,11 @@ export function getEditsForPatch(patch: StructuredPatchHunk[]): FileEdit[] {
   })
 }
 
-/**
+/*    *
  * Contains replacements to de-sanitize strings from Claude
  * Since Claude can't see any of these strings (sanitized in the API)
  * It'll output the sanitized versions in the edit response
- */
+     */
 const DESANITIZATIONS: Record<string, string> = {
   '<fnr>': '<function_results>',
   '<n>': '<name>',
@@ -549,11 +549,11 @@ const DESANITIZATIONS: Record<string, string> = {
   '\n\nA:': '\n\nAssistant:',
 }
 
-/**
+/*    *
  * Normalizes a match string by applying specific replacements
  * This helps handle when exact matches fail due to formatting differences
  * @returns The normalized string and which replacements were applied
- */
+     */
 function desanitizeMatchString(matchString: string): {
   result: string
   appliedReplacements: Array<{ from: string; to: string }>
@@ -573,11 +573,11 @@ function desanitizeMatchString(matchString: string): {
   return { result, appliedReplacements }
 }
 
-/**
+/*    *
  * Normalize the input for the FileEditTool
  * If the string to replace is not found in the file, try with a normalized version
  * Returns the normalized input if successful, or the original input if not
- */
+     */
 export function normalizeFileEditInput({
   file_path,
   edits,
@@ -656,11 +656,11 @@ export function normalizeFileEditInput({
   return { file_path, edits }
 }
 
-/**
+/*    *
  * Compare two sets of edits to determine if they are equivalent
  * by applying both sets to the original content and comparing results.
  * This handles cases where edits might be different but produce the same outcome.
- */
+     */
 export function areFileEditsEquivalent(
   edits1: FileEdit[],
   edits2: FileEdit[],
@@ -725,10 +725,10 @@ export function areFileEditsEquivalent(
   return result1!.updatedFile === result2!.updatedFile
 }
 
-/**
+/*    *
  * Unified function to check if two file edit inputs are equivalent.
  * Handles file edits (FileEditTool).
- */
+     */
 export function areFileEditsInputsEquivalent(
   input1: {
     file_path: string

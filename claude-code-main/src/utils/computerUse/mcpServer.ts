@@ -17,11 +17,11 @@ import { getComputerUseHostAdapter } from './hostAdapter.js'
 
 const APP_ENUM_TIMEOUT_MS = 1000
 
-/**
+/*    *
  * Enumerate installed apps, timed. Fails soft — if Spotlight is slow or
  * claude-swift throws, the tool description just omits the list. Resolution
  * happens at call time regardless; the model just doesn't get hints.
- */
+     */
 async function tryGetInstalledAppNames(): Promise<string[] | undefined> {
   const adapter = getComputerUseHostAdapter()
   const enumP = adapter.executor.listInstalledApps()
@@ -43,7 +43,7 @@ async function tryGetInstalledAppNames(): Promise<string[] | undefined> {
   return filterAppsForDescription(installed, homedir())
 }
 
-/**
+/*    *
  * Construct the in-process server. Delegates to the package's
  * `createComputerUseMcpServer` for the Server object + stub CallTool handler,
  * then REPLACES the ListTools handler with one that includes installed-app
@@ -56,7 +56,7 @@ async function tryGetInstalledAppNames(): Promise<string[] | undefined> {
  *
  * Real dispatch still goes through `wrapper.tsx`'s `.call()` override; this
  * server exists only to answer ListTools.
- */
+     */
 export async function createComputerUseMcpServerForCli(): Promise<
   ReturnType<typeof createComputerUseMcpServer>
 > {
@@ -77,11 +77,11 @@ export async function createComputerUseMcpServerForCli(): Promise<
   return server
 }
 
-/**
+/*    *
  * Subprocess entrypoint for `--computer-use-mcp`. Mirror of
  * `runClaudeInChromeMcpServer` — stdio transport, exit on stdin close,
  * flush analytics before exit.
- */
+     */
 export async function runComputerUseMcpServer(): Promise<void> {
   enableConfigs()
   initializeAnalyticsSink()

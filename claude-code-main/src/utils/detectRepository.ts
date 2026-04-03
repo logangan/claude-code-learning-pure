@@ -24,11 +24,11 @@ export async function detectCurrentRepository(): Promise<string | null> {
   return `${result.owner}/${result.name}`
 }
 
-/**
+/*    *
  * Like detectCurrentRepository, but also returns the host (e.g. "github.com"
  * or a GHE hostname). Callers that need to construct URLs against a specific
  * GitHub host should use this variant.
- */
+     */
 export async function detectCurrentRepositoryWithHost(): Promise<ParsedRepository | null> {
   const cwd = getCwd()
 
@@ -58,32 +58,32 @@ export async function detectCurrentRepositoryWithHost(): Promise<ParsedRepositor
   }
 }
 
-/**
+/*    *
  * Synchronously returns the cached github.com repository for the current cwd
  * as "owner/name", or null if it hasn't been resolved yet or the host is not
  * github.com. Call detectCurrentRepository() first to populate the cache.
  *
  * Callers construct github.com URLs, so GHE hosts are filtered out here.
- */
+     */
 export function getCachedRepository(): string | null {
   const parsed = repositoryWithHostCache.get(getCwd())
   if (!parsed || parsed.host !== 'github.com') return null
   return `${parsed.owner}/${parsed.name}`
 }
 
-/**
+/*    *
  * Parses a git remote URL into host, owner, and name components.
  * Accepts any host (github.com, GHE instances, etc.).
  *
  * Supports:
- *   https://host/owner/repo.git
+ *   https:// host/owner/repo.git
  *   git@host:owner/repo.git
- *   ssh://git@host/owner/repo.git
- *   git://host/owner/repo.git
- *   https://host/owner/repo (no .git)
+ *   ssh:// git@host/owner/repo.git
+ *   git:// host/owner/repo.git
+ *   https:// host/owner/repo (no .git)
  *
  * Note: repo names can contain dots (e.g., cc.kurs.web)
- */
+     */
 export function parseGitRemote(input: string): ParsedRepository | null {
   const trimmed = input.trim()
 
@@ -123,12 +123,12 @@ export function parseGitRemote(input: string): ParsedRepository | null {
   return null
 }
 
-/**
+/*    *
  * Parses a git remote URL or "owner/repo" string and returns "owner/repo".
  * Only returns results for github.com hosts — GHE URLs return null.
  * Use parseGitRemote() for GHE support.
  * Also accepts plain "owner/repo" strings for backward compatibility.
- */
+     */
 export function parseGitHubRepository(input: string): string | null {
   const trimmed = input.trim()
 
@@ -144,7 +144,7 @@ export function parseGitHubRepository(input: string): string | null {
 
   // If no URL pattern matched, check if it's already in owner/repo format
   if (
-    !trimmed.includes('://') &&
+    !trimmed.includes(':// ') &&
     !trimmed.includes('@') &&
     trimmed.includes('/')
   ) {
@@ -160,13 +160,13 @@ export function parseGitHubRepository(input: string): string | null {
   return null
 }
 
-/**
+/*    *
  * Checks whether a hostname looks like a real domain name rather than an
  * SSH config alias. A simple dot-check is not enough because aliases like
  * "github.com-work" still contain a dot. We additionally require that the
  * last segment (the TLD) is purely alphabetic — real TLDs (com, org, io, net)
  * never contain hyphens or digits.
- */
+     */
 function looksLikeRealHostname(host: string): boolean {
   if (!host.includes('.')) return false
   const lastSegment = host.split('.').pop()

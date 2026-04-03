@@ -1,4 +1,4 @@
-/**
+/*    *
  * Minimal module for firing MDM subprocess reads without blocking the event loop.
  * Has minimal imports — only child_process, fs, and mdmConstants (which only imports os).
  *
@@ -7,7 +7,7 @@
  * 2. Poll/fallback: fireRawRead() creates a fresh read on demand (used by changeDetector and SDK entrypoint)
  *
  * Raw stdout is consumed by mdmSettings.ts via consumeRawReadResult().
- */
+     */
 
 import { execFile } from 'child_process'
 import { existsSync } from 'fs'
@@ -46,12 +46,12 @@ function execFilePromise(
   })
 }
 
-/**
+/*    *
  * Fire fresh subprocess reads for MDM settings and return raw stdout.
  * On macOS: spawns plutil for each plist path in parallel, picks first winner.
  * On Windows: spawns reg query for HKLM and HKCU in parallel.
  * On Linux: returns empty (no MDM equivalent).
- */
+     */
 export function fireRawRead(): Promise<RawReadResult> {
   return (async (): Promise<RawReadResult> => {
     if (process.platform === 'darwin') {
@@ -113,18 +113,18 @@ export function fireRawRead(): Promise<RawReadResult> {
   })()
 }
 
-/**
+/*    *
  * Fire raw subprocess reads once for startup. Called at main.tsx module evaluation.
  * Results are consumed via getMdmRawReadPromise().
- */
+     */
 export function startMdmRawRead(): void {
   if (rawReadPromise) return
   rawReadPromise = fireRawRead()
 }
 
-/**
+/*    *
  * Get the startup promise. Returns null if startMdmRawRead() wasn't called.
- */
+     */
 export function getMdmRawReadPromise(): Promise<RawReadResult> | null {
   return rawReadPromise
 }

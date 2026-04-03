@@ -1,4 +1,4 @@
-/**
+/*    *
  * Plugin-hint recommendations.
  *
  * Companion to lspRecommendation.ts: where LSP recommendations are triggered
@@ -8,7 +8,7 @@
  * State persists in GlobalConfig.claudeCodeHints — a show-once record per
  * plugin and a disabled flag (user picked "don't show again"). Official-
  * marketplace filtering is hardcoded for v1.
- */
+     */
 
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../../services/analytics/growthbook.js'
 import {
@@ -31,11 +31,11 @@ import {
 } from './pluginIdentifier.js'
 import { isPluginBlockedByPolicy } from './pluginPolicy.js'
 
-/**
+/*    *
  * Hard cap on `claudeCodeHints.plugin[]` — bounds config growth. Each shown
  * plugin appends one slug; past this point we stop prompting (and stop
  * appending) rather than let the config grow without limit.
- */
+     */
 const MAX_SHOWN_PLUGINS = 100
 
 export type PluginHintRecommendation = {
@@ -46,7 +46,7 @@ export type PluginHintRecommendation = {
   sourceCommand: string
 }
 
-/**
+/*    *
  * Pre-store gate called by shell tools when a `type="plugin"` hint is detected.
  * Drops the hint if:
  *
@@ -61,7 +61,7 @@ export type PluginHintRecommendation = {
  * Synchronous on purpose — shell tools shouldn't await a marketplace lookup
  * just to strip a stderr line. The async marketplace-cache check happens
  * later in resolvePluginHint (hook side).
- */
+     */
 export function maybeRecordPluginHint(hint: ClaudeCodeHint): void {
   if (!getFeatureValue_CACHED_MAY_BE_STALE('tengu_lapis_finch', false)) return
   if (hasShownHintThisSession()) return
@@ -90,16 +90,16 @@ export function maybeRecordPluginHint(hint: ClaudeCodeHint): void {
 
 const triedThisSession = new Set<string>()
 
-/** Test-only reset. */
+/*    * Test-only reset.     */
 export function _resetHintRecommendationForTesting(): void {
   triedThisSession.clear()
 }
 
-/**
+/*    *
  * Resolve the pending hint to a renderable recommendation. Runs the async
  * marketplace lookup that the sync pre-store gate skipped. Returns null if
  * the plugin isn't in the marketplace cache — the hint is discarded.
- */
+     */
 export async function resolvePluginHint(
   hint: ClaudeCodeHint,
 ): Promise<PluginHintRecommendation | null> {
@@ -134,10 +134,10 @@ export async function resolvePluginHint(
   }
 }
 
-/**
+/*    *
  * Record that a prompt for this plugin was surfaced. Called regardless of
  * the user's yes/no response — show-once semantics.
- */
+     */
 export function markHintPluginShown(pluginId: string): void {
   saveGlobalConfig(current => {
     const existing = current.claudeCodeHints?.plugin ?? []
@@ -152,7 +152,7 @@ export function markHintPluginShown(pluginId: string): void {
   })
 }
 
-/** Called when the user picks "don't show plugin installation hints again". */
+/*    * Called when the user picks "don't show plugin installation hints again".     */
 export function disableHintRecommendations(): void {
   saveGlobalConfig(current => {
     if (current.claudeCodeHints?.disabled) return current

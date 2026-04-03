@@ -14,16 +14,16 @@ type BridgeApiDeps = {
   getAccessToken: () => string | undefined
   runnerVersion: string
   onDebug?: (msg: string) => void
-  /**
+  /*    *
    * Called on 401 to attempt OAuth token refresh. Returns true if refreshed,
    * in which case the request is retried once. Injected because
    * handleOAuth401Error from utils/auth.ts transitively pulls in config.ts →
    * file.ts → permissions/filesystem.ts → sessionStorage.ts → commands.ts
    * (~1300 modules). Daemon callers using env-var tokens omit this — their
    * tokens don't refresh, so 401 goes straight to BridgeFatalError.
-   */
+       */
   onAuth401?: (staleAccessToken: string) => Promise<boolean>
-  /**
+  /*    *
    * Returns the trusted device token to send as X-Trusted-Device-Token on
    * bridge API calls. Bridge sessions have SecurityTier=ELEVATED on the
    * server (CCR v2); when the server's enforcement flag is on,
@@ -31,20 +31,20 @@ type BridgeApiDeps = {
    * Optional — when absent or returning undefined, the header is omitted
    * and the server falls through to its flag-off/no-op path. The CLI-side
    * gate is tengu_sessions_elevated_auth_enforcement (see trustedDevice.ts).
-   */
+       */
   getTrustedDeviceToken?: () => string | undefined
 }
 
 const BETA_HEADER = 'environments-2025-11-01'
 
-/** Allowlist pattern for server-provided IDs used in URL path segments. */
+/*    * Allowlist pattern for server-provided IDs used in URL path segments.     */
 const SAFE_ID_PATTERN = /^[a-zA-Z0-9_-]+$/
 
-/**
+/*    *
  * Validate that a server-provided ID is safe to interpolate into a URL path.
  * Prevents path traversal (e.g. `../../admin`) and injection via IDs that
  * contain slashes, dots, or other special characters.
- */
+     */
 export function validateBridgeId(id: string, label: string): string {
   if (!id || !SAFE_ID_PATTERN.test(id)) {
     throw new Error(`Invalid ${label}: contains unsafe characters`)
@@ -52,10 +52,10 @@ export function validateBridgeId(id: string, label: string): string {
   return id
 }
 
-/** Fatal bridge errors that should not be retried (e.g. auth failures). */
+/*    * Fatal bridge errors that should not be retried (e.g. auth failures).     */
 export class BridgeFatalError extends Error {
   readonly status: number
-  /** Server-provided error type, e.g. "environment_expired". */
+  /*    * Server-provided error type, e.g. "environment_expired".     */
   readonly errorType: string | undefined
   constructor(message: string, status: number, errorType?: string) {
     super(message)
@@ -96,13 +96,13 @@ export function createBridgeApiClient(deps: BridgeApiDeps): BridgeApiClient {
     return accessToken
   }
 
-  /**
+  /*    *
    * Execute an OAuth-authenticated request with a single retry on 401.
    * On 401, attempts token refresh via handleOAuth401Error (same pattern as
    * withRetry.ts for v1/messages). If refresh succeeds, retries the request
    * once with the new token. If refresh fails or the retry also returns 401,
    * the 401 response is returned for handleErrorStatus to throw BridgeFatalError.
-   */
+       */
   async function withOAuthRetry<T>(
     fn: (accessToken: string) => Promise<{ status: number; data: T }>,
     context: string,
@@ -499,7 +499,7 @@ function handleErrorStatus(
   }
 }
 
-/** Check whether an error type string indicates a session/environment expiry. */
+/*    * Check whether an error type string indicates a session/environment expiry.     */
 export function isExpiredErrorType(errorType: string | undefined): boolean {
   if (!errorType) {
     return false
@@ -507,12 +507,12 @@ export function isExpiredErrorType(errorType: string | undefined): boolean {
   return errorType.includes('expired') || errorType.includes('lifetime')
 }
 
-/**
+/*    *
  * Check whether a BridgeFatalError is a suppressible 403 permission error.
  * These are 403 errors for scopes like 'external_poll_sessions' or operations
  * like StopWork that fail because the user's role lacks 'environments:manage'.
  * They don't affect core functionality and shouldn't be shown to users.
- */
+     */
 export function isSuppressible403(err: BridgeFatalError): boolean {
   if (err.status !== 403) {
     return false

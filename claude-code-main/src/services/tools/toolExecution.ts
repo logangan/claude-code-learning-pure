@@ -130,13 +130,13 @@ import {
   runPreToolUseHooks,
 } from './toolHooks.js'
 
-/** Minimum total hook duration (ms) to show inline timing summary */
+/*    * Minimum total hook duration (ms) to show inline timing summary     */
 export const HOOK_TIMING_DISPLAY_THRESHOLD_MS = 500
-/** Log a debug warning when hooks/permission-decision block for this long. Matches
- * BashTool's PROGRESS_THRESHOLD_MS — the collapsed view feels stuck past this. */
+/*    * Log a debug warning when hooks/permission-decision block for this long. Matches
+ * BashTool's PROGRESS_THRESHOLD_MS — the collapsed view feels stuck past this.     */
 const SLOW_PHASE_LOG_THRESHOLD_MS = 2000
 
-/**
+/*    *
  * Classify a tool execution error into a telemetry-safe string.
  *
  * In minified/external builds, `error.constructor.name` is mangled into
@@ -146,7 +146,7 @@ const SLOW_PHASE_LOG_THRESHOLD_MS = 2000
  * - Node.js fs errors: log the error code (ENOENT, EACCES, etc.)
  * - Known error types: use their unminified name
  * - Fallback: "Error" (better than a mangled 3-char identifier)
- */
+     */
 export function classifyToolError(error: unknown): string {
   if (
     error instanceof TelemetrySafeError_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
@@ -170,14 +170,14 @@ export function classifyToolError(error: unknown): string {
   return 'UnknownError'
 }
 
-/**
+/*    *
  * Map a rule's origin to the documented OTel `source` vocabulary, matching
  * the interactive path's semantics (permissionLogging.ts:81): session-scoped
  * grants are temporary, on-disk grants are permanent, and user-authored
  * denies are user_reject regardless of persistence. Everything the user
  * didn't write (cliArg, policySettings, projectSettings, flagSettings) is
  * config.
- */
+     */
 function ruleSourceToOTelSource(
   ruleSource: string,
   behavior: 'allow' | 'deny',
@@ -193,7 +193,7 @@ function ruleSourceToOTelSource(
   }
 }
 
-/**
+/*    *
  * Map a PermissionDecisionReason to the OTel `source` label for the
  * non-interactive tool_decision path, staying within the documented
  * vocabulary (config, hook, user_permanent, user_temporary, user_reject).
@@ -203,7 +203,7 @@ function ruleSourceToOTelSource(
  * cache hit — the host knows, we can't tell from {behavior:'allow'} alone).
  * Without it, we fall back conservatively: allow → user_temporary,
  * deny → user_reject.
- */
+     */
 function decisionReasonToOTelSource(
   reason: PermissionDecisionReason | undefined,
   behavior: 'allow' | 'deny',
@@ -300,11 +300,11 @@ function findMcpServerConnection(
   )
 }
 
-/**
+/*    *
  * Extracts the MCP server transport type from a tool name.
  * Returns the server type (stdio, sse, http, ws, sdk, etc.) for MCP tools,
  * or undefined for built-in tools.
- */
+     */
 function getMcpServerType(
   toolName: string,
   mcpClients: MCPServerConnection[],
@@ -319,10 +319,10 @@ function getMcpServerType(
   return undefined
 }
 
-/**
+/*    *
  * Extracts the MCP server base URL for a tool by looking up its server connection.
  * Returns undefined for stdio servers, built-in tools, or if the server is not connected.
- */
+     */
 function getMcpServerBaseUrlFromToolName(
   toolName: string,
   mcpClients: MCPServerConnection[],
@@ -503,8 +503,7 @@ function streamedCheckPermissionsAndCallTool(
 ): AsyncIterable<MessageUpdateLazy> {
   // This is a bit of a hack to get progress events and final results
   // into a single async iterable.
-  //
-  // Ideally the progress reporting and tool call reporting would
+  // // Ideally the progress reporting and tool call reporting would
   // be via separate mechanisms.
   const stream = new Stream<MessageUpdateLazy>()
   checkPermissionsAndCallTool(
@@ -569,12 +568,12 @@ function streamedCheckPermissionsAndCallTool(
   return stream
 }
 
-/**
+/*    *
  * Appended to Zod errors when a deferred tool wasn't in the discovered-tool
  * set — re-runs the claude.ts schema-filter scan dispatch-time to detect the
  * mismatch. The raw Zod error ("expected array, got string") doesn't tell the
  * model to re-load the tool; this hint does. Null if the schema was sent.
- */
+     */
 export function buildSchemaNotSentHint(
   tool: Tool,
   messages: Message[],

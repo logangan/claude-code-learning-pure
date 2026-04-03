@@ -15,9 +15,9 @@ import { logForDebugging } from '../../utils/debug.js'
 import { errorMessage } from '../../utils/errors.js'
 import { logError } from '../../utils/log.js'
 import { subprocessEnv } from '../../utils/subprocessEnv.js'
-/**
+/*    *
  * LSP client interface.
- */
+     */
 export type LSPClient = {
   readonly capabilities: ServerCapabilities | undefined
   readonly isInitialized: boolean
@@ -40,14 +40,14 @@ export type LSPClient = {
   stop: () => Promise<void>
 }
 
-/**
+/*    *
  * Create an LSP client wrapper using vscode-jsonrpc.
  * Manages communication with an LSP server process via stdio.
  *
  * @param onCrash - Called when the server process exits unexpectedly (non-zero
  *   exit code during operation, not during intentional stop). Allows the owner
  *   to propagate crash state so the server can be restarted on next use.
- */
+     */
 export function createLSPClient(
   serverName: string,
   onCrash?: (error: Error) => void,

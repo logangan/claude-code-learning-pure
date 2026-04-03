@@ -34,10 +34,10 @@ export function getBuiltInAgents(): AgentDefinition[] {
   // which depend on AgentTool which imports this file.
   if (feature('COORDINATOR_MODE')) {
     if (isEnvTruthy(process.env.CLAUDE_CODE_COORDINATOR_MODE)) {
-      /* eslint-disable @typescript-eslint/no-require-imports */
+      /*     eslint-disable @typescript-eslint/no-require-imports     */
       const { getCoordinatorAgents } =
         require('../../coordinator/workerAgent.js') as typeof import('../../coordinator/workerAgent.js')
-      /* eslint-enable @typescript-eslint/no-require-imports */
+      /*     eslint-enable @typescript-eslint/no-require-imports     */
       return getCoordinatorAgents()
     }
   }

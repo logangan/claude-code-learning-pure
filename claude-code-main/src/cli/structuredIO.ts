@@ -4,7 +4,7 @@ import type {
   JSONRPCMessage,
 } from '@modelcontextprotocol/sdk/types.js'
 import { randomUUID } from 'crypto'
-import type { AssistantMessage } from 'src//types/message.js'
+import type { AssistantMessage } from 'src// types/message.js'
 import type {
   HookInput,
   HookJSONOutput,
@@ -54,11 +54,11 @@ import { jsonParse } from '../utils/slowOperations.js'
 import { Stream } from '../utils/stream.js'
 import { ndjsonSafeStringify } from './ndjsonSafeStringify.js'
 
-/**
+/*    *
  * Synthetic tool name used when forwarding sandbox network permission
  * requests via the can_use_tool control_request protocol. SDK hosts
  * see this as a normal tool permission prompt.
- */
+     */
 export const SANDBOX_NETWORK_ACCESS_TOOL_NAME = 'SandboxNetworkAccess'
 
 function serializeDecisionReason(
@@ -123,10 +123,10 @@ type PendingRequest<T> = {
   request: SDKControlRequest
 }
 
-/**
+/*    *
  * Provides a structured way to read and write SDK messages from stdio,
  * capturing the SDK protocol.
- */
+     */
 // Maximum number of resolved tool_use IDs to track. Once exceeded, the oldest
 // entry is evicted. This bounds memory in very long sessions while keeping
 // enough history to catch duplicate control_response deliveries.
@@ -169,10 +169,10 @@ export class StructuredIO {
     this.structuredInput = this.read()
   }
 
-  /**
+  /*    *
    * Records a tool_use ID as resolved so that late/duplicate control_response
    * messages for the same tool are ignored by the orphan handler.
-   */
+       */
   private trackResolvedToolUseId(request: SDKControlRequest): void {
     if (request.request.subtype === 'can_use_tool') {
       this.resolvedToolUseIds.add(request.request.tool_use_id)
@@ -186,21 +186,21 @@ export class StructuredIO {
     }
   }
 
-  /** Flush pending internal events. No-op for non-remote IO. Overridden by RemoteIO. */
+  /*    * Flush pending internal events. No-op for non-remote IO. Overridden by RemoteIO.     */
   flushInternalEvents(): Promise<void> {
     return Promise.resolve()
   }
 
-  /** Internal-event queue depth. Overridden by RemoteIO; zero otherwise. */
+  /*    * Internal-event queue depth. Overridden by RemoteIO; zero otherwise.     */
   get internalEventsPending(): number {
     return 0
   }
 
-  /**
+  /*    *
    * Queue a user turn to be yielded before the next message from this.input.
    * Works before iteration starts and mid-stream — read() re-checks
    * prependedLines between each yielded message.
-   */
+       */
   prependUserMessage(content: string): void {
     this.prependedLines.push(
       jsonStringify({
@@ -272,14 +272,14 @@ export class StructuredIO {
     this.unexpectedResponseCallback = callback
   }
 
-  /**
+  /*    *
    * Inject a control_response message to resolve a pending permission request.
    * Used by the bridge to feed permission responses from claude.ai into the
    * SDK permission flow.
    *
    * Also sends a control_cancel_request to the SDK consumer so its canUseTool
    * callback is aborted via the signal — otherwise the callback hangs.
-   */
+       */
   injectControlResponse(response: SDKControlResponse): void {
     const requestId = response.response?.request_id
     if (!requestId) return
@@ -308,22 +308,22 @@ export class StructuredIO {
     }
   }
 
-  /**
+  /*    *
    * Register a callback invoked whenever a can_use_tool control_request
    * is written to stdout. Used by the bridge to forward permission
    * requests to claude.ai.
-   */
+       */
   setOnControlRequestSent(
     callback: ((request: SDKControlRequest) => void) | undefined,
   ): void {
     this.onControlRequestSent = callback
   }
 
-  /**
+  /*    *
    * Register a callback invoked when a can_use_tool control_response arrives
    * from the SDK consumer (via stdin). Used by the bridge to cancel the
    * stale permission prompt on claude.ai when the SDK consumer wins the race.
-   */
+       */
   setOnControlRequestResolved(
     callback: ((requestId: string) => void) | undefined,
   ): void {
@@ -688,9 +688,9 @@ export class StructuredIO {
     }
   }
 
-  /**
+  /*    *
    * Sends an elicitation request to the SDK consumer and returns the response.
-   */
+       */
   async handleElicitation(
     serverName: string,
     message: string,
@@ -720,14 +720,14 @@ export class StructuredIO {
     }
   }
 
-  /**
+  /*    *
    * Creates a SandboxAskCallback that forwards sandbox network permission
    * requests to the SDK host as can_use_tool control_requests.
    *
    * This piggybacks on the existing can_use_tool protocol with a synthetic
    * tool name so that SDK hosts (VS Code, CCR, etc.) can prompt the user
    * for network access without requiring a new protocol subtype.
-   */
+       */
   createSandboxAskCallback(): (hostPattern: {
     host: string
     port?: number
@@ -752,9 +752,9 @@ export class StructuredIO {
     }
   }
 
-  /**
+  /*    *
    * Sends an MCP message to an SDK server and waits for the response
-   */
+       */
   async sendMcpMessage(
     serverName: string,
     message: JSONRPCMessage,
@@ -780,10 +780,10 @@ function exitWithMessage(message: string): never {
   process.exit(1)
 }
 
-/**
+/*    *
  * Execute PermissionRequest hooks and return a decision if one is made.
  * Returns undefined if no hook made a decision.
- */
+     */
 async function executePermissionRequestHooksForSDK(
   toolName: string,
   toolUseID: string,

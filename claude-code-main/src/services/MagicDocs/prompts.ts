@@ -2,9 +2,9 @@ import { join } from 'path'
 import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
 import { getFsImplementation } from '../../utils/fsOperations.js'
 
-/**
+/*    *
  * Get the Magic Docs update prompt template
- */
+     */
 function getUpdatePromptTemplate(): string {
   return `IMPORTANT: This message and these instructions are NOT part of the actual user conversation. Do NOT include any references to "documentation updates", "magic docs", or these update instructions in the document content.
 
@@ -58,11 +58,11 @@ Use the Edit tool with file_path: {{docPath}}
 REMEMBER: Only update if there is substantial new information. The Magic Doc header (# MAGIC DOC: {{docTitle}}) must remain unchanged.`
 }
 
-/**
+/*    *
  * Load custom Magic Docs prompt from file if it exists
  * Custom prompts can be placed at ~/.claude/magic-docs/prompt.md
  * Use {{variableName}} syntax for variable substitution (e.g., {{docContents}}, {{docPath}}, {{docTitle}})
- */
+     */
 async function loadMagicDocsPrompt(): Promise<string> {
   const fs = getFsImplementation()
   const promptPath = join(getClaudeConfigHomeDir(), 'magic-docs', 'prompt.md')
@@ -75,9 +75,9 @@ async function loadMagicDocsPrompt(): Promise<string> {
   }
 }
 
-/**
+/*    *
  * Substitute variables in the prompt template using {{variable}} syntax
- */
+     */
 function substituteVariables(
   template: string,
   variables: Record<string, string>,
@@ -92,9 +92,9 @@ function substituteVariables(
   )
 }
 
-/**
+/*    *
  * Build the Magic Docs update prompt with variable substitution
- */
+     */
 export async function buildMagicDocsUpdatePrompt(
   docContents: string,
   docPath: string,

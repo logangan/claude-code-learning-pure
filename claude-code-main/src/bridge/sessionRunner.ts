@@ -16,25 +16,25 @@ import type {
 const MAX_ACTIVITIES = 10
 const MAX_STDERR_LINES = 10
 
-/**
+/*    *
  * Sanitize a session ID for use in file names.
  * Strips any characters that could cause path traversal (e.g. `../`, `/`)
  * or other filesystem issues, replacing them with underscores.
- */
+     */
 export function safeFilenameId(id: string): string {
   return id.replace(/[^a-zA-Z0-9_-]/g, '_')
 }
 
-/**
+/*    *
  * A control_request emitted by the child CLI when it needs permission to
  * execute a **specific** tool invocation (not a general capability check).
  * The bridge forwards this to the server so the user can approve/deny.
- */
+     */
 export type PermissionRequest = {
   type: 'control_request'
   request_id: string
   request: {
-    /** Per-invocation permission check — "may I run this tool with these inputs?" */
+    /*    * Per-invocation permission check — "may I run this tool with these inputs?"     */
     subtype: 'can_use_tool'
     tool_name: string
     input: Record<string, unknown>
@@ -44,13 +44,13 @@ export type PermissionRequest = {
 
 type SessionSpawnerDeps = {
   execPath: string
-  /**
+  /*    *
    * Arguments that must precede the CLI flags when spawning. Empty for
    * compiled binaries (where execPath is the claude binary itself); contains
    * the script path (process.argv[1]) for npm installs where execPath is the
    * node runtime. Without this, node sees --sdk-url as a node option and
    * exits with "bad option: --sdk-url" (see anthropics/claude-code#28334).
-   */
+       */
   scriptArgs: string[]
   env: NodeJS.ProcessEnv
   verbose: boolean
@@ -66,7 +66,7 @@ type SessionSpawnerDeps = {
   ) => void
 }
 
-/** Map tool names to human-readable verbs for the status display. */
+/*    * Map tool names to human-readable verbs for the status display.     */
 const TOOL_VERBS: Record<string, string> = {
   Read: 'Reading',
   Write: 'Writing',
@@ -199,11 +199,11 @@ function extractActivities(
   return activities
 }
 
-/**
+/*    *
  * Extract plain text from a replayed SDKUserMessage NDJSON line. Returns the
  * trimmed text if this looks like a real human-authored message, otherwise
  * undefined so the caller keeps waiting for the first real message.
- */
+     */
 function extractUserMessageText(
   msg: Record<string, unknown>,
 ): string | undefined {
@@ -233,7 +233,7 @@ function extractUserMessageText(
   return text ? text : undefined
 }
 
-/** Build a short preview of tool input for debug logging. */
+/*    * Build a short preview of tool input for debug logging.     */
 function inputPreview(input: Record<string, unknown>): string {
   const parts: string[] = []
   for (const [key, val] of Object.entries(input)) {

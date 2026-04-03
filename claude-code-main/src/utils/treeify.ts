@@ -32,10 +32,10 @@ const DEFAULT_TREE_CHARS: TreeCharacters = {
   empty: ' ',
 }
 
-/**
+/*    *
  * Custom treeify implementation with Ink theme color support
- * Based on https://github.com/notatestuser/treeify
- */
+ * Based on https:// github.com/notatestuser/treeify
+     */
 export function treeify(obj: TreeNode, options: TreeifyOptions = {}): string {
   const {
     showValues = true,

@@ -1,20 +1,20 @@
-/**
+/*    *
  * Hook event system for broadcasting hook execution events.
  *
  * This module provides a generic event system that is separate from the
  * main message stream. Handlers can register to receive events and decide
  * what to do with them (e.g., convert to SDK messages, log, etc.).
- */
+     */
 
 import { HOOK_EVENTS } from 'src/entrypoints/sdk/coreTypes.js'
 
 import { logForDebugging } from '../debug.js'
 
-/**
+/*    *
  * Hook events that are always emitted regardless of the includeHookEvents
  * option. These are low-noise lifecycle events that were in the original
  * allowlist and are backwards-compatible.
- */
+     */
 const ALWAYS_EMITTED_HOOK_EVENTS = ['SessionStart', 'Setup'] as const
 
 const MAX_PENDING_EVENTS = 100
@@ -176,11 +176,11 @@ export function emitHookResponse(data: {
   })
 }
 
-/**
+/*    *
  * Enable emission of all hook event types (beyond SessionStart and Setup).
  * Called when the SDK `includeHookEvents` option is set or when running
  * in CLAUDE_CODE_REMOTE mode.
- */
+     */
 export function setAllHookEventsEnabled(enabled: boolean): void {
   allHookEventsEnabled = enabled
 }

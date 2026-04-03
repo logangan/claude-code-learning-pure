@@ -32,7 +32,7 @@ import { getEssentialTrafficOnlyReason } from './privacyLevel.js'
 import { getManagedFilePath } from './settings/managedPath.js'
 import type { ThemeSetting } from './theme.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const teamMemPaths = feature('TEAMMEM')
   ? (require('../memdir/teamMemPaths.js') as typeof import('../memdir/teamMemPaths.js'))
   : null
@@ -40,7 +40,7 @@ const ccrAutoConnect = feature('CCR_AUTO_CONNECT')
   ? (require('../bridge/bridgeEnabled.js') as typeof import('../bridge/bridgeEnabled.js'))
   : null
 
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import type { ImageDimensions } from './imageResizer.js'
 import type { ModelOption } from './model/modelOptions.js'
 import { jsonParse, jsonStringify } from './slowOperations.js'
@@ -131,7 +131,7 @@ export type ProjectConfig = {
     sessionId: string
     hookBased?: boolean
   }
-  /** Spawn mode for `claude remote-control` multi-session. Set by first-run dialog or `w` toggle. */
+  /*    * Spawn mode for `claude remote-control` multi-session. Set by first-run dialog or `w` toggle.     */
   remoteControlSpawnMode?: 'same-dir' | 'worktree'
 }
 
@@ -181,9 +181,9 @@ export type DiffTool = 'terminal' | 'auto'
 export type OutputStyle = string
 
 export type GlobalConfig = {
-  /**
+  /*    *
    * @deprecated Use settings.apiKeyHelper instead.
-   */
+       */
   apiKeyHelper?: string
   projects?: Record<string, ProjectConfig>
   numStartups: number
@@ -212,9 +212,9 @@ export type GlobalConfig = {
   // something the user has demonstrably ignored and shouldn't nag about.
   claudeAiMcpEverConnected?: string[]
   preferredNotifChannel: NotificationChannel
-  /**
+  /*    *
    * @deprecated. Use the Notification hook instead (docs/hooks.md).
-   */
+       */
   customNotifyCommand?: string
   verbose: boolean
   customApiKeyResponses?: {
@@ -233,9 +233,9 @@ export type GlobalConfig = {
   hasUsedBackslashReturn?: boolean
   autoCompactEnabled: boolean // Controls whether auto-compact is enabled
   showTurnDuration: boolean // Controls whether to show turn duration message (e.g., "Cooked for 1m 6s")
-  /**
+  /*    *
    * @deprecated Use settings.env instead.
-   */
+       */
   env: { [key: string]: string } // Environment variables to set for the CLI
   hasSeenTasksHint?: boolean // Whether the user has seen the tasks hint
   hasUsedStash?: boolean // Whether the user has used the stash feature (Ctrl+S)
@@ -577,11 +577,11 @@ export type GlobalConfig = {
   migrationVersion?: number
 }
 
-/**
+/*    *
  * Factory for a fresh default GlobalConfig. Used instead of deep-cloning a
  * shared constant — the nested containers (arrays, records) are all empty, so
  * a factory gives fresh refs at zero clone cost.
- */
+     */
 function createDefaultGlobalConfig(): GlobalConfig {
   return {
     numStartups: 0,
@@ -679,7 +679,7 @@ export const PROJECT_CONFIG_KEYS = [
 
 export type ProjectConfigKey = (typeof PROJECT_CONFIG_KEYS)[number]
 
-/**
+/*    *
  * Check if the user has already accepted the trust dialog for the cwd.
  *
  * This function traverses parent directories to check if a parent directory
@@ -687,7 +687,7 @@ export type ProjectConfigKey = (typeof PROJECT_CONFIG_KEYS)[number]
  * directories.
  *
  * @returns Whether the trust dialog has been accepted (i.e. "should not be shown")
- */
+     */
 let _trustAccepted = false
 
 export function resetTrustDialogAcceptedCacheForTesting(): void {
@@ -742,13 +742,13 @@ function computeTrustDialogAccepted(): boolean {
   return false
 }
 
-/**
+/*    *
  * Check trust for an arbitrary directory (not the session cwd).
  * Walks up from `dir`, returning true if any ancestor has trust persisted.
  * Unlike checkHasTrustDialogAccepted, this does NOT consult session trust or
  * the memoized project path — use when the target dir differs from cwd (e.g.
  * /assistant installing into a user-typed path).
- */
+     */
 export function isPathTrusted(dir: string): boolean {
   const config = getGlobalConfig()
   let currentPath = normalizePathForConfigKey(resolve(dir))
@@ -773,13 +773,13 @@ export function isProjectConfigKey(key: string): key is ProjectConfigKey {
   return PROJECT_CONFIG_KEYS.includes(key as ProjectConfigKey)
 }
 
-/**
+/*    *
  * Detect whether writing `fresh` would lose auth/onboarding state that the
  * in-memory cache still has. This happens when `getConfig` hits a corrupted
  * or truncated file mid-write (from another process or a non-atomic fallback)
  * and returns DEFAULT_GLOBAL_CONFIG. Writing that back would permanently
  * wipe auth. See GH #3117.
- */
+     */
 function wouldLoseAuthState(fresh: {
   oauthAccount?: unknown
   hasCompletedOnboarding?: boolean
@@ -905,10 +905,10 @@ registerCleanup(async () => {
   reportConfigCacheStats()
 })
 
-/**
+/*    *
  * Migrates old autoUpdaterStatus to new installMethod and autoUpdates fields
  * @internal
- */
+     */
 function migrateConfigFields(config: GlobalConfig): GlobalConfig {
   // Already migrated
   if (config.installMethod !== undefined) {
@@ -959,10 +959,10 @@ function migrateConfigFields(config: GlobalConfig): GlobalConfig {
   }
 }
 
-/**
+/*    *
  * Removes history field from projects (migrated to history.jsonl)
  * @internal
- */
+     */
 function removeProjectHistory(
   projects: Record<string, ProjectConfig> | undefined,
 ): Record<string, ProjectConfig> | undefined {
@@ -1085,12 +1085,12 @@ export function getGlobalConfig(): GlobalConfig {
   }
 }
 
-/**
+/*    *
  * Returns the effective value of remoteControlAtStartup. Precedence:
  *   1. User's explicit config value (always wins — honors opt-out)
  *   2. CCR auto-connect default (ant-only build, GrowthBook-gated)
  *   3. false (Remote Control must be explicitly opted into)
- */
+     */
 export function getRemoteControlAtStartup(): boolean {
   const explicit = getGlobalConfig().remoteControlAtStartup
   if (explicit !== undefined) return explicit
@@ -1144,12 +1144,12 @@ function saveConfig<A extends object>(
   }
 }
 
-/**
+/*    *
  * Returns true if a write was performed; false if the write was skipped
  * (no changes, or auth-loss guard tripped). Callers use this to decide
  * whether to invalidate the cache -- invalidating after a skipped write
  * destroys the good cached state the auth-loss guard depends on.
- */
+     */
 function saveConfigWithLock<A extends object>(
   file: string,
   createDefault: () => A,
@@ -1347,7 +1347,7 @@ export function enableConfigs(): void {
   getConfig(
     getGlobalClaudeFile(),
     createDefaultGlobalConfig,
-    true /* throw on invalid */,
+    true /*     throw on invalid     */,
   )
 
   logForDiagnosticsNoPII('info', 'enable_configs_completed', {
@@ -1355,20 +1355,20 @@ export function enableConfigs(): void {
   })
 }
 
-/**
+/*    *
  * Returns the directory where config backup files are stored.
  * Uses ~/.claude/backups/ to keep the home directory clean.
- */
+     */
 function getConfigBackupDir(): string {
   return join(getClaudeConfigHomeDir(), 'backups')
 }
 
-/**
+/*    *
  * Find the most recent backup file for a given config file.
  * Checks ~/.claude/backups/ first, then falls back to the legacy location
  * (next to the config file) for backwards compatibility.
  * Returns the full path to the most recent backup, or null if none exist.
- */
+     */
 function findMostRecentBackup(file: string): string | null {
   const fs = getFsImplementation()
   const fileBase = basename(file)
@@ -1701,12 +1701,12 @@ export function isAutoUpdaterDisabled(): boolean {
   return getAutoUpdaterDisabledReason() !== null
 }
 
-/**
+/*    *
  * Returns true if plugin autoupdate should be skipped.
  * This checks if the auto-updater is disabled AND the FORCE_AUTOUPDATE_PLUGINS
  * env var is not set to 'true'. The env var allows forcing plugin autoupdate
  * even when the auto-updater is otherwise disabled.
- */
+     */
 export function shouldSkipPluginAutoupdate(): boolean {
   return (
     isAutoUpdaterDisabled() &&

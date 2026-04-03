@@ -20,7 +20,7 @@ const INITIAL_STATE: PrStatusState = {
   lastUpdated: 0,
 }
 
-/**
+/*    *
  * Polls PR review status every 60s while the session is active.
  * When no interaction is detected for 60 minutes, the loop stops — no
  * timers remain. React re-runs the effect when isLoading changes
@@ -31,7 +31,7 @@ const INITIAL_STATE: PrStatusState = {
  *
  * Pass `enabled: false` to skip polling entirely (hook still must be
  * called unconditionally to satisfy the rules of hooks).
- */
+     */
 export function usePrStatus(isLoading: boolean, enabled = true): PrStatusState {
   const [prStatus, setPrStatus] = useState<PrStatusState>(INITIAL_STATE)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)

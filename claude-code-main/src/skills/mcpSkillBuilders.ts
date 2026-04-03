@@ -3,7 +3,7 @@ import type {
   parseSkillFrontmatterFields,
 } from './loadSkillsDir.js'
 
-/**
+/*    *
  * Write-once registry for the two loadSkillsDir functions that MCP skill
  * discovery needs. This module is a dependency-graph leaf: it imports nothing
  * but types, so both mcpSkills.ts and loadSkillsDir.ts can depend on it
@@ -21,7 +21,7 @@ import type {
  * Registration happens at loadSkillsDir.ts module init, which is eagerly
  * evaluated at startup via the static import from commands.ts — long before
  * any MCP server connects.
- */
+     */
 
 export type MCPSkillBuilders = {
   createSkillCommand: typeof createSkillCommand

@@ -11,7 +11,7 @@ export type AntModel = {
   contextWindow?: number
   defaultMaxTokens?: number
   upperMaxTokensLimit?: number
-  /** Model defaults to adaptive thinking and rejects `thinking: { type: 'disabled' }`. */
+  /*    * Model defaults to adaptive thinking and rejects `thinking: { type: 'disabled' }`.     */
   alwaysOnThinking?: boolean
 }
 

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Resolve file_uuid attachments on inbound bridge user messages.
  *
  * Web composer uploads via cookie-authed /api/{org}/upload, sends file_uuid
@@ -8,7 +8,7 @@
  *
  * Best-effort: any failure (no token, network, non-2xx, disk) logs debug and
  * skips that attachment. The message still reaches Claude, just without @path.
- */
+     */
 
 import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/messages.mjs'
 import axios from 'axios'
@@ -38,7 +38,7 @@ const attachmentsArraySchema = lazySchema(() => z.array(attachmentSchema()))
 
 export type InboundAttachment = z.infer<ReturnType<typeof attachmentSchema>>
 
-/** Pull file_attachments off a loosely-typed inbound message. */
+/*    * Pull file_attachments off a loosely-typed inbound message.     */
 export function extractInboundAttachments(msg: unknown): InboundAttachment[] {
   if (typeof msg !== 'object' || msg === null || !('file_attachments' in msg)) {
     return []
@@ -47,11 +47,11 @@ export function extractInboundAttachments(msg: unknown): InboundAttachment[] {
   return parsed.success ? parsed.data : []
 }
 
-/**
+/*    *
  * Strip path components and keep only filename-safe chars. file_name comes
  * from the network (web composer), so treat it as untrusted even though the
  * composer controls it.
- */
+     */
 function sanitizeFileName(name: string): string {
   const base = basename(name).replace(/[^a-zA-Z0-9._-]/g, '_')
   return base || 'attachment'
@@ -61,10 +61,10 @@ function uploadsDir(): string {
   return join(getClaudeConfigHomeDir(), 'uploads', getSessionId())
 }
 
-/**
+/*    *
  * Fetch + write one attachment. Returns the absolute path on success,
  * undefined on any failure.
- */
+     */
 async function resolveOne(att: InboundAttachment): Promise<string | undefined> {
   const token = getBridgeAccessToken()
   if (!token) {
@@ -116,10 +116,10 @@ async function resolveOne(att: InboundAttachment): Promise<string | undefined> {
   return outPath
 }
 
-/**
+/*    *
  * Resolve all attachments on an inbound message to a prefix string of
  * @path refs. Empty string if none resolved.
- */
+     */
 export async function resolveInboundAttachments(
   attachments: InboundAttachment[],
 ): Promise<string> {
@@ -133,12 +133,12 @@ export async function resolveInboundAttachments(
   return ok.map(p => `@"${p}"`).join(' ') + ' '
 }
 
-/**
+/*    *
  * Prepend @path refs to content, whichever form it's in.
  * Targets the LAST text block — processUserInputBase reads inputString
  * from processedBlocks[processedBlocks.length - 1], so putting refs in
  * block[0] means they're silently ignored for [text, image] content.
- */
+     */
 export function prependPathRefs(
   content: string | Array<ContentBlockParam>,
   prefix: string,
@@ -160,10 +160,10 @@ export function prependPathRefs(
   return [...content, { type: 'text', text: prefix.trimEnd() }]
 }
 
-/**
+/*    *
  * Convenience: extract + resolve + prepend. No-op when the message has no
  * file_attachments field (fast path — no network, returns same reference).
- */
+     */
 export async function resolveAndPrepend(
   msg: unknown,
   content: string | Array<ContentBlockParam>,

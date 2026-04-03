@@ -44,12 +44,12 @@ type BaseExecutionParams = {
   querySource: QuerySource
   commands: Command[]
   queryGuard: QueryGuard
-  /**
+  /*    *
    * True when external loading (remote session, foregrounded background task)
    * is active. These don't route through queryGuard, so the queue check must
    * account for them separately. Omit (defaults to false) for the dequeue path
    * (executeQueuedInput) — dequeued items were already queued past this check.
-   */
+       */
   isExternalLoading?: boolean
   setToolJSX: SetToolJSXFn
   getToolUseContext: (
@@ -75,9 +75,9 @@ type BaseExecutionParams = {
   canUseTool?: CanUseToolFn
 }
 
-/**
+/*    *
  * Parameters for core execution logic (no UI concerns).
- */
+     */
 type ExecuteUserInputParams = BaseExecutionParams & {
   resetHistory: () => void
   onInputChange: (value: string) => void
@@ -109,11 +109,11 @@ export type HandlePromptSubmitParams = BaseExecutionParams & {
   streamMode?: SpinnerMode
   hasInterruptibleToolInProgress?: boolean
   uuid?: UUID
-  /**
+  /*    *
    * When true, input starting with `/` is treated as plain text.
    * Used for remotely-received messages (bridge/CCR) that should not
    * trigger local slash commands or skills.
-   */
+       */
   skipSlashCommands?: boolean
 }
 
@@ -386,13 +386,13 @@ export async function handlePromptSubmit(
   })
 }
 
-/**
+/*    *
  * Core logic for executing user input without UI side effects.
  *
  * All commands arrive as `queuedCommands`. First command gets full treatment
  * (attachments, ideSelection, pastedContents with image resizing). Commands 2-N
  * get `skipAttachments` to avoid duplicating turn-level context.
- */
+     */
 async function executeUserInput(params: ExecuteUserInputParams): Promise<void> {
   const {
     messages,

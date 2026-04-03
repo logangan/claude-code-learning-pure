@@ -1,4 +1,4 @@
-/**
+/*    *
  * Provides ripgrep glob exclusion patterns for orphaned plugin versions.
  *
  * When plugin versions are updated, old versions are marked with a
@@ -13,7 +13,7 @@
  * settles disk state. Once populated, the exclusion list is frozen for
  * the session unless /reload-plugins is called; subsequent disk mutations
  * (autoupdate, concurrent sessions) don't affect it.
- */
+     */
 
 import { dirname, isAbsolute, join, normalize, relative, sep } from 'path'
 import { ripGrep } from '../ripgrep.js'
@@ -22,10 +22,10 @@ import { getPluginsDirectory } from './pluginDirectories.js'
 // Inlined from cacheUtils.ts to avoid a circular dep through commands.js.
 const ORPHANED_AT_FILENAME = '.orphaned_at'
 
-/** Session-scoped cache. Frozen once computed — only cleared by explicit /reload-plugins. */
+/*    * Session-scoped cache. Frozen once computed — only cleared by explicit /reload-plugins.     */
 let cachedExclusions: string[] | null = null
 
-/**
+/*    *
  * Get ripgrep glob exclusion patterns for orphaned plugin versions.
  *
  * @param searchPath - When provided, exclusions are only returned if the
@@ -34,7 +34,7 @@ let cachedExclusions: string[] | null = null
  *
  * Warmed eagerly in main.tsx after orphan GC; the lazy-compute path here
  * is a fallback. Best-effort: returns empty array if anything goes wrong.
- */
+     */
 export async function getGlobExclusionsForPluginCache(
   searchPath?: string,
 ): Promise<string[]> {
@@ -77,7 +77,7 @@ export async function getGlobExclusionsForPluginCache(
         : versionDir
       // ripgrep glob patterns always use forward slashes, even on Windows
       const posixRelative = rel.replace(/\\/g, '/')
-      return `!**/${posixRelative}/**`
+      return `!**/${posixRelative}/*    *`
     })
     return cachedExclusions
   } catch {
@@ -93,9 +93,9 @@ export function clearPluginCacheExclusions(): void {
 
 /**
  * One path is a prefix of the other. Special-cases root (normalize('/') + sep
- * = '//'). Case-insensitive on win32 since normalize() doesn't lowercase
+ * = '// '). Case-insensitive on win32 since normalize() doesn't lowercase
  * drive letters and CLAUDE_CODE_PLUGIN_CACHE_DIR may disagree with resolved.
- */
+     */
 function pathsOverlap(a: string, b: string): boolean {
   const na = normalizeForCompare(a)
   const nb = normalizeForCompare(b)

@@ -47,16 +47,16 @@ type LoadConfig = {
   isSkillMode: boolean // true when loading from skills/ directory
 }
 
-/**
+/*    *
  * Check if a file path is a skill file (SKILL.md)
- */
+     */
 function isSkillFile(filePath: string): boolean {
   return /^skill\.md$/i.test(basename(filePath))
 }
 
-/**
+/*    *
  * Get command name from file path, handling both regular files and skills
- */
+     */
 function getCommandNameFromFile(
   filePath: string,
   baseDir: string,
@@ -72,7 +72,7 @@ function getCommandNameFromFile(
 
     // Build namespace from parent of skill directory
     const relativePath = parentOfSkillDir.startsWith(baseDir)
-      ? parentOfSkillDir.slice(baseDir.length).replace(/^\//, '')
+      ? parentOfSkillDir.slice(baseDir.length).replace(/^\// , '')
       : ''
     const namespace = relativePath ? relativePath.split('/').join(':') : ''
 
@@ -86,7 +86,7 @@ function getCommandNameFromFile(
 
     // Build namespace from file directory
     const relativePath = fileDirectory.startsWith(baseDir)
-      ? fileDirectory.slice(baseDir.length).replace(/^\//, '')
+      ? fileDirectory.slice(baseDir.length).replace(/^\// , '')
       : ''
     const namespace = relativePath ? relativePath.split('/').join(':') : ''
 
@@ -96,9 +96,9 @@ function getCommandNameFromFile(
   }
 }
 
-/**
+/*    *
  * Recursively collects all markdown files from a directory
- */
+     */
 async function collectMarkdownFiles(
   dirPath: string,
   baseDir: string,
@@ -129,9 +129,9 @@ async function collectMarkdownFiles(
   return files
 }
 
-/**
+/*    *
  * Transforms plugin markdown files to handle skill directories
- */
+     */
 function transformPluginSkillFiles(
   files: PluginMarkdownFile[],
 ): PluginMarkdownFile[] {
@@ -212,9 +212,9 @@ async function loadCommandsFromDirectory(
   return commands
 }
 
-/**
+/*    *
  * Create a Command from a plugin markdown file
- */
+     */
 function createPluginCommand(
   commandName: string,
   file: PluginMarkdownFile,
@@ -680,10 +680,10 @@ export function clearPluginCommandCache(): void {
   getPluginCommands.cache?.clear?.()
 }
 
-/**
+/*    *
  * Loads skills from plugin skills directories
  * Skills are directories containing SKILL.md files
- */
+     */
 async function loadSkillsFromDirectory(
   skillsPath: string,
   pluginName: string,

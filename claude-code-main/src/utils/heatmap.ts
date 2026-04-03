@@ -13,9 +13,9 @@ type Percentiles = {
   p75: number
 }
 
-/**
+/*    *
  * Pre-calculates percentiles from activity data for use in intensity calculations
- */
+     */
 function calculatePercentiles(
   dailyActivity: DailyActivity[],
 ): Percentiles | null {
@@ -33,9 +33,9 @@ function calculatePercentiles(
   }
 }
 
-/**
+/*    *
  * Generates a GitHub-style activity heatmap for the terminal
- */
+     */
 export function generateHeatmap(
   dailyActivity: DailyActivity[],
   options: HeatmapOptions = {},

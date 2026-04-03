@@ -1,4 +1,4 @@
-/**
+/*    *
  * TMUX SOCKET ISOLATION
  * =====================
  * This module manages an isolated tmux socket for Claude's operations.
@@ -21,7 +21,7 @@
  * IMPORTANT: The user's original TMUX env var is NOT used. After socket
  * initialization, getClaudeTmuxEnv() returns a value that overrides the
  * user's TMUX in all child processes spawned by Shell.ts.
- */
+     */
 
 import { posix } from 'path'
 import { registerCleanup } from './cleanupRegistry.js'
@@ -35,12 +35,12 @@ import { getPlatform } from './platform.js'
 const TMUX_COMMAND = 'tmux'
 const CLAUDE_SOCKET_PREFIX = 'claude'
 
-/**
+/*    *
  * Executes a tmux command, routing through WSL on Windows.
  * On Windows, tmux only exists inside WSL — WSL interop lets the tmux session
  * launch .exe files as native Win32 processes while stdin/stdout flow through
  * the WSL pty.
- */
+     */
 async function execTmux(
   args: string[],
   opts?: { useCwd?: boolean },
@@ -84,10 +84,10 @@ let tmuxAvailable = false
 // Used to defer socket initialization until actually needed
 let tmuxToolUsed = false
 
-/**
+/*    *
  * Gets the socket name for Claude's isolated tmux session.
  * Format: claude-<PID>
- */
+     */
 export function getClaudeSocketName(): string {
   if (!socketName) {
     socketName = `${CLAUDE_SOCKET_PREFIX}-${process.pid}`
@@ -95,31 +95,31 @@ export function getClaudeSocketName(): string {
   return socketName
 }
 
-/**
+/*    *
  * Gets the socket path if the socket has been initialized.
  * Returns null if not yet initialized.
- */
+     */
 export function getClaudeSocketPath(): string | null {
   return socketPath
 }
 
-/**
+/*    *
  * Sets socket info after initialization.
  * Called after the tmux session is created.
- */
+     */
 export function setClaudeSocketInfo(path: string, pid: number): void {
   socketPath = path
   serverPid = pid
 }
 
-/**
+/*    *
  * Returns whether the socket has been initialized.
- */
+     */
 export function isSocketInitialized(): boolean {
   return socketPath !== null && serverPid !== null
 }
 
-/**
+/*    *
  * Gets the TMUX environment variable value for Claude's isolated socket.
  *
  * CRITICAL: This value is used by Shell.ts to override the TMUX env var
@@ -131,7 +131,7 @@ export function isSocketInitialized(): boolean {
  *
  * Returns null if socket is not yet initialized.
  * When null, Shell.ts does not override TMUX, preserving user's environment.
- */
+     */
 export function getClaudeTmuxEnv(): string | null {
   if (!socketPath || serverPid === null) {
     return null
@@ -139,7 +139,7 @@ export function getClaudeTmuxEnv(): string | null {
   return `${socketPath},${serverPid},0`
 }
 
-/**
+/*    *
  * Checks if tmux is available on this system.
  * This is checked once and cached for the lifetime of the process.
  *
@@ -147,7 +147,7 @@ export function getClaudeTmuxEnv(): string | null {
  * - TungstenTool (Tmux) will not work
  * - TeammateTool will not work (it uses tmux for pane management)
  * - Bash commands will run without tmux isolation
- */
+     */
 export async function checkTmuxAvailable(): Promise<boolean> {
   if (!tmuxAvailabilityChecked) {
     const result =
@@ -170,33 +170,33 @@ export async function checkTmuxAvailable(): Promise<boolean> {
   return tmuxAvailable
 }
 
-/**
+/*    *
  * Returns the cached tmux availability status.
  * Returns false if availability hasn't been checked yet.
  * Use checkTmuxAvailable() to perform the check.
- */
+     */
 export function isTmuxAvailable(): boolean {
   return tmuxAvailabilityChecked && tmuxAvailable
 }
 
-/**
+/*    *
  * Marks that the Tmux tool has been used at least once.
  * Called by TungstenTool before initialization.
  * After this is called, Shell.ts will initialize the socket for subsequent Bash commands.
- */
+     */
 export function markTmuxToolUsed(): void {
   tmuxToolUsed = true
 }
 
-/**
+/*    *
  * Returns whether the Tmux tool has been used at least once.
  * Used by Shell.ts to decide whether to initialize the socket.
- */
+     */
 export function hasTmuxToolBeenUsed(): boolean {
   return tmuxToolUsed
 }
 
-/**
+/*    *
  * Ensures the socket is initialized with a tmux session.
  * Called by Shell.ts when the Tmux tool has been used or the command includes "tmux".
  * Safe to call multiple times; will only initialize once.
@@ -204,7 +204,7 @@ export function hasTmuxToolBeenUsed(): boolean {
  * If tmux is not installed, this function returns gracefully without
  * initializing the socket. getClaudeTmuxEnv() will return null, and
  * Bash commands will run without tmux isolation.
- */
+     */
 export async function ensureSocketInitialized(): Promise<void> {
   // Already initialized
   if (isSocketInitialized()) {
@@ -245,10 +245,10 @@ export async function ensureSocketInitialized(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Kills the tmux server for Claude's isolated socket.
  * Called during graceful shutdown to clean up resources.
- */
+     */
 async function killTmuxServer(): Promise<void> {
   const socket = getClaudeSocketName()
   logForDebugging(`[Socket] Killing tmux server for socket: ${socket}`)
@@ -270,8 +270,7 @@ async function doInitialize(): Promise<void> {
 
   // Create a new session with our custom socket
   // Pass CLAUDE_CODE_SKIP_PROMPT_HISTORY via -e so it's set in the initial shell environment
-  //
-  // On Windows, the tmux server inherits WSL_INTEROP from the short-lived
+  // // On Windows, the tmux server inherits WSL_INTEROP from the short-lived
   // wsl.exe that spawns it; once `new-session -d` detaches and wsl.exe exits,
   // that socket stops servicing requests. Any cli.exe launched inside the pane
   // then hits `UtilAcceptVsock: accept4 failed 110` (ETIMEDOUT). Observed on

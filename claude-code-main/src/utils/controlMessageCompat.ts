@@ -1,4 +1,4 @@
-/**
+/*    *
  * Normalize camelCase `requestId` → snake_case `request_id` on incoming
  * control messages (control_request, control_response).
  *
@@ -9,7 +9,7 @@
  *
  * If both `request_id` and `requestId` are present, snake_case wins.
  * Mutates the object in place.
- */
+     */
 export function normalizeControlMessageKeys(obj: unknown): unknown {
   if (obj === null || typeof obj !== 'object') return obj
   const record = obj as Record<string, unknown>

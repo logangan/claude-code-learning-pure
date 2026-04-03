@@ -6,10 +6,10 @@ const SKILL_USAGE_DEBOUNCE_MS = 60_000
 // calls. Same pattern as lastConfigStatTime / globalConfigWriteCount in config.ts.
 const lastWriteBySkill = new Map<string, number>()
 
-/**
+/*    *
  * Records a skill usage for ranking purposes.
  * Updates both usage count and last used timestamp.
- */
+     */
 export function recordSkillUsage(skillName: string): void {
   const now = Date.now()
   const lastWrite = lastWriteBySkill.get(skillName)
@@ -34,13 +34,13 @@ export function recordSkillUsage(skillName: string): void {
   })
 }
 
-/**
+/*    *
  * Calculates a usage score for a skill based on frequency and recency.
  * Higher scores indicate more frequently and recently used skills.
  *
  * The score uses exponential decay with a half-life of 7 days,
  * meaning usage from 7 days ago is worth half as much as usage today.
- */
+     */
 export function getSkillUsageScore(skillName: string): number {
   const config = getGlobalConfig()
   const usage = config.skillUsage?.[skillName]

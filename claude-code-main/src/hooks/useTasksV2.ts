@@ -17,7 +17,7 @@ const HIDE_DELAY_MS = 5000
 const DEBOUNCE_MS = 50
 const FALLBACK_POLL_MS = 5000 // Fallback in case fs.watch misses events
 
-/**
+/*    *
  * Singleton store for the TodoV2 task list. Owns the file watcher, timers,
  * and cached task list. Multiple hook instances (REPL, Spinner,
  * PromptInputFooterLeftSide) subscribe to one shared store instead of each
@@ -25,16 +25,16 @@ const FALLBACK_POLL_MS = 5000 // Fallback in case fs.watch misses events
  * unmounts every turn — per-hook watchers caused constant watch/unwatch churn.
  *
  * Implements the useSyncExternalStore contract: subscribe/getSnapshot.
- */
+     */
 class TasksV2Store {
-  /** Stable array reference; replaced only on fetch. undefined until started. */
+  /*    * Stable array reference; replaced only on fetch. undefined until started.     */
   #tasks: Task[] | undefined = undefined
-  /**
+  /*    *
    * Set when the hide timer has elapsed (all tasks completed for >5s), or
    * when the task list is empty. Starts false so the first fetch runs the
    * "all completed → schedule 5s hide" path (matches original behavior:
    * resuming a session with completed tasks shows them briefly).
-   */
+       */
   #hidden = false
   #watcher: FSWatcher | null = null
   #watchedDir: string | null = null
@@ -46,10 +46,10 @@ class TasksV2Store {
   #subscriberCount = 0
   #started = false
 
-  /**
+  /*    *
    * useSyncExternalStore snapshot. Returns the same Task[] reference between
    * updates (required for Object.is stability). Returns undefined when hidden.
-   */
+       */
   getSnapshot = (): Task[] | undefined => {
     return this.#hidden ? undefined : this.#tasks
   }
@@ -82,11 +82,11 @@ class TasksV2Store {
     this.#changed.emit()
   }
 
-  /**
+  /*    *
    * Point the file watcher at the current tasks directory. Called on start
    * and whenever #fetch detects the task list ID has changed (e.g. when
    * TeamCreateTool sets leaderTeamName mid-session).
-   */
+       */
   #rewatch(dir: string): void {
     // Retry even on same dir if the previous watch attempt failed (dir
     // didn't exist yet). Once the watcher is established, same-dir is a no-op.
@@ -178,11 +178,11 @@ class TasksV2Store {
     }
   }
 
-  /**
+  /*    *
    * Tear down the watcher, timers, and in-process subscription. Called when
    * the last subscriber unsubscribes. Preserves #tasks/#hidden cache so a
    * subsequent re-subscribe renders the last known state immediately.
-   */
+       */
   #stop(): void {
     this.#watcher?.close()
     this.#watcher = null
@@ -209,12 +209,12 @@ const NOOP = (): void => {}
 const NOOP_SUBSCRIBE = (): (() => void) => NOOP
 const NOOP_SNAPSHOT = (): undefined => undefined
 
-/**
+/*    *
  * Hook to get the current task list for the persistent UI display.
  * Returns tasks when TodoV2 is enabled, otherwise returns undefined.
  * All hook instances share a single file watcher via TasksV2Store.
  * Hides the list after 5 seconds if there are no open tasks.
- */
+     */
 export function useTasksV2(): Task[] | undefined {
   const teamContext = useAppState(s => s.teamContext)
 
@@ -228,11 +228,11 @@ export function useTasksV2(): Task[] | undefined {
   )
 }
 
-/**
+/*    *
  * Same as useTasksV2, plus collapses the expanded task view when the list
  * becomes hidden. Call this from exactly one always-mounted component (REPL)
  * so the collapse effect runs once instead of N× per consumer.
- */
+     */
 export function useTasksV2WithCollapseEffect(): Task[] | undefined {
   const tasks = useTasksV2()
   const setAppState = useSetAppState()

@@ -9,13 +9,13 @@ const MAX_LINES_TO_SHOW = 3
 // reduction (columns - 5 in tool result rendering)
 const PADDING_TO_PREVENT_OVERFLOW = 10
 
-/**
+/*    *
  * Inserts newlines in a string to wrap it at the specified width.
  * Uses ANSI-aware slicing to avoid splitting escape sequences.
  * @param text The text to wrap.
  * @param wrapWidth The width at which to wrap lines (in visible characters).
  * @returns The wrapped text.
- */
+     */
 function wrapText(
   text: string,
   wrapWidth: number,
@@ -60,14 +60,14 @@ function wrapText(
   }
 }
 
-/**
+/*    *
  * Renders the content with line-based truncation for terminal display.
  * If the content exceeds the maximum number of lines, it truncates the content
  * and adds a message indicating the number of additional lines.
  * @param content The content to render.
  * @param terminalWidth Terminal width for wrapping lines.
  * @returns The rendered content with truncation if needed.
- */
+     */
 export function renderTruncatedContent(
   content: string,
   terminalWidth: number,
@@ -112,10 +112,10 @@ export function renderTruncatedContent(
     .join('\n')
 }
 
-/** Fast check: would OutputLine truncate this content? Counts raw newlines
+/*    * Fast check: would OutputLine truncate this content? Counts raw newlines
  *  only (ignores terminal-width wrapping), so it may return false for a single
  *  very long line that wraps past 3 visual rows — acceptable, since the common
- *  case is multi-line output. */
+ *  case is multi-line output.     */
 export function isOutputLineTruncated(content: string): boolean {
   let pos = 0
   // Need more than MAX_LINES_TO_SHOW newlines (content fills > 3 lines).

@@ -18,11 +18,11 @@ export type PrStatus = {
 
 const GH_TIMEOUT_MS = 5000
 
-/**
+/*    *
  * Derive review state from GitHub API values.
  * Draft PRs always show as 'draft' regardless of reviewDecision.
  * reviewDecision can be: APPROVED, CHANGES_REQUESTED, REVIEW_REQUIRED, or empty string.
- */
+     */
 export function deriveReviewState(
   isDraft: boolean,
   reviewDecision: string,
@@ -38,11 +38,11 @@ export function deriveReviewState(
   }
 }
 
-/**
+/*    *
  * Fetch PR status for the current branch using `gh pr view`.
  * Returns null on any failure (gh not installed, no PR, not in git repo, etc).
  * Also returns null if the PR's head branch is the default branch (e.g., main/master).
- */
+     */
 export async function fetchPrStatus(): Promise<PrStatus | null> {
   const isGit = await getIsGit()
   if (!isGit) return null

@@ -55,7 +55,7 @@ import {
   shouldAllowManagedPermissionRulesOnly,
 } from './permissionsLoader.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const classifierDecisionModule = feature('TRANSCRIPT_CLASSIFIER')
   ? (require('./classifierDecision.js') as typeof import('./classifierDecision.js'))
   : null
@@ -89,7 +89,7 @@ import {
   DONT_ASK_REJECT_MESSAGE,
 } from '../messages.js'
 import { calculateCostFromTokens } from '../modelCost.js'
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import { jsonStringify } from '../slowOperations.js'
 import {
   createDenialTrackingState,
@@ -131,9 +131,9 @@ export function getAllowRules(
   )
 }
 
-/**
+/*    *
  * Creates a permission request message that explain the permission request
- */
+     */
 export function createPermissionRequestMessage(
   toolName: string,
   decisionReason?: PermissionDecisionReason,
@@ -230,11 +230,11 @@ export function getAskRules(context: ToolPermissionContext): PermissionRule[] {
   )
 }
 
-/**
+/*    *
  * Check if the entire tool matches a rule
  * For example, this matches "Bash" but not "Bash(prefix:*)" for BashTool
  * This also matches MCP tools with a server name, e.g. the rule "mcp__server1"
- */
+     */
 function toolMatchesRule(
   tool: Pick<Tool, 'name' | 'mcpInfo'>,
   rule: PermissionRule,
@@ -268,10 +268,10 @@ function toolMatchesRule(
   )
 }
 
-/**
+/*    *
  * Check if the entire tool is listed in the always allow rules
  * For example, this finds "Bash" but not "Bash(prefix:*)" for BashTool
- */
+     */
 export function toolAlwaysAllowedRule(
   context: ToolPermissionContext,
   tool: Pick<Tool, 'name' | 'mcpInfo'>,
@@ -281,9 +281,9 @@ export function toolAlwaysAllowedRule(
   )
 }
 
-/**
+/*    *
  * Check if the tool is listed in the always deny rules
- */
+     */
 export function getDenyRuleForTool(
   context: ToolPermissionContext,
   tool: Pick<Tool, 'name' | 'mcpInfo'>,
@@ -291,9 +291,9 @@ export function getDenyRuleForTool(
   return getDenyRules(context).find(rule => toolMatchesRule(tool, rule)) || null
 }
 
-/**
+/*    *
  * Check if the tool is listed in the always ask rules
- */
+     */
 export function getAskRuleForTool(
   context: ToolPermissionContext,
   tool: Pick<Tool, 'name' | 'mcpInfo'>,
@@ -301,10 +301,10 @@ export function getAskRuleForTool(
   return getAskRules(context).find(rule => toolMatchesRule(tool, rule)) || null
 }
 
-/**
+/*    *
  * Check if a specific agent is denied via Agent(agentType) syntax.
  * For example, Agent(Explore) would deny the Explore agent.
- */
+     */
 export function getDenyRuleForAgent(
   context: ToolPermissionContext,
   agentToolName: string,
@@ -319,9 +319,9 @@ export function getDenyRuleForAgent(
   )
 }
 
-/**
+/*    *
  * Filter agents to exclude those that are denied via Agent(agentType) syntax.
- */
+     */
 export function filterDeniedAgents<T extends { agentType: string }>(
   agents: T[],
   context: ToolPermissionContext,
@@ -342,10 +342,10 @@ export function filterDeniedAgents<T extends { agentType: string }>(
   return agents.filter(agent => !deniedAgentTypes.has(agent.agentType))
 }
 
-/**
+/*    *
  * Map of rule contents to the associated rule for a given tool.
  * e.g. the string key is "prefix:*" from "Bash(prefix:*)" for BashTool
- */
+     */
 export function getRuleByContentsForTool(
   context: ToolPermissionContext,
   tool: Tool,
@@ -389,14 +389,14 @@ export function getRuleByContentsForToolName(
   return ruleByContents
 }
 
-/**
+/*    *
  * Runs PermissionRequest hooks for headless/async agents that cannot show
  * permission prompts. This gives hooks an opportunity to allow or deny
  * tool use before the fallback auto-deny kicks in.
  *
  * Returns a PermissionDecision if a hook made a decision, or null if no
  * hook provided a decision (caller should proceed to auto-deny).
- */
+     */
 async function runPermissionRequestHooksForHeadlessAgent(
   tool: Tool,
   input: { [key: string]: unknown },
@@ -955,11 +955,11 @@ export const hasPermissionsToUseTool: CanUseToolFn = async (
   return result
 }
 
-/**
+/*    *
  * Persist denial tracking state. For async subagents with localDenialTracking,
  * mutate the local state in place (since setAppState is a no-op). Otherwise,
  * write to appState as usual.
- */
+     */
 function persistDenialState(
   context: ToolUseContext,
   newState: DenialTrackingState,
@@ -977,10 +977,10 @@ function persistDenialState(
   }
 }
 
-/**
+/*    *
  * Check if a denial limit was exceeded and return an 'ask' result
  * so the user can review. Returns null if no limit was hit.
- */
+     */
 function handleDenialLimitExceeded(
   denialState: DenialTrackingState,
   appState: {
@@ -1057,7 +1057,7 @@ function handleDenialLimitExceeded(
   }
 }
 
-/**
+/*    *
  * Check only the rule-based steps of the permission pipeline — the subset
  * that bypassPermissions mode respects (everything that fires before step 2a).
  *
@@ -1067,7 +1067,7 @@ function handleDenialLimitExceeded(
  * or bypassPermissions / always-allowed checks.
  *
  * Caller must pre-check tool.requiresUserInteraction() — step 1e is not replicated.
- */
+     */
 export async function checkRuleBasedPermissions(
   tool: Tool,
   input: { [key: string]: unknown },
@@ -1323,9 +1323,9 @@ type EditPermissionRuleArgs = {
   setToolPermissionContext: (updatedContext: ToolPermissionContext) => void
 }
 
-/**
+/*    *
  * Delete a permission rule from the appropriate destination
- */
+     */
 export async function deletePermissionRule({
   rule,
   initialContext,
@@ -1369,9 +1369,9 @@ export async function deletePermissionRule({
   setToolPermissionContext(updatedContext)
 }
 
-/**
+/*    *
  * Helper to convert PermissionRule array to PermissionUpdate array
- */
+     */
 function convertRulesToUpdates(
   rules: PermissionRule[],
   updateType: 'addRules' | 'replaceRules',
@@ -1402,9 +1402,9 @@ function convertRulesToUpdates(
   return updates
 }
 
-/**
+/*    *
  * Apply permission rules to context (additive - for initial setup)
- */
+     */
 export function applyPermissionRulesToPermissionContext(
   toolPermissionContext: ToolPermissionContext,
   rules: PermissionRule[],
@@ -1413,9 +1413,9 @@ export function applyPermissionRulesToPermissionContext(
   return applyPermissionUpdates(toolPermissionContext, updates)
 }
 
-/**
+/*    *
  * Sync permission rules from disk (replacement - for settings changes)
- */
+     */
 export function syncPermissionRulesFromDisk(
   toolPermissionContext: ToolPermissionContext,
   rules: PermissionRule[],
@@ -1470,10 +1470,10 @@ export function syncPermissionRulesFromDisk(
   return applyPermissionUpdates(context, updates)
 }
 
-/**
+/*    *
  * Extract updatedInput from a permission result, falling back to the original input.
  * Handles the case where some PermissionResult variants don't have updatedInput.
- */
+     */
 function getUpdatedInputOrFallback(
   permissionResult: PermissionResult,
   fallback: Record<string, unknown>,

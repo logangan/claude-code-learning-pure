@@ -1,18 +1,18 @@
 import { setMaxListeners } from 'events'
 
-/**
+/*    *
  * Default max listeners for standard operations
- */
+     */
 const DEFAULT_MAX_LISTENERS = 50
 
-/**
+/*    *
  * Creates an AbortController with proper event listener limits set.
  * This prevents MaxListenersExceededWarning when multiple listeners
  * are attached to the abort signal.
  *
  * @param maxListeners - Maximum number of listeners (default: 50)
  * @returns AbortController with configured listener limit
- */
+     */
 export function createAbortController(
   maxListeners: number = DEFAULT_MAX_LISTENERS,
 ): AbortController {
@@ -21,12 +21,12 @@ export function createAbortController(
   return controller
 }
 
-/**
+/*    *
  * Propagates abort from a parent to a weakly-referenced child controller.
  * Both parent and child are weakly held — neither direction creates a
  * strong reference that could prevent GC.
  * Module-scope function avoids per-call closure allocation.
- */
+     */
 function propagateAbort(
   this: WeakRef<AbortController>,
   weakChild: WeakRef<AbortController>,
@@ -35,12 +35,12 @@ function propagateAbort(
   weakChild.deref()?.abort(parent?.signal.reason)
 }
 
-/**
+/*    *
  * Removes an abort handler from a weakly-referenced parent signal.
  * Both parent and handler are weakly held — if either has been GC'd
  * or the parent already aborted ({once: true}), this is a no-op.
  * Module-scope function avoids per-call closure allocation.
- */
+     */
 function removeAbortHandler(
   this: WeakRef<AbortController>,
   weakHandler: WeakRef<(...args: unknown[]) => void>,
@@ -52,7 +52,7 @@ function removeAbortHandler(
   }
 }
 
-/**
+/*    *
  * Creates a child AbortController that aborts when its parent aborts.
  * Aborting the child does NOT affect the parent.
  *
@@ -64,7 +64,7 @@ function removeAbortHandler(
  * @param parent - The parent AbortController
  * @param maxListeners - Maximum number of listeners (default: 50)
  * @returns Child AbortController
- */
+     */
 export function createChildAbortController(
   parent: AbortController,
   maxListeners?: number,

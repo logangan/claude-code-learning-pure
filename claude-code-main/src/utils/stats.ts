@@ -86,9 +86,9 @@ export type ClaudeCodeStats = {
   oneShotRate?: number
 }
 
-/**
+/*    *
  * Result of processing session files - intermediate stats that can be merged.
- */
+     */
 type ProcessedStats = {
   dailyActivity: DailyActivity[]
   dailyModelTokens: DailyModelTokens[]
@@ -100,9 +100,9 @@ type ProcessedStats = {
   shotDistribution?: { [shotCount: number]: number }
 }
 
-/**
+/*    *
  * Options for processing session files.
- */
+     */
 type ProcessOptions = {
   // Only include data from dates >= this date (YYYY-MM-DD format)
   fromDate?: string
@@ -110,10 +110,10 @@ type ProcessOptions = {
   toDate?: string
 }
 
-/**
+/*    *
  * Process session files and extract stats.
  * Can filter by date range.
- */
+     */
 async function processSessionFiles(
   sessionFiles: string[],
   options: ProcessOptions = {},
@@ -367,10 +367,10 @@ async function processSessionFiles(
   }
 }
 
-/**
+/*    *
  * Get all session files from all project directories.
  * Includes both main session files and subagent transcript files.
- */
+     */
 async function getAllSessionFiles(): Promise<string[]> {
   const projectsDir = getProjectsDir()
   const fs = getFsImplementation()
@@ -434,9 +434,9 @@ async function getAllSessionFiles(): Promise<string[]> {
   return projectResults.flat()
 }
 
-/**
+/*    *
  * Convert a PersistedStatsCache to ClaudeCodeStats by computing derived fields.
- */
+     */
 function cacheToStats(
   cache: PersistedStatsCache,
   todayStats: ProcessedStats | null,
@@ -633,10 +633,10 @@ function cacheToStats(
   return result
 }
 
-/**
+/*    *
  * Aggregates stats from all Claude Code sessions across all projects.
  * Uses a disk cache to avoid reprocessing historical data.
- */
+     */
 export async function aggregateClaudeCodeStats(): Promise<ClaudeCodeStats> {
   const allSessionFiles = await getAllSessionFiles()
 
@@ -711,10 +711,10 @@ export async function aggregateClaudeCodeStats(): Promise<ClaudeCodeStats> {
 
 export type StatsDateRange = '7d' | '30d' | 'all'
 
-/**
+/*    *
  * Aggregates stats for a specific date range.
  * For 'all', uses the cached aggregation. For other ranges, processes files directly.
- */
+     */
 export async function aggregateClaudeCodeStatsForRange(
   range: StatsDateRange,
 ): Promise<ClaudeCodeStats> {
@@ -742,10 +742,10 @@ export async function aggregateClaudeCodeStatsForRange(
   return processedStatsToClaudeCodeStats(stats)
 }
 
-/**
+/*    *
  * Convert ProcessedStats to ClaudeCodeStats.
  * Used for filtered date ranges that bypass the cache.
- */
+     */
 function processedStatsToClaudeCodeStats(
   stats: ProcessedStats,
 ): ClaudeCodeStats {
@@ -841,9 +841,9 @@ function processedStatsToClaudeCodeStats(
   return result
 }
 
-/**
+/*    *
  * Get the next day after a given date string (YYYY-MM-DD format).
- */
+     */
 function getNextDay(dateStr: string): string {
   const date = new Date(dateStr)
   date.setDate(date.getDate() + 1)
@@ -932,11 +932,11 @@ function calculateStreaks(dailyActivity: DailyActivity[]): StreakInfo {
 
 const SHOT_COUNT_REGEX = /(\d+)-shotted by/
 
-/**
+/*    *
  * Extract the shot count from PR attribution text in a `gh pr create` Bash call.
  * The attribution format is: "N-shotted by model-name"
  * Returns the shot count, or null if not found.
- */
+     */
 function extractShotCountFromMessages(
   messages: TranscriptMessage[],
 ): number | null {
@@ -976,7 +976,7 @@ const TRANSCRIPT_MESSAGE_TYPES = new Set([
   'progress',
 ])
 
-/**
+/*    *
  * Peeks at the head of a session file to get the session start date.
  * Uses a small 4 KB read to avoid loading the full file.
  *
@@ -990,7 +990,7 @@ const TRANSCRIPT_MESSAGE_TYPES = new Set([
  *
  * Returns a YYYY-MM-DD string, or null if no transcript message fits in the
  * head (caller falls through to the full read — safe default).
- */
+     */
 export async function readSessionStartDate(
   filePath: string,
 ): Promise<string | null> {

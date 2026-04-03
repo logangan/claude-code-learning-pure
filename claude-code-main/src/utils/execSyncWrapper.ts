@@ -6,7 +6,7 @@ import {
 } from 'child_process'
 import { slowLogging } from './slowOperations.js'
 
-/**
+/*    *
  * @deprecated Use async alternatives when possible. Sync exec calls block the event loop.
  *
  * Wrapped execSync with slow operation logging.
@@ -15,7 +15,7 @@ import { slowLogging } from './slowOperations.js'
  * @example
  * import { execSync_DEPRECATED } from './execSyncWrapper.js'
  * const result = execSync_DEPRECATED('git status', { encoding: 'utf8' })
- */
+     */
 export function execSync_DEPRECATED(command: string): Buffer
 export function execSync_DEPRECATED(
   command: string,

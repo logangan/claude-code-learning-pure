@@ -9,62 +9,62 @@ import { sleep } from '../../utils/sleep.js'
 import type { createLSPClient as createLSPClientType } from './LSPClient.js'
 import type { LspServerState, ScopedLspServerConfig } from './types.js'
 
-/**
+/*    *
  * LSP error code for "content modified" - indicates the server's state changed
  * during request processing (e.g., rust-analyzer still indexing the project).
  * This is a transient error that can be retried.
- */
+     */
 const LSP_ERROR_CONTENT_MODIFIED = -32801
 
-/**
+/*    *
  * Maximum number of retries for transient LSP errors like "content modified".
- */
+     */
 const MAX_RETRIES_FOR_TRANSIENT_ERRORS = 3
 
-/**
+/*    *
  * Base delay in milliseconds for exponential backoff on transient errors.
  * Actual delays: 500ms, 1000ms, 2000ms
- */
+     */
 const RETRY_BASE_DELAY_MS = 500
-/**
+/*    *
  * LSP server instance interface returned by createLSPServerInstance.
  * Manages the lifecycle of a single LSP server with state tracking and health monitoring.
- */
+     */
 export type LSPServerInstance = {
-  /** Unique server identifier */
+  /*    * Unique server identifier     */
   readonly name: string
-  /** Server configuration */
+  /*    * Server configuration     */
   readonly config: ScopedLspServerConfig
-  /** Current server state */
+  /*    * Current server state     */
   readonly state: LspServerState
-  /** When the server was last started */
+  /*    * When the server was last started     */
   readonly startTime: Date | undefined
-  /** Last error encountered */
+  /*    * Last error encountered     */
   readonly lastError: Error | undefined
-  /** Number of times restart() has been called */
+  /*    * Number of times restart() has been called     */
   readonly restartCount: number
-  /** Start the server and initialize it */
+  /*    * Start the server and initialize it     */
   start(): Promise<void>
-  /** Stop the server gracefully */
+  /*    * Stop the server gracefully     */
   stop(): Promise<void>
-  /** Manually restart the server (stop then start) */
+  /*    * Manually restart the server (stop then start)     */
   restart(): Promise<void>
-  /** Check if server is healthy and ready for requests */
+  /*    * Check if server is healthy and ready for requests     */
   isHealthy(): boolean
-  /** Send an LSP request to the server */
+  /*    * Send an LSP request to the server     */
   sendRequest<T>(method: string, params: unknown): Promise<T>
-  /** Send an LSP notification to the server (fire-and-forget) */
+  /*    * Send an LSP notification to the server (fire-and-forget)     */
   sendNotification(method: string, params: unknown): Promise<void>
-  /** Register a handler for LSP notifications */
+  /*    * Register a handler for LSP notifications     */
   onNotification(method: string, handler: (params: unknown) => void): void
-  /** Register a handler for LSP requests from the server */
+  /*    * Register a handler for LSP requests from the server     */
   onRequest<TParams, TResult>(
     method: string,
     handler: (params: TParams) => TResult | Promise<TResult>,
   ): void
 }
 
-/**
+/*    *
  * Creates and manages a single LSP server instance.
  *
  * Uses factory function pattern with closures for state encapsulation (avoiding classes).
@@ -86,7 +86,7 @@ export type LSPServerInstance = {
  * await instance.start()
  * const result = await instance.sendRequest('textDocument/definition', params)
  * await instance.stop()
- */
+     */
 export function createLSPServerInstance(
   name: string,
   config: ScopedLspServerConfig,
@@ -124,14 +124,14 @@ export function createLSPServerInstance(
     crashRecoveryCount++
   })
 
-  /**
+  /*    *
    * Starts the LSP server and initializes it with workspace information.
    *
    * If the server is already running or starting, this method returns immediately.
    * On failure, sets state to 'error', logs for monitoring, and throws.
    *
    * @throws {Error} If server fails to start or initialize
-   */
+       */
   async function start(): Promise<void> {
     if (state === 'running' || state === 'starting') {
       return
@@ -263,14 +263,14 @@ export function createLSPServerInstance(
     }
   }
 
-  /**
+  /*    *
    * Stops the LSP server gracefully.
    *
    * If already stopped or stopping, returns immediately.
    * On failure, sets state to 'error', logs for monitoring, and throws.
    *
    * @throws {Error} If server fails to stop
-   */
+       */
   async function stop(): Promise<void> {
     if (state === 'stopped' || state === 'stopping') {
       return
@@ -289,14 +289,14 @@ export function createLSPServerInstance(
     }
   }
 
-  /**
+  /*    *
    * Manually restarts the server by stopping and starting it.
    *
    * Increments restartCount and enforces maxRestarts limit.
    * Note: This is NOT automatic - must be called explicitly.
    *
    * @throws {Error} If stop or start fails, or if restartCount exceeds config.maxRestarts (default: 3)
-   */
+       */
   async function restart(): Promise<void> {
     try {
       await stop()
@@ -330,16 +330,16 @@ export function createLSPServerInstance(
     }
   }
 
-  /**
+  /*    *
    * Checks if the server is healthy and ready to handle requests.
    *
    * @returns true if state is 'running' AND the client has completed initialization
-   */
+       */
   function isHealthy(): boolean {
     return state === 'running' && client.isInitialized
   }
 
-  /**
+  /*    *
    * Sends an LSP request to the server with retry logic for transient errors.
    *
    * Checks server health before sending and wraps errors with context.
@@ -351,7 +351,7 @@ export function createLSPServerInstance(
    * @param params - Method-specific parameters
    * @returns The server's response
    * @throws {Error} If server is not healthy or request fails after all retries
-   */
+       */
   async function sendRequest<T>(method: string, params: unknown): Promise<T> {
     if (!isHealthy()) {
       const error = new Error(
@@ -409,10 +409,10 @@ export function createLSPServerInstance(
     throw requestError
   }
 
-  /**
+  /*    *
    * Send a notification to the LSP server (fire-and-forget).
    * Used for file synchronization (didOpen, didChange, didClose).
-   */
+       */
   async function sendNotification(
     method: string,
     params: unknown,
@@ -436,12 +436,12 @@ export function createLSPServerInstance(
     }
   }
 
-  /**
+  /*    *
    * Registers a handler for LSP notifications from the server.
    *
    * @param method - LSP notification method (e.g., 'window/logMessage')
    * @param handler - Callback function to handle the notification
-   */
+       */
   function onNotification(
     method: string,
     handler: (params: unknown) => void,
@@ -449,7 +449,7 @@ export function createLSPServerInstance(
     client.onNotification(method, handler)
   }
 
-  /**
+  /*    *
    * Registers a handler for LSP requests from the server.
    *
    * Some LSP servers send requests TO the client (reverse direction).
@@ -457,7 +457,7 @@ export function createLSPServerInstance(
    *
    * @param method - LSP request method (e.g., 'workspace/configuration')
    * @param handler - Callback function to handle the request and return a response
-   */
+       */
   function onRequest<TParams, TResult>(
     method: string,
     handler: (params: TParams) => TResult | Promise<TResult>,
@@ -492,10 +492,10 @@ export function createLSPServerInstance(
   }
 }
 
-/**
+/*    *
  * Race a promise against a timeout. Cleans up the timer regardless of outcome
  * to avoid unhandled rejections from orphaned setTimeout callbacks.
- */
+     */
 function withTimeout<T>(
   promise: Promise<T>,
   ms: number,

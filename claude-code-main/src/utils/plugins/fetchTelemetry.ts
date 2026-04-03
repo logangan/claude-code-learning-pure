@@ -1,4 +1,4 @@
-/**
+/*    *
  * Telemetry for plugin/marketplace fetches that hit the network.
  *
  * Added for inc-5046 (GitHub complained about claude-plugins-official load).
@@ -10,7 +10,7 @@
  * Volume: these fire at startup (install-counts 24h-TTL)
  * and on explicit user action (install/update). NOT per-interaction. Similar
  * envelope to tengu_binary_download_*.
- */
+     */
 
 import {
   logEvent,
@@ -45,12 +45,12 @@ const KNOWN_PUBLIC_HOSTS = new Set([
   'storage.googleapis.com', // GCS — where Dickson's migration points
 ])
 
-/**
+/*    *
  * Extract hostname from a URL or git spec and bucket to the allowlist.
- * Handles `https://host/...`, `git@host:path`, `ssh://host/...`.
+ * Handles `https:// host/...`, `git@host:path`, `ssh://host/...`.
  * Returns a known public host, 'other' (parseable but not allowlisted —
  * don't leak private hostnames), or 'unknown' (unparseable / local path).
- */
+     */
 function extractHost(urlOrSpec: string): string {
   let host: string
   const scpMatch = /^[^@/]+@([^:/]+):/.exec(urlOrSpec)
@@ -67,11 +67,11 @@ function extractHost(urlOrSpec: string): string {
   return KNOWN_PUBLIC_HOSTS.has(normalized) ? normalized : 'other'
 }
 
-/**
+/*    *
  * True if the URL/spec points at anthropics/claude-plugins-official — the
  * repo GitHub complained about. Lets the dashboard separate "our problem"
  * traffic from user-configured marketplaces.
- */
+     */
 function isOfficialRepo(urlOrSpec: string): boolean {
   return urlOrSpec.includes(`anthropics/${OFFICIAL_MARKETPLACE_NAME}`)
 }
@@ -95,7 +95,7 @@ export function logPluginFetch(
   })
 }
 
-/**
+/*    *
  * Classify an error into a stable bucket for the error_kind field. Keeps
  * cardinality bounded — raw error messages would explode dashboard grouping.
  *
@@ -104,7 +104,7 @@ export function logPluginFetch(
  * checked BEFORE timeout because gitClone's error enhancement at
  * marketplaceManager.ts:~950 rewrites DNS failures to include the word
  * "timeout" — ordering the other way would misclassify git DNS as timeout.
- */
+     */
 export function classifyFetchError(error: unknown): string {
   const msg = String((error as { message?: unknown })?.message ?? error)
   if (

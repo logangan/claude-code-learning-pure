@@ -1,11 +1,11 @@
-/**
+/*    *
  * Teammate Mailbox - File-based messaging system for agent swarms
  *
  * Each teammate has an inbox file at .claude/teams/{team_name}/inboxes/{agent_name}.json
  * Other teammates can write messages to it, and the recipient sees them as attachments.
  *
  * Note: Inboxes are keyed by agent name within a team.
- */
+     */
 
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import { join } from 'path'
@@ -49,10 +49,10 @@ export type TeammateMessage = {
   summary?: string // 5-10 word summary shown as preview in the UI
 }
 
-/**
+/*    *
  * Get the path to a teammate's inbox file
  * Structure: ~/.claude/teams/{team_name}/inboxes/{agent_name}.json
- */
+     */
 export function getInboxPath(agentName: string, teamName?: string): string {
   const team = teamName || getTeamName() || 'default'
   const safeTeam = sanitizePathComponent(team)
@@ -65,9 +65,9 @@ export function getInboxPath(agentName: string, teamName?: string): string {
   return fullPath
 }
 
-/**
+/*    *
  * Ensure the inbox directory exists for a team
- */
+     */
 async function ensureInboxDir(teamName?: string): Promise<void> {
   const team = teamName || getTeamName() || 'default'
   const safeTeam = sanitizePathComponent(team)
@@ -76,11 +76,11 @@ async function ensureInboxDir(teamName?: string): Promise<void> {
   logForDebugging(`[TeammateMailbox] Ensured inbox directory: ${inboxDir}`)
 }
 
-/**
+/*    *
  * Read all messages from a teammate's inbox
  * @param agentName - The agent name (not UUID) to read inbox for
  * @param teamName - Optional team name (defaults to CLAUDE_CODE_TEAM_NAME env var or 'default')
- */
+     */
 export async function readMailbox(
   agentName: string,
   teamName?: string,
@@ -107,11 +107,11 @@ export async function readMailbox(
   }
 }
 
-/**
+/*    *
  * Read only unread messages from a teammate's inbox
  * @param agentName - The agent name (not UUID) to read inbox for
  * @param teamName - Optional team name
- */
+     */
 export async function readUnreadMessages(
   agentName: string,
   teamName?: string,
@@ -124,13 +124,13 @@ export async function readUnreadMessages(
   return unread
 }
 
-/**
+/*    *
  * Write a message to a teammate's inbox
  * Uses file locking to prevent race conditions when multiple agents write concurrently
  * @param recipientName - The recipient's agent name (not UUID)
  * @param message - The message to write
  * @param teamName - Optional team name
- */
+     */
 export async function writeToMailbox(
   recipientName: string,
   message: Omit<TeammateMessage, 'read'>,
@@ -191,13 +191,13 @@ export async function writeToMailbox(
   }
 }
 
-/**
+/*    *
  * Mark a specific message in a teammate's inbox as read by index
  * Uses file locking to prevent race conditions
  * @param agentName - The agent name to mark message as read for
  * @param teamName - Optional team name
  * @param messageIndex - Index of the message to mark as read
- */
+     */
 export async function markMessageAsReadByIndex(
   agentName: string,
   teamName: string | undefined,
@@ -270,12 +270,12 @@ export async function markMessageAsReadByIndex(
   }
 }
 
-/**
+/*    *
  * Mark all messages in a teammate's inbox as read
  * Uses file locking to prevent race conditions
  * @param agentName - The agent name to mark messages as read for
  * @param teamName - Optional team name
- */
+     */
 export async function markMessagesAsRead(
   agentName: string,
   teamName?: string,
@@ -341,11 +341,11 @@ export async function markMessagesAsRead(
   }
 }
 
-/**
+/*    *
  * Clear a teammate's inbox (delete all messages)
  * @param agentName - The agent name to clear inbox for
  * @param teamName - Optional team name
- */
+     */
 export async function clearMailbox(
   agentName: string,
   teamName?: string,
@@ -367,9 +367,9 @@ export async function clearMailbox(
   }
 }
 
-/**
+/*    *
  * Format teammate messages as XML for attachment display
- */
+     */
 export function formatTeammateMessages(
   messages: Array<{
     from: string
@@ -388,25 +388,25 @@ export function formatTeammateMessages(
     .join('\n\n')
 }
 
-/**
+/*    *
  * Structured message sent when a teammate becomes idle (via Stop hook)
- */
+     */
 export type IdleNotificationMessage = {
   type: 'idle_notification'
   from: string
   timestamp: string
-  /** Why the agent went idle */
+  /*    * Why the agent went idle     */
   idleReason?: 'available' | 'interrupted' | 'failed'
-  /** Brief summary of the last DM sent this turn (if any) */
+  /*    * Brief summary of the last DM sent this turn (if any)     */
   summary?: string
   completedTaskId?: string
   completedStatus?: 'resolved' | 'blocked' | 'failed'
   failureReason?: string
 }
 
-/**
+/*    *
  * Creates an idle notification message to send to the team leader
- */
+     */
 export function createIdleNotification(
   agentId: string,
   options?: {
@@ -429,9 +429,9 @@ export function createIdleNotification(
   }
 }
 
-/**
+/*    *
  * Checks if a message text contains an idle notification
- */
+     */
 export function isIdleNotification(
   messageText: string,
 ): IdleNotificationMessage | null {
@@ -446,10 +446,10 @@ export function isIdleNotification(
   return null
 }
 
-/**
+/*    *
  * Permission request message sent from worker to leader via mailbox.
  * Field names align with SDK `can_use_tool` (snake_case).
- */
+     */
 export type PermissionRequestMessage = {
   type: 'permission_request'
   request_id: string
@@ -461,10 +461,10 @@ export type PermissionRequestMessage = {
   permission_suggestions: unknown[]
 }
 
-/**
+/*    *
  * Permission response message sent from leader to worker via mailbox.
  * Shape mirrors SDK ControlResponseSchema / ControlErrorResponseSchema.
- */
+     */
 export type PermissionResponseMessage =
   | {
       type: 'permission_response'
@@ -482,9 +482,9 @@ export type PermissionResponseMessage =
       error: string
     }
 
-/**
+/*    *
  * Creates a permission request message to send to the team leader
- */
+     */
 export function createPermissionRequestMessage(params: {
   request_id: string
   agent_id: string
@@ -506,9 +506,9 @@ export function createPermissionRequestMessage(params: {
   }
 }
 
-/**
+/*    *
  * Creates a permission response message to send back to a worker
- */
+     */
 export function createPermissionResponseMessage(params: {
   request_id: string
   subtype: 'success' | 'error'
@@ -535,9 +535,9 @@ export function createPermissionResponseMessage(params: {
   }
 }
 
-/**
+/*    *
  * Checks if a message text contains a permission request
- */
+     */
 export function isPermissionRequest(
   messageText: string,
 ): PermissionRequestMessage | null {
@@ -552,9 +552,9 @@ export function isPermissionRequest(
   return null
 }
 
-/**
+/*    *
  * Checks if a message text contains a permission response
- */
+     */
 export function isPermissionResponse(
   messageText: string,
 ): PermissionResponseMessage | null {
@@ -569,46 +569,46 @@ export function isPermissionResponse(
   return null
 }
 
-/**
+/*    *
  * Sandbox permission request message sent from worker to leader via mailbox
  * This is triggered when sandbox runtime detects a network access to a non-allowed host
- */
+     */
 export type SandboxPermissionRequestMessage = {
   type: 'sandbox_permission_request'
-  /** Unique identifier for this request */
+  /*    * Unique identifier for this request     */
   requestId: string
-  /** Worker's CLAUDE_CODE_AGENT_ID */
+  /*    * Worker's CLAUDE_CODE_AGENT_ID     */
   workerId: string
-  /** Worker's CLAUDE_CODE_AGENT_NAME */
+  /*    * Worker's CLAUDE_CODE_AGENT_NAME     */
   workerName: string
-  /** Worker's CLAUDE_CODE_AGENT_COLOR */
+  /*    * Worker's CLAUDE_CODE_AGENT_COLOR     */
   workerColor?: string
-  /** The host pattern requesting network access */
+  /*    * The host pattern requesting network access     */
   hostPattern: {
     host: string
   }
-  /** Timestamp when request was created */
+  /*    * Timestamp when request was created     */
   createdAt: number
 }
 
-/**
+/*    *
  * Sandbox permission response message sent from leader to worker via mailbox
- */
+     */
 export type SandboxPermissionResponseMessage = {
   type: 'sandbox_permission_response'
-  /** ID of the request this responds to */
+  /*    * ID of the request this responds to     */
   requestId: string
-  /** The host that was approved/denied */
+  /*    * The host that was approved/denied     */
   host: string
-  /** Whether the connection is allowed */
+  /*    * Whether the connection is allowed     */
   allow: boolean
-  /** Timestamp when response was created */
+  /*    * Timestamp when response was created     */
   timestamp: string
 }
 
-/**
+/*    *
  * Creates a sandbox permission request message to send to the team leader
- */
+     */
 export function createSandboxPermissionRequestMessage(params: {
   requestId: string
   workerId: string
@@ -627,9 +627,9 @@ export function createSandboxPermissionRequestMessage(params: {
   }
 }
 
-/**
+/*    *
  * Creates a sandbox permission response message to send back to a worker
- */
+     */
 export function createSandboxPermissionResponseMessage(params: {
   requestId: string
   host: string
@@ -644,9 +644,9 @@ export function createSandboxPermissionResponseMessage(params: {
   }
 }
 
-/**
+/*    *
  * Checks if a message text contains a sandbox permission request
- */
+     */
 export function isSandboxPermissionRequest(
   messageText: string,
 ): SandboxPermissionRequestMessage | null {
@@ -661,9 +661,9 @@ export function isSandboxPermissionRequest(
   return null
 }
 
-/**
+/*    *
  * Checks if a message text contains a sandbox permission response
- */
+     */
 export function isSandboxPermissionResponse(
   messageText: string,
 ): SandboxPermissionResponseMessage | null {
@@ -678,9 +678,9 @@ export function isSandboxPermissionResponse(
   return null
 }
 
-/**
+/*    *
  * Message sent when a teammate requests plan approval from the team leader
- */
+     */
 export const PlanApprovalRequestMessageSchema = lazySchema(() =>
   z.object({
     type: z.literal('plan_approval_request'),
@@ -696,9 +696,9 @@ export type PlanApprovalRequestMessage = z.infer<
   ReturnType<typeof PlanApprovalRequestMessageSchema>
 >
 
-/**
+/*    *
  * Message sent by the team leader in response to a plan approval request
- */
+     */
 export const PlanApprovalResponseMessageSchema = lazySchema(() =>
   z.object({
     type: z.literal('plan_approval_response'),
@@ -714,9 +714,9 @@ export type PlanApprovalResponseMessage = z.infer<
   ReturnType<typeof PlanApprovalResponseMessageSchema>
 >
 
-/**
+/*    *
  * Shutdown request message sent from leader to teammate via mailbox
- */
+     */
 export const ShutdownRequestMessageSchema = lazySchema(() =>
   z.object({
     type: z.literal('shutdown_request'),
@@ -731,9 +731,9 @@ export type ShutdownRequestMessage = z.infer<
   ReturnType<typeof ShutdownRequestMessageSchema>
 >
 
-/**
+/*    *
  * Shutdown approved message sent from teammate to leader via mailbox
- */
+     */
 export const ShutdownApprovedMessageSchema = lazySchema(() =>
   z.object({
     type: z.literal('shutdown_approved'),
@@ -749,9 +749,9 @@ export type ShutdownApprovedMessage = z.infer<
   ReturnType<typeof ShutdownApprovedMessageSchema>
 >
 
-/**
+/*    *
  * Shutdown rejected message sent from teammate to leader via mailbox
- */
+     */
 export const ShutdownRejectedMessageSchema = lazySchema(() =>
   z.object({
     type: z.literal('shutdown_rejected'),
@@ -766,9 +766,9 @@ export type ShutdownRejectedMessage = z.infer<
   ReturnType<typeof ShutdownRejectedMessageSchema>
 >
 
-/**
+/*    *
  * Creates a shutdown request message to send to a teammate
- */
+     */
 export function createShutdownRequestMessage(params: {
   requestId: string
   from: string
@@ -783,9 +783,9 @@ export function createShutdownRequestMessage(params: {
   }
 }
 
-/**
+/*    *
  * Creates a shutdown approved message to send to the team leader
- */
+     */
 export function createShutdownApprovedMessage(params: {
   requestId: string
   from: string
@@ -802,9 +802,9 @@ export function createShutdownApprovedMessage(params: {
   }
 }
 
-/**
+/*    *
  * Creates a shutdown rejected message to send to the team leader
- */
+     */
 export function createShutdownRejectedMessage(params: {
   requestId: string
   from: string
@@ -819,7 +819,7 @@ export function createShutdownRejectedMessage(params: {
   }
 }
 
-/**
+/*    *
  * Sends a shutdown request to a teammate's mailbox.
  * This is the core logic extracted for reuse by both the tool and UI components.
  *
@@ -827,7 +827,7 @@ export function createShutdownRejectedMessage(params: {
  * @param teamName - Optional team name (defaults to CLAUDE_CODE_TEAM_NAME env var)
  * @param reason - Optional reason for the shutdown request
  * @returns The request ID and target name
- */
+     */
 export async function sendShutdownRequestToMailbox(
   targetName: string,
   teamName?: string,
@@ -862,9 +862,9 @@ export async function sendShutdownRequestToMailbox(
   return { requestId, target: targetName }
 }
 
-/**
+/*    *
  * Checks if a message text contains a shutdown request
- */
+     */
 export function isShutdownRequest(
   messageText: string,
 ): ShutdownRequestMessage | null {
@@ -879,9 +879,9 @@ export function isShutdownRequest(
   return null
 }
 
-/**
+/*    *
  * Checks if a message text contains a plan approval request
- */
+     */
 export function isPlanApprovalRequest(
   messageText: string,
 ): PlanApprovalRequestMessage | null {
@@ -896,9 +896,9 @@ export function isPlanApprovalRequest(
   return null
 }
 
-/**
+/*    *
  * Checks if a message text contains a shutdown approved message
- */
+     */
 export function isShutdownApproved(
   messageText: string,
 ): ShutdownApprovedMessage | null {
@@ -913,9 +913,9 @@ export function isShutdownApproved(
   return null
 }
 
-/**
+/*    *
  * Checks if a message text contains a shutdown rejected message
- */
+     */
 export function isShutdownRejected(
   messageText: string,
 ): ShutdownRejectedMessage | null {
@@ -930,9 +930,9 @@ export function isShutdownRejected(
   return null
 }
 
-/**
+/*    *
  * Checks if a message text contains a plan approval response
- */
+     */
 export function isPlanApprovalResponse(
   messageText: string,
 ): PlanApprovalResponseMessage | null {
@@ -947,9 +947,9 @@ export function isPlanApprovalResponse(
   return null
 }
 
-/**
+/*    *
  * Task assignment message sent when a task is assigned to a teammate
- */
+     */
 export type TaskAssignmentMessage = {
   type: 'task_assignment'
   taskId: string
@@ -959,9 +959,9 @@ export type TaskAssignmentMessage = {
   timestamp: string
 }
 
-/**
+/*    *
  * Checks if a message text contains a task assignment
- */
+     */
 export function isTaskAssignment(
   messageText: string,
 ): TaskAssignmentMessage | null {
@@ -976,28 +976,28 @@ export function isTaskAssignment(
   return null
 }
 
-/**
+/*    *
  * Team permission update message sent from leader to teammates via mailbox
  * Broadcasts a permission update that applies to all teammates
- */
+     */
 export type TeamPermissionUpdateMessage = {
   type: 'team_permission_update'
-  /** The permission update to apply */
+  /*    * The permission update to apply     */
   permissionUpdate: {
     type: 'addRules'
     rules: Array<{ toolName: string; ruleContent?: string }>
     behavior: 'allow' | 'deny' | 'ask'
     destination: 'session'
   }
-  /** The directory path that was allowed */
+  /*    * The directory path that was allowed     */
   directoryPath: string
-  /** The tool name this applies to */
+  /*    * The tool name this applies to     */
   toolName: string
 }
 
-/**
+/*    *
  * Checks if a message text contains a team permission update
- */
+     */
 export function isTeamPermissionUpdate(
   messageText: string,
 ): TeamPermissionUpdateMessage | null {
@@ -1012,10 +1012,10 @@ export function isTeamPermissionUpdate(
   return null
 }
 
-/**
+/*    *
  * Mode set request message sent from leader to teammate via mailbox
  * Uses SDK PermissionModeSchema for validated mode values
- */
+     */
 export const ModeSetRequestMessageSchema = lazySchema(() =>
   z.object({
     type: z.literal('mode_set_request'),
@@ -1028,9 +1028,9 @@ export type ModeSetRequestMessage = z.infer<
   ReturnType<typeof ModeSetRequestMessageSchema>
 >
 
-/**
+/*    *
  * Creates a mode set request message to send to a teammate
- */
+     */
 export function createModeSetRequestMessage(params: {
   mode: string
   from: string
@@ -1042,9 +1042,9 @@ export function createModeSetRequestMessage(params: {
   }
 }
 
-/**
+/*    *
  * Checks if a message text contains a mode set request
- */
+     */
 export function isModeSetRequest(
   messageText: string,
 ): ModeSetRequestMessage | null {
@@ -1061,7 +1061,7 @@ export function isModeSetRequest(
   return null
 }
 
-/**
+/*    *
  * Checks if a message text is a structured protocol message that should be
  * routed by useInboxPoller rather than consumed as raw LLM context.
  *
@@ -1069,7 +1069,7 @@ export function isModeSetRequest(
  * to the correct queues (workerPermissions, workerSandboxPermissions, etc.).
  * If getTeammateMailboxAttachments consumes them first, they get bundled as
  * raw text in attachments and never reach their intended handlers.
- */
+     */
 export function isStructuredProtocolMessage(messageText: string): boolean {
   try {
     const parsed = jsonParse(messageText)
@@ -1094,10 +1094,10 @@ export function isStructuredProtocolMessage(messageText: string): boolean {
   }
 }
 
-/**
+/*    *
  * Marks only messages matching a predicate as read, leaving others unread.
  * Uses the same file-locking mechanism as markMessagesAsRead.
- */
+     */
 export async function markMessagesAsReadByPredicate(
   agentName: string,
   predicate: (msg: TeammateMessage) => boolean,
@@ -1141,11 +1141,11 @@ export async function markMessagesAsReadByPredicate(
   }
 }
 
-/**
+/*    *
  * Extracts a "[to {name}] {summary}" string from the last assistant message
  * if it ended with a SendMessage tool_use targeting a peer (not the team lead).
  * Returns undefined when the turn didn't end with a peer DM.
- */
+     */
 export function getLastPeerDmSummary(messages: Message[]): string | undefined {
   for (let i = messages.length - 1; i >= 0; i--) {
     const msg = messages[i]

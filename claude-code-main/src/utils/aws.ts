@@ -1,6 +1,6 @@
 import { logForDebugging } from './debug.js'
 
-/** AWS short-term credentials format. */
+/*    * AWS short-term credentials format.     */
 export type AwsCredentials = {
   AccessKeyId: string
   SecretAccessKey: string
@@ -8,7 +8,7 @@ export type AwsCredentials = {
   Expiration?: string
 }
 
-/** Output from `aws sts get-session-token` or `aws sts assume-role`. */
+/*    * Output from `aws sts get-session-token` or `aws sts assume-role`.     */
 export type AwsStsOutput = {
   Credentials: AwsCredentials
 }
@@ -21,7 +21,7 @@ export function isAwsCredentialsProviderError(err: unknown) {
   return (err as AwsError | undefined)?.name === 'CredentialsProviderError'
 }
 
-/** Typeguard to validate AWS STS assume-role output */
+/*    * Typeguard to validate AWS STS assume-role output     */
 export function isValidAwsStsOutput(obj: unknown): obj is AwsStsOutput {
   if (!obj || typeof obj !== 'object') {
     return false
@@ -46,7 +46,7 @@ export function isValidAwsStsOutput(obj: unknown): obj is AwsStsOutput {
   )
 }
 
-/** Throws if STS caller identity cannot be retrieved. */
+/*    * Throws if STS caller identity cannot be retrieved.     */
 export async function checkStsCallerIdentity(): Promise<void> {
   const { STSClient, GetCallerIdentityCommand } = await import(
     '@aws-sdk/client-sts'
@@ -54,10 +54,10 @@ export async function checkStsCallerIdentity(): Promise<void> {
   await new STSClient().send(new GetCallerIdentityCommand({}))
 }
 
-/**
+/*    *
  * Clear AWS credential provider cache by forcing a refresh
  * This ensures that any changes to ~/.aws/credentials are picked up immediately
- */
+     */
 export async function clearAwsIniCache(): Promise<void> {
   try {
     logForDebugging('Clearing AWS credential provider cache')

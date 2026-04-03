@@ -1,7 +1,7 @@
-/**
+/*    *
  * Agents subcommand handler — prints the list of configured agents.
  * Dynamically imported only when `claude agents` runs.
- */
+     */
 
 import {
   AGENT_SOURCE_GROUPS,

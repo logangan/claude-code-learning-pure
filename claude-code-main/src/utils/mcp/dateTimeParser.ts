@@ -7,7 +7,7 @@ export type DateTimeParseResult =
   | { success: true; value: string }
   | { success: false; error: string }
 
-/**
+/*    *
  * Parse natural language date/time input into ISO 8601 format using Haiku.
  *
  * Examples:
@@ -19,7 +19,7 @@ export type DateTimeParseResult =
  * @param format Whether to parse as 'date' (YYYY-MM-DD) or 'date-time' (full ISO 8601 with time)
  * @param signal AbortSignal for cancellation
  * @returns Parsed ISO 8601 string or error message
- */
+     */
 export async function parseNaturalLanguageDateTime(
   input: string,
   format: 'date' | 'date-time',
@@ -110,10 +110,10 @@ Parse the user's input into ISO 8601 format. Return ONLY the formatted string, o
   }
 }
 
-/**
+/*    *
  * Check if a string looks like it might be an ISO 8601 date/time.
  * Used to decide whether to attempt NL parsing.
- */
+     */
 export function looksLikeISO8601(input: string): boolean {
   // ISO 8601 date: YYYY-MM-DD
   // ISO 8601 datetime: YYYY-MM-DDTHH:MM:SS...

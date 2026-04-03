@@ -1,6 +1,6 @@
-/**
+/*    *
  * Utilities for handling local installation
- */
+     */
 
 import { access, chmod, writeFile } from 'fs/promises'
 import { join } from 'path'
@@ -23,18 +23,18 @@ export function getLocalClaudePath(): string {
   return join(getLocalInstallDir(), 'claude')
 }
 
-/**
+/*    *
  * Check if we're running from our managed local installation
- */
+     */
 export function isRunningFromLocalInstallation(): boolean {
   const execPath = process.argv[1] || ''
   return execPath.includes('/.claude/local/node_modules/')
 }
 
-/**
+/*    *
  * Write `content` to `path` only if the file does not already exist.
  * Uses O_EXCL ('wx') for atomic create-if-missing.
- */
+     */
 async function writeIfMissing(
   path: string,
   content: string,
@@ -49,10 +49,10 @@ async function writeIfMissing(
   }
 }
 
-/**
+/*    *
  * Ensure the local package environment is set up
  * Creates the directory, package.json, and wrapper script
- */
+     */
 export async function ensureLocalPackageEnvironment(): Promise<boolean> {
   try {
     const localInstallDir = getLocalInstallDir()
@@ -89,11 +89,11 @@ export async function ensureLocalPackageEnvironment(): Promise<boolean> {
   }
 }
 
-/**
+/*    *
  * Install or update Claude CLI package in the local directory
  * @param channel - Release channel to use (latest or stable)
  * @param specificVersion - Optional specific version to install (overrides channel)
- */
+     */
 export async function installOrUpdateClaudePackage(
   channel: ReleaseChannel,
   specificVersion?: string | null,
@@ -137,10 +137,10 @@ export async function installOrUpdateClaudePackage(
   }
 }
 
-/**
+/*    *
  * Check if local installation exists.
  * Pure existence probe — callers use this to choose update path / UI hints.
- */
+     */
 export async function localInstallationExists(): Promise<boolean> {
   try {
     await access(join(getLocalInstallDir(), 'node_modules', '.bin', 'claude'))
@@ -150,9 +150,9 @@ export async function localInstallationExists(): Promise<boolean> {
   }
 }
 
-/**
+/*    *
  * Get shell type to determine appropriate path setup
- */
+     */
 export function getShellType(): string {
   const shellPath = process.env.SHELL || ''
   if (shellPath.includes('zsh')) return 'zsh'

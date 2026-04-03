@@ -28,7 +28,7 @@ import {
 import { applyPermissionRulesToPermissionContext } from './permissions.js'
 import { loadAllPermissionRulesFromDisk } from './permissionsLoader.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const autoModeStateModule = feature('TRANSCRIPT_CLASSIFIER')
   ? (require('./autoModeState.js') as typeof import('./autoModeState.js'))
   : null
@@ -50,7 +50,7 @@ import {
 } from '../../services/analytics/index.js'
 import { AGENT_TOOL_NAME } from '../../tools/AgentTool/constants.js'
 import { BASH_TOOL_NAME } from '../../tools/BashTool/toolName.js'
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import { POWERSHELL_TOOL_NAME } from '../../tools/PowerShellTool/toolName.js'
 import { getToolsForDefaultPreset, parseToolPreset } from '../../tools.js'
 import {
@@ -81,7 +81,7 @@ import {
   permissionRuleValueToString,
 } from './permissionRuleParser.js'
 
-/**
+/*    *
  * Checks if a Bash permission rule is dangerous for auto mode.
  * A rule is dangerous if it would auto-allow commands that execute arbitrary code,
  * bypassing the classifier's safety evaluation.
@@ -90,7 +90,7 @@ import {
  * 1. Tool-level allow (Bash with no ruleContent) - allows ALL commands
  * 2. Prefix rules for script interpreters (python:*, node:*, etc.)
  * 3. Wildcard rules matching interpreters (python*, node*, etc.)
- */
+     */
 export function isDangerousBashPermission(
   toolName: string,
   ruleContent: string | undefined,
@@ -146,14 +146,14 @@ export function isDangerousBashPermission(
   return false
 }
 
-/**
+/*    *
  * Checks if a PowerShell permission rule is dangerous for auto mode.
  * A rule is dangerous if it would auto-allow commands that execute arbitrary
  * code (nested shells, Invoke-Expression, Start-Process, etc.), bypassing the
  * classifier's safety evaluation.
  *
  * PowerShell is case-insensitive, so rule content is lowercased before matching.
- */
+     */
 export function isDangerousPowerShellPermission(
   toolName: string,
   ruleContent: string | undefined,
@@ -232,11 +232,11 @@ export function isDangerousPowerShellPermission(
   return false
 }
 
-/**
+/*    *
  * Checks if an Agent (sub-agent) permission rule is dangerous for auto mode.
  * Any Agent allow rule would auto-approve sub-agent spawns before the auto mode classifier
  * can evaluate the sub-agent's prompt, defeating delegation attack prevention.
- */
+     */
 export function isDangerousTaskPermission(
   toolName: string,
   _ruleContent: string | undefined,
@@ -258,17 +258,17 @@ function formatPermissionSource(source: PermissionRuleSource): string {
 export type DangerousPermissionInfo = {
   ruleValue: PermissionRuleValue
   source: PermissionRuleSource
-  /** The permission rule formatted for display, e.g. "Bash(*)" or "Bash(python:*)" */
+  /*    * The permission rule formatted for display, e.g. "Bash(*)" or "Bash(python:*)"     */
   ruleDisplay: string
-  /** The source formatted for display, e.g. a file path or "--allowed-tools" */
+  /*    * The source formatted for display, e.g. a file path or "--allowed-tools"     */
   sourceDisplay: string
 }
 
-/**
+/*    *
  * Checks if a permission rule is dangerous for auto mode.
  * A rule is dangerous if it would auto-allow actions before the auto mode classifier
  * can evaluate them, bypassing safety checks.
- */
+     */
 function isDangerousClassifierPermission(
   toolName: string,
   ruleContent: string | undefined,
@@ -284,14 +284,14 @@ function isDangerousClassifierPermission(
   )
 }
 
-/**
+/*    *
  * Finds all dangerous permissions from rules loaded from disk and CLI arguments.
  * Returns structured info about each dangerous permission found.
  *
  * Checks Bash permissions (wildcard/interpreter patterns), PowerShell permissions
  * (wildcard/iex/Start-Process patterns), and Agent permissions (any allow rule
  * bypasses the classifier's sub-agent evaluation).
- */
+     */
 export function findDangerousClassifierPermissions(
   rules: PermissionRule[],
   cliAllowedTools: string[],
@@ -341,13 +341,13 @@ export function findDangerousClassifierPermissions(
   return dangerous
 }
 
-/**
+/*    *
  * Checks if a Bash allow rule is overly broad (equivalent to YOLO mode).
  * Returns true for tool-level Bash allow rules with no content restriction,
  * which auto-allow every bash command.
  *
  * Matches: Bash, Bash(*), Bash() — all parse to { toolName: 'Bash' } with no ruleContent.
- */
+     */
 export function isOverlyBroadBashAllowRule(
   ruleValue: PermissionRuleValue,
 ): boolean {
@@ -356,12 +356,12 @@ export function isOverlyBroadBashAllowRule(
   )
 }
 
-/**
+/*    *
  * PowerShell equivalent of isOverlyBroadBashAllowRule.
  *
  * Matches: PowerShell, PowerShell(*), PowerShell() — all parse to
  * { toolName: 'PowerShell' } with no ruleContent.
- */
+     */
 export function isOverlyBroadPowerShellAllowRule(
   ruleValue: PermissionRuleValue,
 ): boolean {
@@ -371,11 +371,11 @@ export function isOverlyBroadPowerShellAllowRule(
   )
 }
 
-/**
+/*    *
  * Finds all overly broad Bash allow rules from settings and CLI arguments.
  * An overly broad rule allows ALL bash commands (e.g., Bash or Bash(*)),
  * which is effectively equivalent to YOLO/bypass-permissions mode.
- */
+     */
 export function findOverlyBroadBashPermissions(
   rules: PermissionRule[],
   cliAllowedTools: string[],
@@ -411,9 +411,9 @@ export function findOverlyBroadBashPermissions(
   return overlyBroad
 }
 
-/**
+/*    *
  * PowerShell equivalent of findOverlyBroadBashPermissions.
- */
+     */
 export function findOverlyBroadPowerShellPermissions(
   rules: PermissionRule[],
   cliAllowedTools: string[],
@@ -449,10 +449,10 @@ export function findOverlyBroadPowerShellPermissions(
   return overlyBroad
 }
 
-/**
+/*    *
  * Type guard to check if a PermissionRuleSource is a valid PermissionUpdateDestination.
  * Sources like 'flagSettings', 'policySettings', and 'command' are not valid destinations.
- */
+     */
 function isPermissionUpdateDestination(
   source: PermissionRuleSource,
 ): source is PermissionUpdateDestination {
@@ -465,10 +465,10 @@ function isPermissionUpdateDestination(
   ].includes(source)
 }
 
-/**
+/*    *
  * Removes dangerous permissions from the in-memory context, and optionally
  * persists the removal to settings files on disk.
- */
+     */
 export function removeDangerousPermissions(
   context: ToolPermissionContext,
   dangerousPermissions: DangerousPermissionInfo[],
@@ -502,11 +502,11 @@ export function removeDangerousPermissions(
   return updatedContext
 }
 
-/**
+/*    *
  * Prepares a ToolPermissionContext for auto mode by stripping
  * dangerous permissions that would bypass the classifier.
  * Returns the cleaned context (with mode unchanged — caller sets the mode).
- */
+     */
 export function stripDangerousPermissionsForAutoMode(
   context: ToolPermissionContext,
 ): ToolPermissionContext {
@@ -552,12 +552,12 @@ export function stripDangerousPermissionsForAutoMode(
   }
 }
 
-/**
+/*    *
  * Restores dangerous allow rules previously stashed by
  * stripDangerousPermissionsForAutoMode. Called when leaving auto mode so that
  * the user's Bash(python:*), Agent(*), etc. rules work again in default mode.
  * Clears the stash so a second exit is a no-op.
- */
+     */
 export function restoreDangerousPermissions(
   context: ToolPermissionContext,
 ): ToolPermissionContext {
@@ -578,7 +578,7 @@ export function restoreDangerousPermissions(
   return { ...result, strippedDangerousRules: undefined }
 }
 
-/**
+/*    *
  * Handles all state transitions when switching permission modes.
  * Centralises side-effects so that every activation path (CLI Shift+Tab,
  * SDK control messages, etc.) behaves identically.
@@ -593,7 +593,7 @@ export function restoreDangerousPermissions(
  * @param fromMode The current permission mode
  * @param toMode The target permission mode
  * @param context The current tool permission context
- */
+     */
 export function transitionPermissionMode(
   fromMode: string,
   toMode: string,
@@ -645,10 +645,10 @@ export function transitionPermissionMode(
   return context
 }
 
-/**
+/*    *
  * Parse base tools specification from CLI
  * Handles both preset names (default, none) and custom tool lists
- */
+     */
 export function parseBaseToolsFromCLI(baseTools: string[]): string[] {
   // Join all array elements and check if it's a single preset name
   const joinedInput = baseTools.join(' ').trim()
@@ -664,9 +664,9 @@ export function parseBaseToolsFromCLI(baseTools: string[]): string[] {
   return parsedTools
 }
 
-/**
+/*    *
  * Check if processPwd is a symlink that resolves to originalCwd
- */
+     */
 function isSymlinkTo({
   processPwd,
   originalCwd,
@@ -683,9 +683,9 @@ function isSymlinkTo({
     : false
 }
 
-/**
+/*    *
  * Safely convert CLI flags to a PermissionMode
- */
+     */
 export function initialPermissionModeFromCLI({
   permissionModeCli,
   dangerouslySkipPermissions,
@@ -1064,7 +1064,7 @@ export function getAutoModeUnavailableNotification(
     : base
 }
 
-/**
+/*    *
  * Async check of auto mode availability.
  *
  * Returns a transform function (not a pre-computed context) that callers
@@ -1074,7 +1074,7 @@ export function getAutoModeUnavailableNotification(
  *
  * The transform re-checks mode/prePlanMode against the fresh ctx to avoid
  * kicking the user out of a mode they've already left during the await.
- */
+     */
 export async function verifyAutoModeGateAccess(
   currentContext: ToolPermissionContext,
   // Runtime AppState.fastMode — passed from callers with AppState access so
@@ -1259,9 +1259,9 @@ export async function verifyAutoModeGateAccess(
   }
 }
 
-/**
+/*    *
  * Core logic to check if bypassPermissions should be disabled based on Statsig gate
- */
+     */
 export function shouldDisableBypassPermissions(): Promise<boolean> {
   return checkSecurityRestrictionGate('tengu_disable_bypass_permissions_mode')
 }
@@ -1276,10 +1276,10 @@ function isAutoModeDisabledBySettings(): boolean {
   )
 }
 
-/**
+/*    *
  * Checks if auto mode can be entered: circuit breaker is not active and settings
  * have not disabled it. Synchronous.
- */
+     */
 export function isAutoModeGateEnabled(): boolean {
   if (autoModeStateModule?.isAutoModeCircuitBroken() ?? false) return false
   if (isAutoModeDisabledBySettings()) return false
@@ -1287,10 +1287,10 @@ export function isAutoModeGateEnabled(): boolean {
   return true
 }
 
-/**
+/*    *
  * Returns the reason auto mode is currently unavailable, or null if available.
  * Synchronous — uses state populated by verifyAutoModeGateAccess.
- */
+     */
 export function getAutoModeUnavailableReason(): AutoModeUnavailableReason | null {
   if (isAutoModeDisabledBySettings()) return 'settings'
   if (autoModeStateModule?.isAutoModeCircuitBroken() ?? false) {
@@ -1300,14 +1300,14 @@ export function getAutoModeUnavailableReason(): AutoModeUnavailableReason | null
   return null
 }
 
-/**
+/*    *
  * The `enabled` field in the tengu_auto_mode_config GrowthBook JSON config.
  * Controls auto mode availability in UI surfaces (CLI, IDE, Desktop).
  * - 'enabled': auto mode is available in the shift-tab carousel (or equivalent)
  * - 'disabled': auto mode is fully unavailable — circuit breaker for incident response
  * - 'opt-in': auto mode is available only if the user has explicitly opted in
  *   (via --enable-auto-mode in CLI, or a settings toggle in IDE/Desktop)
- */
+     */
 export type AutoModeEnabledState = 'enabled' | 'disabled' | 'opt-in'
 
 const AUTO_MODE_ENABLED_DEFAULT: AutoModeEnabledState = 'disabled'
@@ -1319,12 +1319,12 @@ function parseAutoModeEnabledState(value: unknown): AutoModeEnabledState {
   return AUTO_MODE_ENABLED_DEFAULT
 }
 
-/**
+/*    *
  * Reads the `enabled` field from tengu_auto_mode_config (cached, may be stale).
  * Defaults to 'disabled' if GrowthBook is unavailable or the field is unset.
  * Other surfaces (IDE, Desktop) should call this to decide whether to surface
  * auto mode in their mode pickers.
- */
+     */
 export function getAutoModeEnabledState(): AutoModeEnabledState {
   const config = getFeatureValue_CACHED_MAY_BE_STALE<{
     enabled?: AutoModeEnabledState
@@ -1334,13 +1334,13 @@ export function getAutoModeEnabledState(): AutoModeEnabledState {
 
 const NO_CACHED_AUTO_MODE_CONFIG = Symbol('no-cached-auto-mode-config')
 
-/**
+/*    *
  * Like getAutoModeEnabledState but returns undefined when no cached value
  * exists (cold start, before GrowthBook init). Used by the sync
  * circuit-breaker check in initialPermissionModeFromCLI, which must not
  * conflate "not yet fetched" with "fetched and disabled" — the former
  * defers to verifyAutoModeGateAccess, the latter blocks immediately.
- */
+     */
 export function getAutoModeEnabledStateIfCached():
   | AutoModeEnabledState
   | undefined {
@@ -1351,23 +1351,23 @@ export function getAutoModeEnabledStateIfCached():
   return parseAutoModeEnabledState(config?.enabled)
 }
 
-/**
+/*    *
  * Returns true if the user has opted in to auto mode via any trusted mechanism:
  * - CLI flag (--enable-auto-mode / --permission-mode auto) — session-scoped
  *   availability request; the startup dialog in showSetupScreens enforces
  *   persistent consent before the REPL renders.
  * - skipAutoPermissionPrompt setting (persistent; set by accepting the opt-in
  *   dialog or by IDE/Desktop settings toggle)
- */
+     */
 export function hasAutoModeOptInAnySource(): boolean {
   if (autoModeStateModule?.getAutoModeFlagCli() ?? false) return true
   return hasAutoModeOptIn()
 }
 
-/**
+/*    *
  * Checks if bypassPermissions mode is currently disabled by Statsig gate or settings.
  * This is a synchronous version that uses cached Statsig values.
- */
+     */
 export function isBypassPermissionsModeDisabled(): boolean {
   const growthBookDisableBypassPermissionsMode =
     checkStatsigFeatureGate_CACHED_MAY_BE_STALE(
@@ -1383,9 +1383,9 @@ export function isBypassPermissionsModeDisabled(): boolean {
   )
 }
 
-/**
+/*    *
  * Creates an updated context with bypassPermissions disabled
- */
+     */
 export function createDisabledBypassPermissionsContext(
   currentContext: ToolPermissionContext,
 ): ToolPermissionContext {
@@ -1404,10 +1404,10 @@ export function createDisabledBypassPermissionsContext(
   }
 }
 
-/**
+/*    *
  * Asynchronously checks if the bypassPermissions mode should be disabled based on Statsig gate
  * and returns an updated toolPermissionContext if needed
- */
+     */
 export async function checkAndDisableBypassPermissions(
   currentContext: ToolPermissionContext,
 ): Promise<void> {
@@ -1438,11 +1438,11 @@ export function isDefaultPermissionModeAuto(): boolean {
   return false
 }
 
-/**
+/*    *
  * Whether plan mode should use auto mode semantics (classifier runs during
  * plan). True when the user has opted in to auto mode and the gate is enabled.
  * Evaluated at permission-check time so it's reactive to config changes.
- */
+     */
 export function shouldPlanUseAutoMode(): boolean {
   if (feature('TRANSCRIPT_CLASSIFIER')) {
     return (
@@ -1454,11 +1454,11 @@ export function shouldPlanUseAutoMode(): boolean {
   return false
 }
 
-/**
+/*    *
  * Centralized plan-mode entry. Stashes the current mode as prePlanMode so
  * ExitPlanMode can restore it. When the user has opted in to auto mode,
  * auto semantics stay active during plan mode.
- */
+     */
 export function prepareContextForPlanMode(
   context: ToolPermissionContext,
 ): ToolPermissionContext {
@@ -1492,13 +1492,13 @@ export function prepareContextForPlanMode(
   return { ...context, prePlanMode: currentMode }
 }
 
-/**
+/*    *
  * Reconciles auto-mode state during plan mode after a settings change.
  * Compares desired state (shouldPlanUseAutoMode) against actual state
  * (isAutoModeActive) and activates/deactivates auto accordingly. No-op when
  * not in plan mode. Called from applySettingsChange so that toggling
  * useAutoModeDuringPlan mid-plan takes effect immediately.
- */
+     */
 export function transitionPlanAutoMode(
   context: ToolPermissionContext,
 ): ToolPermissionContext {

@@ -13,7 +13,7 @@ import type { KeybindingContextName } from './types.js'
 // should be able to trust that getBindingDisplayText always returns a value for
 // known actions, and we can remove this defensive pattern.
 
-/**
+/*    *
  * Hook to get the display text for a configured shortcut.
  * Returns the configured binding or a fallback if unavailable.
  *
@@ -25,7 +25,7 @@ import type { KeybindingContextName } from './types.js'
  * @example
  * const expandShortcut = useShortcutDisplay('app:toggleTranscript', 'Global', 'ctrl+o')
  * // Returns the user's configured binding, or 'ctrl+o' as default
- */
+     */
 export function useShortcutDisplay(
   action: string,
   context: KeybindingContextName,

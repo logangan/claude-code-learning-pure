@@ -4,7 +4,7 @@ import { logForDebugging } from '../debug.js'
 import type { HooksSettings } from '../settings/types.js'
 import { addSessionHook } from './sessionHooks.js'
 
-/**
+/*    *
  * Register hooks from frontmatter (agent or skill) into session-scoped hooks.
  * These hooks will be active for the duration of the session/agent and cleaned up
  * when the session/agent ends.
@@ -14,7 +14,7 @@ import { addSessionHook } from './sessionHooks.js'
  * @param hooks The hooks settings from frontmatter
  * @param sourceName Human-readable source name for logging (e.g., "agent 'my-agent'")
  * @param isAgent If true, converts Stop hooks to SubagentStop (since subagents trigger SubagentStop, not Stop)
- */
+     */
 export function registerFrontmatterHooks(
   setAppState: (updater: (prev: AppState) => AppState) => void,
   sessionId: string,

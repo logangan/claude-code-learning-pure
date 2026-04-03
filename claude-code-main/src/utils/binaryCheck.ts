@@ -4,13 +4,13 @@ import { which } from './which.js'
 // Session cache to avoid repeated checks
 const binaryCache = new Map<string, boolean>()
 
-/**
+/*    *
  * Check if a binary/command is installed and available on the system.
  * Uses 'which' on Unix systems (macOS, Linux, WSL) and 'where' on Windows.
  *
  * @param command - The command name to check (e.g., 'gopls', 'rust-analyzer')
  * @returns Promise<boolean> - true if the command exists, false otherwise
- */
+     */
 export async function isBinaryInstalled(command: string): Promise<boolean> {
   // Edge case: empty or whitespace-only command
   if (!command || !command.trim()) {
@@ -45,9 +45,9 @@ export async function isBinaryInstalled(command: string): Promise<boolean> {
   return exists
 }
 
-/**
+/*    *
  * Clear the binary check cache (useful for testing)
- */
+     */
 export function clearBinaryCache(): void {
   binaryCache.clear()
 }

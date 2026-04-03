@@ -19,9 +19,9 @@ import { jsonParse, jsonStringify } from './utils/slowOperations.js'
 const MAX_HISTORY_ITEMS = 100
 const MAX_PASTED_CONTENT_LENGTH = 1024
 
-/**
+/*    *
  * Stored paste content - either inline content or a hash reference to paste store.
- */
+     */
 type StoredPastedContent = {
   id: number
   type: 'text' | 'image'
@@ -31,7 +31,7 @@ type StoredPastedContent = {
   filename?: string
 }
 
-/**
+/*    *
  * Claude Code parses history for pasted content references to match back to
  * pasted content. The references look like:
  *   Text: [Pasted text #1 +10 lines]
@@ -39,7 +39,7 @@ type StoredPastedContent = {
  * The numbers are expected to be unique within a single prompt but not across
  * prompts. We choose numeric, auto-incrementing IDs as they are more
  * user-friendly than other ID options.
- */
+     */
 
 // Note: The original text paste implementation would consider input like
 // "line1\nline2\nline3" to have +2 lines, not 3 lines. We preserve that
@@ -74,10 +74,10 @@ export function parseReferences(
     .filter(match => match.id > 0)
 }
 
-/**
+/*    *
  * Replace [Pasted text #N] placeholders in input with their actual content.
  * Image refs are left alone — they become content blocks, not inlined text.
- */
+     */
 export function expandPastedTextRefs(
   input: string,
   pastedContents: Record<number, PastedContent>,
@@ -154,11 +154,11 @@ export type TimestampedHistoryEntry = {
   resolve: () => Promise<HistoryEntry>
 }
 
-/**
+/*    *
  * Current-project history for the ctrl+r picker: deduped by display text,
  * newest first, with timestamps. Paste contents are resolved lazily via
  * `resolve()` — the picker only reads display+timestamp for the list.
- */
+     */
 export async function* getTimestampedHistory(): AsyncGenerator<TimestampedHistoryEntry> {
   const currentProject = getProjectRoot()
   const seen = new Set<string>()
@@ -179,14 +179,14 @@ export async function* getTimestampedHistory(): AsyncGenerator<TimestampedHistor
   }
 }
 
-/**
+/*    *
  * Get history entries for the current project, with current session's entries first.
  *
  * Entries from the current session are yielded before entries from other sessions,
  * so concurrent sessions don't interleave their up-arrow history. Within each group,
  * order is newest-first. Scans the same MAX_HISTORY_ITEMS window as before —
  * entries are reordered within that window, not beyond it.
- */
+     */
 export async function* getHistory(): AsyncGenerator<HistoryEntry> {
   const currentProject = getProjectRoot()
   const currentSession = getSessionId()
@@ -224,9 +224,9 @@ type LogEntry = {
   sessionId?: string
 }
 
-/**
+/*    *
  * Resolve stored paste content to full PastedContent by fetching from paste store if needed.
- */
+     */
 async function resolveStoredPastedContent(
   stored: StoredPastedContent,
 ): Promise<PastedContent | null> {
@@ -259,9 +259,9 @@ async function resolveStoredPastedContent(
   return null
 }
 
-/**
+/*    *
  * Convert LogEntry to HistoryEntry by resolving paste store references.
- */
+     */
 async function logEntryToHistoryEntry(entry: LogEntry): Promise<HistoryEntry> {
   const pastedContents: Record<number, PastedContent> = {}
 
@@ -439,7 +439,7 @@ export function clearPendingHistoryEntries(): void {
   skippedTimestamps.clear()
 }
 
-/**
+/*    *
  * Undo the most recent addToHistory call. Used by auto-restore-on-interrupt:
  * when Esc rewinds the conversation before any response arrives, the submit is
  * semantically undone — the history entry should be too, otherwise Up-arrow
@@ -449,7 +449,7 @@ export function clearPendingHistoryEntries(): void {
  * race (TTFT is typically >> disk write latency), the entry's timestamp is
  * added to a skip-set consulted by getHistory. One-shot: clears the tracked
  * entry so a second call is a no-op.
- */
+     */
 export function removeLastFromHistory(): void {
   if (!lastAddedEntry) return
   const entry = lastAddedEntry

@@ -24,33 +24,33 @@ import {
 import { getSettingsFilePathForSource } from './settings.js'
 import { resetSettingsCache } from './settingsCache.js'
 
-/**
+/*    *
  * Time in milliseconds to wait for file writes to stabilize before processing.
  * This helps avoid processing partial writes or rapid successive changes.
- */
+     */
 const FILE_STABILITY_THRESHOLD_MS = 1000
 
-/**
+/*    *
  * Polling interval in milliseconds for checking file stability.
  * Used by chokidar's awaitWriteFinish option.
  * Must be lower than FILE_STABILITY_THRESHOLD_MS.
- */
+     */
 const FILE_STABILITY_POLL_INTERVAL_MS = 500
 
-/**
+/*    *
  * Time window in milliseconds to consider a file change as internal.
  * If a file change occurs within this window after markInternalWrite() is called,
  * it's assumed to be from Claude Code itself and won't trigger a notification.
- */
+     */
 const INTERNAL_WRITE_WINDOW_MS = 5000
 
-/**
+/*    *
  * Poll interval for MDM settings (registry/plist) changes.
  * These can't be watched via filesystem events, so we poll periodically.
- */
+     */
 const MDM_POLL_INTERVAL_MS = 30 * 60 * 1000 // 30 minutes
 
-/**
+/*    *
  * Grace period in milliseconds before processing a settings file deletion.
  * Handles the common delete-and-recreate pattern during auto-updates or when
  * another session starts up. If an `add` or `change` event fires within this
@@ -58,7 +58,7 @@ const MDM_POLL_INTERVAL_MS = 30 * 60 * 1000 // 30 minutes
  *
  * Must exceed chokidar's awaitWriteFinish delay (stabilityThreshold + pollInterval)
  * so the grace window outlasts the write stability check on the recreated file.
- */
+     */
 const DELETION_GRACE_MS =
   FILE_STABILITY_THRESHOLD_MS + FILE_STABILITY_POLL_INTERVAL_MS + 200
 
@@ -78,9 +78,9 @@ let testOverrides: {
   deletionGrace?: number
 } | null = null
 
-/**
+/*    *
  * Initialize file watching
- */
+     */
 export async function initialize(): Promise<void> {
   if (getIsRemoteMode()) return
   if (initialized || disposed) return
@@ -145,12 +145,12 @@ export async function initialize(): Promise<void> {
   watcher.on('add', handleAdd)
 }
 
-/**
+/*    *
  * Clean up file watcher. Returns a promise that resolves when chokidar's
  * close() settles — callers that need the watcher fully stopped before
  * removing the watched directory (e.g. test teardown) must await this.
  * Fire-and-forget is still valid where timing doesn't matter.
- */
+     */
 export function dispose(): Promise<void> {
   disposed = true
   if (mdmPollTimer) {
@@ -167,16 +167,16 @@ export function dispose(): Promise<void> {
   return w ? w.close() : Promise.resolve()
 }
 
-/**
+/*    *
  * Subscribe to settings changes
- */
+     */
 export const subscribe = settingsChanged.subscribe
 
-/**
+/*    *
  * Collect settings file paths and their deduplicated parent directories to watch.
  * Returns all potential settings file paths for watched directories, not just those
  * that exist at init time, so that newly-created files are also detected.
- */
+     */
 async function getWatchTargets(): Promise<{
   dirs: string[]
   settingsFiles: Set<string>
@@ -301,10 +301,10 @@ function handleChange(path: string): void {
   })
 }
 
-/**
+/*    *
  * Handle a file being re-added (e.g. after a delete-and-recreate). Cancels any
  * pending deletion grace timer and treats the event as a change.
- */
+     */
 function handleAdd(path: string): void {
   const source = getSourceForPath(path)
   if (!source) return
@@ -321,12 +321,12 @@ function handleAdd(path: string): void {
   handleChange(path)
 }
 
-/**
+/*    *
  * Handle a file being deleted. Uses a grace period to absorb delete-and-recreate
  * patterns (e.g. auto-updater, another session starting up). If the file is
  * recreated within the grace period (detected via 'add' or 'change' event),
  * the deletion is cancelled and treated as a normal change instead.
- */
+     */
 function handleDelete(path: string): void {
   const source = getSourceForPath(path)
   if (!source) return
@@ -374,10 +374,10 @@ function getSourceForPath(path: string): SettingSource | undefined {
   )
 }
 
-/**
+/*    *
  * Start polling for MDM settings changes (registry/plist).
  * Takes a snapshot of current MDM settings and compares on each tick.
- */
+     */
 function startMdmPoll(): void {
   // Capture initial snapshot (includes both admin MDM and user-writable HKCU)
   const initial = getMdmSettings()
@@ -417,7 +417,7 @@ function startMdmPoll(): void {
   mdmPollTimer.unref()
 }
 
-/**
+/*    *
  * Reset the settings cache, then notify all listeners.
  *
  * The cache reset MUST happen here (single producer), not in each listener
@@ -433,23 +433,23 @@ function startMdmPoll(): void {
  * With the reset centralized here, one notification = one disk reload: the
  * first listener to call getSettingsWithErrors() pays the miss and
  * repopulates; all subsequent listeners hit the cache.
- */
+     */
 function fanOut(source: SettingSource): void {
   resetSettingsCache()
   settingsChanged.emit(source)
 }
 
-/**
+/*    *
  * Manually notify listeners of a settings change.
  * Used for programmatic settings changes (e.g., remote managed settings refresh)
  * that don't involve file system changes.
- */
+     */
 export function notifyChange(source: SettingSource): void {
   logForDebugging(`Programmatic settings change notification for ${source}`)
   fanOut(source)
 }
 
-/**
+/*    *
  * Reset internal state for testing purposes only.
  * This allows re-initialization after dispose().
  * Optionally accepts timing overrides for faster test execution.
@@ -457,7 +457,7 @@ export function notifyChange(source: SettingSource): void {
  * Closes the watcher and returns the close promise so preload's afterEach
  * can await it BEFORE nuking perTestSettingsDir. Without this, chokidar's
  * pending awaitWriteFinish poll fires on the deleted dir → ENOENT (#25253).
- */
+     */
 export function resetForTesting(overrides?: {
   stabilityThreshold?: number
   pollInterval?: number

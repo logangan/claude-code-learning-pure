@@ -74,8 +74,7 @@ function containsExcludedCommand(command: string): boolean {
     // that `FOO=bar bazel ...` and `timeout 30 bazel ...` match `bazel:*`. Not a
     // security boundary (see NOTE at top); the &&-split above already lets
     // `export FOO=bar && bazel ...` match. BINARY_HIJACK_VARS kept as a heuristic.
-    //
-    // We iteratively apply both stripping operations until no new candidates are
+    // // We iteratively apply both stripping operations until no new candidates are
     // produced (fixed-point), matching the approach in filterRulesByContentsMatchingInput.
     // This handles interleaved patterns like `timeout 300 FOO=bar bazel run`
     // where single-pass composition would fail.

@@ -29,16 +29,16 @@ export {
 import { type HookCommand, HooksSchema } from '../../schemas/hooks.js'
 import { count } from '../array.js'
 
-/**
+/*    *
  * Schema for environment variables
- */
+     */
 export const EnvironmentVariablesSchema = lazySchema(() =>
   z.record(z.string(), z.coerce.string()),
 )
 
-/**
+/*    *
  * Schema for permissions section
- */
+     */
 export const PermissionsSchema = lazySchema(() =>
   z
     .object({
@@ -84,10 +84,10 @@ export const PermissionsSchema = lazySchema(() =>
     .passthrough(),
 )
 
-/**
+/*    *
  * Schema for extra marketplaces defined in repository settings
  * Same as KnownMarketplace but without lastUpdated (which is managed automatically)
- */
+     */
 export const ExtraKnownMarketplaceSchema = lazySchema(() =>
   z.object({
     source: MarketplaceSourceSchema().describe(
@@ -108,10 +108,10 @@ export const ExtraKnownMarketplaceSchema = lazySchema(() =>
   }),
 )
 
-/**
+/*    *
  * Schema for allowed MCP server entry in enterprise allowlist.
  * Supports matching by serverName, serverCommand, or serverUrl (mutually exclusive).
- */
+     */
 export const AllowedMcpServerEntrySchema = lazySchema(() =>
   z
     .object({
@@ -134,7 +134,7 @@ export const AllowedMcpServerEntrySchema = lazySchema(() =>
         .string()
         .optional()
         .describe(
-          'URL pattern with wildcard support (e.g., "https://*.example.com/*") for allowed remote MCP servers',
+          'URL pattern with wildcard support (e.g., "https:// * .example.com/*   ") for allowed remote MCP servers',
         ),
       // Future extensibility: allowedTransports, requiredArgs, maxInstances, etc.
     })
@@ -160,7 +160,7 @@ export const AllowedMcpServerEntrySchema = lazySchema(() =>
 /**
  * Schema for denied MCP server entry in enterprise denylist.
  * Supports matching by serverName, serverCommand, or serverUrl (mutually exclusive).
- */
+     */
 export const DeniedMcpServerEntrySchema = lazySchema(() =>
   z
     .object({
@@ -183,7 +183,7 @@ export const DeniedMcpServerEntrySchema = lazySchema(() =>
         .string()
         .optional()
         .describe(
-          'URL pattern with wildcard support (e.g., "https://*.example.com/*") for blocked remote MCP servers',
+          'URL pattern with wildcard support (e.g., "https:// * .example.com/*   ") for blocked remote MCP servers',
         ),
       // Future extensibility: reason, blockedSince, etc.
     })
@@ -238,13 +238,13 @@ export const DeniedMcpServerEntrySchema = lazySchema(() =>
  * - Type coercion via z.coerce (e.g., env vars convert numbers to strings)
  * - .passthrough() preserves unknown fields in permissions object
  * - Invalid settings are simply not used, but remain in the file to be fixed by the user
- */
+     */
 
-/**
+/*    *
  * Surfaces lockable by `strictPluginOnlyCustomization`. Exported so the
  * schema preprocess (below) and the runtime helper (pluginOnlyPolicy.ts)
  * share one source of truth.
- */
+     */
 export const CUSTOMIZATION_SURFACES = [
   'skills',
   'agents',
@@ -482,7 +482,7 @@ export const SettingsSchema = lazySchema(() =>
         .optional()
         .describe(
           'Allowlist of URL patterns that HTTP hooks may target. ' +
-            'Supports * as a wildcard (e.g. "https://hooks.example.com/*"). ' +
+            'Supports * as a wildcard (e.g. "https:// hooks.example.com/*    "). ' +
             'When set, HTTP hooks with non-matching URLs are blocked. ' +
             'If undefined, all URLs are allowed. If empty array, no HTTP hooks are allowed. ' +
             'Arrays merge across settings sources (same semantics as allowedMcpServers).',
@@ -1057,7 +1057,7 @@ export const SettingsSchema = lazySchema(() =>
           'Glob patterns or absolute paths of CLAUDE.md files to exclude from loading. ' +
             'Patterns are matched against absolute file paths using picomatch. ' +
             'Only applies to User, Project, and Local memory types (Managed/policy files cannot be excluded). ' +
-            'Examples: "/home/user/monorepo/CLAUDE.md", "**/code/CLAUDE.md", "**/some-dir/.claude/rules/**"',
+            'Examples: "/home/user/monorepo/CLAUDE.md", "*    */code/CLAUDE.md", "**/some-dir/.claude/rules/*    *"',
         ),
       pluginTrustMessage: z
         .string()
@@ -1075,7 +1075,7 @@ export const SettingsSchema = lazySchema(() =>
 /**
  * Internal type for plugin hooks - includes plugin context for execution.
  * Not a Zod schema since it's not user-facing (plugins provide native hooks).
- */
+     */
 export type PluginHookMatcher = {
   matcher?: string
   hooks: HookCommand[]
@@ -1084,10 +1084,10 @@ export type PluginHookMatcher = {
   pluginId: string // format: "pluginName@marketplaceName"
 }
 
-/**
+/*    *
  * Internal type for skill hooks - includes skill context for execution.
  * Not a Zod schema since it's not user-facing (skills provide native hooks).
- */
+     */
 export type SkillHookMatcher = {
   matcher?: string
   hooks: HookCommand[]
@@ -1103,44 +1103,44 @@ export type DeniedMcpServerEntry = z.infer<
 >
 export type SettingsJson = z.infer<ReturnType<typeof SettingsSchema>>
 
-/**
+/*    *
  * Type guard for MCP server entry with serverName
- */
+     */
 export function isMcpServerNameEntry(
   entry: AllowedMcpServerEntry | DeniedMcpServerEntry,
 ): entry is { serverName: string } {
   return 'serverName' in entry && entry.serverName !== undefined
 }
 
-/**
+/*    *
  * Type guard for MCP server entry with serverCommand
- */
+     */
 export function isMcpServerCommandEntry(
   entry: AllowedMcpServerEntry | DeniedMcpServerEntry,
 ): entry is { serverCommand: string[] } {
   return 'serverCommand' in entry && entry.serverCommand !== undefined
 }
 
-/**
+/*    *
  * Type guard for MCP server entry with serverUrl
- */
+     */
 export function isMcpServerUrlEntry(
   entry: AllowedMcpServerEntry | DeniedMcpServerEntry,
 ): entry is { serverUrl: string } {
   return 'serverUrl' in entry && entry.serverUrl !== undefined
 }
 
-/**
+/*    *
  * User configuration values for MCPB MCP servers
- */
+     */
 export type UserConfigValues = Record<
   string,
   string | number | boolean | string[]
 >
 
-/**
+/*    *
  * Plugin configuration stored in settings.json
- */
+     */
 export type PluginConfig = {
   mcpServers?: {
     [serverName: string]: UserConfigValues

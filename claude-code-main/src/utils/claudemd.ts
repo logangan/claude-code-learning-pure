@@ -1,4 +1,4 @@
-/**
+/*    *
  * Files are loaded in the following order:
  *
  * 1. Managed memory (eg. /etc/claude-code/CLAUDE.md) - Global instructions for all users
@@ -23,7 +23,7 @@
  * - Included files are added as separate entries before the including file
  * - Circular references are prevented by tracking processed files
  * - Non-existent files are silently ignored
- */
+     */
 
 import { feature } from 'bun:bundle'
 import ignore from 'ignore'
@@ -78,11 +78,11 @@ import { pathInWorkingPath } from './permissions/filesystem.js'
 import { isSettingSourceEnabled } from './settings/constants.js'
 import { getInitialSettings } from './settings/settings.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const teamMemPaths = feature('TEAMMEM')
   ? (require('../memdir/teamMemPaths.js') as typeof import('../memdir/teamMemPaths.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 let hasLoggedInitialLoad = false
 
@@ -246,11 +246,11 @@ function pathInOriginalCwd(path: string): boolean {
   return pathInWorkingPath(path, getOriginalCwd())
 }
 
-/**
+/*    *
  * Parses raw content to extract both content and glob patterns from frontmatter
  * @param rawContent Raw file content with frontmatter
  * @returns Object with content and globs (undefined if no paths or match-all pattern)
- */
+     */
 function parseFrontmatterPaths(rawContent: string): {
   content: string
   paths?: string[]
@@ -263,7 +263,7 @@ function parseFrontmatterPaths(rawContent: string): {
 
   const patterns = splitPathInFrontmatter(frontmatter.paths)
     .map(pattern => {
-      // Remove /** suffix - ignore library treats 'path' as matching both
+      // Remove /*    * suffix - ignore library treats 'path' as matching both
       // the path itself and everything inside it
       return pattern.endsWith('/**') ? pattern.slice(0, -3) : pattern
     })
@@ -288,7 +288,7 @@ function parseFrontmatterPaths(rawContent: string): {
  *
  * Unclosed comments (`<!--` with no matching `-->`) are left in place so a
  * typo doesn't silently swallow the rest of the file.
- */
+     */
 export function stripHtmlComments(content: string): {
   content: string
   stripped: boolean
@@ -333,13 +333,13 @@ function stripHtmlCommentsFromTokens(tokens: ReturnType<Lexer['lex']>): {
   return { content: result, stripped }
 }
 
-/**
+/*    *
  * Parses raw memory file content into a MemoryFileInfo. Pure function — no I/O.
  *
  * When includeBasePath is given, @include paths are resolved in the same lex
  * pass and returned alongside the parsed file (so processMemoryFile doesn't
  * need to lex the same content a second time).
- */
+     */
 function parseMemoryFileContent(
   rawContent: string,
   filePath: string,
@@ -415,12 +415,12 @@ function handleMemoryFileReadError(error: unknown, filePath: string): void {
   }
 }
 
-/**
+/*    *
  * Used by processMemoryFile → getMemoryFiles so the event loop stays
  * responsive during the directory walk (many readFile attempts, most
  * ENOENT). When includeBasePath is given, @include paths are resolved in
  * the same lex pass and returned alongside the parsed file.
- */
+     */
 async function safelyReadMemoryFileAsync(
   filePath: string,
   type: MemoryType,
@@ -536,14 +536,14 @@ function extractIncludePathsFromTokens(
 
 const MAX_INCLUDE_DEPTH = 5
 
-/**
+/*    *
  * Checks whether a CLAUDE.md file path is excluded by the claudeMdExcludes setting.
  * Only applies to User, Project, and Local memory types.
  * Managed, AutoMem, and TeamMem types are never excluded.
  *
  * Matches both the original path and the realpath-resolved path to handle symlinks
  * (e.g., /tmp -> /private/tmp on macOS).
- */
+     */
 function isClaudeMdExcluded(filePath: string, type: MemoryType): boolean {
   if (type !== 'User' && type !== 'Project' && type !== 'Local') {
     return false
@@ -572,18 +572,18 @@ function isClaudeMdExcluded(filePath: string, type: MemoryType): boolean {
   return picomatch.isMatch(normalizedPath, expandedPatterns, matchOpts)
 }
 
-/**
+/*    *
  * Expands exclude patterns by resolving symlinks in absolute path prefixes.
  * For each absolute pattern (starting with /), tries to resolve the longest
  * existing directory prefix via realpathSync and adds the resolved version.
  * Glob patterns (containing *) have their static prefix resolved.
- */
+     */
 function resolveExcludePatterns(patterns: string[]): string[] {
   const fs = getFsImplementation()
   const expanded: string[] = patterns.map(p => p.replaceAll('\\', '/'))
 
   for (const normalized of expanded) {
-    // Only resolve absolute patterns — glob-only patterns like "**/*.md" don't have
+    // Only resolve absolute patterns — glob-only patterns like "**/*    .md" don't have
     // a filesystem prefix to resolve
     if (!normalized.startsWith('/')) {
       continue
@@ -614,7 +614,7 @@ function resolveExcludePatterns(patterns: string[]): string[] {
 /**
  * Recursively processes a memory file and all its @include references
  * Returns an array of MemoryFileInfo objects with includes first, then main file
- */
+     */
 export async function processMemoryFile(
   filePath: string,
   type: MemoryType,
@@ -684,7 +684,7 @@ export async function processMemoryFile(
   return result
 }
 
-/**
+/*    *
  * Processes all .md files in the .claude/rules/ directory and its subdirectories
  * @param rulesDir The path to the rules directory
  * @param type Type of memory file (User, Project, Local)
@@ -693,7 +693,7 @@ export async function processMemoryFile(
  * @param conditionalRule If true, only include files with frontmatter paths; if false, only include files without frontmatter paths
  * @param visitedDirs Set of already visited directory real paths (for cycle detection)
  * @returns Array of MemoryFileInfo objects
- */
+     */
 export async function processMdRules({
   rulesDir,
   type,
@@ -810,7 +810,7 @@ export const getMemoryFiles = memoize(
         includeExternal,
       )),
     )
-    // Process Managed .claude/rules/*.md files
+    // Process Managed .claude/rules/*    .md files
     const managedClaudeRulesDir = getManagedClaudeRulesDir()
     result.push(
       ...(await processMdRules({
@@ -1115,7 +1115,7 @@ function consumeNextEagerLoadReason(): InstructionsLoadReason | undefined {
  * worktree enter/exit, settings sync, /memory dialog). For events that
  * represent instructions actually being reloaded into context (e.g.
  * compaction), use resetGetMemoryFilesCache() instead.
- */
+     */
 export function clearMemoryFileCaches(): void {
   // ?.cache because tests spyOn this, which replaces the memoize wrapper.
   getMemoryFiles.cache?.clear?.()
@@ -1133,12 +1133,12 @@ export function getLargeMemoryFiles(files: MemoryFileInfo[]): MemoryFileInfo[] {
   return files.filter(f => f.content.length > MAX_MEMORY_CHARACTER_COUNT)
 }
 
-/**
+/*    *
  * When tengu_moth_copse is on, the findRelevantMemories prefetch surfaces
  * memory files via attachments, so the MEMORY.md index is no longer injected
  * into the system prompt. Callsites that care about "what's actually in
  * context" (context builder, /context viz) should filter through this.
- */
+     */
 export function filterInjectedMemoryFiles(
   files: MemoryFileInfo[],
 ): MemoryFileInfo[] {
@@ -1194,21 +1194,21 @@ export const getClaudeMds = (
   return `${MEMORY_INSTRUCTION_PROMPT}\n\n${memories.join('\n\n')}`
 }
 
-/**
+/*    *
  * Gets managed and user conditional rules that match the target path.
  * This is the first phase of nested memory loading.
  *
  * @param targetPath The target file path to match against glob patterns
  * @param processedPaths Set of already processed file paths (will be mutated)
  * @returns Array of MemoryFileInfo objects for matching conditional rules
- */
+     */
 export async function getManagedAndUserConditionalRules(
   targetPath: string,
   processedPaths: Set<string>,
 ): Promise<MemoryFileInfo[]> {
   const result: MemoryFileInfo[] = []
 
-  // Process Managed conditional .claude/rules/*.md files
+  // Process Managed conditional .claude/rules/*    .md files
   const managedClaudeRulesDir = getManagedClaudeRulesDir()
   result.push(
     ...(await processConditionedMdRules(
@@ -1245,7 +1245,7 @@ export async function getManagedAndUserConditionalRules(
  * @param targetPath The target file path (for conditional rule matching)
  * @param processedPaths Set of already processed file paths (will be mutated)
  * @returns Array of MemoryFileInfo objects
- */
+     */
 export async function getMemoryFilesForNestedDirectory(
   dir: string,
   targetPath: string,
@@ -1285,7 +1285,7 @@ export async function getMemoryFilesForNestedDirectory(
 
   const rulesDir = join(dir, '.claude', 'rules')
 
-  // Process project unconditional .claude/rules/*.md files, which were not eagerly loaded
+  // Process project unconditional .claude/rules/*    .md files, which were not eagerly loaded
   // Use a separate processedPaths set to avoid marking conditional rule files as processed
   const unconditionalProcessedPaths = new Set(processedPaths)
   result.push(
@@ -1325,7 +1325,7 @@ export async function getMemoryFilesForNestedDirectory(
  * @param targetPath The target file path (for conditional rule matching)
  * @param processedPaths Set of already processed file paths (will be mutated)
  * @returns Array of MemoryFileInfo objects
- */
+     */
 export async function getConditionalRulesForCwdLevelDirectory(
   dir: string,
   targetPath: string,
@@ -1341,7 +1341,7 @@ export async function getConditionalRulesForCwdLevelDirectory(
   )
 }
 
-/**
+/*    *
  * Processes all .md files in the .claude/rules/ directory and its subdirectories,
  * filtering to only include files with frontmatter paths that match the target path
  * @param targetPath The file path to match against frontmatter glob patterns
@@ -1350,7 +1350,7 @@ export async function getConditionalRulesForCwdLevelDirectory(
  * @param processedPaths Set of already processed file paths
  * @param includeExternal Whether to include external files
  * @returns Array of MemoryFileInfo objects that match the target path
- */
+     */
 export async function processConditionedMdRules(
   targetPath: string,
   rulesDir: string,
@@ -1429,9 +1429,9 @@ export async function shouldShowClaudeMdExternalIncludesWarning(): Promise<boole
   return hasExternalClaudeMdIncludes(await getMemoryFiles(true))
 }
 
-/**
+/*    *
  * Check if a file path is a memory file (CLAUDE.md, CLAUDE.local.md, or .claude/rules/*.md)
- */
+     */
 export function isMemoryFilePath(filePath: string): boolean {
   const name = basename(filePath)
 
@@ -1451,12 +1451,12 @@ export function isMemoryFilePath(filePath: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Get all memory file paths from both standard discovery and readFileState.
  * Combines:
  * - getMemoryFiles() paths (CWD upward to root)
  * - readFileState paths matching memory patterns (includes child directories)
- */
+     */
 export function getAllMemoryFilePaths(
   files: MemoryFileInfo[],
   readFileState: FileStateCache,

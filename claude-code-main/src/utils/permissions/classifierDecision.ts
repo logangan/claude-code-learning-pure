@@ -23,7 +23,7 @@ import { YOLO_CLASSIFIER_TOOL_NAME } from './yoloClassifier.js'
 
 // Ant-only tool names: conditional require so Bun can DCE these in external builds.
 // Gates mirror tools.ts. Keeps the tool name strings out of cli.js.
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const TERMINAL_CAPTURE_TOOL_NAME = feature('TERMINAL_PANEL')
   ? (
       require('../../tools/TerminalCaptureTool/prompt.js') as typeof import('../../tools/TerminalCaptureTool/prompt.js')
@@ -45,14 +45,14 @@ const WORKFLOW_TOOL_NAME = feature('WORKFLOW_SCRIPTS')
       require('../../tools/WorkflowTool/constants.js') as typeof import('../../tools/WorkflowTool/constants.js')
     ).WORKFLOW_TOOL_NAME
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
-/**
+/*    *
  * Tools that are safe and don't need any classifier checking.
  * Used by the auto mode classifier to skip unnecessary API calls.
  * Does NOT include write/edit tools — those are handled by the
  * acceptEdits fast path (allowed in CWD, classified outside CWD).
- */
+     */
 const SAFE_YOLO_ALLOWLISTED_TOOLS = new Set([
   // Read-only file operations
   FILE_READ_TOOL_NAME,

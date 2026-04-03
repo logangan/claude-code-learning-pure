@@ -1,4 +1,4 @@
-/**
+/*    *
  * Team Memory Sync Service
  *
  * Syncs team memory files between the local filesystem and the server API.
@@ -22,7 +22,7 @@
  *   All mutable state (ETag tracking, watcher suppression) lives in a
  *   SyncState object created by the caller and threaded through every call.
  *   This avoids module-level mutable state and gives tests natural isolation.
- */
+     */
 
 import axios from 'axios'
 import { createHash } from 'crypto'
@@ -92,29 +92,29 @@ const MAX_CONFLICT_RETRIES = 2
 
 // ─── Sync state ─────────────────────────────────────────────
 
-/**
+/*    *
  * Mutable state for the team memory sync service.
  * Created once per session by the watcher and passed to all sync functions.
  * Tests create a fresh instance per test for isolation.
- */
+     */
 export type SyncState = {
-  /** Last known server checksum (ETag) for conditional requests. */
+  /*    * Last known server checksum (ETag) for conditional requests.     */
   lastKnownChecksum: string | null
-  /**
+  /*    *
    * Per-key content hash (`sha256:<hex>`) of what we believe the server
    * currently holds. Populated from server-provided entryChecksums on pull
    * and from local hashes on successful push. Used to compute the delta on
    * push — only keys whose local hash differs are uploaded.
-   */
+       */
   serverChecksums: Map<string, string>
-  /**
+  /*    *
    * Server-enforced max_entries cap, learned from a structured 413 response
    * (anthropic/anthropic#293258 adds error_code + extra_details.max_entries).
    * Stays null until a 413 is observed — the server's cap is GB-tunable
    * per-org so there is no correct client-side default.  While null,
    * readLocalTeamMemory sends everything and lets the server be
    * authoritative (it rejects atomically).
-   */
+       */
   serverMaxEntries: number | null
 }
 
@@ -126,28 +126,28 @@ export function createSyncState(): SyncState {
   }
 }
 
-/**
+/*    *
  * Compute `sha256:<hex>` over the UTF-8 bytes of the given content.
  * Format matches the server's entryChecksums values (anthropic/anthropic#283027)
  * so local-vs-server comparison works by direct string equality.
- */
+     */
 export function hashContent(content: string): string {
   return 'sha256:' + createHash('sha256').update(content, 'utf8').digest('hex')
 }
 
-/**
+/*    *
  * Type guard narrowing an unknown error to a Node.js errno-style exception.
  * Uses `in` narrowing so no `as` cast is needed at call sites.
- */
+     */
 function isErrnoException(e: unknown): e is NodeJS.ErrnoException {
   return e instanceof Error && 'code' in e && typeof e.code === 'string'
 }
 
 // ─── Auth & endpoint ─────────────────────────────────────────
 
-/**
+/*    *
  * Check if user is authenticated with first-party OAuth (required for team memory sync).
- */
+     */
 function isUsingOAuth(): boolean {
   if (getAPIProvider() !== 'firstParty' || !isFirstPartyAnthropicBaseUrl()) {
     return false
@@ -305,13 +305,13 @@ async function fetchTeamMemoryOnce(
   }
 }
 
-/**
+/*    *
  * Fetch only per-key checksums + metadata (no entry bodies).
  * Used for cheap serverChecksums refresh during 412 conflict resolution — avoids
  * downloading ~300KB of content just to learn which keys changed.
  * Requires anthropic/anthropic#283027 deployed; on failure the caller fails the
  * push and the watcher retries on the next edit.
- */
+     */
 async function fetchTeamMemoryHashes(
   state: SyncState,
   repoSlug: string,
@@ -411,7 +411,7 @@ async function fetchTeamMemory(
 
 // ─── Upload (push) ───────────────────────────────────────────
 
-/**
+/*    *
  * Split a delta into PUT-sized batches under MAX_PUT_BODY_BYTES each.
  *
  * Greedy bin-packing over sorted keys — sorting gives deterministic batches
@@ -422,7 +422,7 @@ async function fetchTeamMemory(
  * A single entry exceeding MAX_PUT_BODY_BYTES goes into its own solo batch
  * (MAX_FILE_SIZE_BYTES=250K already caps individual files; a ~250K solo body
  * is above our soft cap but below the gateway's observed real threshold).
- */
+     */
 export function batchDeltaByBytes(
   delta: Record<string, string>,
 ): Array<Record<string, string>> {
@@ -554,7 +554,7 @@ async function uploadTeamMemory(
 
 // ─── Local file operations ───────────────────────────────────
 
-/**
+/*    *
  * Read all team memory files from the local directory into a flat key-value map.
  * Keys are relative paths from the team memory directory.
  * Empty files are included (content will be empty string).
@@ -563,7 +563,7 @@ async function uploadTeamMemory(
  * using patterns from gitleaks. Files containing secrets are SKIPPED
  * (not uploaded) and collected in skippedSecrets so the caller can
  * warn the user.
- */
+     */
 async function readLocalTeamMemory(maxEntries: number | null): Promise<{
   entries: Record<string, string>
   skippedSecrets: SkippedSecretFile[]
@@ -641,14 +641,12 @@ async function readLocalTeamMemory(maxEntries: number | null): Promise<{
   // Before the first 413 we send everything and let the server be
   // authoritative.  The server validates total stored entries after merge
   // (not PUT body count) and rejects atomically — nothing is written on 413.
-  //
-  // Sorting before truncation is what makes delta computation work: without
+  // // Sorting before truncation is what makes delta computation work: without
   // it, the parallel walk above picks a different N-of-M subset each push
   // (Promise.all resolves in completion order), serverChecksums misses keys,
   // and the "delta" balloons to near-full snapshot.  With deterministic
   // truncation, the same N keys are compared against the same server state.
-  //
-  // When disk has more files than the learned cap, alphabetically-last ones
+  // // When disk has more files than the learned cap, alphabetically-last ones
   // consistently never sync.  When the merged (server + delta) count exceeds
   // the cap we still fail — recovering requires soft_delete_keys.
   const keys = Object.keys(entries).sort()
@@ -672,7 +670,7 @@ async function readLocalTeamMemory(maxEntries: number | null): Promise<{
   return { entries, skippedSecrets }
 }
 
-/**
+/*    *
  * Write remote team memory entries to the local directory.
  * Validates every path against the team memory directory boundary.
  * Skips entries whose on-disk content already matches, so unchanged
@@ -685,7 +683,7 @@ async function readLocalTeamMemory(maxEntries: number | null): Promise<{
  * pole in startTeamMemoryWatcher — p99 was ~22s serial at 50 entries.
  *
  * Returns the number of files actually written.
- */
+     */
 async function writeRemoteEntriesToLocal(
   entries: Record<string, string>,
 ): Promise<number> {
@@ -756,24 +754,24 @@ async function writeRemoteEntriesToLocal(
 
 // ─── Public API ──────────────────────────────────────────────
 
-/**
+/*    *
  * Check if team memory sync is available (requires first-party OAuth).
- */
+     */
 export function isTeamMemorySyncAvailable(): boolean {
   return isUsingOAuth()
 }
 
-/**
+/*    *
  * Pull team memory from the server and write to local directory.
  * Returns true if any files were updated.
- */
+     */
 export async function pullTeamMemory(
   state: SyncState,
   options?: { skipEtagCache?: boolean },
 ): Promise<{
   success: boolean
   filesWritten: number
-  /** Number of entries the server returned, regardless of whether they were written to disk. */
+  /*    * Number of entries the server returned, regardless of whether they were written to disk.     */
   entryCount: number
   notModified?: boolean
   error?: string
@@ -866,7 +864,7 @@ export async function pullTeamMemory(
   }
 }
 
-/**
+/*    *
  * Push local team memory files to the server with optimistic locking.
  *
  * Uses delta upload: only keys whose local content hash differs from
@@ -885,7 +883,7 @@ export async function pullTeamMemory(
  * the local user is actively editing and can re-incorporate the teammate's
  * changes, whereas silently discarding the local edit loses work the user
  * just did with no recourse.
- */
+     */
 export async function pushTeamMemory(
   state: SyncState,
 ): Promise<TeamMemorySyncPushResult> {
@@ -1145,11 +1143,11 @@ export async function pushTeamMemory(
   }
 }
 
-/**
+/*    *
  * Bidirectional sync: pull from server, merge with local, push back.
  * Server entries take precedence on conflict (last-write-wins by the server).
  * Push uses conflict resolution (retries on 412) via pushTeamMemory.
- */
+     */
 export async function syncTeamMemory(state: SyncState): Promise<{
   success: boolean
   filesPulled: number

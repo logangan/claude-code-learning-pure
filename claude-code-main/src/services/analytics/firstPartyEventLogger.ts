@@ -24,11 +24,11 @@ import { getDynamicConfig_CACHED_MAY_BE_STALE } from './growthbook.js'
 import { getEventMetadata } from './metadata.js'
 import { isSinkKilled } from './sinkKillswitch.js'
 
-/**
+/*    *
  * Configuration for sampling individual event types.
  * Each event name maps to an object containing sample_rate (0-1).
  * Events not in the config are logged at 100% rate.
- */
+     */
 export type EventSamplingConfig = {
   [eventName: string]: {
     sample_rate: number
@@ -36,10 +36,10 @@ export type EventSamplingConfig = {
 }
 
 const EVENT_SAMPLING_CONFIG_NAME = 'tengu_event_sampling_config'
-/**
+/*    *
  * Get the event sampling configuration from GrowthBook.
  * Uses cached value if available, updates cache in background.
- */
+     */
 export function getEventSamplingConfig(): EventSamplingConfig {
   return getDynamicConfig_CACHED_MAY_BE_STALE<EventSamplingConfig>(
     EVENT_SAMPLING_CONFIG_NAME,
@@ -47,13 +47,13 @@ export function getEventSamplingConfig(): EventSamplingConfig {
   )
 }
 
-/**
+/*    *
  * Determine if an event should be sampled based on its sample rate.
  * Returns the sample rate if sampled, null if not sampled.
  *
  * @param eventName - Name of the event to check
  * @returns The sample_rate if event should be logged, null if it should be dropped
- */
+     */
 export function shouldSampleEvent(eventName: string): number | null {
   const config = getEventSamplingConfig()
   const eventConfig = config[eventName]
@@ -108,11 +108,11 @@ let firstPartyEventLoggerProvider: LoggerProvider | null = null
 // reinitialize1PEventLoggingIfConfigChanged to decide whether a rebuild is
 // needed when GrowthBook refreshes.
 let lastBatchConfig: BatchConfig | null = null
-/**
+/*    *
  * Flush and shutdown the 1P event logger.
  * This should be called as the final step before process exit to ensure
  * all events (including late ones from API responses) are exported.
- */
+     */
 export async function shutdown1PEventLogging(): Promise<void> {
   if (!firstPartyEventLoggerProvider) {
     return
@@ -127,7 +127,7 @@ export async function shutdown1PEventLogging(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Check if 1P event logging is enabled.
  * Respects the same opt-outs as other analytics sinks:
  * - Test environment
@@ -137,13 +137,13 @@ export async function shutdown1PEventLogging(): Promise<void> {
  *
  * Note: Unlike BigQuery metrics, event logging does NOT check organization-level
  * metrics opt-out via API. It follows the same pattern as Statsig event logging.
- */
+     */
 export function is1PEventLoggingEnabled(): boolean {
   // Respect standard analytics opt-outs
   return !isAnalyticsDisabled()
 }
 
-/**
+/*    *
  * Log a 1st-party event for internal analytics (async version).
  * Events are batched and exported to /api/event_logging/batch
  *
@@ -152,7 +152,7 @@ export function is1PEventLoggingEnabled(): boolean {
  *
  * @param eventName - Name of the event (e.g., 'tengu_api_query')
  * @param metadata - Additional metadata for the event (intentionally no strings, to avoid accidentally logging code/filepaths)
- */
+     */
 async function logEventTo1PAsync(
   firstPartyEventLogger: Logger,
   eventName: string,
@@ -206,13 +206,13 @@ async function logEventTo1PAsync(
   }
 }
 
-/**
+/*    *
  * Log a 1st-party event for internal analytics.
  * Events are batched and exported to /api/event_logging/batch
  *
  * @param eventName - Name of the event (e.g., 'tengu_api_query')
  * @param metadata - Additional metadata for the event (intentionally no strings, to avoid accidentally logging code/filepaths)
- */
+     */
 export function logEventTo1P(
   eventName: string,
   metadata: Record<string, number | boolean | undefined> = {},
@@ -229,9 +229,9 @@ export function logEventTo1P(
   void logEventTo1PAsync(firstPartyEventLogger, eventName, metadata)
 }
 
-/**
+/*    *
  * GrowthBook experiment event data for logging
- */
+     */
 export type GrowthBookExperimentData = {
   experimentId: string
   variationId: number
@@ -246,12 +246,12 @@ function getEnvironmentForGrowthBook(): string {
   return 'production'
 }
 
-/**
+/*    *
  * Log a GrowthBook experiment assignment event to 1P.
  * Events are batched and exported to /api/event_logging/batch
  *
  * @param data - GrowthBook experiment assignment data
- */
+     */
 export function logGrowthBookExperimentTo1P(
   data: GrowthBookExperimentData,
 ): void {
@@ -301,14 +301,14 @@ const DEFAULT_LOGS_EXPORT_INTERVAL_MS = 10000
 const DEFAULT_MAX_EXPORT_BATCH_SIZE = 200
 const DEFAULT_MAX_QUEUE_SIZE = 8192
 
-/**
+/*    *
  * Initialize 1P event logging infrastructure.
  * This creates a separate LoggerProvider for internal event logging,
  * independent of customer OTLP telemetry.
  *
  * This uses its own minimal resource configuration with just the attributes
  * we need for internal analytics (service name, version, platform info).
- */
+     */
 export function initialize1PEventLogging(): void {
   profileCheckpoint('1p_event_logging_start')
   const enabled = is1PEventLoggingEnabled()
@@ -388,7 +388,7 @@ export function initialize1PEventLogging(): void {
   )
 }
 
-/**
+/*    *
  * Rebuild the 1P event logging pipeline if the batch config changed.
  * Register this with onGrowthBookRefresh so long-running sessions pick up
  * changes to batch size, delay, endpoint, etc.
@@ -403,7 +403,7 @@ export function initialize1PEventLogging(): void {
  *    reinit — so the NEW exporter's disk-backed retry picks them up.
  * 3. Swap to new provider/logger; old provider shutdown runs in background
  *    (buffer already drained, just cleanup).
- */
+     */
 export async function reinitialize1PEventLoggingIfConfigChanged(): Promise<void> {
   if (!is1PEventLoggingEnabled() || !firstPartyEventLoggerProvider) {
     return

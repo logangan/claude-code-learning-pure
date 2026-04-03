@@ -1,4 +1,4 @@
-/**
+/*    *
  * CLI `ComputerExecutor` implementation. Wraps two native modules:
  *   - `@ant/computer-use-input` (Rust/enigo) — mouse, keyboard, frontmost app
  *   - `@ant/computer-use-swift` — SCContentFilter screenshots, NSWorkspace apps, TCC
@@ -25,7 +25,7 @@
  *   frontmost gate uses that, and the terminal being frontmost is fine.
  *
  * Clipboard via `pbcopy`/`pbpaste`. No Electron `clipboard` module.
- */
+     */
 
 import type {
   ComputerExecutor,
@@ -56,7 +56,7 @@ import { requireComputerUseSwift } from './swiftLoader.js'
 
 const SCREENSHOT_JPEG_QUALITY = 0.75
 
-/** Logical → physical → API target dims. See `targetImageSize` + COORDINATES.md. */
+/*    * Logical → physical → API target dims. See `targetImageSize` + COORDINATES.md.     */
 function computeTargetDims(
   logicalW: number,
   logicalH: number,
@@ -89,25 +89,25 @@ async function writeClipboardViaPbcopy(text: string): Promise<void> {
 
 type Input = ReturnType<typeof requireComputerUseInput>
 
-/**
+/*    *
  * Single-element key sequence matching "escape" or "esc" (case-insensitive).
  * Used to hole-punch the CGEventTap abort for model-synthesized Escape — enigo
  * accepts both spellings, so the tap must too.
- */
+     */
 function isBareEscape(parts: readonly string[]): boolean {
   if (parts.length !== 1) return false
   const lower = parts[0]!.toLowerCase()
   return lower === 'escape' || lower === 'esc'
 }
 
-/**
+/*    *
  * Instant move, then 50ms — an input→HID→AppKit→NSEvent round-trip before the
  * caller reads `NSEvent.mouseLocation` or dispatches a click. Used for click,
  * scroll, and drag-from; `animatedMove` is reserved for drag-to only. The
  * intermediate animation frames were triggering hover states and, on the
  * decomposed mouseDown/moveMouse path, emitting stray `.leftMouseDragged`
  * events (toolCalls.ts handleScroll's mouse_full workaround).
- */
+     */
 const MOVE_SETTLE_MS = 50
 
 async function moveAndSettle(
@@ -119,7 +119,7 @@ async function moveAndSettle(
   await sleep(MOVE_SETTLE_MS)
 }
 
-/**
+/*    *
  * Release `pressed` in reverse (last pressed = first released). Errors are
  * swallowed so a release failure never masks the real error.
  *
@@ -127,7 +127,7 @@ async function moveAndSettle(
  * orphaned press lambda resolves an in-flight input.key() AFTER finally
  * calls us, that late push is still released on the next iteration. The
  * orphaned flag stops the lambda at its NEXT check, not the current await.
- */
+     */
 async function releasePressed(input: Input, pressed: string[]): Promise<void> {
   let k: string | undefined
   while ((k = pressed.pop()) !== undefined) {
@@ -139,14 +139,14 @@ async function releasePressed(input: Input, pressed: string[]): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Bracket `fn()` with modifier press/release. `pressed` tracks which presses
  * actually landed, so a mid-press throw only releases what was pressed — no
  * stuck modifiers. The finally covers both press-phase and fn() throws.
  *
  * Caller must already be inside drainRunLoop() — key() dispatches to the
  * main queue and needs the pump to resolve.
- */
+     */
 async function withModifiers<T>(
   input: Input,
   mods: string[],
@@ -164,7 +164,7 @@ async function withModifiers<T>(
   }
 }
 
-/**
+/*    *
  * Port of Cowork's `typeViaClipboard`. Sequence:
  *   1. Save the user's clipboard.
  *   2. Write our text.
@@ -176,7 +176,7 @@ async function withModifiers<T>(
  *      pastes the RESTORED content.
  *   6. Restore — in a `finally`, so a throw between 2-5 never leaves the
  *      user's clipboard clobbered. Restore failures are swallowed.
- */
+     */
 async function typeViaClipboard(input: Input, text: string): Promise<void> {
   let saved: string | undefined
   try {
@@ -205,7 +205,7 @@ async function typeViaClipboard(input: Input, text: string): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Port of Cowork's `animateMouseMovement` + `animatedMove`. Ease-out-cubic at
  * 60fps; distance-proportional duration at 2000 px/sec, capped at 0.5s. When
  * the sub-gate is off (or distance < ~2 frames), falls through to
@@ -213,7 +213,7 @@ async function typeViaClipboard(input: Input, text: string): Promise<void> {
  * apps may watch for `.leftMouseDragged` specifically (not just "button down +
  * position changed") and the slow motion gives them time to process
  * intermediate positions (scrollbars, window resizes).
- */
+     */
 async function animatedMove(
   input: Input,
   targetX: number,
@@ -313,8 +313,7 @@ export function createCliExecutor(opts: {
       // Electron drains CFRunLoop continuously so Cowork doesn't see this.
       // Worst-case 100ms + 5×200ms safety-net ≈ 1.1s, well under the 30s
       // drainRunLoop ceiling.
-      //
-      // "Continue with action execution even if switching fails" — the
+      // // "Continue with action execution even if switching fails" — the
       // frontmost gate in toolCalls.ts catches any actual unsafe state.
       return drainRunLoop(async () => {
         try {
@@ -391,11 +390,11 @@ export function createCliExecutor(opts: {
       )
     },
 
-    /**
+    /*    *
      * Pre-size to `targetImageSize` output so the API transcoder's early-return
      * fires — no server-side resize, `scaleCoord` stays coherent. See
      * packages/desktop/computer-use-mcp/COORDINATES.md.
-     */
+         */
     async screenshot(opts: {
       allowedBundleIds: string[]
       displayId?: number
@@ -445,13 +444,13 @@ export function createCliExecutor(opts: {
 
     // ── Keyboard ─────────────────────────────────────────────────────────
 
-    /**
+    /*    *
      * xdotool-style sequence e.g. "ctrl+shift+a" → split on '+' and pass to
      * keys(). keys() dispatches to DispatchQueue.main — drainRunLoop pumps
      * CFRunLoop so it resolves. Rust's error-path cleanup (enigo_wrap.rs)
      * releases modifiers on each invocation, so a mid-loop throw leaves
      * nothing stuck. 8ms between iterations — 125Hz USB polling cadence.
-     */
+         */
     async key(keySequence: string, repeat?: number): Promise<void> {
       const input = requireComputerUseInput()
       const parts = keySequence.split('+').filter(p => p.length > 0)
@@ -478,8 +477,7 @@ export function createCliExecutor(opts: {
       // durationMs isn't bounded by drainRunLoop's 30s timeout. `pressed`
       // tracks which presses landed so a mid-press throw still releases
       // everything that was actually pressed.
-      //
-      // `orphaned` guards against a timeout-orphan race: if the press-phase
+      // // `orphaned` guards against a timeout-orphan race: if the press-phase
       // drainRunLoop times out while the esc-hotkey pump-retain keeps the
       // pump running, the orphaned lambda would continue pushing to `pressed`
       // after finally's releasePressed snapshotted the length — leaving keys
@@ -528,13 +526,13 @@ export function createCliExecutor(opts: {
       await moveAndSettle(requireComputerUseInput(), x, y)
     },
 
-    /**
+    /*    *
      * Move, then click. Modifiers are press/release bracketed via withModifiers
      * — same pattern as Cowork. AppKit computes NSEvent.clickCount from timing
      * + position proximity, so double/triple click work without setting the
      * CGEvent clickState field. key() inside withModifiers needs the pump;
      * the modifier-less path doesn't.
-     */
+         */
     async click(
       x: number,
       y: number,
@@ -567,7 +565,7 @@ export function createCliExecutor(opts: {
       return requireComputerUseInput().mouseLocation()
     },
 
-    /**
+    /*    *
      * `from === undefined` → drag from current cursor (training's
      * left_click_drag with start_coordinate omitted). Inner `finally`: the
      * button is ALWAYS released even if the move throws — otherwise the
@@ -575,7 +573,7 @@ export function createCliExecutor(opts: {
      * 50ms sleep after press: enigo's move_mouse reads NSEvent.pressedMouseButtons
      * to decide .leftMouseDragged vs .mouseMoved; the synthetic leftMouseDown
      * needs a HID-tap round-trip to show up there.
-     */
+         */
     async drag(
       from: { x: number; y: number } | undefined,
       to: { x: number; y: number },
@@ -593,10 +591,10 @@ export function createCliExecutor(opts: {
       }
     },
 
-    /**
+    /*    *
      * Move first, then scroll each axis. Vertical-first — it's the common
      * axis; a horizontal failure shouldn't lose the vertical.
-     */
+         */
     async scroll(x: number, y: number, dx: number, dy: number): Promise<void> {
       const input = requireComputerUseInput()
       await moveAndSettle(input, x, y)
@@ -644,11 +642,11 @@ export function createCliExecutor(opts: {
   }
 }
 
-/**
+/*    *
  * Module-level export (not on the executor object) — called at turn-end from
  * `stopHooks.ts` / `query.ts`, outside the executor lifecycle. Fire-and-forget
  * at the call site; the caller `.catch()`es.
- */
+     */
 export async function unhideComputerUseApps(
   bundleIds: readonly string[],
 ): Promise<void> {

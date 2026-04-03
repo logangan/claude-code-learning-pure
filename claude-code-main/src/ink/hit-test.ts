@@ -3,7 +3,7 @@ import { ClickEvent } from './events/click-event.js'
 import type { EventHandlerProps } from './events/event-handlers.js'
 import { nodeCache } from './node-cache.js'
 
-/**
+/*    *
  * Find the deepest DOM element whose rendered rect contains (col, row).
  *
  * Uses the nodeCache populated by renderNodeToOutput — rects are in screen
@@ -14,7 +14,7 @@ import { nodeCache } from './node-cache.js'
  *
  * Returns the hit node even if it has no onClick — dispatchClick walks up
  * via parentNode to find handlers.
- */
+     */
 export function hitTest(
   node: DOMElement,
   col: number,
@@ -40,12 +40,12 @@ export function hitTest(
   return node
 }
 
-/**
+/*    *
  * Hit-test the root at (col, row) and bubble a ClickEvent from the deepest
  * containing node up through parentNode. Only nodes with an onClick handler
  * fire. Stops when a handler calls stopImmediatePropagation(). Returns
  * true if at least one onClick handler fired.
- */
+     */
 export function dispatchClick(
   root: DOMElement,
   col: number,
@@ -88,7 +88,7 @@ export function dispatchClick(
   return handled
 }
 
-/**
+/*    *
  * Fire onMouseEnter/onMouseLeave as the pointer moves. Like DOM
  * mouseenter/mouseleave: does NOT bubble — moving between children does
  * not re-fire on the parent. Walks up from the hit node collecting every
@@ -98,7 +98,7 @@ export function dispatchClick(
  * Mutates `hovered` in place so the caller (App instance) can hold it
  * across calls. Clears the set when the hit is null (cursor moved into a
  * non-rendered gap or off the root rect).
- */
+     */
 export function dispatchHover(
   root: DOMElement,
   col: number,

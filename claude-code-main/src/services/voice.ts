@@ -1,6 +1,5 @@
 // Voice service: audio recording for push-to-talk voice input.
-//
-// Recording uses native audio capture (cpal) on macOS, Linux, and Windows
+// // Recording uses native audio capture (cpal) on macOS, Linux, and Windows
 // for in-process mic access. Falls back to SoX `rec` or arecord (ALSA)
 // on Linux if the native module is unavailable.
 

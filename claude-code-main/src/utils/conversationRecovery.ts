@@ -51,7 +51,7 @@ import type { ContentReplacementRecord } from './toolResultStorage.js'
 
 // Dead code elimination: ant-only tool names are conditionally required so
 // their strings don't leak into external builds. Static imports always bundle.
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const BRIEF_TOOL_NAME: string | null =
   feature('KAIROS') || feature('KAIROS_BRIEF')
     ? (
@@ -69,11 +69,11 @@ const SEND_USER_FILE_TOOL_NAME: string | null = feature('KAIROS')
       require('../tools/SendUserFileTool/prompt.js') as typeof import('../tools/SendUserFileTool/prompt.js')
     ).SEND_USER_FILE_TOOL_NAME
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
-/**
+/*    *
  * Transforms legacy attachment types to current types for backward compatibility
- */
+     */
 function migrateLegacyAttachmentTypes(message: Message): Message {
   if (message.type !== 'attachment') {
     return message
@@ -145,22 +145,22 @@ export type DeserializeResult = {
   turnInterruptionState: TurnInterruptionState
 }
 
-/**
+/*    *
  * Deserializes messages from a log file into the format expected by the REPL.
  * Filters unresolved tool uses, orphaned thinking messages, and appends a
  * synthetic assistant sentinel when the last message is from the user.
  * @internal Exported for testing - use loadConversationForResume instead
- */
+     */
 export function deserializeMessages(serializedMessages: Message[]): Message[] {
   return deserializeMessagesWithInterruptDetection(serializedMessages).messages
 }
 
-/**
+/*    *
  * Like deserializeMessages, but also detects whether the session was
  * interrupted mid-turn. Used by the SDK resume path to auto-continue
  * interrupted turns after a gateway-triggered restart.
  * @internal Exported for testing
- */
+     */
 export function deserializeMessagesWithInterruptDetection(
   serializedMessages: Message[],
 ): DeserializeResult {
@@ -251,15 +251,15 @@ export function deserializeMessagesWithInterruptDetection(
   }
 }
 
-/**
+/*    *
  * Internal 3-way result from detection, before transforming interrupted_turn
  * into interrupted_prompt with a synthetic continuation message.
- */
+     */
 type InternalInterruptionState =
   | TurnInterruptionState
   | { kind: 'interrupted_turn' }
 
-/**
+/*    *
  * Determines whether the conversation was interrupted mid-turn based on the
  * last message after filtering. An assistant as last message (after filtering
  * unresolved tool_uses) is treated as a completed turn because stop_reason is
@@ -268,7 +268,7 @@ type InternalInterruptionState =
  * System and progress messages are skipped when finding the last turn-relevant
  * message — they are bookkeeping artifacts that should not mask a genuine
  * interruption. Attachments are kept as part of the turn.
- */
+     */
 function detectTurnInterruption(
   messages: NormalizedMessage[],
 ): InternalInterruptionState {
@@ -332,7 +332,7 @@ function detectTurnInterruption(
   return { kind: 'none' }
 }
 
-/**
+/*    *
  * Is this tool_result the output of a tool that legitimately terminates a
  * turn? SendUserMessage is the canonical case: in brief mode, calling it is
  * the turn's final act — there is no follow-up assistant text (#20467
@@ -344,7 +344,7 @@ function detectTurnInterruption(
  * preceding relevant message (filterUnresolvedToolUses has already dropped
  * unpaired ones), but we walk just in case system/progress noise is
  * interleaved.
- */
+     */
 function isTerminalToolResult(
   result: NormalizedUserMessage,
   messages: NormalizedMessage[],
@@ -372,13 +372,13 @@ function isTerminalToolResult(
   return false
 }
 
-/**
+/*    *
  * Restores skill state from invoked_skills attachments in messages.
  * This ensures that skills are preserved across resume after compaction.
  * Without this, if another compaction happens after resume, the skills would be lost
  * because STATE.invokedSkills would be empty.
  * @internal Exported for testing - use loadConversationForResume instead
- */
+     */
 export function restoreSkillStateFromMessages(messages: Message[]): void {
   for (const message of messages) {
     if (message.type !== 'attachment') {
@@ -402,7 +402,7 @@ export function restoreSkillStateFromMessages(messages: Message[]): void {
   }
 }
 
-/**
+/*    *
  * Chain-walk a transcript jsonl by path.  Same sequence loadFullLog
  * runs internally — loadTranscriptFile → find newest non-sidechain
  * leaf → buildConversationChain → removeExtraFields — just starting
@@ -412,7 +412,7 @@ export function restoreSkillStateFromMessages(messages: Message[]): void {
  * other message's parentUuid points at" — the chain tips.  There can
  * be several (sidechains, orphans); newest non-sidechain is the main
  * conversation's end.
- */
+     */
 export async function loadMessagesFromJsonlPath(path: string): Promise<{
   messages: SerializedMessage[]
   sessionId: UUID | undefined
@@ -439,7 +439,7 @@ export async function loadMessagesFromJsonlPath(path: string): Promise<{
   }
 }
 
-/**
+/*    *
  * Loads a conversation for resume from various sources.
  * This is the centralized function for loading and deserializing conversations.
  *
@@ -452,7 +452,7 @@ export async function loadMessagesFromJsonlPath(path: string): Promise<{
  *   on suffix), typically for cross-directory resume where the
  *   transcript lives outside the current project dir.
  * @returns Object containing the deserialized messages and the original log, or null if not found
- */
+     */
 export async function loadConversationForResume(
   source: string | LogOption | undefined,
   sourceJsonlFile: string | undefined,

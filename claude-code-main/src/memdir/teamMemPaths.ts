@@ -4,9 +4,9 @@ import { getFeatureValue_CACHED_MAY_BE_STALE } from '../services/analytics/growt
 import { getErrnoCode } from '../utils/errors.js'
 import { getAutoMemPath, isAutoMemoryEnabled } from './paths.js'
 
-/**
+/*    *
  * Error thrown when a path validation detects a traversal or injection attempt.
- */
+     */
 export class PathTraversalError extends Error {
   constructor(message: string) {
     super(message)
@@ -14,11 +14,11 @@ export class PathTraversalError extends Error {
   }
 }
 
-/**
+/*    *
  * Sanitize a file path key by rejecting dangerous patterns.
  * Checks for null bytes, URL-encoded traversals, and other injection vectors.
  * Returns the sanitized string or throws PathTraversalError.
- */
+     */
 function sanitizePathKey(key: string): string {
   // Null bytes can truncate paths in C-based syscalls
   if (key.includes('\0')) {
@@ -63,13 +63,13 @@ function sanitizePathKey(key: string): string {
   return key
 }
 
-/**
+/*    *
  * Whether team memory features are enabled.
  * Team memory is a subdirectory of auto memory, so it requires auto memory
  * to be enabled. This keeps all team-memory consumers (prompt, content
  * injection, sync watcher, file detection) consistent when auto memory is
  * disabled via env var or settings.
- */
+     */
 export function isTeamMemoryEnabled(): boolean {
   if (!isAutoMemoryEnabled()) {
     return false
@@ -77,23 +77,23 @@ export function isTeamMemoryEnabled(): boolean {
   return getFeatureValue_CACHED_MAY_BE_STALE('tengu_herring_clock', false)
 }
 
-/**
+/*    *
  * Returns the team memory path: <memoryBase>/projects/<sanitized-project-root>/memory/team/
  * Lives as a subdirectory of the auto-memory directory, scoped per-project.
- */
+     */
 export function getTeamMemPath(): string {
   return (join(getAutoMemPath(), 'team') + sep).normalize('NFC')
 }
 
-/**
+/*    *
  * Returns the team memory entrypoint: <memoryBase>/projects/<sanitized-project-root>/memory/team/MEMORY.md
  * Lives as a subdirectory of the auto-memory directory, scoped per-project.
- */
+     */
 export function getTeamMemEntrypoint(): string {
   return join(getAutoMemPath(), 'team', 'MEMORY.md')
 }
 
-/**
+/*    *
  * Resolve symlinks for the deepest existing ancestor of a path.
  * The target file may not exist yet (we may be about to create it), so we
  * walk up the directory tree until realpath() succeeds, then rejoin the
@@ -105,7 +105,7 @@ export function getTeamMemEntrypoint(): string {
  * Using realpath() on the deepest existing ancestor ensures we compare the
  * actual filesystem location, not the symbolic path.
  *
- */
+     */
 async function realpathDeepestExisting(absolutePath: string): Promise<string> {
   const tail: string[] = []
   let current = absolutePath
@@ -170,7 +170,7 @@ async function realpathDeepestExisting(absolutePath: string): Promise<string> {
   return absolutePath
 }
 
-/**
+/*    *
  * Check whether a real (symlink-resolved) path is within the real team
  * memory directory. Both sides are realpath'd so the comparison is between
  * canonical filesystem locations.
@@ -179,7 +179,7 @@ async function realpathDeepestExisting(absolutePath: string): Promise<string> {
  * a symlink escape requires a pre-existing symlink inside teamDir, which
  * requires teamDir to exist. If there's no directory, there's no symlink,
  * and the first-pass string-level containment check is sufficient.
- */
+     */
 async function isRealPathWithinTeamDir(
   realCandidate: string,
 ): Promise<boolean> {
@@ -205,12 +205,12 @@ async function isRealPathWithinTeamDir(
   return realCandidate.startsWith(realTeamDir + sep)
 }
 
-/**
+/*    *
  * Check if a resolved absolute path is within the team memory directory.
  * Uses path.resolve() to convert relative paths and eliminate traversal segments.
  * Does NOT resolve symlinks — for write validation use validateTeamMemWritePath()
  * or validateTeamMemKey() which include symlink resolution.
- */
+     */
 export function isTeamMemPath(filePath: string): boolean {
   // SECURITY: resolve() converts to absolute and eliminates .. segments,
   // preventing path traversal attacks (e.g. "team/../../etc/passwd")
@@ -219,12 +219,12 @@ export function isTeamMemPath(filePath: string): boolean {
   return resolvedPath.startsWith(teamDir)
 }
 
-/**
+/*    *
  * Validate that an absolute file path is safe for writing to the team memory directory.
  * Returns the resolved absolute path if valid.
  * Throws PathTraversalError if the path contains injection vectors, escapes the
  * directory via .. segments, or escapes via a symlink (PSR M22186).
- */
+     */
 export async function validateTeamMemWritePath(
   filePath: string,
 ): Promise<string> {
@@ -255,13 +255,13 @@ export async function validateTeamMemWritePath(
   return resolvedPath
 }
 
-/**
+/*    *
  * Validate a relative path key from the server against the team memory directory.
  * Sanitizes the key, joins with the team dir, resolves symlinks on the deepest
  * existing ancestor, and verifies containment against the real team dir.
  * Returns the resolved absolute path.
  * Throws PathTraversalError if the key is malicious (PSR M22186).
- */
+     */
 export async function validateTeamMemKey(relativeKey: string): Promise<string> {
   sanitizePathKey(relativeKey)
   const teamDir = getTeamMemPath()
@@ -283,10 +283,10 @@ export async function validateTeamMemKey(relativeKey: string): Promise<string> {
   return resolvedPath
 }
 
-/**
+/*    *
  * Check if a file path is within the team memory directory
  * and team memory is enabled.
- */
+     */
 export function isTeamMemFile(filePath: string): boolean {
   return isTeamMemoryEnabled() && isTeamMemPath(filePath)
 }

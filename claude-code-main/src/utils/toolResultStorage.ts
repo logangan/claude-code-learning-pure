@@ -1,6 +1,6 @@
-/**
+/*    *
  * Utility for persisting large tool results to disk instead of truncating them.
- */
+     */
 
 import type { ToolResultBlockParam } from '@anthropic-ai/sdk/resources/index.mjs'
 import { mkdir, writeFile } from 'fs/promises'
@@ -33,16 +33,16 @@ export const PERSISTED_OUTPUT_CLOSING_TAG = '</persisted-output>'
 // Message used when tool result content was cleared without persisting to file
 export const TOOL_RESULT_CLEARED_MESSAGE = '[Old tool result content cleared]'
 
-/**
+/*    *
  * GrowthBook override map: tool name -> persistence threshold (chars).
  * When a tool name is present in this map, that value is used directly as the
  * effective threshold, bypassing the Math.min() clamp against the 50k default.
  * Tools absent from the map use the hardcoded fallback.
  * Flag default is {} (no overrides == behavior unchanged).
- */
+     */
 const PERSIST_THRESHOLD_OVERRIDE_FLAG = 'tengu_satin_quoll'
 
-/**
+/*    *
  * Resolve the effective persistence threshold for a tool.
  * GrowthBook override wins when present; otherwise falls back to the declared
  * per-tool cap clamped by the global default.
@@ -51,7 +51,7 @@ const PERSIST_THRESHOLD_OVERRIDE_FLAG = 'tengu_satin_quoll'
  * so a flag served as `null` leaks through. We guard with optional chaining and a
  * typeof check so any non-object flag value (null, string, number) falls through
  * to the hardcoded default instead of throwing on index or returning 0.
- */
+     */
 export function getPersistenceThreshold(
   toolName: string,
   declaredMaxResultSizeChars: number,
@@ -91,16 +91,16 @@ export type PersistToolResultError = {
   error: string
 }
 
-/**
+/*    *
  * Get the session directory (projectDir/sessionId)
- */
+     */
 function getSessionDir(): string {
   return join(getProjectDir(getOriginalCwd()), getSessionId())
 }
 
-/**
+/*    *
  * Get the tool results directory for this session (projectDir/sessionId/tool-results)
- */
+     */
 export function getToolResultsDir(): string {
   return join(getSessionDir(), TOOL_RESULTS_SUBDIR)
 }
@@ -108,17 +108,17 @@ export function getToolResultsDir(): string {
 // Preview size in bytes for the reference message
 export const PREVIEW_SIZE_BYTES = 2000
 
-/**
+/*    *
  * Get the filepath where a tool result would be persisted.
- */
+     */
 export function getToolResultPath(id: string, isJson: boolean): string {
   const ext = isJson ? 'json' : 'txt'
   return join(getToolResultsDir(), `${id}.${ext}`)
 }
 
-/**
+/*    *
  * Ensure the session-specific tool results directory exists
- */
+     */
 export async function ensureToolResultsDir(): Promise<void> {
   try {
     await mkdir(getToolResultsDir(), { recursive: true })
@@ -127,13 +127,13 @@ export async function ensureToolResultsDir(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Persist a tool result to disk and return information about the persisted file
  *
  * @param content - The tool result content to persist (string or array of content blocks)
  * @param toolUseId - The ID of the tool use that produced the result
  * @returns Information about the persisted file including filepath and preview
- */
+     */
 export async function persistToolResult(
   content: NonNullable<ToolResultBlockParam['content']>,
   toolUseId: string,
@@ -183,9 +183,9 @@ export async function persistToolResult(
   }
 }
 
-/**
+/*    *
  * Build a message for large tool results with preview
- */
+     */
 export function buildLargeToolResultMessage(
   result: PersistedToolResult,
 ): string {
@@ -198,10 +198,10 @@ export function buildLargeToolResultMessage(
   return message
 }
 
-/**
+/*    *
  * Process a tool result for inclusion in a message.
  * Maps the result to the API format and persists large results to disk.
- */
+     */
 export async function processToolResultBlock<T>(
   tool: {
     name: string
@@ -225,10 +225,10 @@ export async function processToolResultBlock<T>(
   )
 }
 
-/**
+/*    *
  * Process a pre-mapped tool result block. Applies persistence for large results
  * without re-calling mapToolResultToToolResultBlockParam.
- */
+     */
 export async function processPreMappedToolResultBlock(
   toolResultBlock: ToolResultBlockParam,
   toolName: string,
@@ -241,12 +241,12 @@ export async function processPreMappedToolResultBlock(
   )
 }
 
-/**
+/*    *
  * True when a tool_result's content is empty or effectively empty. Covers:
  * undefined/null/'', whitespace-only strings, empty arrays, and arrays whose
  * only blocks are text blocks with empty/whitespace text. Non-text blocks
  * (images, tool_reference) are treated as non-empty.
- */
+     */
 export function isToolResultContentEmpty(
   content: ToolResultBlockParam['content'],
 ): boolean {
@@ -264,11 +264,11 @@ export function isToolResultContentEmpty(
   )
 }
 
-/**
+/*    *
  * Handle large tool results by persisting to disk instead of truncating.
  * Returns the original block if no persistence needed, or a modified block
  * with the content replaced by a reference to the persisted file.
- */
+     */
 async function maybePersistLargeToolResult(
   toolResultBlock: ToolResultBlockParam,
   toolName: string,
@@ -333,9 +333,9 @@ async function maybePersistLargeToolResult(
   return { ...toolResultBlock, content: message }
 }
 
-/**
+/*    *
  * Generate a preview of content, truncating at a newline boundary when possible.
- */
+     */
 export function generatePreview(
   content: string,
   maxBytes: number,
@@ -355,9 +355,9 @@ export function generatePreview(
   return { preview: content.slice(0, cutPoint), hasMore: true }
 }
 
-/**
+/*    *
  * Type guard to check if persist result is an error
- */
+     */
 export function isPersistError(
   result: PersistedToolResult | PersistToolResultError,
 ): result is PersistToolResultError {
@@ -365,11 +365,10 @@ export function isPersistError(
 }
 
 // --- Message-level aggregate tool result budget ---
-//
-// Tracks replacement state across turns so enforceToolResultBudget makes the
+// // Tracks replacement state across turns so enforceToolResultBudget makes the
 // same choices every time (preserves prompt cache prefix).
 
-/**
+/*    *
  * Per-conversation-thread state for the aggregate tool result budget.
  * State must be stable to preserve prompt cache:
  *   - seenIds: results that have passed through the budget check (replaced
@@ -386,7 +385,7 @@ export function isPersistError(
  * parent's state by default (cache-sharing forks like agentSummary need
  * identical decisions), or resumeAgentBackground threads one reconstructed
  * from sidechain records.
- */
+     */
 export type ContentReplacementState = {
   seenIds: Set<string>
   replacements: Map<string, string>
@@ -396,12 +395,12 @@ export function createContentReplacementState(): ContentReplacementState {
   return { seenIds: new Set(), replacements: new Map() }
 }
 
-/**
+/*    *
  * Clone replacement state for a cache-sharing fork (e.g. agentSummary).
  * The fork needs state identical to the source at fork time so
  * enforceToolResultBudget makes the same choices → same wire prefix →
  * prompt cache hit. Mutating the clone does not affect the source.
- */
+     */
 export function cloneContentReplacementState(
   source: ContentReplacementState,
 ): ContentReplacementState {
@@ -411,13 +410,13 @@ export function cloneContentReplacementState(
   }
 }
 
-/**
+/*    *
  * Resolve the per-message aggregate budget limit. GrowthBook override
  * (tengu_hawthorn_window) wins when present and a finite positive number;
  * otherwise falls back to the hardcoded constant. Defensive typeof/finite
  * check: GrowthBook's cache returns `cached !== undefined ? cached : default`,
  * so a flag served as null/string/NaN leaks through.
- */
+     */
 export function getPerMessageBudgetLimit(): number {
   const override = getFeatureValue_CACHED_MAY_BE_STALE<number | null>(
     'tengu_hawthorn_window',
@@ -433,7 +432,7 @@ export function getPerMessageBudgetLimit(): number {
   return MAX_TOOL_RESULTS_PER_MESSAGE_CHARS
 }
 
-/**
+/*    *
  * Provision replacement state for a new conversation thread.
  *
  * Encapsulates the feature-flag gate + reconstruct-vs-fresh choice:
@@ -443,7 +442,7 @@ export function getPerMessageBudgetLimit(): number {
  *     budget never replaces content the model already saw unreplaced). Empty
  *     or absent records freeze everything; non-empty records additionally
  *     populate the replacements Map for byte-identical re-apply.
- */
+     */
 export function provisionContentReplacementState(
   initialMessages?: Message[],
   initialContentReplacements?: ContentReplacementRecord[],
@@ -462,7 +461,7 @@ export function provisionContentReplacementState(
   return createContentReplacementState()
 }
 
-/**
+/*    *
  * Serializable record of one content-replacement decision. Written to the
  * transcript as a ContentReplacementEntry so decisions survive resume.
  * Discriminated by `kind` so future replacement mechanisms (user text,
@@ -471,7 +470,7 @@ export function provisionContentReplacementState(
  * `replacement` is the exact string the model saw — stored rather than
  * derived on resume so code changes to the preview template, size formatting,
  * or path layout can't silently break prompt cache.
- */
+     */
 export type ContentReplacementRecord = {
   kind: 'tool-result'
   toolUseId: string
@@ -528,11 +527,11 @@ function contentSize(
   )
 }
 
-/**
+/*    *
  * Walk messages and build tool_use_id → tool_name from assistant tool_use
  * blocks. tool_use always precedes its tool_result (model calls, then result
  * arrives), so by the time budget enforcement sees a result, its name is known.
- */
+     */
 function buildToolNameMap(messages: Message[]): Map<string, string> {
   const map = new Map<string, string>()
   for (const message of messages) {
@@ -548,12 +547,12 @@ function buildToolNameMap(messages: Message[]): Map<string, string> {
   return map
 }
 
-/**
+/*    *
  * Extract candidate tool_result blocks from a single user message: blocks
  * that are non-empty, non-image, and not already compacted by tag (i.e. by
  * the per-tool limit, or an earlier iteration of this same query call).
  * Returns [] for messages with no eligible blocks.
- */
+     */
 function collectCandidatesFromMessage(message: Message): ToolResultCandidate[] {
   if (message.type !== 'user' || !Array.isArray(message.message.content)) {
     return []
@@ -572,7 +571,7 @@ function collectCandidatesFromMessage(message: Message): ToolResultCandidate[] {
   })
 }
 
-/**
+/*    *
  * Extract candidate tool_result blocks grouped by API-level user message.
  *
  * normalizeMessagesForAPI merges consecutive user messages into one
@@ -596,7 +595,7 @@ function collectCandidatesFromMessage(message: Message): ToolResultCandidate[] {
  * into one over-budget wire message — defeating the feature.
  *
  * Only groups with at least one eligible candidate are returned.
- */
+     */
 function collectCandidatesByMessage(
   messages: Message[],
 ): ToolResultCandidate[][] {
@@ -612,11 +611,11 @@ function collectCandidatesByMessage(
   // merged by normalizeMessagesForAPI (messages.ts ~2126 walks back PAST
   // different-ID assistants via `continue`), so any re-appearance of a
   // previously-seen ID must NOT create a group boundary. Two scenarios:
-  //   • Consecutive: streamingToolExecution yields one AssistantMessage per
-  //     content_block_stop (same id); a fast tool drains between blocks;
-  //     abort/hook-stop leaves [asst(X), user(trA), asst(X), user(trB)].
-  //   • Interleaved: coordinator/teammate streams mix different responses
-  //     so [asst(X), user(trA), asst(Y), user(trB), asst(X), user(trC)].
+  // • Consecutive: streamingToolExecution yields one AssistantMessage per
+  // content_block_stop (same id); a fast tool drains between blocks;
+  // abort/hook-stop leaves [asst(X), user(trA), asst(X), user(trB)].
+  // • Interleaved: coordinator/teammate streams mix different responses
+  // so [asst(X), user(trA), asst(Y), user(trB), asst(X), user(trC)].
   // In both, normalizeMessagesForAPI merges the X fragments into one wire
   // assistant, and their following tool_results merge into one wire user
   // message — so the budget must see them as one group too.
@@ -638,14 +637,14 @@ function collectCandidatesByMessage(
   return groups
 }
 
-/**
+/*    *
  * Partition candidates by their prior decision state:
  *  - mustReapply: previously replaced → re-apply the cached replacement for
  *    prefix stability
  *  - frozen: previously seen and left unreplaced → off-limits (replacing
  *    now would change a prefix that was already cached)
  *  - fresh: never seen → eligible for new replacement decisions
- */
+     */
 function partitionByPriorDecision(
   candidates: ToolResultCandidate[],
   state: ContentReplacementState,
@@ -666,12 +665,12 @@ function partitionByPriorDecision(
   )
 }
 
-/**
+/*    *
  * Pick the largest fresh results to replace until the model-visible total
  * (frozen + remaining fresh) is at or under budget, or fresh is exhausted.
  * If frozen results alone exceed budget we accept the overage — microcompact
  * will eventually clear them.
- */
+     */
 function selectFreshToReplace(
   fresh: ToolResultCandidate[],
   frozenSize: number,
@@ -691,11 +690,11 @@ function selectFreshToReplace(
   return selected
 }
 
-/**
+/*    *
  * Return a new Message[] where each tool_result block whose id appears in
  * replacementMap has its content replaced. Messages and blocks with no
  * replacements are passed through by reference.
- */
+     */
 function replaceToolResultContents(
   messages: Message[],
   replacementMap: Map<string, string>,
@@ -736,7 +735,7 @@ async function buildReplacement(
   }
 }
 
-/**
+/*    *
  * Enforce the per-message budget on aggregate tool result size.
  *
  * For each user message whose tool_result blocks together exceed the
@@ -765,7 +764,7 @@ async function buildReplacement(
  *   - messages: same array instance when no replacement is needed
  *   - newlyReplaced: replacements made THIS call (not re-applies).
  *     Caller persists these to the transcript for resume reconstruction.
- */
+     */
 export async function enforceToolResultBudget(
   messages: Message[],
   state: ContentReplacementState,
@@ -908,7 +907,7 @@ export async function enforceToolResultBudget(
   }
 }
 
-/**
+/*    *
  * Query-loop integration point for the aggregate budget.
  *
  * Gates on `state` (undefined means feature disabled → no-op return),
@@ -920,7 +919,7 @@ export async function enforceToolResultBudget(
  *
  * @returns messages with replacements applied, or the input array unchanged
  *   when the feature is off or no replacement occurred.
- */
+     */
 export async function applyToolResultBudget(
   messages: Message[],
   state: ContentReplacementState | undefined,
@@ -935,7 +934,7 @@ export async function applyToolResultBudget(
   return result.messages
 }
 
-/**
+/*    *
  * Reconstruct replacement state from content-replacement records loaded from
  * the transcript. Used on resume so the budget makes the same choices it
  * made in the original session (prompt cache stability).
@@ -956,7 +955,7 @@ export async function applyToolResultBudget(
  *     it as frozen. The parent's live state still has the mapping; copy
  *     it for IDs in messages that records don't cover. No-op for non-fork
  *     resumes (parent IDs aren't in the subagent's messages).
- */
+     */
 export function reconstructContentReplacementState(
   messages: Message[],
   records: ContentReplacementRecord[],
@@ -987,7 +986,7 @@ export function reconstructContentReplacementState(
   return state
 }
 
-/**
+/*    *
  * AgentTool-resume variant: encapsulates the feature-flag gate + parent
  * gap-fill so both AgentTool.call and resumeAgentBackground share one
  * implementation. Returns undefined when parentState is undefined (feature
@@ -997,7 +996,7 @@ export function reconstructContentReplacementState(
  * Kept out of AgentTool.tsx — that file is at the feature() DCE complexity
  * cliff and cannot tolerate even +1 net source line without silently
  * breaking feature('TRANSCRIPT_CLASSIFIER') eval in tests.
- */
+     */
 export function reconstructForSubagentResume(
   parentState: ContentReplacementState | undefined,
   resumedMessages: Message[],
@@ -1011,9 +1010,9 @@ export function reconstructForSubagentResume(
   )
 }
 
-/**
+/*    *
  * Get a human-readable error message from a filesystem error
- */
+     */
 function getFileSystemErrorMessage(error: Error): string {
   // Node.js filesystem errors have a 'code' property
   // eslint-disable-next-line no-restricted-syntax -- uses .path, not just .code

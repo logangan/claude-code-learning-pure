@@ -1,4 +1,4 @@
-/**
+/*    *
  * Git bundle creation + upload for CCR seed-bundle seeding.
  *
  * Flow:
@@ -7,7 +7,7 @@
  *   3. Upload to /v1/files
  *   4. Cleanup refs/seed/stash (don't pollute user's repo)
  *   5. Caller sets seed_bundle_file_id on SessionContext
- */
+     */
 
 import { stat, unlink } from 'fs/promises'
 import {
@@ -140,7 +140,7 @@ async function _bundleWithFallback(
   return {
     ok: false,
     error:
-      'Repo is too large to bundle. Please setup GitHub on https://claude.ai/code',
+      'Repo is too large to bundle. Please setup GitHub on https:// claude.ai/code',
     failReason: 'too_large',
   }
 }

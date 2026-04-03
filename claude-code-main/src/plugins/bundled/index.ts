@@ -1,4 +1,4 @@
-/**
+/*    *
  * Built-in Plugin Initialization
  *
  * Initializes built-in plugins that ship with the CLI and appear in the
@@ -12,11 +12,11 @@
  * To add a new built-in plugin:
  * 1. Import registerBuiltinPlugin from '../builtinPlugins.js'
  * 2. Call registerBuiltinPlugin() with the plugin definition here
- */
+     */
 
-/**
+/*    *
  * Initialize built-in plugins. Called during CLI startup.
- */
+     */
 export function initBuiltinPlugins(): void {
   // No built-in plugins registered yet — this is the scaffolding for
   // migrating bundled skills that should be user-toggleable.

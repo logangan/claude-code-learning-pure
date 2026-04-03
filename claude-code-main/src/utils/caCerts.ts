@@ -3,7 +3,7 @@ import { logForDebugging } from './debug.js'
 import { hasNodeOption } from './envUtils.js'
 import { getFsImplementation } from './fsOperations.js'
 
-/**
+/*    *
  * Load CA certificates for TLS connections.
  *
  * Since setting `ca` on an HTTPS agent replaces the default certificate store,
@@ -24,7 +24,7 @@ import { getFsImplementation } from './fsOperations.js'
  * Reads ONLY `process.env.NODE_EXTRA_CA_CERTS`. `caCertsConfig.ts` populates
  * that env var from settings.json at CLI init; this module stays config-free
  * so `proxy.ts`/`mtls.ts` don't transitively pull in the command registry.
- */
+     */
 export const getCACertificates = memoize((): string[] | undefined => {
   const useSystemCA =
     hasNodeOption('--use-system-ca') || hasNodeOption('--use-openssl-ca')
@@ -44,9 +44,9 @@ export const getCACertificates = memoize((): string[] | undefined => {
   // root certificates (~750KB heap) on import, even if tls.rootCertificates
   // is never accessed. Most users hit the early return above, so we only
   // pay this cost when custom CA handling is actually needed.
-  /* eslint-disable @typescript-eslint/no-require-imports */
+  /*     eslint-disable @typescript-eslint/no-require-imports     */
   const tls = require('tls') as typeof import('tls')
-  /* eslint-enable @typescript-eslint/no-require-imports */
+  /*     eslint-enable @typescript-eslint/no-require-imports     */
 
   const certs: string[] = []
 
@@ -104,11 +104,11 @@ export const getCACertificates = memoize((): string[] | undefined => {
   return certs.length > 0 ? certs : undefined
 })
 
-/**
+/*    *
  * Clear the CA certificates cache.
  * Call this when environment variables that affect CA certs may have changed
  * (e.g., NODE_EXTRA_CA_CERTS, NODE_OPTIONS).
- */
+     */
 export function clearCACertsCache(): void {
   getCACertificates.cache.clear?.()
   logForDebugging('Cleared CA certificates cache')

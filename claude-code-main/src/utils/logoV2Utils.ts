@@ -29,17 +29,17 @@ export type LayoutDimensions = {
   totalWidth: number
 }
 
-/**
+/*    *
  * Determines the layout mode based on terminal width
- */
+     */
 export function getLayoutMode(columns: number): LayoutMode {
   if (columns >= 70) return 'horizontal'
   return 'compact'
 }
 
-/**
+/*    *
  * Calculates layout dimensions for the LogoV2 component
- */
+     */
 export function calculateLayoutDimensions(
   columns: number,
   layoutMode: LayoutMode,
@@ -74,9 +74,9 @@ export function calculateLayoutDimensions(
   }
 }
 
-/**
+/*    *
  * Calculates optimal left panel width based on content
- */
+     */
 export function calculateOptimalLeftWidth(
   welcomeMessage: string,
   truncatedCwd: string,
@@ -91,9 +91,9 @@ export function calculateOptimalLeftWidth(
   return Math.min(contentWidth + 4, MAX_LEFT_WIDTH) // +4 for padding
 }
 
-/**
+/*    *
  * Formats the welcome message based on username
- */
+     */
 export function formatWelcomeMessage(username: string | null): string {
   if (!username || username.length > MAX_USERNAME_LENGTH) {
     return 'Welcome back!'
@@ -101,10 +101,10 @@ export function formatWelcomeMessage(username: string | null): string {
   return `Welcome back ${username}!`
 }
 
-/**
+/*    *
  * Truncates a path in the middle if it's too long.
  * Width-aware: uses stringWidth() for correct CJK/emoji measurement.
- */
+     */
 export function truncatePath(path: string, maxLength: number): string {
   if (stringWidth(path) <= maxLength) return path
 
@@ -183,9 +183,9 @@ export function truncatePath(path: string, maxLength: number): string {
 let cachedActivity: LogOption[] = []
 let cachePromise: Promise<LogOption[]> | null = null
 
-/**
+/*    *
  * Preloads recent conversations for display in Logo v2
- */
+     */
 export async function getRecentActivity(): Promise<LogOption[]> {
   // Return existing promise if already loading
   if (cachePromise) {
@@ -218,16 +218,16 @@ export async function getRecentActivity(): Promise<LogOption[]> {
   return cachePromise
 }
 
-/**
+/*    *
  * Gets cached activity synchronously
- */
+     */
 export function getRecentActivitySync(): LogOption[] {
   return cachedActivity
 }
 
-/**
+/*    *
  * Formats release notes for display, with smart truncation
- */
+     */
 export function formatReleaseNoteForDisplay(
   note: string,
   maxWidth: number,
@@ -236,9 +236,9 @@ export function formatReleaseNoteForDisplay(
   return truncate(note, maxWidth)
 }
 
-/**
+/*    *
  * Gets the common logo display data used by both LogoV2 and CondensedLogo
- */
+     */
 export function getLogoDisplayData(): {
   version: string
   cwd: string
@@ -251,7 +251,7 @@ export function getLogoDisplayData(): {
     ? '/code/claude'
     : getDisplayPath(getCwd())
   const cwd = serverUrl
-    ? `${displayPath} in ${serverUrl.replace(/^https?:\/\//, '')}`
+    ? `${displayPath} in ${serverUrl.replace(/^https?:\/\// , '')}`
     : displayPath
   const billingType = isClaudeAISubscriber()
     ? getSubscriptionName()
@@ -266,9 +266,9 @@ export function getLogoDisplayData(): {
   }
 }
 
-/**
+/*    *
  * Determines how to display model and billing information based on available width
- */
+     */
 export function formatModelAndBilling(
   modelName: string,
   billingType: string,
@@ -304,11 +304,11 @@ export function formatModelAndBilling(
   }
 }
 
-/**
+/*    *
  * Gets recent release notes for Logo v2 display
  * For ants, uses commits bundled at build time
  * For external users, uses public changelog
- */
+     */
 export function getRecentReleaseNotesSync(maxItems: number): string[] {
   // For ants, use bundled changelog
   if (process.env.USER_TYPE === 'ant') {

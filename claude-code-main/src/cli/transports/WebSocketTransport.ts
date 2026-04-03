@@ -22,23 +22,23 @@ const KEEP_ALIVE_FRAME = '{"type":"keep_alive"}\n'
 const DEFAULT_MAX_BUFFER_SIZE = 1000
 const DEFAULT_BASE_RECONNECT_DELAY = 1000
 const DEFAULT_MAX_RECONNECT_DELAY = 30000
-/** Time budget for reconnection attempts before giving up (10 minutes). */
+/*    * Time budget for reconnection attempts before giving up (10 minutes).     */
 const DEFAULT_RECONNECT_GIVE_UP_MS = 600_000
 const DEFAULT_PING_INTERVAL = 10000
 const DEFAULT_KEEPALIVE_INTERVAL = 300_000 // 5 minutes
 
-/**
+/*    *
  * Threshold for detecting system sleep/wake. If the gap between consecutive
  * reconnection attempts exceeds this, the machine likely slept. We reset
  * the reconnection budget and retry — the server will reject with permanent
  * close codes (4001/1002) if the session was reaped during sleep.
- */
+     */
 const SLEEP_DETECTION_THRESHOLD_MS = DEFAULT_MAX_RECONNECT_DELAY * 2 // 60s
 
-/**
+/*    *
  * WebSocket close codes that indicate a permanent server-side rejection.
  * The transport transitions to 'closed' immediately without retrying.
- */
+     */
 const PERMANENT_CLOSE_CODES = new Set([
   1002, // protocol error — server rejected handshake (e.g. session reaped)
   4001, // session expired / not found
@@ -46,14 +46,14 @@ const PERMANENT_CLOSE_CODES = new Set([
 ])
 
 export type WebSocketTransportOptions = {
-  /** When false, the transport does not attempt automatic reconnection on
+  /*    * When false, the transport does not attempt automatic reconnection on
    *  disconnect. Use this when the caller has its own recovery mechanism
-   *  (e.g. the REPL bridge poll loop). Defaults to true. */
+   *  (e.g. the REPL bridge poll loop). Defaults to true.     */
   autoReconnect?: boolean
-  /** Gates the tengu_ws_transport_* telemetry events. Set true at the
+  /*    * Gates the tengu_ws_transport_* telemetry events. Set true at the
    *  REPL-bridge construction site so only Remote Control sessions (the
    *  Cloudflare-idle-timeout population) emit; print-mode workers stay
-   *  silent. Defaults to false. */
+   *  silent. Defaults to false.     */
   isBridge?: boolean
 }
 
@@ -351,12 +351,12 @@ export class WebSocketTransport implements Transport {
     }
   }
 
-  /**
+  /*    *
    * Remove all listeners attached in connect() for the given WebSocket.
    * Without this, each reconnect orphans the old WS object + its closures
    * until GC — these accumulate under network instability. Mirrors the
    * pattern in src/utils/mcpWebSocketTransport.ts.
-   */
+       */
   private removeWsListeners(ws: WebSocketLike): void {
     if (this.isBunWs) {
       const nws = ws as unknown as globalThis.WebSocket

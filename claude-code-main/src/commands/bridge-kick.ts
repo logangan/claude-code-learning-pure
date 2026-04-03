@@ -2,7 +2,7 @@ import { getBridgeDebugHandle } from '../bridge/bridgeDebug.js'
 import type { Command } from '../commands.js'
 import type { LocalCommandCall } from '../types/command.js'
 
-/**
+/*    *
  * Ant-only: inject bridge failure states to manually test recovery paths.
  *
  *   /bridge-kick close 1002            — fire ws_closed with code 1002
@@ -35,7 +35,7 @@ import type { LocalCommandCall } from '../types/command.js'
  *   /bridge-kick poll 404
  *   → expect: tengu_bridge_repl_fatal_error (gate is dead — 147K/wk)
  *     after fix: tengu_bridge_repl_env_lost → doReconnect
- */
+     */
 
 const USAGE = `/bridge-kick <subcommand>
   close <code>              fire ws_closed with the given code (e.g. 1002)

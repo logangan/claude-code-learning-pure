@@ -56,16 +56,16 @@ import {
 } from './types.js'
 import { getProjectMcpServerStatus } from './utils.js'
 
-/**
+/*    *
  * Get the path to the managed MCP configuration file
- */
+     */
 export function getEnterpriseMcpFilePath(): string {
   return join(getManagedFilePath(), 'managed-mcp.json')
 }
 
-/**
+/*    *
  * Internal utility: Add scope to server configs
- */
+     */
 function addScopeToServers(
   servers: Record<string, McpServerConfig> | undefined,
   scope: ConfigScope,
@@ -80,11 +80,11 @@ function addScopeToServers(
   return scopedServers
 }
 
-/**
+/*    *
  * Internal utility: Write MCP config to .mcp.json file.
  * Preserves file permissions and flushes to disk before rename.
  * Uses the original path for rename (does not follow symlinks).
- */
+     */
 async function writeMcpjsonFile(config: McpJsonConfig): Promise<void> {
   const mcpJsonPath = join(getCwd(), '.mcp.json')
 
@@ -130,10 +130,10 @@ async function writeMcpjsonFile(config: McpJsonConfig): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Extract command array from server config (stdio servers only)
  * Returns null for non-stdio servers
- */
+     */
 function getServerCommandArray(config: McpServerConfig): string[] | null {
   // Non-stdio servers don't have commands
   if (config.type !== undefined && config.type !== 'stdio') {
@@ -143,9 +143,9 @@ function getServerCommandArray(config: McpServerConfig): string[] | null {
   return [stdioConfig.command, ...(stdioConfig.args ?? [])]
 }
 
-/**
+/*    *
  * Check if two command arrays match exactly
- */
+     */
 function commandArraysMatch(a: string[], b: string[]): boolean {
   if (a.length !== b.length) {
     return false
@@ -153,32 +153,32 @@ function commandArraysMatch(a: string[], b: string[]): boolean {
   return a.every((val, idx) => val === b[idx])
 }
 
-/**
+/*    *
  * Extract URL from server config (remote servers only)
  * Returns null for stdio/sdk servers
- */
+     */
 function getServerUrl(config: McpServerConfig): string | null {
   return 'url' in config ? config.url : null
 }
 
-/**
+/*    *
  * CCR proxy URL path markers. In remote sessions, claude.ai connectors arrive
  * via --mcp-config with URLs rewritten to route through the CCR/session-ingress
  * SHTTP proxy. The original vendor URL is preserved in the mcp_url query param
  * so the proxy knows where to forward. See api-go/ccr/internal/ccrshared/
  * mcp_url_rewriter.go and api-go/ccr/internal/mcpproxy/proxy.go.
- */
+     */
 const CCR_PROXY_PATH_MARKERS = [
   '/v2/session_ingress/shttp/mcp/',
   '/v2/ccr-sessions/',
 ]
 
-/**
+/*    *
  * If the URL is a CCR proxy URL, extract the original vendor URL from the
  * mcp_url query parameter. Otherwise return the URL unchanged. This lets
  * signature-based dedup match a plugin's raw vendor URL against a connector's
  * rewritten proxy URL when both point at the same MCP server.
- */
+     */
 export function unwrapCcrProxyUrl(url: string): string {
   if (!CCR_PROXY_PATH_MARKERS.some(m => url.includes(m))) {
     return url
@@ -192,13 +192,13 @@ export function unwrapCcrProxyUrl(url: string): string {
   }
 }
 
-/**
+/*    *
  * Compute a dedup signature for an MCP server config.
  * Two configs with the same signature are considered "the same server" for
  * plugin deduplication. Ignores env (plugins always inject CLAUDE_PLUGIN_ROOT)
  * and headers (same URL = same server regardless of auth).
  * Returns null only for configs with neither command nor url (sdk type).
- */
+     */
 export function getMcpServerSignature(config: McpServerConfig): string | null {
   const cmd = getServerCommandArray(config)
   if (cmd) {
@@ -211,7 +211,7 @@ export function getMcpServerSignature(config: McpServerConfig): string | null {
   return null
 }
 
-/**
+/*    *
  * Filter plugin MCP servers, dropping any whose signature matches a
  * manually-configured server or an earlier-loaded plugin server.
  * Manual wins over plugin; between plugins, first-loaded wins.
@@ -219,7 +219,7 @@ export function getMcpServerSignature(config: McpServerConfig): string | null {
  * Plugin servers are namespaced `plugin:name:server` so they never key-collide
  * with manual servers in the merge — this content-based check catches the case
  * where both actually launch the same underlying process/connection.
- */
+     */
 export function dedupPluginMcpServers(
   pluginServers: Record<string, ScopedMcpServerConfig>,
   manualServers: Record<string, ScopedMcpServerConfig>,
@@ -265,7 +265,7 @@ export function dedupPluginMcpServers(
   return { servers, suppressed }
 }
 
-/**
+/*    *
  * Filter claude.ai connectors, dropping any whose signature matches an enabled
  * manually-configured server. Manual wins: a user who wrote .mcp.json or ran
  * `claude mcp add` expressed higher intent than a connector toggled in the web UI.
@@ -277,7 +277,7 @@ export function dedupPluginMcpServers(
  *
  * Only enabled manual servers count as dedup targets — a disabled manual server
  * mustn't suppress its connector twin, or neither runs.
- */
+     */
 export function dedupClaudeAiMcpServers(
   claudeAiServers: Record<string, ScopedMcpServerConfig>,
   manualServers: Record<string, ScopedMcpServerConfig>,
@@ -309,14 +309,14 @@ export function dedupClaudeAiMcpServers(
   return { servers, suppressed }
 }
 
-/**
+/*    *
  * Convert a URL pattern with wildcards to a RegExp
  * Supports * as wildcard matching any characters
  * Examples:
- *   "https://example.com/*" matches "https://example.com/api/v1"
- *   "https://*.example.com/*" matches "https://api.example.com/path"
- *   "https://example.com:*\/*" matches any port
- */
+ *   "https:// example.com/*" matches "https://example.com/api/v1"
+ *   "https:// *.example.com/*" matches "https://api.example.com/path"
+ *   "https:// example.com:*\/*" matches any port
+     */
 function urlPatternToRegex(pattern: string): RegExp {
   // Escape regex special characters except *
   const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&')
@@ -325,19 +325,19 @@ function urlPatternToRegex(pattern: string): RegExp {
   return new RegExp(`^${regexStr}$`)
 }
 
-/**
+/*    *
  * Check if a URL matches a pattern with wildcard support
- */
+     */
 function urlMatchesPattern(url: string, pattern: string): boolean {
   const regex = urlPatternToRegex(pattern)
   return regex.test(url)
 }
 
-/**
+/*    *
  * Get the settings to use for MCP server allowlist policy.
  * When allowManagedMcpServersOnly is set in policySettings, only managed settings
  * control which servers are allowed. Otherwise, returns merged settings.
- */
+     */
 function getMcpAllowlistSettings(): SettingsJson {
   if (shouldAllowManagedMcpServersOnly()) {
     return getSettingsForSource('policySettings') ?? {}
@@ -345,22 +345,22 @@ function getMcpAllowlistSettings(): SettingsJson {
   return getInitialSettings()
 }
 
-/**
+/*    *
  * Get the settings to use for MCP server denylist policy.
  * Denylists always merge from all sources — users can always deny servers
  * for themselves, even when allowManagedMcpServersOnly is set.
- */
+     */
 function getMcpDenylistSettings(): SettingsJson {
   return getInitialSettings()
 }
 
-/**
+/*    *
  * Check if an MCP server is denied by enterprise policy
  * Checks name-based, command-based, and URL-based restrictions
  * @param serverName The name of the server to check
  * @param config Optional server config for command/URL-based matching
  * @returns true if denied, false if not on denylist
- */
+     */
 function isMcpServerDenied(
   serverName: string,
   config?: McpServerConfig,
@@ -407,13 +407,13 @@ function isMcpServerDenied(
   return false
 }
 
-/**
+/*    *
  * Check if an MCP server is allowed by enterprise policy
  * Checks name-based, command-based, and URL-based restrictions
  * @param serverName The name of the server to check
  * @param config Optional server config for command/URL-based matching
  * @returns true if allowed, false if blocked by policy
- */
+     */
 function isMcpServerAllowedByPolicy(
   serverName: string,
   config?: McpServerConfig,
@@ -507,7 +507,7 @@ function isMcpServerAllowedByPolicy(
   return false
 }
 
-/**
+/*    *
  * Filter a record of MCP server configs by managed policy (allowedMcpServers /
  * deniedMcpServers). Servers blocked by policy are dropped and their names
  * returned so callers can warn the user.
@@ -532,7 +532,7 @@ function isMcpServerAllowedByPolicy(
  * The `as McpServerConfig` widening is safe for that reason; the downstream
  * checks tolerate missing/undefined fields: `config` is optional, and
  * `getServerCommandArray` defaults `args` to `[]` via `?? []`.
- */
+     */
 export function filterMcpServersByPolicy<T>(configs: Record<string, T>): {
   allowed: Record<string, T>
   blocked: string[]
@@ -550,9 +550,9 @@ export function filterMcpServersByPolicy<T>(configs: Record<string, T>): {
   return { allowed, blocked }
 }
 
-/**
+/*    *
  * Internal utility: Expands environment variables in an MCP server config
- */
+     */
 function expandEnvVars(config: McpServerConfig): {
   expanded: McpServerConfig
   missingVars: string[]
@@ -615,13 +615,13 @@ function expandEnvVars(config: McpServerConfig): {
   }
 }
 
-/**
+/*    *
  * Add a new MCP server configuration
  * @param name The name of the server
  * @param config The server configuration
  * @param scope The configuration scope
  * @throws Error if name is invalid or server already exists, or if the config is invalid
- */
+     */
 export async function addMcpConfig(
   name: string,
   config: unknown,
@@ -760,12 +760,12 @@ export async function addMcpConfig(
   }
 }
 
-/**
+/*    *
  * Remove an MCP server configuration
  * @param name The name of the server to remove
  * @param scope The configuration scope
  * @throws Error if server not found in specified scope
- */
+     */
 export async function removeMcpConfig(
   name: string,
   scope: ConfigScope,
@@ -833,13 +833,13 @@ export async function removeMcpConfig(
   }
 }
 
-/**
+/*    *
  * Get MCP configs from current directory only (no parent traversal).
  * Used by addMcpConfig and removeMcpConfig to modify the local .mcp.json file.
  * Exported for testing purposes.
  *
  * @returns Servers with scope information and any validation errors from current directory's .mcp.json
- */
+     */
 export function getProjectMcpConfigsFromCwd(): {
   servers: Record<string, ScopedMcpServerConfig>
   errors: ValidationError[]
@@ -880,11 +880,11 @@ export function getProjectMcpConfigsFromCwd(): {
   }
 }
 
-/**
+/*    *
  * Get all MCP configurations from a specific scope
  * @param scope The configuration scope
  * @returns Servers with scope information and any validation errors
- */
+     */
 export function getMcpConfigsByScope(
   scope: 'project' | 'user' | 'local' | 'enterprise',
 ): {
@@ -1025,11 +1025,11 @@ export function getMcpConfigsByScope(
   }
 }
 
-/**
+/*    *
  * Get an MCP server configuration by name
  * @param name The name of the server
  * @returns The server configuration with scope, or undefined if not found
- */
+     */
 export function getMcpConfigByName(name: string): ScopedMcpServerConfig | null {
   const { servers: enterpriseServers } = getMcpConfigsByScope('enterprise')
 
@@ -1059,7 +1059,7 @@ export function getMcpConfigByName(name: string): ScopedMcpServerConfig | null {
   return null
 }
 
-/**
+/*    *
  * Get Claude Code MCP configurations (excludes claude.ai servers from the
  * returned set — they're fetched separately and merged by callers).
  * This is fast: only local file reads; no awaited network calls on the
@@ -1067,7 +1067,7 @@ export function getMcpConfigByName(name: string): ScopedMcpServerConfig | null {
  * claude.ai connector fetch) is awaited only after loadAllPluginsCacheOnly() completes,
  * so the two overlap rather than serialize.
  * @returns Claude Code server configurations with appropriate scopes
- */
+     */
 export async function getClaudeCodeMcpConfigs(
   dynamicServers: Record<string, ScopedMcpServerConfig> = {},
   extraDedupTargets: Promise<
@@ -1250,11 +1250,11 @@ export async function getClaudeCodeMcpConfigs(
   return { servers: filtered, errors: mcpErrors }
 }
 
-/**
+/*    *
  * Get all MCP configurations across all scopes, including claude.ai servers.
  * This may be slow due to network calls - use getClaudeCodeMcpConfigs() for fast startup.
  * @returns All server configurations with appropriate scopes
- */
+     */
 export async function getAllMcpConfigs(): Promise<{
   servers: Record<string, ScopedMcpServerConfig>
   errors: PluginError[]
@@ -1289,11 +1289,11 @@ export async function getAllMcpConfigs(): Promise<{
   return { servers, errors }
 }
 
-/**
+/*    *
  * Parse and validate an MCP configuration object
  * @param params Parsing parameters
  * @returns Validated configuration with any errors
- */
+     */
 export function parseMcpConfig(params: {
   configObject: unknown
   expandVars: boolean
@@ -1359,7 +1359,7 @@ export function parseMcpConfig(params: {
         ...(filePath && { file: filePath }),
         path: `mcpServers.${name}`,
         message: `Windows requires 'cmd /c' wrapper to execute npx`,
-        suggestion: `Change command to "cmd" with args ["/c", "npx", ...]. See: https://code.claude.com/docs/en/mcp#configure-mcp-servers`,
+        suggestion: `Change command to "cmd" with args ["/c", "npx", ...]. See: https:// code.claude.com/docs/en/mcp#configure-mcp-servers`,
         mcpErrorMetadata: {
           scope,
           serverName: name,
@@ -1376,11 +1376,11 @@ export function parseMcpConfig(params: {
   }
 }
 
-/**
+/*    *
  * Parse and validate an MCP configuration from a file path
  * @param params Parsing parameters
  * @returns Validated configuration with any errors
- */
+     */
 export function parseMcpConfigFromFilePath(params: {
   filePath: string
   expandVars: boolean
@@ -1476,21 +1476,21 @@ export const doesEnterpriseMcpConfigExist = memoize((): boolean => {
   return config !== null
 })
 
-/**
+/*    *
  * Check if MCP allowlist policy should only come from managed settings.
  * This is true when policySettings has allowManagedMcpServersOnly: true.
  * When enabled, allowedMcpServers is read exclusively from managed settings.
  * Users can still add their own MCP servers and deny servers via deniedMcpServers.
- */
+     */
 export function shouldAllowManagedMcpServersOnly(): boolean {
   return (
     getSettingsForSource('policySettings')?.allowManagedMcpServersOnly === true
   )
 }
 
-/**
+/*    *
  * Check if all MCP servers in a config are allowed with enterprise MCP config.
- */
+     */
 export function areMcpConfigsAllowedWithEnterpriseMcpConfig(
   configs: Record<string, ScopedMcpServerConfig>,
 ): boolean {
@@ -1503,28 +1503,28 @@ export function areMcpConfigsAllowedWithEnterpriseMcpConfig(
   )
 }
 
-/**
+/*    *
  * Built-in MCP server that defaults to disabled. Unlike user-configured servers
  * (opt-out via disabledMcpServers), this requires explicit opt-in via
  * enabledMcpServers. Shows up in /mcp as disabled until the user enables it.
- */
-/* eslint-disable @typescript-eslint/no-require-imports */
+     */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const DEFAULT_DISABLED_BUILTIN = feature('CHICAGO_MCP')
   ? (
       require('../../utils/computerUse/common.js') as typeof import('../../utils/computerUse/common.js')
     ).COMPUTER_USE_MCP_SERVER_NAME
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 function isDefaultDisabledBuiltin(name: string): boolean {
   return DEFAULT_DISABLED_BUILTIN !== null && name === DEFAULT_DISABLED_BUILTIN
 }
 
-/**
+/*    *
  * Check if an MCP server is disabled
  * @param name The name of the server
  * @returns true if the server is disabled
- */
+     */
 export function isMcpServerDisabled(name: string): boolean {
   const projectConfig = getCurrentProjectConfig()
   if (isDefaultDisabledBuiltin(name)) {
@@ -1545,11 +1545,11 @@ function toggleMembership(
   return shouldContain ? [...list, name] : list.filter(s => s !== name)
 }
 
-/**
+/*    *
  * Enable or disable an MCP server
  * @param name The name of the server
  * @param enabled Whether the server should be enabled
- */
+     */
 export function setMcpServerEnabled(name: string, enabled: boolean): void {
   const isBuiltinStateChange =
     isDefaultDisabledBuiltin(name) && isMcpServerDisabled(name) === enabled

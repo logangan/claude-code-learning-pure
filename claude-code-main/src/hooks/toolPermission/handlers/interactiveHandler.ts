@@ -40,7 +40,7 @@ type InteractivePermissionParams = {
   channelCallbacks?: ChannelPermissionCallbacks
 }
 
-/**
+/*    *
  * Handles the interactive (main-agent) permission flow.
  *
  * Pushes a ToolUseConfirm entry to the confirm queue with callbacks:
@@ -53,7 +53,7 @@ type InteractivePermissionParams = {
  * This function does NOT return a Promise -- it sets up callbacks that
  * eventually call `resolve()` to resolve the outer promise owned by
  * the caller.
- */
+     */
 function handleInteractivePermission(
   params: InteractivePermissionParams,
   resolve: (decision: PermissionDecision) => void,
@@ -109,8 +109,7 @@ function handleInteractivePermission(
       // Called when user starts interacting with the permission dialog
       // (e.g., arrow keys, tab, typing feedback)
       // Hide the classifier indicator since auto-approve is no longer possible
-      //
-      // Grace period: ignore interactions in the first 200ms to prevent
+      // // Grace period: ignore interactions in the first 200ms to prevent
       // accidental keypresses from canceling the classifier prematurely
       const GRACE_PERIOD_MS = 200
       if (Date.now() - permissionPromptStartTimeMs < GRACE_PERIOD_MS) {
@@ -235,8 +234,7 @@ function handleInteractivePermission(
   // When the bridge is connected, send the permission request to CCR and
   // subscribe for a response. Whichever side (CLI or CCR) responds first
   // wins via claim().
-  //
-  // All tools are forwarded — CCR's generic allow/deny modal handles any
+  // // All tools are forwarded — CCR's generic allow/deny modal handles any
   // tool, and can return `updatedInput` when it has a dedicated renderer
   // (e.g. plan edit). Tools whose local dialog injects fields (ReviewArtifact
   // `selected`, AskUserQuestion `answers`) tolerate the field being missing
@@ -303,14 +301,12 @@ function handleInteractivePermission(
   // classifier. The inbound "yes abc123" is intercepted in the notification
   // handler (useManageMCPConnections.ts) BEFORE enqueue, so it never reaches
   // Claude as a conversation turn.
-  //
-  // Unlike the bridge block, this still guards on `requiresUserInteraction` —
+  // // Unlike the bridge block, this still guards on `requiresUserInteraction` —
   // channel replies are pure yes/no with no `updatedInput` path. In practice
   // the guard is dead code today: all three `requiresUserInteraction` tools
   // (ExitPlanMode, AskUserQuestion, ReviewArtifact) return `isEnabled()===false`
   // when channels are configured, so they never reach this handler.
-  //
-  // Fire-and-forget send: if callTool fails (channel down, tool missing),
+  // // Fire-and-forget send: if callTool fails (channel down, tool missing),
   // the subscription never fires and another racer wins. Graceful degradation
   // — the local dialog is always there as the floor.
   if (

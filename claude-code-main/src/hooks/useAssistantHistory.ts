@@ -20,25 +20,25 @@ import type { Message, SystemInformationalMessage } from '../types/message.js'
 import { logForDebugging } from '../utils/debug.js'
 
 type Props = {
-  /** Gated on viewerOnly — non-viewer sessions have no remote history to page. */
+  /*    * Gated on viewerOnly — non-viewer sessions have no remote history to page.     */
   config: RemoteSessionConfig | undefined
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>
   scrollRef: RefObject<ScrollBoxHandle | null>
-  /** Called after prepend from the layout effect with message count + height
-   *  delta. Lets useUnseenDivider shift dividerIndex + dividerYRef. */
+  /*    * Called after prepend from the layout effect with message count + height
+   *  delta. Lets useUnseenDivider shift dividerIndex + dividerYRef.     */
   onPrepend?: (indexDelta: number, heightDelta: number) => void
 }
 
 type Result = {
-  /** Trigger for ScrollKeybindingHandler's onScroll composition. */
+  /*    * Trigger for ScrollKeybindingHandler's onScroll composition.     */
   maybeLoadOlder: (handle: ScrollBoxHandle) => void
 }
 
-/** Fire loadOlder when scrolled within this many rows of the top. */
+/*    * Fire loadOlder when scrolled within this many rows of the top.     */
 const PREFETCH_THRESHOLD_ROWS = 40
 
-/** Max chained page loads to fill the viewport on mount. Bounds the loop if
- *  events convert to zero visible messages (everything filtered). */
+/*    * Max chained page loads to fill the viewport on mount. Bounds the loop if
+ *  events convert to zero visible messages (everything filtered).     */
 const MAX_FILL_PAGES = 10
 
 const SENTINEL_LOADING = 'loading older messages…'
@@ -46,7 +46,7 @@ const SENTINEL_LOADING_FAILED =
   'failed to load older messages — scroll up to retry'
 const SENTINEL_START = 'start of session'
 
-/** Convert a HistoryPage to REPL Message[] using the same opts as viewer mode. */
+/*    * Convert a HistoryPage to REPL Message[] using the same opts as viewer mode.     */
 function pageToMessages(page: HistoryPage): Message[] {
   const out: Message[] = []
   for (const ev of page.events) {
@@ -59,7 +59,7 @@ function pageToMessages(page: HistoryPage): Message[] {
   return out
 }
 
-/**
+/*    *
  * Lazy-load `claude assistant` history on scroll-up.
  *
  * On mount: fetch newest page via anchor_to_latest, prepend to messages.
@@ -68,7 +68,7 @@ function pageToMessages(page: HistoryPage): Message[] {
  *
  * No-op unless config.viewerOnly. REPL only calls this hook inside a
  * feature('KAIROS') gate, so build-time elimination is handled there.
- */
+     */
 export function useAssistantHistory({
   config,
   setMessages,
@@ -110,8 +110,8 @@ export function useAssistantHistory({
     }
   }
 
-  /** Prepend a page at the front, with scroll-anchor snapshot for non-initial.
-   *  Replaces the sentinel (always at index 0 when present) in-place. */
+  /*    * Prepend a page at the front, with scroll-anchor snapshot for non-initial.
+   *  Replaces the sentinel (always at index 0 when present) in-place.     */
   const prepend = useCallback(
     (page: HistoryPage, isInitial: boolean) => {
       const msgs = pageToMessages(page)
@@ -211,8 +211,7 @@ export function useAssistantHistory({
   // load another page. Runs as useEffect (not layout effect) so Ink has
   // painted and scrollViewportHeight is populated. Self-chains via next
   // render's effect; budget caps the chain.
-  //
-  // The ScrollBox content wrapper has flexGrow:1 flexShrink:0 — it's clamped
+  // // The ScrollBox content wrapper has flexGrow:1 flexShrink:0 — it's clamped
   // to ≥ viewport. So `content < viewport` is never true; `<=` detects "no
   // overflow yet" correctly. Stops once there's at least something to scroll.
   useEffect(() => {

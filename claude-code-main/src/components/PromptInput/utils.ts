@@ -5,10 +5,10 @@ import {
 import type { Key } from '../../ink.js'
 import { getGlobalConfig } from '../../utils/config.js'
 import { env } from '../../utils/env.js'
-/**
+/*    *
  * Helper function to check if vim mode is currently enabled
  * @returns boolean indicating if vim mode is active
- */
+     */
 export function isVimModeEnabled(): boolean {
   const config = getGlobalConfig()
   return config.editorMode === 'vim'
@@ -31,11 +31,11 @@ export function getNewlineInstructions(): string {
     : 'backslash (\\) + return (⏎) for newline'
 }
 
-/**
+/*    *
  * True when the keystroke is a printable character that does not begin
  * with whitespace — i.e., a normal letter/digit/symbol the user typed.
  * Used to gate the lazy space inserted after an image pill.
- */
+     */
 export function isNonSpacePrintable(input: string, key: Key): boolean {
   if (
     key.ctrl ||

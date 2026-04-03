@@ -42,11 +42,11 @@ export function getPlanModeV2ExploreAgentCount(): number {
   return 3
 }
 
-/**
+/*    *
  * Check if plan mode interview phase is enabled.
  *
  * Config: ant=always_on, external=tengu_plan_mode_interview_phase gate, envVar=true
- */
+     */
 export function isPlanModeInterviewPhaseEnabled(): boolean {
   // Always on for ants
   if (process.env.USER_TYPE === 'ant') return true
@@ -63,7 +63,7 @@ export function isPlanModeInterviewPhaseEnabled(): boolean {
 
 export type PewterLedgerVariant = 'trim' | 'cut' | 'cap' | null
 
-/**
+/*    *
  * tengu_pewter_ledger — plan file structure prompt experiment.
  *
  * Controls the Phase 4 "Final Plan" bullets in the 5-phase plan mode
@@ -84,7 +84,7 @@ export type PewterLedgerVariant = 'trim' | 'cut' | 'cap' | null
  *   write→count→edit cycles.
  * Guardrail: feedback-bad rate, requests/session (too-thin plans →
  *   more implementation iterations), tool error rate
- */
+     */
 export function getPewterLedgerVariant(): PewterLedgerVariant {
   const raw = getFeatureValue_CACHED_MAY_BE_STALE<string | null>(
     'tengu_pewter_ledger',

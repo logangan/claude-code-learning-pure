@@ -1,16 +1,16 @@
-/**
+/*    *
  * Sandbox types for the Claude Code Agent SDK
  *
  * This file is the single source of truth for sandbox configuration types.
  * Both the SDK and the settings validation import from here.
- */
+     */
 
 import { z } from 'zod/v4'
 import { lazySchema } from '../utils/lazySchema.js'
 
-/**
+/*    *
  * Network configuration schema for sandbox.
- */
+     */
 export const SandboxNetworkConfigSchema = lazySchema(() =>
   z
     .object({
@@ -41,9 +41,9 @@ export const SandboxNetworkConfigSchema = lazySchema(() =>
     .optional(),
 )
 
-/**
+/*    *
  * Filesystem configuration schema for sandbox.
- */
+     */
 export const SandboxFilesystemConfigSchema = lazySchema(() =>
   z
     .object({
@@ -85,9 +85,9 @@ export const SandboxFilesystemConfigSchema = lazySchema(() =>
     .optional(),
 )
 
-/**
+/*    *
  * Sandbox settings schema.
- */
+     */
 export const SandboxSettingsSchema = lazySchema(() =>
   z
     .object({
@@ -103,8 +103,7 @@ export const SandboxSettingsSchema = lazySchema(() =>
         ),
       // Note: enabledPlatforms is an undocumented setting read via .passthrough()
       // It restricts sandboxing to specific platforms (e.g., ["macos"]).
-      //
-      // Added to unblock NVIDIA enterprise rollout: they want to enable
+      // // Added to unblock NVIDIA enterprise rollout: they want to enable
       // autoAllowBashIfSandboxed but only on macOS initially, since Linux/WSL
       // sandbox support is newer and less battle-tested. This allows them to
       // set enabledPlatforms: ["macos"] to disable sandbox (and auto-allow)

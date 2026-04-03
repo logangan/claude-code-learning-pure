@@ -346,10 +346,10 @@ function isBigQueryMetricsEnabled() {
   return is1PApiCustomer() || isC4EOrTeamUser
 }
 
-/**
+/*    *
  * Initialize beta tracing - a separate code path for detailed debugging.
  * Uses BETA_TRACING_ENDPOINT instead of OTEL_EXPORTER_OTLP_ENDPOINT.
- */
+     */
 async function initializeBetaTracing(
   resource: ReturnType<typeof resourceFromAttributes>,
 ): Promise<void> {
@@ -700,10 +700,10 @@ Current timeout: ${timeoutMs}ms
   return meterProvider.getMeter('com.anthropic.claude_code', MACRO.VERSION)
 }
 
-/**
+/*    *
  * Flush all pending telemetry data immediately.
  * This should be called before logout or org switching to prevent data leakage.
- */
+     */
 export async function flushTelemetry(): Promise<void> {
   const meterProvider = getMeterProvider()
   if (!meterProvider) {
@@ -760,11 +760,11 @@ function parseOtelHeadersEnvVar(): Record<string, string> {
   return headers
 }
 
-/**
+/*    *
  * Get configuration for OTLP exporters including:
  * - HTTP agent options (proxy, mTLS)
  * - Dynamic headers via otelHeadersHelper or static headers from env var
- */
+     */
 function getOTLPExporterConfig() {
   const proxyUrl = getProxyUrl()
   const mtlsConfig = getMTLSConfig()

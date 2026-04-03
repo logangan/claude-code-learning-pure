@@ -20,9 +20,8 @@ function writeOut(stream: NodeJS.WriteStream, data: string): void {
   }
 
   // Note: we don't handle backpressure (write() returning false).
-  //
-  // We should consider handling the callback to ensure we wait for data to flush.
-  stream.write(data /* callback to handle here */)
+  // // We should consider handling the callback to ensure we wait for data to flush.
+  stream.write(data /*     callback to handle here     */)
 }
 
 export function writeToStdout(data: string): void {

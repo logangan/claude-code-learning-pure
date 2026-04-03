@@ -55,7 +55,7 @@ type FirstPartyEventLoggingPayload = {
   events: FirstPartyEventLoggingEvent[]
 }
 
-/**
+/*    *
  * Exporter for 1st-party event logging to /api/event_logging/batch.
  *
  * Export cycles are controlled by OpenTelemetry's BatchLogRecordProcessor, which
@@ -69,7 +69,7 @@ type FirstPartyEventLoggingPayload = {
  * - Immediate retry of queued events when any export succeeds (endpoint is healthy)
  * - Chunking large event sets into smaller batches
  * - Auth fallback: retries without auth on 401 errors
- */
+     */
 export class FirstPartyEventLoggingExporter implements LogRecordExporter {
   private readonly endpoint: string
   private readonly timeout: number
@@ -113,9 +113,9 @@ export class FirstPartyEventLoggingExporter implements LogRecordExporter {
     // Overridable via tengu_1p_event_batch_config.baseUrl.
     const baseUrl =
       options.baseUrl ||
-      (process.env.ANTHROPIC_BASE_URL === 'https://api-staging.anthropic.com'
-        ? 'https://api-staging.anthropic.com'
-        : 'https://api.anthropic.com')
+      (process.env.ANTHROPIC_BASE_URL === 'https:// api-staging.anthropic.com'
+        ? 'https:// api-staging.anthropic.com'
+        : 'https:// api.anthropic.com')
 
     this.endpoint = `${baseUrl}${options.path || '/api/event_logging/batch'}`
 

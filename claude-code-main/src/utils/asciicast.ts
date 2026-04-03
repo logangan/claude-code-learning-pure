@@ -15,12 +15,12 @@ const recordingState: { filePath: string | null; timestamp: number } = {
   timestamp: 0,
 }
 
-/**
+/*    *
  * Get the asciicast recording file path.
  * For ants with CLAUDE_CODE_TERMINAL_RECORDING=1: returns a path.
  * Otherwise: returns null.
  * The path is computed once and cached in recordingState.
- */
+     */
 export function getRecordFilePath(): string | null {
   if (recordingState.filePath !== null) {
     return recordingState.filePath
@@ -48,10 +48,10 @@ export function _resetRecordingStateForTesting(): void {
   recordingState.timestamp = 0
 }
 
-/**
+/*    *
  * Find all .cast files for the current session.
  * Returns paths sorted by filename (chronological by timestamp suffix).
- */
+     */
 export function getSessionRecordingPaths(): string[] {
   const sessionId = getSessionId()
   const projectsDir = join(getClaudeConfigHomeDir(), 'projects')
@@ -73,12 +73,12 @@ export function getSessionRecordingPaths(): string[] {
   }
 }
 
-/**
+/*    *
  * Rename the recording file to match the current session ID.
  * Called after --resume/--continue changes the session ID via switchSession().
  * The recorder was installed with the initial (random) session ID; this renames
  * the file so getSessionRecordingPaths() can find it by the resumed session ID.
- */
+     */
 export async function renameRecordingForSession(): Promise<void> {
   const oldPath = recordingState.filePath
   if (!oldPath || recordingState.timestamp === 0) {
@@ -124,19 +124,19 @@ function getTerminalSize(): { cols: number; rows: number } {
   return { cols, rows }
 }
 
-/**
+/*    *
  * Flush pending recording data to disk.
  * Call before reading the .cast file (e.g., during /share).
- */
+     */
 export async function flushAsciicastRecorder(): Promise<void> {
   await recorder?.flush()
 }
 
-/**
+/*    *
  * Install the asciicast recorder.
  * Wraps process.stdout.write to capture all terminal output with timestamps.
  * Must be called before Ink mounts.
- */
+     */
 export function installAsciicastRecorder(): void {
   const filePath = getRecordFilePath()
   if (!filePath) {

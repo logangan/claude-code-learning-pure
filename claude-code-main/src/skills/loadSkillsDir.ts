@@ -72,9 +72,9 @@ export type LoadedFrom =
   | 'bundled'
   | 'mcp'
 
-/**
+/*    *
  * Returns a claude config directory path for a given source.
- */
+     */
 export function getSkillsPath(
   source: SettingSource | 'plugin',
   dir: 'skills' | 'commands',
@@ -93,10 +93,10 @@ export function getSkillsPath(
   }
 }
 
-/**
+/*    *
  * Estimates token count for a skill based on frontmatter only
  * (name, description, whenToUse) since full content is only loaded on invocation.
- */
+     */
 export function estimateSkillFrontmatterTokens(skill: Command): number {
   const frontmatterText = [skill.name, skill.description, skill.whenToUse]
     .filter(Boolean)
@@ -104,7 +104,7 @@ export function estimateSkillFrontmatterTokens(skill: Command): number {
   return roughTokenCountEstimation(frontmatterText)
 }
 
-/**
+/*    *
  * Gets a unique identifier for a file by resolving symlinks to a canonical path.
  * This allows detection of duplicate files accessed through different paths
  * (e.g., via symlinks or overlapping parent directories).
@@ -113,8 +113,8 @@ export function estimateSkillFrontmatterTokens(skill: Command): number {
  * Uses realpath to resolve symlinks, which is filesystem-agnostic and avoids
  * issues with filesystems that report unreliable inode values (e.g., inode 0 on
  * some virtual/container/NFS filesystems, or precision loss on ExFAT).
- * See: https://github.com/anthropics/claude-code/issues/13893
- */
+ * See: https:// github.com/anthropics/claude-code/issues/13893
+     */
 async function getFileIdentity(filePath: string): Promise<string | null> {
   try {
     return await realpath(filePath)
@@ -129,10 +129,10 @@ type SkillWithPath = {
   filePath: string
 }
 
-/**
+/*    *
  * Parse and validate hooks from frontmatter.
  * Returns undefined if hooks are not defined or invalid.
- */
+     */
 function parseHooksFromFrontmatter(
   frontmatter: FrontmatterData,
   skillName: string,
@@ -152,10 +152,10 @@ function parseHooksFromFrontmatter(
   return result.data
 }
 
-/**
+/*    *
  * Parse paths frontmatter from a skill, using the same format as CLAUDE.md rules.
  * Returns undefined if no paths are specified or if all patterns are match-all.
- */
+     */
 function parseSkillPaths(frontmatter: FrontmatterData): string[] | undefined {
   if (!frontmatter.paths) {
     return undefined
@@ -163,7 +163,7 @@ function parseSkillPaths(frontmatter: FrontmatterData): string[] | undefined {
 
   const patterns = splitPathInFrontmatter(frontmatter.paths)
     .map(pattern => {
-      // Remove /** suffix - ignore library treats 'path' as matching both
+      // Remove /*    * suffix - ignore library treats 'path' as matching both
       // the path itself and everything inside it
       return pattern.endsWith('/**') ? pattern.slice(0, -3) : pattern
     })
@@ -181,7 +181,7 @@ function parseSkillPaths(frontmatter: FrontmatterData): string[] | undefined {
  * Parses all skill frontmatter fields that are shared between file-based and
  * MCP skill loading. Caller supplies the resolved skill name and the
  * source/loadedFrom/baseDir/paths fields separately.
- */
+     */
 export function parseSkillFrontmatterFields(
   frontmatter: FrontmatterData,
   markdownContent: string,
@@ -264,9 +264,9 @@ export function parseSkillFrontmatterFields(
   }
 }
 
-/**
+/*    *
  * Creates a skill command from parsed data
- */
+     */
 export function createSkillCommand({
   skillName,
   displayName,
@@ -400,10 +400,10 @@ export function createSkillCommand({
   } satisfies Command
 }
 
-/**
+/*    *
  * Loads skills from a /skills/ directory path.
  * Only supports directory format: skill-name/SKILL.md
- */
+     */
 async function loadSkillsFromSkillsDir(
   basePath: string,
   source: SettingSource,
@@ -485,11 +485,11 @@ function isSkillFile(filePath: string): boolean {
   return /^skill\.md$/i.test(basename(filePath))
 }
 
-/**
+/*    *
  * Transforms markdown files to handle "skill" commands in legacy /commands/ folder.
  * When a SKILL.md file exists in a directory, only that file is loaded
  * and it takes the name of its parent directory.
- */
+     */
 function transformSkillFiles(files: MarkdownFile[]): MarkdownFile[] {
   const filesByDir = new Map<string, MarkdownFile[]>()
 
@@ -558,11 +558,11 @@ function getCommandName(file: MarkdownFile): string {
     : getRegularCommandName(file.filePath, file.baseDir)
 }
 
-/**
+/*    *
  * Loads skills from legacy /commands/ directories.
  * Supports both directory format (SKILL.md) and single .md file format.
  * Commands from /commands/ default to user-invocable: true
- */
+     */
 async function loadSkillsFromCommandsDir(
   cwd: string,
 ): Promise<SkillWithPath[]> {
@@ -622,7 +622,7 @@ async function loadSkillsFromCommandsDir(
   }
 }
 
-/**
+/*    *
  * Loads all skills from both /skills/ and legacy /commands/ directories.
  *
  * Skills from /skills/ directories:
@@ -634,7 +634,7 @@ async function loadSkillsFromCommandsDir(
  * - Default to user-invocable: true (user can type /cmd)
  *
  * @param cwd Current working directory for project directory traversal
- */
+     */
 export const getSkillDirCommands = memoize(
   async (cwd: string): Promise<Command[]> => {
     const userSkillsDir = join(getClaudeConfigHomeDir(), 'skills')
@@ -831,11 +831,11 @@ const activatedConditionalSkillNames = new Set<string>()
 // Signal fired when dynamic skills are loaded
 const skillsLoaded = createSignal()
 
-/**
+/*    *
  * Register a callback to be invoked when dynamic skills are loaded.
  * Used by other modules to clear caches without creating import cycles.
  * Returns an unsubscribe function.
- */
+     */
 export function onDynamicSkillsLoaded(callback: () => void): () => void {
   // Wrap at subscribe time so a throwing listener is logged and skipped
   // rather than aborting skillsLoaded.emit() and breaking skill loading.
@@ -850,14 +850,14 @@ export function onDynamicSkillsLoaded(callback: () => void): () => void {
   })
 }
 
-/**
+/*    *
  * Discovers skill directories by walking up from file paths to cwd.
  * Only discovers directories below cwd (cwd-level skills are loaded at startup).
  *
  * @param filePaths Array of file paths to check
  * @param cwd Current working directory (upper bound for discovery)
  * @returns Array of newly discovered skill directories, sorted deepest first
- */
+     */
 export async function discoverSkillDirsForPaths(
   filePaths: string[],
   cwd: string,
@@ -914,12 +914,12 @@ export async function discoverSkillDirsForPaths(
   )
 }
 
-/**
+/*    *
  * Loads skills from the given directories and merges them into the dynamic skills map.
  * Skills from directories closer to the file (deeper paths) take precedence.
  *
  * @param dirs Array of skill directories to load from (should be sorted deepest first)
- */
+     */
 export async function addSkillDirectories(dirs: string[]): Promise<void> {
   if (
     !isSettingSourceEnabled('projectSettings') ||
@@ -974,15 +974,15 @@ export async function addSkillDirectories(dirs: string[]): Promise<void> {
   skillsLoaded.emit()
 }
 
-/**
+/*    *
  * Gets all dynamically discovered skills.
  * These are skills discovered from file paths during the session.
- */
+     */
 export function getDynamicSkills(): Command[] {
   return Array.from(dynamicSkills.values())
 }
 
-/**
+/*    *
  * Activates conditional skills (skills with paths frontmatter) whose path
  * patterns match the given file paths. Activated skills are added to the
  * dynamic skills map, making them available to the model.
@@ -993,7 +993,7 @@ export function getDynamicSkills(): Command[] {
  * @param filePaths Array of file paths being operated on
  * @param cwd Current working directory (paths are matched relative to cwd)
  * @returns Array of newly activated skill names
- */
+     */
 export function activateConditionalSkillsForPaths(
   filePaths: string[],
   cwd: string,
@@ -1057,16 +1057,16 @@ export function activateConditionalSkillsForPaths(
   return activated
 }
 
-/**
+/*    *
  * Gets the number of pending conditional skills (for testing/debugging).
- */
+     */
 export function getConditionalSkillCount(): number {
   return conditionalSkills.size
 }
 
-/**
+/*    *
  * Clears dynamic skill state (for testing).
- */
+     */
 export function clearDynamicSkills(): void {
   dynamicSkillDirs.clear()
   dynamicSkills.clear()

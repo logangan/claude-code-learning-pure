@@ -101,7 +101,7 @@ import {
 } from '../claudeAiLimits.js'
 import { getAPIContextManagement } from '../compact/apiMicrocompact.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const autoModeStateModule = feature('TRANSCRIPT_CLASSIFIER')
   ? (require('../../utils/permissions/autoModeState.js') as typeof import('../../utils/permissions/autoModeState.js'))
   : null
@@ -214,7 +214,7 @@ import {
   type LLMRequestNewContext,
   startLLMRequestSpan,
 } from '../../utils/telemetry/sessionTracing.js'
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import {
   type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
   logEvent,
@@ -261,14 +261,14 @@ type JsonValue = string | number | boolean | null | JsonObject | JsonArray
 type JsonObject = { [key: string]: JsonValue }
 type JsonArray = JsonValue[]
 
-/**
+/*    *
  * Assemble the extra body parameters for the API request, based on the
  * CLAUDE_CODE_EXTRA_BODY environment variable if present and on any beta
  * headers (primarily for Bedrock requests).
  *
  * @param betaHeaders - An array of beta headers to include in the request.
  * @returns A JSON object representing the extra body parameters.
- */
+     */
 export function getExtraBodyParams(betaHeaders?: string[]): JsonObject {
   // Parse user's extra body parameters first
   const extraBodyStr = process.env.CLAUDE_CODE_EXTRA_BODY
@@ -373,7 +373,7 @@ export function getCacheControl({
   }
 }
 
-/**
+/*    *
  * Determines if 1h TTL should be used for prompt caching.
  *
  * Only applied when:
@@ -389,7 +389,7 @@ export function getCacheControl({
  *
  * The allowlist is cached in STATE for session stability — prevents mixed
  * TTLs when GrowthBook's disk cache updates mid-request.
- */
+     */
 function should1hCacheTTL(querySource?: QuerySource): boolean {
   // 3P Bedrock users get 1h TTL when opted in via env var — they manage their own billing
   // No GrowthBook gating needed since 3P users don't have GrowthBook configured
@@ -433,10 +433,10 @@ function should1hCacheTTL(querySource?: QuerySource): boolean {
   )
 }
 
-/**
+/*    *
  * Configure effort parameters for API request.
  *
- */
+     */
 function configureEffortParams(
   effortValue: EffortValue | undefined,
   outputConfig: BetaOutputConfig,
@@ -779,10 +779,10 @@ export async function* queryModelWithStreaming({
   })
 }
 
-/**
+/*    *
  * Determines if an LSP tool should be deferred (tool appears with defer_loading: true)
  * because LSP initialization is not yet complete.
- */
+     */
 function shouldDeferLspTool(tool: Tool): boolean {
   if (!('isLsp' in tool) || !tool.isLsp) {
     return false
@@ -792,7 +792,7 @@ function shouldDeferLspTool(tool: Tool): boolean {
   return status.status === 'pending' || status.status === 'not-started'
 }
 
-/**
+/*    *
  * Per-attempt timeout for non-streaming fallback requests, in milliseconds.
  * Reads API_TIMEOUT_MS when set so slow backends and the streaming path
  * share the same ceiling.
@@ -803,18 +803,18 @@ function shouldDeferLspTool(tool: Tool): boolean {
  *
  * Otherwise defaults to 300s — long enough for slow backends without
  * approaching the API's 10-minute non-streaming boundary.
- */
+     */
 function getNonstreamingFallbackTimeoutMs(): number {
   const override = parseInt(process.env.API_TIMEOUT_MS || '', 10)
   if (override) return override
   return isEnvTruthy(process.env.CLAUDE_CODE_REMOTE) ? 120_000 : 300_000
 }
 
-/**
+/*    *
  * Helper generator for non-streaming API requests.
  * Encapsulates the common pattern of creating a withRetry generator,
  * iterating to yield system messages, and returning the final BetaMessage.
- */
+     */
 export async function* executeNonStreamingRequest(
   clientOptions: {
     model: string
@@ -833,10 +833,10 @@ export async function* executeNonStreamingRequest(
   paramsFromContext: (context: RetryContext) => BetaMessageStreamParams,
   onAttempt: (attempt: number, start: number, maxOutputTokens: number) => void,
   captureRequest: (params: BetaMessageStreamParams) => void,
-  /**
+  /*    *
    * Request ID of the failed streaming attempt this fallback is recovering
    * from. Emitted in tengu_nonstreaming_fallback_error for funnel correlation.
-   */
+       */
   originatingRequestId?: string | null,
 ): AsyncGenerator<SystemAPIErrorMessage, BetaMessage> {
   const fallbackTimeoutMs = getNonstreamingFallbackTimeoutMs()
@@ -916,7 +916,7 @@ export async function* executeNonStreamingRequest(
   return e.value as BetaMessage
 }
 
-/**
+/*    *
  * Extracts the request ID from the most recent assistant message in the
  * conversation. Used to link consecutive API requests in analytics so we can
  * join them for cache-hit-rate analysis and incremental token tracking.
@@ -924,7 +924,7 @@ export async function* executeNonStreamingRequest(
  * Deriving this from the message array (rather than global state) ensures each
  * query chain (main thread, subagent, teammate) tracks its own request chain
  * independently, and rollback/undo naturally updates the value.
- */
+     */
 function getPreviousRequestIdFromMessages(
   messages: Message[],
 ): string | undefined {
@@ -949,10 +949,10 @@ function isToolResult(
   return block.type === 'tool_result'
 }
 
-/**
+/*    *
  * Ensures messages contain at most `limit` media items (images + documents).
  * Strips oldest media first to preserve the most recent.
- */
+     */
 export function stripExcessMediaItems(
   messages: (UserMessage | AssistantMessage)[],
   limit: number,
@@ -1268,16 +1268,14 @@ async function* queryModel(
 
   // Model-specific post-processing: strip tool-search-specific fields if the
   // selected model doesn't support tool search.
-  //
-  // Why is this needed in addition to normalizeMessagesForAPI?
+  // // Why is this needed in addition to normalizeMessagesForAPI?
   // - normalizeMessagesForAPI uses isToolSearchEnabledNoModelCheck() because it's
-  //   called from ~20 places (analytics, feedback, sharing, etc.), many of which
-  //   don't have model context. Adding model to its signature would be a large refactor.
+  // called from ~20 places (analytics, feedback, sharing, etc.), many of which
+  // don't have model context. Adding model to its signature would be a large refactor.
   // - This post-processing uses the model-aware isToolSearchEnabled() check
   // - This handles mid-conversation model switching (e.g., Sonnet → Haiku) where
-  //   stale tool-search fields from the previous model would cause 400 errors
-  //
-  // Note: For assistant messages, normalizeMessagesForAPI already normalized the
+  // stale tool-search fields from the previous model would cause 400 errors
+  // // Note: For assistant messages, normalizeMessagesForAPI already normalized the
   // tool inputs, so stripCallerFieldFromAssistantMessage only needs to remove the
   // 'caller' field (not re-normalize inputs).
   if (!useToolSearch) {
@@ -2232,8 +2230,7 @@ async function* queryModel(
             // were generated (output_tokens: 0, stop_reason: null).
             // message_delta arrives after content_block_stop with the real
             // values.
-            //
-            // IMPORTANT: Use direct property mutation, not object replacement.
+            // // IMPORTANT: Use direct property mutation, not object replacement.
             // The transcript write queue holds a reference to message.message
             // and serializes it lazily (100ms flush interval). Object
             // replacement ({ ...lastMsg.message, usage }) would disconnect
@@ -2338,8 +2335,8 @@ async function* queryModel(
       // This covers two proxy failure modes:
       // 1. No events at all (!partialMessage): proxy returned 200 with non-SSE body
       // 2. Partial events (partialMessage set but no content blocks completed AND
-      //    no stop_reason received): proxy returned message_start but stream ended
-      //    before content_block_stop and before message_delta with stop_reason
+      // no stop_reason received): proxy returned message_start but stream ended
+      // before content_block_stop and before message_delta with stop_reason
       // BetaMessageStream had the first check in _endRequest() but the raw Stream
       // does not - without it the generator silently returns no assistant messages,
       // causing "Execution error" in -p mode.
@@ -2891,10 +2888,10 @@ async function* queryModel(
   releaseStreamResources()
 }
 
-/**
+/*    *
  * Cleans up stream resources to prevent memory leaks.
  * @internal Exported for testing
- */
+     */
 export function cleanupStream(
   stream: Stream<BetaRawMessageStreamEvent> | undefined,
 ): void {
@@ -2911,7 +2908,7 @@ export function cleanupStream(
   }
 }
 
-/**
+/*    *
  * Updates usage statistics with new values from streaming API events.
  * Note: Anthropic's streaming API provides cumulative usage totals, not incremental deltas.
  * Each event contains the complete usage up to that point in the stream.
@@ -2920,7 +2917,7 @@ export function cleanupStream(
  * are typically set in message_start and remain constant. message_delta events may send
  * explicit 0 values for these fields, which should not overwrite the values from message_start.
  * We only update these fields if they have a non-null, non-zero value.
- */
+     */
 export function updateUsage(
   usage: Readonly<NonNullableUsage>,
   partUsage: BetaMessageDeltaUsage | undefined,
@@ -2986,10 +2983,10 @@ export function updateUsage(
   }
 }
 
-/**
+/*    *
  * Accumulates usage from one message into a total usage object.
  * Used to track cumulative usage across multiple assistant turns.
- */
+     */
 export function accumulateUsage(
   totalUsage: Readonly<NonNullableUsage>,
   messageUsage: Readonly<NonNullableUsage>,
@@ -3181,8 +3178,7 @@ export function addCacheBreakpoints(
     // the last cache_control marker. The API requires cache_reference to
     // appear "before or on" the last cache_control — we use strict "before"
     // to avoid edge cases where cache_edits splicing shifts block indices.
-    //
-    // Create new objects instead of mutating in-place to avoid contaminating
+    // // Create new objects instead of mutating in-place to avoid contaminating
     // blocks reused by secondary queries that use models without cache_editing support.
     if (lastCCMsg >= 0) {
       for (let i = 0; i < lastCCMsg; i++) {
@@ -3292,11 +3288,11 @@ export async function queryHaiku({
 
 type QueryWithModelOptions = Omit<Options, 'getToolPermissionContext'>
 
-/**
+/*    *
  * Query a specific model through the Claude Code infrastructure.
  * This goes through the full query pipeline including proper authentication,
  * betas, and headers - unlike direct API calls.
- */
+     */
 export async function queryWithModel({
   systemPrompt = asSystemPrompt([]),
   userPrompt,
@@ -3353,14 +3349,14 @@ export async function queryWithModel({
 // bypass it by setting a client-level timeout, so we can cap higher.
 export const MAX_NON_STREAMING_TOKENS = 64_000
 
-/**
+/*    *
  * Adjusts thinking budget when max_tokens is capped for non-streaming fallback.
  * Ensures the API constraint: max_tokens > thinking.budget_tokens
  *
  * @param params - The parameters that will be sent to the API
  * @param maxTokensCap - The maximum allowed tokens (MAX_NON_STREAMING_TOKENS)
  * @returns Adjusted parameters with thinking budget capped if needed
- */
+     */
 export function adjustParamsForNonStreaming<
   T extends {
     max_tokens: number

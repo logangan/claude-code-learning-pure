@@ -1,4 +1,4 @@
-/**
+/*    *
  * Layer-3 refresh primitive: swap active plugin components in the running session.
  *
  * Three-layer model (see reconciler.ts for Layer-2):
@@ -15,7 +15,7 @@
  * - useManagePlugins needsRefresh effect — interactive mode shows a notification;
  *   user explicitly runs /reload-plugins (PR 5c)
  * - /plugin menu — sets needsRefresh, user runs /reload-plugins (PR 5b)
- */
+     */
 
 import { getOriginalCwd } from '../../bootstrap/state.js'
 import type { Command } from '../../commands.js'
@@ -44,19 +44,19 @@ export type RefreshActivePluginsResult = {
   agent_count: number
   hook_count: number
   mcp_count: number
-  /** LSP servers provided by enabled plugins. reinitializeLspServerManager()
+  /*    * LSP servers provided by enabled plugins. reinitializeLspServerManager()
    * is called unconditionally so the manager picks these up (no-op if
-   * manager was never initialized). */
+   * manager was never initialized).     */
   lsp_count: number
   error_count: number
-  /** The refreshed agent definitions, for callers (e.g. print.ts) that also
-   * maintain a local mutable reference outside AppState. */
+  /*    * The refreshed agent definitions, for callers (e.g. print.ts) that also
+   * maintain a local mutable reference outside AppState.     */
   agentDefinitions: AgentDefinitionsResult
-  /** The refreshed plugin commands, same rationale as agentDefinitions. */
+  /*    * The refreshed plugin commands, same rationale as agentDefinitions.     */
   pluginCommands: Command[]
 }
 
-/**
+/*    *
  * Refresh all active plugin components: commands, agents, hooks, MCP-reconnect
  * trigger, AppState plugin arrays. Clears ALL plugin caches (unlike the old
  * needsRefresh path which only cleared loadAllPlugins and returned stale data
@@ -68,7 +68,7 @@ export type RefreshActivePluginsResult = {
  *
  * LSP: if plugins now contribute LSP servers, reinitializeLspServerManager()
  * re-reads config. Servers are lazy-started so this is just config parsing.
- */
+     */
 export async function refreshActivePlugins(
   setAppState: SetAppState,
 ): Promise<RefreshActivePluginsResult> {
@@ -190,12 +190,12 @@ export async function refreshActivePlugins(
   }
 }
 
-/**
+/*    *
  * Merge fresh plugin-load errors with existing errors, preserving LSP and
  * plugin-component errors that were recorded by other systems and
  * deduplicating. Same logic as refreshPlugins()/updatePluginState(), extracted
  * so refresh.ts doesn't leave those errors stranded.
- */
+     */
 function mergePluginErrors(
   existing: PluginError[],
   fresh: PluginError[],

@@ -45,10 +45,10 @@ export type MarkdownFile = {
   source: SettingSource
 }
 
-/**
+/*    *
  * Extracts a description from markdown content
  * Uses the first non-empty line as the description, or falls back to a default
- */
+     */
 export function extractDescriptionFromMarkdown(
   content: string,
   defaultDescription: string = 'Custom item',
@@ -68,12 +68,12 @@ export function extractDescriptionFromMarkdown(
   return defaultDescription
 }
 
-/**
+/*    *
  * Parses tools from frontmatter, supporting both string and array formats
  * Always returns a string array for consistency
  * @param toolsValue The value from frontmatter
  * @returns Parsed tool list as string[]
- */
+     */
 function parseToolListString(toolsValue: unknown): string[] | null {
   // Return null for missing/null - let caller decide the default
   if (toolsValue === undefined || toolsValue === null) {
@@ -105,11 +105,11 @@ function parseToolListString(toolsValue: unknown): string[] | null {
   return parsedTools
 }
 
-/**
+/*    *
  * Parse tools from agent frontmatter
  * Missing field = undefined (all tools)
  * Empty field = [] (no tools)
- */
+     */
 export function parseAgentToolsFromFrontmatter(
   toolsValue: unknown,
 ): string[] | undefined {
@@ -125,10 +125,10 @@ export function parseAgentToolsFromFrontmatter(
   return parsed
 }
 
-/**
+/*    *
  * Parse allowed-tools from slash command frontmatter
  * Missing or empty field = no tools ([])
- */
+     */
 export function parseSlashCommandToolsFromFrontmatter(
   toolsValue: unknown,
 ): string[] {
@@ -139,7 +139,7 @@ export function parseSlashCommandToolsFromFrontmatter(
   return parsed
 }
 
-/**
+/*    *
  * Gets a unique identifier for a file based on its device ID and inode.
  * This allows detection of duplicate files accessed through different paths
  * (e.g., via symlinks). Returns null if the file doesn't exist or can't be stat'd.
@@ -151,11 +151,11 @@ export function parseSlashCommandToolsFromFrontmatter(
  * Uses bigint: true to handle filesystems with large inodes (e.g., ExFAT)
  * that exceed JavaScript's Number precision (53 bits). Without bigint, different
  * large inodes can round to the same Number, causing false duplicate detection.
- * See: https://github.com/anthropics/claude-code/issues/13893
+ * See: https:// github.com/anthropics/claude-code/issues/13893
  *
  * @param filePath - Path to the file
  * @returns A string identifier "device:inode" or null if file can't be identified
- */
+     */
 async function getFileIdentity(filePath: string): Promise<string | null> {
   try {
     const stats = await lstat(filePath, { bigint: true })
@@ -171,7 +171,7 @@ async function getFileIdentity(filePath: string): Promise<string | null> {
   }
 }
 
-/**
+/*    *
  * Compute the stop boundary for getProjectDirsUpToHome's upward walk.
  *
  * Normally the walk stops at the nearest `.git` above `cwd`. But if the Bash
@@ -187,7 +187,7 @@ async function getFileIdentity(filePath: string): Promise<string | null> {
  * Worktrees (under `.claude/worktrees/`) stay on the old behavior: their `.git`
  * file is the stop, and loadMarkdownFilesForSubdir's fallback adds the main-repo
  * copy only when the worktree lacks one.
- */
+     */
 function resolveStopBoundary(cwd: string): string | null {
   const cwdGitRoot = findGitRoot(cwd)
   const sessionGitRoot = findGitRoot(getProjectRoot())
@@ -219,7 +219,7 @@ function resolveStopBoundary(cwd: string): string | null {
   return cwdGitRoot
 }
 
-/**
+/*    *
  * Traverses from the current directory up to the git root (or home directory if not in a git repo),
  * collecting all .claude directories along the way.
  *
@@ -230,7 +230,7 @@ function resolveStopBoundary(cwd: string): string | null {
  * @param subdir Subdirectory (eg. "commands", "agents")
  * @param cwd Current working directory to start from
  * @returns Array of directory paths containing .claude/subdir, from most specific (cwd) to least specific
- */
+     */
 export function getProjectDirsUpToHome(
   subdir: ClaudeConfigDirectory,
   cwd: string,
@@ -288,12 +288,12 @@ export function getProjectDirsUpToHome(
   return dirs
 }
 
-/**
+/*    *
  * Loads markdown files from managed, user, and project directories
  * @param subdir Subdirectory (eg. "agents" or "commands")
  * @param cwd Current working directory for project directory traversal
  * @returns Array of parsed markdown files with metadata
- */
+     */
 export const loadMarkdownFilesForSubdir = memoize(
   async function (
     subdir: ClaudeConfigDirectory,
@@ -308,14 +308,12 @@ export const loadMarkdownFilesForSubdir = memoize(
     // out (e.g. sparse-checkout), fall back to the main repository's copy.
     // getProjectDirsUpToHome stops at the worktree root (where the .git file is),
     // so it never sees the main repo on its own.
-    //
-    // Only add the main repo's copy when the worktree root's .claude/<subdir>
+    // // Only add the main repo's copy when the worktree root's .claude/<subdir>
     // is absent. A standard `git worktree add` checks out the full tree, so the
     // worktree already has identical .claude/<subdir> content — loading the main
     // repo's copy too would duplicate every command/agent/skill
     // (anthropics/claude-code#29599, #28182, #26992).
-    //
-    // projectDirs already reflects existence (getProjectDirsUpToHome checked
+    // // projectDirs already reflects existence (getProjectDirsUpToHome checked
     // each dir), so we compare against that instead of stat'ing again.
     const gitRoot = findGitRoot(cwd)
     const canonicalRoot = findCanonicalGitRoot(cwd)
@@ -429,7 +427,7 @@ export const loadMarkdownFilesForSubdir = memoize(
   (subdir: ClaudeConfigDirectory, cwd: string) => `${subdir}:${cwd}`,
 )
 
-/**
+/*    *
  * Native implementation to find markdown files using Node.js fs APIs
  *
  * This implementation exists alongside ripgrep for the following reasons:
@@ -447,7 +445,7 @@ export const loadMarkdownFilesForSubdir = memoize(
  * @param dir Directory to search
  * @param signal AbortSignal for timeout
  * @returns Array of file paths
- */
+     */
 async function findMarkdownFilesNative(
   dir: string,
   signal: AbortSignal,
@@ -538,11 +536,11 @@ async function findMarkdownFilesNative(
   return files
 }
 
-/**
+/*    *
  * Generic function to load markdown files from specified directories
  * @param dir Directory (eg. "~/.claude/commands")
  * @returns Array of parsed markdown files with metadata
- */
+     */
 async function loadMarkdownFiles(dir: string): Promise<
   {
     filePath: string
@@ -553,8 +551,7 @@ async function loadMarkdownFiles(dir: string): Promise<
   // File search strategy:
   // - Default: ripgrep (faster, battle-tested)
   // - Fallback: native Node.js (when CLAUDE_CODE_USE_NATIVE_FILE_SEARCH is set)
-  //
-  // Why both? Ripgrep has poor startup performance in native builds.
+  // // Why both? Ripgrep has poor startup performance in native builds.
   const useNative = isEnvTruthy(process.env.CLAUDE_CODE_USE_NATIVE_FILE_SEARCH)
   const signal = AbortSignal.timeout(3000)
   let files: string[]

@@ -7,14 +7,14 @@ import { normalizeFullWidthDigits } from '../../utils/stringUtils.js'
 // cancel when the user types more characters.
 const DEFAULT_DEBOUNCE_MS = 400
 
-/**
+/*    *
  * Detects when the user types a single valid digit into the prompt input,
  * debounces to avoid accidental submissions (e.g., "1. First item"),
  * trims the digit from the input, and fires a callback.
  *
  * Used by survey components that accept numeric responses typed directly
  * into the main prompt input.
- */
+     */
 export function useDebouncedDigitInput<T extends string = string>({
   inputValue,
   setInputValue,

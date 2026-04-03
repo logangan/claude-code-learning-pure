@@ -1,8 +1,8 @@
-/**
+/*    *
  * Session Memory automatically maintains a markdown file with notes about the current conversation.
  * It runs periodically in the background using a forked subagent to extract key information
  * without interrupting the main conversation flow.
- */
+     */
 
 import { writeFile } from 'fs/promises'
 import memoize from 'lodash-es/memoize.js'
@@ -73,18 +73,18 @@ import {
   getFeatureValue_CACHED_MAY_BE_STALE,
 } from '../analytics/growthbook.js'
 
-/**
+/*    *
  * Check if session memory feature is enabled.
  * Uses cached gate value - returns immediately without blocking.
- */
+     */
 function isSessionMemoryGateEnabled(): boolean {
   return getFeatureValue_CACHED_MAY_BE_STALE('tengu_session_memory', false)
 }
 
-/**
+/*    *
  * Get session memory config from cache.
  * Returns immediately without blocking - value may be stale.
- */
+     */
 function getSessionMemoryRemoteConfig(): Partial<SessionMemoryConfig> {
   return getDynamicConfig_CACHED_MAY_BE_STALE<Partial<SessionMemoryConfig>>(
     'tengu_sm_config',
@@ -98,9 +98,9 @@ function getSessionMemoryRemoteConfig(): Partial<SessionMemoryConfig> {
 
 let lastMemoryMessageUuid: string | undefined
 
-/**
+/*    *
  * Reset the last memory message UUID (for testing)
- */
+     */
 export function resetLastMemoryMessageUuid(): void {
   lastMemoryMessageUuid = undefined
 }
@@ -160,9 +160,8 @@ export function shouldExtractMemory(messages: Message[]): boolean {
   // Trigger extraction when:
   // 1. Both thresholds are met (tokens AND tool calls), OR
   // 2. No tool calls in last turn AND token threshold is met
-  //    (to ensure we extract at natural conversation breaks)
-  //
-  // IMPORTANT: The token threshold (minimumTokensBetweenUpdate) is ALWAYS required.
+  // (to ensure we extract at natural conversation breaks)
+  // // IMPORTANT: The token threshold (minimumTokensBetweenUpdate) is ALWAYS required.
   // Even if the tool call threshold is met, extraction won't happen until the
   // token threshold is also satisfied. This prevents excessive extractions.
   const shouldExtract =
@@ -232,11 +231,11 @@ async function setupSessionMemoryFile(
   return { memoryPath, currentMemory }
 }
 
-/**
+/*    *
  * Initialize session memory config from remote config (lazy initialization).
  * Memoized - only runs once per session, subsequent calls return immediately.
  * Uses cached config values - non-blocking.
- */
+     */
 const initSessionMemoryConfigIfNeeded = memoize((): void => {
   // Load config from cache (non-blocking, may be stale)
   const remoteConfig = getSessionMemoryRemoteConfig()
@@ -263,9 +262,9 @@ const initSessionMemoryConfigIfNeeded = memoize((): void => {
   setSessionMemoryConfig(config)
 })
 
-/**
+/*    *
  * Session memory post-sampling hook that extracts and updates session notes
- */
+     */
 // Track if we've logged the gate check failure this session (to avoid spam)
 let hasLoggedGateFailure = false
 
@@ -349,11 +348,11 @@ const extractSessionMemory = sequential(async function (
   markExtractionCompleted()
 })
 
-/**
+/*    *
  * Initialize session memory by registering the post-sampling hook.
  * This is synchronous to avoid race conditions during startup.
  * The gate check and config loading happen lazily when the hook runs.
- */
+     */
 export function initSessionMemory(): void {
   if (getIsRemoteMode()) return
   // Session memory is used for compaction, so respect auto-compact settings
@@ -380,10 +379,10 @@ export type ManualExtractionResult = {
   error?: string
 }
 
-/**
+/*    *
  * Manually trigger session memory extraction, bypassing threshold checks.
  * Used by the /summary command.
- */
+     */
 export async function manuallyExtractSessionMemory(
   messages: Message[],
   toolUseContext: ToolUseContext,
@@ -454,9 +453,9 @@ export async function manuallyExtractSessionMemory(
 
 // Helper functions
 
-/**
+/*    *
  * Creates a canUseTool function that only allows Edit for the exact memory file.
- */
+     */
 export function createMemoryFileCanUseTool(memoryPath: string): CanUseToolFn {
   return async (tool: Tool, input: unknown) => {
     if (
@@ -481,10 +480,10 @@ export function createMemoryFileCanUseTool(memoryPath: string): CanUseToolFn {
   }
 }
 
-/**
+/*    *
  * Updates lastSummarizedMessageId after successful extraction.
  * Only sets it if the last message doesn't have tool calls (to avoid orphaned tool_results).
- */
+     */
 function updateLastSummarizedMessageIdIfSafe(messages: Message[]): void {
   if (!hasToolCallsInLastAssistantTurn(messages)) {
     const lastMessage = messages[messages.length - 1]

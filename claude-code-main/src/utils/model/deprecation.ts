@@ -1,8 +1,8 @@
-/**
+/*    *
  * Model deprecation utilities
  *
  * Contains information about deprecated models and their retirement dates.
- */
+     */
 
 import { type APIProvider, getAPIProvider } from './providers.js'
 
@@ -19,17 +19,17 @@ type NotDeprecatedInfo = {
 type DeprecationInfo = DeprecatedModelInfo | NotDeprecatedInfo
 
 type DeprecationEntry = {
-  /** Human-readable model name */
+  /*    * Human-readable model name     */
   modelName: string
-  /** Retirement dates by provider (null = not deprecated for that provider) */
+  /*    * Retirement dates by provider (null = not deprecated for that provider)     */
   retirementDates: Record<APIProvider, string | null>
 }
 
-/**
+/*    *
  * Deprecated models and their retirement dates by provider.
  * Keys are substrings to match in model IDs (case-insensitive).
  * To add a new deprecated model, add an entry to this object.
- */
+     */
 const DEPRECATED_MODELS: Record<string, DeprecationEntry> = {
   'claude-3-opus': {
     modelName: 'Claude 3 Opus',
@@ -60,9 +60,9 @@ const DEPRECATED_MODELS: Record<string, DeprecationEntry> = {
   },
 }
 
-/**
+/*    *
  * Check if a model is deprecated and get its deprecation info
- */
+     */
 function getDeprecatedModelInfo(modelId: string): DeprecationInfo {
   const lowercaseModelId = modelId.toLowerCase()
   const provider = getAPIProvider()
@@ -82,9 +82,9 @@ function getDeprecatedModelInfo(modelId: string): DeprecationInfo {
   return { isDeprecated: false }
 }
 
-/**
+/*    *
  * Get a deprecation warning message for a model, or null if not deprecated
- */
+     */
 export function getModelDeprecationWarning(
   modelId: string | null,
 ): string | null {

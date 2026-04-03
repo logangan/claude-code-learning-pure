@@ -12,7 +12,7 @@ import { WebFetchTool } from './tools/WebFetchTool/WebFetchTool.js'
 import { TaskStopTool } from './tools/TaskStopTool/TaskStopTool.js'
 import { BriefTool } from './tools/BriefTool/BriefTool.js'
 // Dead code elimination: conditional import for ant-only tools
-/* eslint-disable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
+/*     eslint-disable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports     */
 const REPLTool =
   process.env.USER_TYPE === 'ant'
     ? require('./tools/REPLTool/REPLTool.js').REPLTool
@@ -50,7 +50,7 @@ const PushNotificationTool =
 const SubscribePRTool = feature('KAIROS_GITHUB_WEBHOOKS')
   ? require('./tools/SubscribePRTool/SubscribePRTool.js').SubscribePRTool
   : null
-/* eslint-enable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
+/*     eslint-enable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports     */
 import { TaskOutputTool } from './tools/TaskOutputTool/TaskOutputTool.js'
 import { WebSearchTool } from './tools/WebSearchTool/WebSearchTool.js'
 import { TodoWriteTool } from './tools/TodoWriteTool/TodoWriteTool.js'
@@ -59,7 +59,7 @@ import { TestingPermissionTool } from './tools/testing/TestingPermissionTool.js'
 import { GrepTool } from './tools/GrepTool/GrepTool.js'
 import { TungstenTool } from './tools/TungstenTool/TungstenTool.js'
 // Lazy require to break circular dependency: tools.ts -> TeamCreateTool/TeamDeleteTool -> ... -> tools.ts
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const getTeamCreateTool = () =>
   require('./tools/TeamCreateTool/TeamCreateTool.js')
     .TeamCreateTool as typeof import('./tools/TeamCreateTool/TeamCreateTool.js').TeamCreateTool
@@ -69,7 +69,7 @@ const getTeamDeleteTool = () =>
 const getSendMessageTool = () =>
   require('./tools/SendMessageTool/SendMessageTool.js')
     .SendMessageTool as typeof import('./tools/SendMessageTool/SendMessageTool.js').SendMessageTool
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import { AskUserQuestionTool } from './tools/AskUserQuestionTool/AskUserQuestionTool.js'
 import { LSPTool } from './tools/LSPTool/LSPTool.js'
 import { ListMcpResourcesTool } from './tools/ListMcpResourcesTool/ListMcpResourcesTool.js'
@@ -87,13 +87,13 @@ import uniqBy from 'lodash-es/uniqBy.js'
 import { isToolSearchEnabledOptimistic } from './utils/toolSearch.js'
 import { isTodoV2Enabled } from './utils/tasks.js'
 // Dead code elimination: conditional import for CLAUDE_CODE_VERIFY_PLAN
-/* eslint-disable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
+/*     eslint-disable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports     */
 const VerifyPlanExecutionTool =
   process.env.CLAUDE_CODE_VERIFY_PLAN === 'true'
     ? require('./tools/VerifyPlanExecutionTool/VerifyPlanExecutionTool.js')
         .VerifyPlanExecutionTool
     : null
-/* eslint-enable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
+/*     eslint-enable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports     */
 import { SYNTHETIC_OUTPUT_TOOL_NAME } from './tools/SyntheticOutputTool/SyntheticOutputTool.js'
 export {
   ALL_AGENT_DISALLOWED_TOOLS,
@@ -103,7 +103,7 @@ export {
 } from './constants/tools.js'
 import { feature } from 'bun:bundle'
 // Dead code elimination: conditional import for OVERFLOW_TEST_TOOL
-/* eslint-disable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
+/*     eslint-disable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports     */
 const OverflowTestTool = feature('OVERFLOW_TEST_TOOL')
   ? require('./tools/OverflowTestTool/OverflowTestTool.js').OverflowTestTool
   : null
@@ -132,7 +132,7 @@ const WorkflowTool = feature('WORKFLOW_SCRIPTS')
       return require('./tools/WorkflowTool/WorkflowTool.js').WorkflowTool
     })()
   : null
-/* eslint-enable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
+/*     eslint-enable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports     */
 import type { ToolPermissionContext } from './Tool.js'
 import { getDenyRuleForTool } from './utils/permissions/permissions.js'
 import { hasEmbeddedSearchTools } from './utils/embeddedTools.js'
@@ -146,18 +146,18 @@ import {
   isReplModeEnabled,
 } from './tools/REPLTool/constants.js'
 export { REPL_ONLY_TOOLS }
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const getPowerShellTool = () => {
   if (!isPowerShellToolEnabled()) return null
   return (
     require('./tools/PowerShellTool/PowerShellTool.js') as typeof import('./tools/PowerShellTool/PowerShellTool.js')
   ).PowerShellTool
 }
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
-/**
+/*    *
  * Predefined tool presets that can be used with --tools flag
- */
+     */
 export const TOOL_PRESETS = ['default'] as const
 
 export type ToolPreset = (typeof TOOL_PRESETS)[number]
@@ -170,26 +170,26 @@ export function parseToolPreset(preset: string): ToolPreset | null {
   return presetString as ToolPreset
 }
 
-/**
+/*    *
  * Get the list of tool names for a given preset
  * Filters out tools that are disabled via isEnabled() check
  * @param preset The preset name
  * @returns Array of tool names
- */
+     */
 export function getToolsForDefaultPreset(): string[] {
   const tools = getAllBaseTools()
   const isEnabled = tools.map(tool => tool.isEnabled())
   return tools.filter((_, i) => isEnabled[i]).map(tool => tool.name)
 }
 
-/**
+/*    *
  * Get the complete exhaustive list of all tools that could be available
  * in the current environment (respecting process.env flags).
  * This is the source of truth for ALL tools.
- */
-/**
- * NOTE: This MUST stay in sync with https://console.statsig.com/4aF3Ewatb6xPVpCwxb5nA3/dynamic_configs/claude_code_global_system_caching, in order to cache the system prompt across users.
- */
+     */
+/*    *
+ * NOTE: This MUST stay in sync with https:// console.statsig.com/4aF3Ewatb6xPVpCwxb5nA3/dynamic_configs/claude_code_global_system_caching, in order to cache the system prompt across users.
+     */
 export function getAllBaseTools(): Tools {
   return [
     AgentTool,
@@ -250,7 +250,7 @@ export function getAllBaseTools(): Tools {
   ]
 }
 
-/**
+/*    *
  * Filters out tools that are blanket-denied by the permission context.
  * A tool is filtered out if there's a deny rule matching its name with no
  * ruleContent (i.e., a blanket deny for that tool).
@@ -258,7 +258,7 @@ export function getAllBaseTools(): Tools {
  * Uses the same matcher as the runtime permission check (step 1a), so MCP
  * server-prefix rules like `mcp__server` strip all tools from that server
  * before the model sees them — not just at call time.
- */
+     */
 export function filterToolsByDenyRules<
   T extends {
     name: string
@@ -326,7 +326,7 @@ export const getTools = (permissionContext: ToolPermissionContext): Tools => {
   return allowedTools.filter((_, i) => isEnabled[i])
 }
 
-/**
+/*    *
  * Assemble the full tool pool for a given permission context and MCP tools.
  *
  * This is the single source of truth for combining built-in tools with MCP tools.
@@ -341,7 +341,7 @@ export const getTools = (permissionContext: ToolPermissionContext): Tools => {
  * @param permissionContext - Permission context for filtering built-in tools
  * @param mcpTools - MCP tools from appState.mcp.tools
  * @returns Combined, deduplicated array of built-in and MCP tools
- */
+     */
 export function assembleToolPool(
   permissionContext: ToolPermissionContext,
   mcpTools: Tools,
@@ -366,7 +366,7 @@ export function assembleToolPool(
   )
 }
 
-/**
+/*    *
  * Get all tools including both built-in tools and MCP tools.
  *
  * This is the preferred function when you need the complete tools list for:
@@ -379,7 +379,7 @@ export function assembleToolPool(
  * @param permissionContext - Permission context for filtering built-in tools
  * @param mcpTools - MCP tools from appState.mcp.tools
  * @returns Combined array of built-in and MCP tools
- */
+     */
 export function getMergedTools(
   permissionContext: ToolPermissionContext,
   mcpTools: Tools,

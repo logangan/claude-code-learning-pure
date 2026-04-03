@@ -21,22 +21,22 @@ import {
 import { jsonParse, jsonStringify } from '../slowOperations.js'
 import { getSystemDirectories } from '../systemDirectories.js'
 import { classifyFetchError, logPluginFetch } from './fetchTelemetry.js'
-/**
+/*    *
  * User configuration values for MCPB
- */
+     */
 export type UserConfigValues = Record<
   string,
   string | number | boolean | string[]
 >
 
-/**
+/*    *
  * User configuration schema from DXT manifest
- */
+     */
 export type UserConfigSchema = Record<string, McpbUserConfigurationOption>
 
-/**
+/*    *
  * Result of loading an MCPB file (success case)
- */
+     */
 export type McpbLoadResult = {
   manifest: McpbManifest
   mcpConfig: McpServerConfig
@@ -44,9 +44,9 @@ export type McpbLoadResult = {
   contentHash: string
 }
 
-/**
+/*    *
  * Result when MCPB needs user configuration
- */
+     */
 export type McpbNeedsConfigResult = {
   status: 'needs-config'
   manifest: McpbManifest
@@ -57,9 +57,9 @@ export type McpbNeedsConfigResult = {
   validationErrors: string[]
 }
 
-/**
+/*    *
  * Metadata stored for each cached MCPB
- */
+     */
 export type McpbCacheMetadata = {
   source: string
   contentHash: string
@@ -68,42 +68,42 @@ export type McpbCacheMetadata = {
   lastChecked: string
 }
 
-/**
+/*    *
  * Progress callback for download and extraction operations
- */
+     */
 export type ProgressCallback = (status: string) => void
 
-/**
+/*    *
  * Check if a source string is an MCPB file reference
- */
+     */
 export function isMcpbSource(source: string): boolean {
   return source.endsWith('.mcpb') || source.endsWith('.dxt')
 }
 
-/**
+/*    *
  * Check if a source is a URL
- */
+     */
 function isUrl(source: string): boolean {
-  return source.startsWith('http://') || source.startsWith('https://')
+  return source.startsWith('http:// ') || source.startsWith('https://')
 }
 
-/**
+/*    *
  * Generate content hash for an MCPB file
- */
+     */
 function generateContentHash(data: Uint8Array): string {
   return createHash('sha256').update(data).digest('hex').substring(0, 16)
 }
 
-/**
+/*    *
  * Get cache directory for MCPB files
- */
+     */
 function getMcpbCacheDir(pluginPath: string): string {
   return join(pluginPath, '.mcpb-cache')
 }
 
-/**
+/*    *
  * Get metadata file path for cached MCPB
- */
+     */
 function getMetadataPath(cacheDir: string, source: string): string {
   const sourceHash = createHash('md5')
     .update(source)
@@ -112,7 +112,7 @@ function getMetadataPath(cacheDir: string, source: string): string {
   return join(cacheDir, `${sourceHash}.metadata.json`)
 }
 
-/**
+/*    *
  * Compose the secureStorage key for a per-server secret bucket.
  * `pluginSecrets` is a flat map — per-server secrets share it with top-level
  * plugin options (pluginOptionsStorage.ts) using a `${pluginId}/${server}`
@@ -120,12 +120,12 @@ function getMetadataPath(cacheDir: string, source: string): string {
  * server names (MCP identifier constraints), so it's unambiguous. Keeps the
  * SecureStorageData schema unchanged and the single-keychain-entry size
  * budget (~2KB stdin-safe, see INC-3028) shared across all plugin secrets.
- */
+     */
 function serverSecretsKey(pluginId: string, serverName: string): string {
   return `${pluginId}/${serverName}`
 }
 
-/**
+/*    *
  * Load user configuration for an MCP server, merging non-sensitive values
  * (from settings.json) with sensitive values (from secureStorage keychain).
  * secureStorage wins on collision — schema determines destination so
@@ -137,7 +137,7 @@ function serverSecretsKey(pluginId: string, serverName: string): string {
  *
  * @param pluginId - Plugin identifier in "plugin@marketplace" format
  * @param serverName - MCP server name from DXT manifest
- */
+     */
 export function loadMcpServerUserConfig(
   pluginId: string,
   serverName: string,
@@ -171,7 +171,7 @@ export function loadMcpServerUserConfig(
   }
 }
 
-/**
+/*    *
  * Save user configuration for an MCP server, splitting by `schema[key].sensitive`.
  * Mirrors savePluginOptions (pluginOptionsStorage.ts:90) for top-level options:
  *   - `sensitive: true` → secureStorage (keychain on macOS, .credentials.json 0600 elsewhere)
@@ -189,7 +189,7 @@ export function loadMcpServerUserConfig(
  * @param config - User configuration values
  * @param schema - The userConfig schema for this server (manifest.user_config
  *   or channels[].userConfig) — drives the sensitive/non-sensitive split
- */
+     */
 export function saveMcpServerUserConfig(
   pluginId: string,
   serverName: string,
@@ -210,10 +210,10 @@ export function saveMcpServerUserConfig(
 
     // Scrub ONLY keys we're writing in this call. Covers both directions
     // across schema-version flips:
-    //  - sensitive→secureStorage ⇒ remove stale plaintext from settings.json
-    //  - nonSensitive→settings.json ⇒ remove stale entry from secureStorage
-    //    (otherwise loadMcpServerUserConfig's {...nonSensitive, ...sensitive}
-    //    would let the stale secureStorage value win on next read)
+    // - sensitive→secureStorage ⇒ remove stale plaintext from settings.json
+    // - nonSensitive→settings.json ⇒ remove stale entry from secureStorage
+    // (otherwise loadMcpServerUserConfig's {...nonSensitive, ...sensitive}
+    // would let the stale secureStorage value win on next read)
     // Partial `config` (user only re-enters one field) leaves other fields
     // untouched in BOTH stores — defense-in-depth against future callers.
     const sensitiveKeysInThisSave = new Set(Object.keys(sensitive))
@@ -222,8 +222,7 @@ export function saveMcpServerUserConfig(
     // Sensitive → secureStorage FIRST. If this fails (keychain locked,
     // .credentials.json perms), throw before touching settings.json — the
     // old plaintext stays as a fallback instead of losing BOTH copies.
-    //
-    // Also scrub non-sensitive keys from secureStorage — schema flipped
+    // // Also scrub non-sensitive keys from secureStorage — schema flipped
     // sensitive→false and they're being written to settings.json now. Without
     // this, loadMcpServerUserConfig's merge would let the stale secureStorage
     // value win on next read.
@@ -280,8 +279,7 @@ export function saveMcpServerUserConfig(
     // a sensitive-only schema still cleans up the old settings.json. Runs
     // AFTER the secureStorage write succeeded, so the scrub can't leave you
     // with zero copies of the secret.
-    //
-    // updateSettingsForSource does mergeWith(diskSettings, ourSettings, ...)
+    // // updateSettingsForSource does mergeWith(diskSettings, ourSettings, ...)
     // which PRESERVES destination keys absent from source — so simply omitting
     // sensitive keys doesn't scrub them, the disk copy merges back in. Instead:
     // set each sensitive key to explicit `undefined` — mergeWith (with the
@@ -340,9 +338,9 @@ export function saveMcpServerUserConfig(
   }
 }
 
-/**
+/*    *
  * Validate user configuration values against DXT user_config schema
- */
+     */
 export function validateUserConfig(
   values: UserConfigValues,
   schema: UserConfigSchema,
@@ -407,9 +405,9 @@ export function validateUserConfig(
   return { valid: errors.length === 0, errors }
 }
 
-/**
+/*    *
  * Generate MCP server configuration from DXT manifest
- */
+     */
 async function generateMcpConfig(
   manifest: McpbManifest,
   extractedPath: string,
@@ -437,9 +435,9 @@ async function generateMcpConfig(
   return mcpConfig as McpServerConfig
 }
 
-/**
+/*    *
  * Load cache metadata for an MCPB source
- */
+     */
 async function loadCacheMetadata(
   cacheDir: string,
   source: string,
@@ -462,9 +460,9 @@ async function loadCacheMetadata(
   }
 }
 
-/**
+/*    *
  * Save cache metadata for an MCPB source
- */
+     */
 async function saveCacheMetadata(
   cacheDir: string,
   source: string,
@@ -476,9 +474,9 @@ async function saveCacheMetadata(
   await writeFile(metadataPath, jsonStringify(metadata, null, 2), 'utf-8')
 }
 
-/**
+/*    *
  * Download MCPB file from URL
- */
+     */
 async function downloadMcpb(
   url: string,
   destPath: string,
@@ -541,12 +539,12 @@ async function downloadMcpb(
   }
 }
 
-/**
+/*    *
  * Extract MCPB file and write contents to extraction directory.
  *
  * @param modes - name→mode map from `parseZipModes`. MCPB bundles can ship
  *   native MCP server binaries, so preserving the exec bit matters here.
- */
+     */
 async function extractMcpbContents(
   unzipped: Record<string, Uint8Array>,
   extractPath: string,
@@ -616,9 +614,9 @@ async function extractMcpbContents(
   }
 }
 
-/**
+/*    *
  * Check if an MCPB source has changed and needs re-extraction
- */
+     */
 export async function checkMcpbChanged(
   source: string,
   pluginPath: string,
@@ -685,7 +683,7 @@ export async function checkMcpbChanged(
   return false
 }
 
-/**
+/*    *
  * Load and extract an MCPB file, with caching and user configuration support
  *
  * @param source - MCPB file path or URL
@@ -694,7 +692,7 @@ export async function checkMcpbChanged(
  * @param onProgress - Progress callback
  * @param providedUserConfig - User configuration values (for initial setup or reconfiguration)
  * @returns Success with MCP config, or needs-config status with schema
- */
+     */
 export async function loadMcpbFile(
   source: string,
   pluginPath: string,

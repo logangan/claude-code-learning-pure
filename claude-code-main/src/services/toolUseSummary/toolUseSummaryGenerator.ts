@@ -1,9 +1,9 @@
-/**
+/*    *
  * Tool Use Summary Generator
  *
  * Generates human-readable summaries of completed tool batches using Haiku.
  * Used by the SDK to provide high-level progress updates to clients.
- */
+     */
 
 import { E_TOOL_USE_SUMMARY_GENERATION_FAILED } from '../../constants/errorIds.js'
 import { toError } from '../../utils/errors.js'
@@ -36,12 +36,12 @@ export type GenerateToolUseSummaryParams = {
   lastAssistantText?: string
 }
 
-/**
+/*    *
  * Generates a human-readable summary of completed tools.
  *
  * @param params - Parameters including tools executed and their results
  * @returns A brief summary string, or null if generation fails
- */
+     */
 export async function generateToolUseSummary({
   tools,
   signal,
@@ -96,9 +96,9 @@ export async function generateToolUseSummary({
   }
 }
 
-/**
+/*    *
  * Truncates a JSON value to a maximum length for the prompt.
- */
+     */
 function truncateJson(value: unknown, maxLength: number): string {
   try {
     const str = jsonStringify(value)

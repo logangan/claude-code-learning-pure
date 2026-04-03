@@ -1,4 +1,4 @@
-/**
+/*    *
  * Native Installer Implementation
  *
  * This module implements the file-based native installer system described in
@@ -8,7 +8,7 @@
  * - Multi-process safety with locking
  * - Simple fallback mechanism using modification time
  * - Support for both JS and native builds
- */
+     */
 
 import { constants as fsConstants, type Stats } from 'fs'
 import {
@@ -434,10 +434,10 @@ async function installVersion(
   }
 }
 
-/**
+/*    *
  * Performs the core update operation: download (if needed), install, and update symlink.
  * Returns whether a new install was performed (vs just updating symlink).
- */
+     */
 async function performVersionUpdate(
   version: string,
   forceReinstall: boolean,
@@ -913,7 +913,7 @@ export async function checkInstall(
   if (!isInCurrentPath) {
     if (isWindows) {
       // Windows-specific PATH instructions
-      const windowsBinPath = localBinDir.replace(/\//g, '\\')
+      const windowsBinPath = localBinDir.replace(/\// g, '\\')
       messages.push({
         message: `Native installation exists but ${windowsBinPath} is not in your PATH. Add it by opening: System Properties → Environment Variables → Edit User PATH → New → Add the path above. Then restart your terminal.`,
         userActionRequired: true,
@@ -1038,13 +1038,13 @@ function getLockFilePathFromVersionPath(
   return join(dirs.locks, `${versionName}.lock`)
 }
 
-/**
+/*    *
  * Acquire a lock on the current running version to prevent it from being deleted
  * This lock is held for the entire lifetime of the process
  *
  * Uses PID-based locking (when enabled) which can immediately detect crashed processes
  * (unlike mtime-based locking which requires a 30-day timeout)
- */
+     */
 export async function lockCurrentVersion(): Promise<void> {
   const dirs = getBaseDirectories()
 
@@ -1164,10 +1164,10 @@ function logLockAcquisitionError(versionPath: string, lockError: unknown) {
   )
 }
 
-/**
+/*    *
  * Force-remove a lock file for a given version path.
  * Used when --force is specified to bypass stale locks.
- */
+     */
 async function forceRemoveLock(versionFilePath: string): Promise<void> {
   const dirs = getBaseDirectories()
   const lockfilePath = getLockFilePathFromVersionPath(dirs, versionFilePath)
@@ -1438,11 +1438,11 @@ export async function cleanupOldVersions(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Check if a given path is managed by npm
  * @param executablePath - The path to check (can be a symlink)
  * @returns true if the path is npm-managed, false otherwise
- */
+     */
 async function isNpmSymlink(executablePath: string): Promise<boolean> {
   // Resolve symlink to its target if applicable
   let targetPath = executablePath
@@ -1457,11 +1457,11 @@ async function isNpmSymlink(executablePath: string): Promise<boolean> {
   return targetPath.endsWith('.js') || targetPath.includes('node_modules')
 }
 
-/**
+/*    *
  * Remove the claude symlink from the executable directory
  * This is used when switching away from native installation
  * Will only remove if it's a native binary symlink, not npm-managed JS files
- */
+     */
 export async function removeInstalledSymlink(): Promise<void> {
   const dirs = getBaseDirectories()
 
@@ -1485,10 +1485,10 @@ export async function removeInstalledSymlink(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Clean up old claude aliases from shell configuration files
  * Only handles alias removal, not PATH setup
- */
+     */
 export async function cleanupShellAliases(): Promise<SetupMessage[]> {
   const messages: SetupMessage[] = []
   const configMap = getShellConfigPaths()

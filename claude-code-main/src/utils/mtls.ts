@@ -17,9 +17,9 @@ export type TLSConfig = MTLSConfig & {
   ca?: string | string[] | Buffer
 }
 
-/**
+/*    *
  * Get mTLS configuration from environment variables
- */
+     */
 export const getMTLSConfig = memoize((): MTLSConfig | undefined => {
   const config: MTLSConfig = {}
 
@@ -72,9 +72,9 @@ export const getMTLSConfig = memoize((): MTLSConfig | undefined => {
   return config
 })
 
-/**
+/*    *
  * Create an HTTPS agent with mTLS configuration
- */
+     */
 export const getMTLSAgent = memoize((): HttpsAgent | undefined => {
   const mtlsConfig = getMTLSConfig()
   const caCerts = getCACertificates()
@@ -94,9 +94,9 @@ export const getMTLSAgent = memoize((): HttpsAgent | undefined => {
   return new HttpsAgent(agentOptions)
 })
 
-/**
+/*    *
  * Get TLS options for WebSocket connections
- */
+     */
 export function getWebSocketTLSOptions(): tls.ConnectionOptions | undefined {
   const mtlsConfig = getMTLSConfig()
   const caCerts = getCACertificates()
@@ -111,9 +111,9 @@ export function getWebSocketTLSOptions(): tls.ConnectionOptions | undefined {
   }
 }
 
-/**
+/*    *
  * Get fetch options with TLS configuration (mTLS + CA certs) for undici
- */
+     */
 export function getTLSFetchOptions(): {
   tls?: TLSConfig
   dispatcher?: undici.Dispatcher
@@ -151,18 +151,18 @@ export function getTLSFetchOptions(): {
   return { dispatcher: agent }
 }
 
-/**
+/*    *
  * Clear the mTLS configuration cache.
- */
+     */
 export function clearMTLSCache(): void {
   getMTLSConfig.cache.clear?.()
   getMTLSAgent.cache.clear?.()
   logForDebugging('Cleared mTLS configuration cache')
 }
 
-/**
+/*    *
  * Configure global Node.js TLS settings
- */
+     */
 export function configureGlobalMTLS(): void {
   const mtlsConfig = getMTLSConfig()
 

@@ -1,6 +1,6 @@
-/**
+/*    *
  * Shared utilities for spawning teammates across different backends.
- */
+     */
 
 import {
   getChromeFlagOverride,
@@ -15,11 +15,11 @@ import type { PermissionMode } from '../permissions/PermissionMode.js'
 import { getTeammateModeFromSnapshot } from './backends/teammateModeSnapshot.js'
 import { TEAMMATE_COMMAND_ENV_VAR } from './constants.js'
 
-/**
+/*    *
  * Gets the command to use for spawning teammate processes.
  * Uses TEAMMATE_COMMAND_ENV_VAR if set, otherwise falls back to the
  * current process executable path.
- */
+     */
 export function getTeammateCommand(): string {
   if (process.env[TEAMMATE_COMMAND_ENV_VAR]) {
     return process.env[TEAMMATE_COMMAND_ENV_VAR]
@@ -27,14 +27,14 @@ export function getTeammateCommand(): string {
   return isInBundledMode() ? process.execPath : process.argv[1]!
 }
 
-/**
+/*    *
  * Builds CLI flags to propagate from the current session to spawned teammates.
  * This ensures teammates inherit important settings like permission mode,
  * model selection, and plugin configuration from their parent.
  *
  * @param options.planModeRequired - If true, don't inherit bypass permissions (plan mode takes precedence)
  * @param options.permissionMode - Permission mode to propagate
- */
+     */
 export function buildInheritedCliFlags(options?: {
   planModeRequired?: boolean
   permissionMode?: PermissionMode
@@ -88,11 +88,11 @@ export function buildInheritedCliFlags(options?: {
   return flags.join(' ')
 }
 
-/**
+/*    *
  * Environment variables that must be explicitly forwarded to tmux-spawned
  * teammates. Tmux may start a new login shell that doesn't inherit the
  * parent's env, so we forward any that are set in the current process.
- */
+     */
 const TEAMMATE_ENV_VARS = [
   // API provider selection — without these, teammates default to firstParty
   // and send requests to the wrong endpoint (GitHub issue #23561)
@@ -127,11 +127,11 @@ const TEAMMATE_ENV_VARS = [
   'CURL_CA_BUNDLE',
 ] as const
 
-/**
+/*    *
  * Builds the `env KEY=VALUE ...` string for teammate spawn commands.
  * Always includes CLAUDECODE=1 and CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1,
  * plus any provider/config env vars that are set in the current process.
- */
+     */
 export function buildInheritedEnvVars(): string {
   const envVars = ['CLAUDECODE=1', 'CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1']
 

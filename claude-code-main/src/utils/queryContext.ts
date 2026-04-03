@@ -1,4 +1,4 @@
-/**
+/*    *
  * Shared helpers for building the API cache-key prefix (systemPrompt,
  * userContext, systemContext) for query() calls.
  *
@@ -7,7 +7,7 @@
  * these imports in systemPrompt.ts or sideQuestion.ts (both reachable
  * from commands.ts) would create cycles. Only entrypoint-layer files
  * import from here (QueryEngine.ts, cli/print.ts).
- */
+     */
 
 import type { Command } from '../commands.js'
 import { getSystemPrompt } from '../constants/prompts.js'
@@ -27,7 +27,7 @@ import {
   type ThinkingConfig,
 } from './thinking.js'
 
-/**
+/*    *
  * Fetch the three context pieces that form the API cache-key prefix:
  * systemPrompt parts, userContext, systemContext.
  *
@@ -40,7 +40,7 @@ import {
  * customSystemPrompt) + optional extras + appendSystemPrompt. QueryEngine
  * injects coordinator userContext and memory-mechanics prompt on top;
  * sideQuestion's fallback uses the base result directly.
- */
+     */
 export async function fetchSystemPromptParts({
   tools,
   mainLoopModel,
@@ -73,7 +73,7 @@ export async function fetchSystemPromptParts({
   return { defaultSystemPrompt, userContext, systemContext }
 }
 
-/**
+/*    *
  * Build CacheSafeParams from raw inputs when getLastCacheSafeParams() is null.
  *
  * Used by the SDK side_question handler (print.ts) on resume before a turn
@@ -84,7 +84,7 @@ export async function fetchSystemPromptParts({
  * May still miss the cache if the main loop applies extras this path doesn't
  * know about (coordinator mode, memory-mechanics prompt). That's acceptable —
  * the alternative is returning null and failing the side question entirely.
- */
+     */
 export async function buildSideQuestionFallbackParams({
   tools,
   commands,

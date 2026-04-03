@@ -6,12 +6,12 @@ import { getPluginLspServers } from '../../utils/plugins/lspPluginIntegration.js
 import { loadAllPluginsCacheOnly } from '../../utils/plugins/pluginLoader.js'
 import type { ScopedLspServerConfig } from './types.js'
 
-/**
+/*    *
  * Get all configured LSP servers from plugins.
  * LSP servers are only supported via plugins, not user/project settings.
  *
  * @returns Object containing servers configuration keyed by scoped server name
- */
+     */
 export async function getAllLspServers(): Promise<{
   servers: Record<string, ScopedLspServerConfig>
 }> {

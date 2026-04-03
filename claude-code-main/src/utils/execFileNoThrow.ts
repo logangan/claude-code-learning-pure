@@ -60,7 +60,7 @@ type ExecaResultWithError = {
   signal?: string
 }
 
-/**
+/*    *
  * Extracts a human-readable error message from an execa result.
  *
  * Priority order:
@@ -69,7 +69,7 @@ type ExecaResultWithError = {
  *    making it more informative than just the signal name.
  * 2. signal - the signal that killed the process (e.g., "SIGTERM")
  * 3. errorCode - fallback to just the numeric exit code
- */
+     */
 function getErrorMessage(
   result: ExecaResultWithError,
   errorCode: number,
@@ -83,9 +83,9 @@ function getErrorMessage(
   return String(errorCode)
 }
 
-/**
+/*    *
  * execFile, but always resolves (never throws)
- */
+     */
 export function execFileNoThrowWithCwd(
   file: string,
   args: string[],

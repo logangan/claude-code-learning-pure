@@ -14,23 +14,23 @@ import {
 const DEBOUNCE_MS = 1000
 
 type Props = {
-  /** When undefined, the hook does nothing. The task list id is also used as the agent ID. */
+  /*    * When undefined, the hook does nothing. The task list id is also used as the agent ID.     */
   taskListId?: string
   isLoading: boolean
-  /**
+  /*    *
    * Called when a task is ready to be worked on.
    * Returns true if submission succeeded, false if rejected.
-   */
+       */
   onSubmitTask: (prompt: string) => boolean
 }
 
-/**
+/*    *
  * Hook that watches a task list directory and automatically picks up
  * open, unowned tasks to work on.
  *
  * This enables "tasks mode" where Claude watches for externally-created
  * tasks and processes them one at a time.
- */
+     */
 export function useTaskListWatcher({
   taskListId,
   isLoading,
@@ -188,12 +188,12 @@ export function useTaskListWatcher({
   }, [enabled, isLoading])
 }
 
-/**
+/*    *
  * Find an available task that can be worked on:
  * - Status is 'pending'
  * - No owner assigned
  * - Not blocked by any unresolved tasks
- */
+     */
 function findAvailableTask(tasks: Task[]): Task | undefined {
   const unresolvedTaskIds = new Set(
     tasks.filter(t => t.status !== 'completed').map(t => t.id),
@@ -207,9 +207,9 @@ function findAvailableTask(tasks: Task[]): Task | undefined {
   })
 }
 
-/**
+/*    *
  * Format a task as a prompt for Claude to work on.
- */
+     */
 function formatTaskAsPrompt(task: Task): string {
   let prompt = `Complete all open tasks. Start with task #${task.id}: \n\n ${task.subject}`
 

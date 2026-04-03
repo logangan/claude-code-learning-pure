@@ -64,7 +64,7 @@ type UseRemoteSessionResult = {
   disconnect: () => void
 }
 
-/**
+/*    *
  * Hook for managing a remote CCR session in the REPL.
  *
  * Handles:
@@ -72,7 +72,7 @@ type UseRemoteSessionResult = {
  * - Converting SDK messages to REPL messages
  * - Sending user input to CCR via HTTP POST
  * - Permission request/response flow via existing ToolUseConfirm queue
- */
+     */
 export function useRemoteSession({
   config,
   setMessages,

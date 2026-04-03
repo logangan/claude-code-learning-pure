@@ -19,58 +19,58 @@ import type {
   TeammateExecutor,
 } from './types.js'
 
-/**
+/*    *
  * Cached backend detection result.
  * Once detected, the backend selection is fixed for the lifetime of the process.
- */
+     */
 let cachedBackend: PaneBackend | null = null
 
-/**
+/*    *
  * Cached detection result with additional metadata.
- */
+     */
 let cachedDetectionResult: BackendDetectionResult | null = null
 
-/**
+/*    *
  * Flag to track if backends have been registered.
- */
+     */
 let backendsRegistered = false
 
-/**
+/*    *
  * Cached in-process backend instance.
- */
+     */
 let cachedInProcessBackend: TeammateExecutor | null = null
 
-/**
+/*    *
  * Cached pane backend executor instance.
  * Wraps the detected PaneBackend to provide TeammateExecutor interface.
- */
+     */
 let cachedPaneBackendExecutor: TeammateExecutor | null = null
 
-/**
+/*    *
  * Tracks whether spawn fell back to in-process mode because no pane backend
  * was available (e.g., iTerm2 without it2 or tmux installed). Once set,
  * isInProcessEnabled() returns true so UI (banner, teams menu) reflects reality.
- */
+     */
 let inProcessFallbackActive = false
 
-/**
+/*    *
  * Placeholder for TmuxBackend - will be replaced with actual implementation.
  * This allows the registry to compile before the backend implementations exist.
- */
+     */
 let TmuxBackendClass: (new () => PaneBackend) | null = null
 
-/**
+/*    *
  * Placeholder for ITermBackend - will be replaced with actual implementation.
  * This allows the registry to compile before the backend implementations exist.
- */
+     */
 let ITermBackendClass: (new () => PaneBackend) | null = null
 
-/**
+/*    *
  * Ensures backend classes are dynamically imported so getBackendByType() can
  * construct them. Unlike detectAndGetBackend(), this never spawns subprocesses
  * and never throws — it's the lightweight option when you only need class
  * registration (e.g., killing a pane by its stored backendType).
- */
+     */
 export async function ensureBackendsRegistered(): Promise<void> {
   if (backendsRegistered) return
   await import('./TmuxBackend.js')
@@ -78,18 +78,18 @@ export async function ensureBackendsRegistered(): Promise<void> {
   backendsRegistered = true
 }
 
-/**
+/*    *
  * Registers the TmuxBackend class with the registry.
  * Called by TmuxBackend.ts to avoid circular dependencies.
- */
+     */
 export function registerTmuxBackend(backendClass: new () => PaneBackend): void {
   TmuxBackendClass = backendClass
 }
 
-/**
+/*    *
  * Registers the ITermBackend class with the registry.
  * Called by ITermBackend.ts to avoid circular dependencies.
- */
+     */
 export function registerITermBackend(
   backendClass: new () => PaneBackend,
 ): void {
@@ -99,10 +99,10 @@ export function registerITermBackend(
   ITermBackendClass = backendClass
 }
 
-/**
+/*    *
  * Creates a TmuxBackend instance.
  * Throws if TmuxBackend hasn't been registered.
- */
+     */
 function createTmuxBackend(): PaneBackend {
   if (!TmuxBackendClass) {
     throw new Error(
@@ -112,10 +112,10 @@ function createTmuxBackend(): PaneBackend {
   return new TmuxBackendClass()
 }
 
-/**
+/*    *
  * Creates an ITermBackend instance.
  * Throws if ITermBackend hasn't been registered.
- */
+     */
 function createITermBackend(): PaneBackend {
   if (!ITermBackendClass) {
     throw new Error(
@@ -125,14 +125,14 @@ function createITermBackend(): PaneBackend {
   return new ITermBackendClass()
 }
 
-/**
+/*    *
  * Detection priority flow:
  * 1. If inside tmux, always use tmux (even in iTerm2)
  * 2. If in iTerm2 with it2 available, use iTerm2 backend
  * 3. If in iTerm2 without it2, return result indicating setup needed
  * 4. If tmux available, use tmux (creates external session)
  * 5. Otherwise, throw error with instructions
- */
+     */
 export async function detectAndGetBackend(): Promise<BackendDetectionResult> {
   // Ensure backends are registered before detection
   await ensureBackendsRegistered()
@@ -253,9 +253,9 @@ export async function detectAndGetBackend(): Promise<BackendDetectionResult> {
   throw new Error(getTmuxInstallInstructions())
 }
 
-/**
+/*    *
  * Returns platform-specific tmux installation instructions.
- */
+     */
 function getTmuxInstallInstructions(): string {
   const platform = getPlatform()
 
@@ -284,14 +284,14 @@ Then start a tmux session with: tmux new-session -s claude`
   }
 }
 
-/**
+/*    *
  * Gets a backend by explicit type selection.
  * Useful for testing or when the user has a preference.
  *
  * @param type - The backend type to get
  * @returns The requested backend instance
  * @throws If the requested backend type is not available
- */
+     */
 export function getBackendByType(type: PaneBackendType): PaneBackend {
   switch (type) {
     case 'tmux':
@@ -301,42 +301,42 @@ export function getBackendByType(type: PaneBackendType): PaneBackend {
   }
 }
 
-/**
+/*    *
  * Gets the currently cached backend, if any.
  * Returns null if no backend has been detected yet.
- */
+     */
 export function getCachedBackend(): PaneBackend | null {
   return cachedBackend
 }
 
-/**
+/*    *
  * Gets the cached backend detection result, if any.
  * Returns null if detection hasn't run yet.
  * Use `isNative` to check if teammates are visible in native panes.
- */
+     */
 export function getCachedDetectionResult(): BackendDetectionResult | null {
   return cachedDetectionResult
 }
 
-/**
+/*    *
  * Records that spawn fell back to in-process mode because no pane backend
  * was available. After this, isInProcessEnabled() returns true and subsequent
  * spawns short-circuit to in-process (the environment won't change mid-session).
- */
+     */
 export function markInProcessFallback(): void {
   logForDebugging('[BackendRegistry] Marking in-process fallback as active')
   inProcessFallbackActive = true
 }
 
-/**
+/*    *
  * Gets the teammate mode for this session.
  * Returns the session snapshot captured at startup, ignoring runtime config changes.
- */
+     */
 function getTeammateMode(): 'auto' | 'tmux' | 'in-process' {
   return getTeammateModeFromSnapshot()
 }
 
-/**
+/*    *
  * Checks if in-process teammate execution is enabled.
  *
  * Logic:
@@ -347,7 +347,7 @@ function getTeammateMode(): 'auto' | 'tmux' | 'in-process' {
  *   - If inside iTerm2, use pane backend (return false) - detectAndGetBackend()
  *     will pick ITermBackend if it2 is available, or fall back to tmux
  *   - Otherwise, use in-process (return true)
- */
+     */
 export function isInProcessEnabled(): boolean {
   // Force in-process mode for non-interactive sessions (-p mode)
   // since tmux-based teammates don't make sense without a terminal UI
@@ -388,19 +388,19 @@ export function isInProcessEnabled(): boolean {
   return enabled
 }
 
-/**
+/*    *
  * Returns the resolved teammate executor mode for this session.
  * Unlike getTeammateModeFromSnapshot which may return 'auto', this returns
  * what 'auto' actually resolves to given the current environment.
- */
+     */
 export function getResolvedTeammateMode(): 'in-process' | 'tmux' {
   return isInProcessEnabled() ? 'in-process' : 'tmux'
 }
 
-/**
+/*    *
  * Gets the InProcessBackend instance.
  * Creates and caches the instance on first call.
- */
+     */
 export function getInProcessBackend(): TeammateExecutor {
   if (!cachedInProcessBackend) {
     cachedInProcessBackend = createInProcessBackend()
@@ -408,7 +408,7 @@ export function getInProcessBackend(): TeammateExecutor {
   return cachedInProcessBackend
 }
 
-/**
+/*    *
  * Gets a TeammateExecutor for spawning teammates.
  *
  * Returns either:
@@ -421,7 +421,7 @@ export function getInProcessBackend(): TeammateExecutor {
  * @param preferInProcess - If true and in-process is enabled, returns InProcessBackend.
  *                          Otherwise returns PaneBackendExecutor.
  * @returns TeammateExecutor instance
- */
+     */
 export async function getTeammateExecutor(
   preferInProcess: boolean = false,
 ): Promise<TeammateExecutor> {
@@ -435,10 +435,10 @@ export async function getTeammateExecutor(
   return getPaneBackendExecutor()
 }
 
-/**
+/*    *
  * Gets the PaneBackendExecutor instance.
  * Creates and caches the instance on first call, detecting the appropriate pane backend.
- */
+     */
 async function getPaneBackendExecutor(): Promise<TeammateExecutor> {
   if (!cachedPaneBackendExecutor) {
     const detection = await detectAndGetBackend()
@@ -450,10 +450,10 @@ async function getPaneBackendExecutor(): Promise<TeammateExecutor> {
   return cachedPaneBackendExecutor
 }
 
-/**
+/*    *
  * Resets the backend detection cache.
  * Used for testing to allow re-detection.
- */
+     */
 export function resetBackendDetection(): void {
   cachedBackend = null
   cachedDetectionResult = null

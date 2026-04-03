@@ -8,11 +8,11 @@ type Options = {
   progressMessage: string
   pluginName: string
   pluginCommand: string
-  /**
+  /*    *
    * The prompt to use while the marketplace is private.
    * External users will get this prompt. Once the marketplace is public,
    * this parameter and the fallback logic can be removed.
-   */
+       */
   getPromptWhileMarketplaceIsPrivate: (
     args: string,
     context: ToolUseContext,
@@ -52,7 +52,7 @@ export function createMovedToPluginCommand({
 
 2. After installation, use /${pluginName}:${pluginCommand} to run this command
 
-3. For more information, see: https://github.com/anthropics/claude-code-marketplace/blob/main/${pluginName}/README.md
+3. For more information, see: https:// github.com/anthropics/claude-code-marketplace/blob/main/${pluginName}/README.md
 
 Do not attempt to run the command. Simply inform the user about the plugin installation.`,
           },

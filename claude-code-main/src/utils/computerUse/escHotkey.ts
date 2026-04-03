@@ -2,7 +2,7 @@ import { logForDebugging } from '../debug.js'
 import { releasePump, retainPump } from './drainRunLoop.js'
 import { requireComputerUseSwift } from './swiftLoader.js'
 
-/**
+/*    *
  * Global Escape → abort. Mirrors Cowork's `escAbort.ts` but without Electron:
  * CGEventTap via `@ant/computer-use-swift`. While registered, Escape is
  * consumed system-wide (PI defense — a prompt-injected action can't dismiss
@@ -18,7 +18,7 @@ import { requireComputerUseSwift } from './swiftLoader.js'
  * executor's `key("escape")` calls it before posting the CGEvent. Swift
  * schedules a 100ms decay so a CGEvent that never reaches the tap callback
  * doesn't eat the next user ESC.
- */
+     */
 
 let registered = false
 

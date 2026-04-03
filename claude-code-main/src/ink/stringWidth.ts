@@ -5,7 +5,7 @@ import { getGraphemeSegmenter } from '../utils/intl.js'
 
 const EMOJI_REGEX = emojiRegex()
 
-/**
+/*    *
  * Fallback JavaScript implementation of stringWidth when Bun.stringWidth is not available.
  *
  * Get the display width of a string as it would appear in a terminal.
@@ -16,7 +16,7 @@ const EMOJI_REGEX = emojiRegex()
  * The implementation uses eastAsianWidth directly with ambiguousAsWide: false,
  * which correctly treats ambiguous-width characters as narrow (width 1) as
  * recommended by the Unicode standard for Western contexts.
- */
+     */
 function stringWidthJavaScript(str: string): number {
   if (typeof str !== 'string' || str.length === 0) {
     return 0
@@ -207,8 +207,7 @@ function isZeroWidth(codePoint: number): boolean {
 // consonants). Bun.stringWidth=2 matches terminal cell allocation, which is what
 // we need for cursor positioning — the JS fallback's grapheme-cluster width of 1
 // would desync Ink's layout from the terminal.
-//
-// Bun.stringWidth is resolved once at module scope rather than checked on every
+// // Bun.stringWidth is resolved once at module scope rather than checked on every
 // call — typeof guards deopt property access and this is a hot path (~100k calls/frame).
 const bunStringWidth =
   typeof Bun !== 'undefined' && typeof Bun.stringWidth === 'function'

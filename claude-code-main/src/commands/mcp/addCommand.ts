@@ -1,8 +1,8 @@
-/**
+/*    *
  * MCP add CLI subcommand
  *
  * Extracted from main.tsx to enable direct testing.
- */
+     */
 import { type Command, Option } from '@commander-js/extra-typings'
 import { cliError, cliOk } from '../../cli/exit.js'
 import {
@@ -27,9 +27,9 @@ import {
 import { parseEnvVars } from '../../utils/envUtils.js'
 import { jsonStringify } from '../../utils/slowOperations.js'
 
-/**
+/*    *
  * Registers the `mcp add` subcommand on the given Commander command.
- */
+     */
 export function registerMcpAddCommand(mcp: Command): void {
   mcp
     .command('add <name> <commandOrUrl> [args...]')
@@ -37,9 +37,9 @@ export function registerMcpAddCommand(mcp: Command): void {
       'Add an MCP server to Claude Code.\n\n' +
         'Examples:\n' +
         '  # Add HTTP server:\n' +
-        '  claude mcp add --transport http sentry https://mcp.sentry.dev/mcp\n\n' +
+        '  claude mcp add --transport http sentry https:// mcp.sentry.dev/mcp\n\n' +
         '  # Add HTTP server with headers:\n' +
-        '  claude mcp add --transport http corridor https://app.corridor.dev/api/mcp --header "Authorization: Bearer ..."\n\n' +
+        '  claude mcp add --transport http corridor https:// app.corridor.dev/api/mcp --header "Authorization: Bearer ..."\n\n' +
         '  # Add stdio server with environment variables:\n' +
         '  claude mcp add -e API_KEY=xxx my-server -- npx my-mcp-server\n\n' +
         '  # Add stdio server with subprocess flags:\n' +
@@ -126,8 +126,8 @@ export function registerMcpAddCommand(mcp: Command): void {
 
         // Check if the command looks like a URL (likely incorrect usage)
         const looksLikeUrl =
-          actualCommand.startsWith('http://') ||
-          actualCommand.startsWith('https://') ||
+          actualCommand.startsWith('http:// ') ||
+          actualCommand.startsWith('https:// ') ||
           actualCommand.startsWith('localhost') ||
           actualCommand.endsWith('/sse') ||
           actualCommand.endsWith('/mcp')

@@ -31,12 +31,12 @@ type TrackedTool = {
   contextModifiers?: Array<(context: ToolUseContext) => ToolUseContext>
 }
 
-/**
+/*    *
  * Executes tools as they stream in with concurrency control.
  * - Concurrent-safe tools can execute in parallel with other concurrent-safe tools
  * - Non-concurrent tools must execute alone (exclusive access)
  * - Results are buffered and emitted in the order tools were received
- */
+     */
 export class StreamingToolExecutor {
   private tools: TrackedTool[] = []
   private toolUseContext: ToolUseContext
@@ -61,18 +61,18 @@ export class StreamingToolExecutor {
     )
   }
 
-  /**
+  /*    *
    * Discards all pending and in-progress tools. Called when streaming fallback
    * occurs and results from the failed attempt should be abandoned.
    * Queued tools won't start, and in-progress tools will receive synthetic errors.
-   */
+       */
   discard(): void {
     this.discarded = true
   }
 
-  /**
+  /*    *
    * Add a tool to the execution queue. Will start executing immediately if conditions allow.
-   */
+       */
   addTool(block: ToolUseBlock, assistantMessage: AssistantMessage): void {
     const toolDefinition = findToolByName(this.toolDefinitions, block.name)
     if (!toolDefinition) {
@@ -123,9 +123,9 @@ export class StreamingToolExecutor {
     void this.processQueue()
   }
 
-  /**
+  /*    *
    * Check if a tool can execute based on current concurrency state
-   */
+       */
   private canExecuteTool(isConcurrencySafe: boolean): boolean {
     const executingTools = this.tools.filter(t => t.status === 'executing')
     return (
@@ -134,9 +134,9 @@ export class StreamingToolExecutor {
     )
   }
 
-  /**
+  /*    *
    * Process the queue, starting tools when concurrency conditions allow
-   */
+       */
   private async processQueue(): Promise<void> {
     for (const tool of this.tools) {
       if (tool.status !== 'queued') continue
@@ -204,9 +204,9 @@ export class StreamingToolExecutor {
     })
   }
 
-  /**
+  /*    *
    * Determine why a tool should be cancelled.
-   */
+       */
   private getAbortReason(
     tool: TrackedTool,
   ): 'sibling_error' | 'user_interrupted' | 'streaming_fallback' | null {
@@ -259,9 +259,9 @@ export class StreamingToolExecutor {
     )
   }
 
-  /**
+  /*    *
    * Execute a tool and collect its results
-   */
+       */
   private async executeTool(tool: TrackedTool): Promise<void> {
     tool.status = 'executing'
     this.toolUseContext.setInProgressToolUseIDs(prev =>
@@ -386,8 +386,8 @@ export class StreamingToolExecutor {
       this.updateInterruptibleState()
 
       // NOTE: we currently don't support context modifiers for concurrent
-      //       tools. None are actively being used, but if we want to use
-      //       them in concurrent tools, we need to support that here.
+      // tools. None are actively being used, but if we want to use
+      // them in concurrent tools, we need to support that here.
       if (!tool.isConcurrencySafe && contextModifiers.length > 0) {
         for (const modifier of contextModifiers) {
           this.toolUseContext = modifier(this.toolUseContext)
@@ -404,11 +404,11 @@ export class StreamingToolExecutor {
     })
   }
 
-  /**
+  /*    *
    * Get any completed results that haven't been yielded yet (non-blocking)
    * Maintains order where necessary
    * Also yields any pending progress messages immediately
-   */
+       */
   *getCompletedResults(): Generator<MessageUpdate, void> {
     if (this.discarded) {
       return
@@ -439,17 +439,17 @@ export class StreamingToolExecutor {
     }
   }
 
-  /**
+  /*    *
    * Check if any tool has pending progress messages
-   */
+       */
   private hasPendingProgress(): boolean {
     return this.tools.some(t => t.pendingProgress.length > 0)
   }
 
-  /**
+  /*    *
    * Wait for remaining tools and yield their results as they complete
    * Also yields progress messages as they become available
-   */
+       */
   async *getRemainingResults(): AsyncGenerator<MessageUpdate, void> {
     if (this.discarded) {
       return
@@ -489,30 +489,30 @@ export class StreamingToolExecutor {
     }
   }
 
-  /**
+  /*    *
    * Check if there are any completed results ready to yield
-   */
+       */
   private hasCompletedResults(): boolean {
     return this.tools.some(t => t.status === 'completed')
   }
 
-  /**
+  /*    *
    * Check if there are any tools still executing
-   */
+       */
   private hasExecutingTools(): boolean {
     return this.tools.some(t => t.status === 'executing')
   }
 
-  /**
+  /*    *
    * Check if there are any unfinished tools
-   */
+       */
   private hasUnfinishedTools(): boolean {
     return this.tools.some(t => t.status !== 'yielded')
   }
 
-  /**
+  /*    *
    * Get the current tool use context (may have been modified by context modifiers)
-   */
+       */
   getUpdatedContext(): ToolUseContext {
     return this.toolUseContext
   }

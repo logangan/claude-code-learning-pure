@@ -1,7 +1,7 @@
-/**
+/*    *
  * Service for heap dump capture.
  * Used by the /heapdump command.
- */
+     */
 
 import { createWriteStream, writeFileSync } from 'fs'
 import { readdir, readFile, writeFile } from 'fs/promises'
@@ -29,10 +29,10 @@ export type HeapDumpResult = {
   error?: string
 }
 
-/**
+/*    *
  * Memory diagnostics captured alongside heap dump.
  * Helps identify if leak is in V8 heap (captured in snapshot) or native memory (not captured).
- */
+     */
 export type MemoryDiagnostics = {
   timestamp: string
   sessionId: string
@@ -81,10 +81,10 @@ export type MemoryDiagnostics = {
   ccVersion: string
 }
 
-/**
+/*    *
  * Capture memory diagnostics.
  * This helps identify if the leak is in V8 heap (captured) or native memory (not captured).
- */
+     */
 export async function captureMemoryDiagnostics(
   trigger: 'manual' | 'auto-1.5GB',
   dumpNumber = 0,
@@ -211,13 +211,13 @@ export async function captureMemoryDiagnostics(
   }
 }
 
-/**
+/*    *
  * Core heap dump function — captures heap snapshot + diagnostics to ~/Desktop.
  *
  * Diagnostics are written BEFORE the heap snapshot is captured, because the
  * V8 heap snapshot serialization can crash for very large heaps. By writing
  * diagnostics first, we still get useful memory info even if the snapshot fails.
- */
+     */
 export async function performHeapDump(
   trigger: 'manual' | 'auto-1.5GB' = 'manual',
   dumpNumber = 0,
@@ -277,21 +277,20 @@ export async function performHeapDump(
   }
 }
 
-/**
+/*    *
  * Write heap snapshot to a file.
  * Uses pipeline() which handles stream cleanup automatically on errors.
- */
+     */
 async function writeHeapSnapshot(filepath: string): Promise<void> {
   if (typeof Bun !== 'undefined') {
     // In Bun, heapsnapshots are currently not streaming.
     // Use synchronous I/O despite potentially large filesize so that we avoid cloning the string for cross-thread usage.
-    //
-    /* eslint-disable custom-rules/no-sync-fs -- intentionally sync to avoid cloning large heap snapshot string for cross-thread usage */
+    // /*     eslint-disable custom-rules/no-sync-fs -- intentionally sync to avoid cloning large heap snapshot string for cross-thread usage     */
     // @ts-expect-error 2nd argument is in the next version of Bun
     writeFileSync(filepath, Bun.generateHeapSnapshot('v8', 'arraybuffer'), {
       mode: 0o600,
     })
-    /* eslint-enable custom-rules/no-sync-fs */
+    /*     eslint-enable custom-rules/no-sync-fs     */
 
     // Force GC to try to free that heap snapshot sooner.
     Bun.gc(true)

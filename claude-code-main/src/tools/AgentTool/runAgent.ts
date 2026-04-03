@@ -82,7 +82,7 @@ import { createAgentId } from '../../utils/uuid.js'
 import { resolveAgentTools } from './agentToolUtils.js'
 import { type AgentDefinition, isBuiltInAgent } from './loadAgentsDir.js'
 
-/**
+/*    *
  * Initialize agent-specific MCP servers
  * Agents can define their own MCP servers in their frontmatter that are additive
  * to the parent's MCP clients. These servers are connected when the agent starts
@@ -91,7 +91,7 @@ import { type AgentDefinition, isBuiltInAgent } from './loadAgentsDir.js'
  * @param agentDefinition The agent definition with optional mcpServers
  * @param parentClients MCP clients inherited from parent context
  * @returns Merged clients (parent + agent-specific), agent MCP tools, and cleanup function
- */
+     */
 async function initializeAgentMcpServers(
   agentDefinition: AgentDefinition,
   parentClients: MCPServerConnection[],
@@ -224,10 +224,10 @@ type QueryMessage =
   | ToolUseSummaryMessage
   | TombstoneMessage
 
-/**
+/*    *
  * Type guard to check if a message from query() is a recordable Message type.
  * Matches the types we want to record: assistant, user, progress, or system compact_boundary.
- */
+     */
 function isRecordableMessage(
   msg: QueryMessage,
 ): msg is
@@ -273,8 +273,8 @@ export async function* runAgent({
   toolUseContext: ToolUseContext
   canUseTool: CanUseToolFn
   isAsync: boolean
-  /** Whether this agent can show permission prompts. Defaults to !isAsync.
-   * Set to true for in-process teammates that run async but share the terminal. */
+  /*    * Whether this agent can show permission prompts. Defaults to !isAsync.
+   * Set to true for in-process teammates that run async but share the terminal.     */
   canShowPermissionPrompts?: boolean
   forkContextMessages?: Message[]
   querySource: QuerySource
@@ -287,44 +287,44 @@ export async function* runAgent({
   }
   model?: ModelAlias
   maxTurns?: number
-  /** Preserve toolUseResult on messages for subagents with viewable transcripts */
+  /*    * Preserve toolUseResult on messages for subagents with viewable transcripts     */
   preserveToolUseResults?: boolean
-  /** Precomputed tool pool for the worker agent. Computed by the caller
+  /*    * Precomputed tool pool for the worker agent. Computed by the caller
    * (AgentTool.tsx) to avoid a circular dependency between runAgent and tools.ts.
    * Always contains the full tool pool assembled with the worker's own permission
-   * mode, independent of the parent's tool restrictions. */
+   * mode, independent of the parent's tool restrictions.     */
   availableTools: Tools
-  /** Tool permission rules to add to the agent's session allow rules.
+  /*    * Tool permission rules to add to the agent's session allow rules.
    * When provided, replaces ALL allow rules so the agent only has what's
-   * explicitly listed (parent approvals don't leak through). */
+   * explicitly listed (parent approvals don't leak through).     */
   allowedTools?: string[]
-  /** Optional callback invoked with CacheSafeParams after constructing the agent's
+  /*    * Optional callback invoked with CacheSafeParams after constructing the agent's
    * system prompt, context, and tools. Used by background summarization to fork
-   * the agent's conversation for periodic progress summaries. */
+   * the agent's conversation for periodic progress summaries.     */
   onCacheSafeParams?: (params: CacheSafeParams) => void
-  /** Replacement state reconstructed from a resumed sidechain transcript so
+  /*    * Replacement state reconstructed from a resumed sidechain transcript so
    * the same tool results are re-replaced (prompt cache stability). When
-   * omitted, createSubagentContext clones the parent's state. */
+   * omitted, createSubagentContext clones the parent's state.     */
   contentReplacementState?: ContentReplacementState
-  /** When true, use availableTools directly without filtering through
+  /*    * When true, use availableTools directly without filtering through
    * resolveAgentTools(). Also inherits the parent's thinkingConfig and
    * isNonInteractiveSession instead of overriding them. Used by the fork
    * subagent path to produce byte-identical API request prefixes for
-   * prompt cache hits. */
+   * prompt cache hits.     */
   useExactTools?: boolean
-  /** Worktree path if the agent was spawned with isolation: "worktree".
-   * Persisted to metadata so resume can restore the correct cwd. */
+  /*    * Worktree path if the agent was spawned with isolation: "worktree".
+   * Persisted to metadata so resume can restore the correct cwd.     */
   worktreePath?: string
-  /** Original task description from AgentTool input. Persisted to metadata
-   * so a resumed agent's notification can show the original description. */
+  /*    * Original task description from AgentTool input. Persisted to metadata
+   * so a resumed agent's notification can show the original description.     */
   description?: string
-  /** Optional subdirectory under subagents/ to group this agent's transcript
-   * with related ones (e.g. workflows/<runId> for workflow subagents). */
+  /*    * Optional subdirectory under subagents/ to group this agent's transcript
+   * with related ones (e.g. workflows/<runId> for workflow subagents).     */
   transcriptSubdir?: string
-  /** Optional callback fired on every message yielded by query() — including
+  /*    * Optional callback fired on every message yielded by query() — including
    * stream_event deltas that runAgent otherwise drops. Use to detect liveness
    * during long single-block streams (e.g. thinking) where no assistant
-   * message is yielded for >60s. */
+   * message is yielded for >60s.     */
   onQueryProgress?: () => void
 }): AsyncGenerator<Message, void> {
   // Track subagent usage for feature discovery
@@ -435,8 +435,8 @@ export async function* runAgent({
 
     // Set flag to auto-deny prompts for agents that can't show UI
     // Use explicit canShowPermissionPrompts if provided, otherwise:
-    //   - bubble mode: always show prompts (bubbles to parent terminal)
-    //   - default: !isAsync (sync agents show prompts, async agents don't)
+    // - bubble mode: always show prompts (bubbles to parent terminal)
+    // - default: !isAsync (sync agents show prompts, async agents don't)
     const shouldAvoidPrompts =
       canShowPermissionPrompts !== undefined
         ? !canShowPermissionPrompts
@@ -845,7 +845,7 @@ export async function* runAgent({
     // `run_in_background` shell loop (e.g. test fixture fake-logs.sh) outlives
     // the agent as a PPID=1 zombie once the main session eventually exits.
     killShellTasksForAgent(agentId, toolUseContext.getAppState, rootSetAppState)
-    /* eslint-disable @typescript-eslint/no-require-imports */
+    /*     eslint-disable @typescript-eslint/no-require-imports     */
     if (feature('MONITOR_TOOL')) {
       const mcpMod =
         require('../../tasks/MonitorMcpTask/MonitorMcpTask.js') as typeof import('../../tasks/MonitorMcpTask/MonitorMcpTask.js')
@@ -855,14 +855,14 @@ export async function* runAgent({
         rootSetAppState,
       )
     }
-    /* eslint-enable @typescript-eslint/no-require-imports */
+    /*     eslint-enable @typescript-eslint/no-require-imports     */
   }
 }
 
-/**
+/*    *
  * Filters out assistant messages with incomplete tool calls (tool uses without results).
  * This prevents API errors when sending messages with orphaned tool calls.
- */
+     */
 export function filterIncompleteToolCalls(messages: Message[]): Message[] {
   // Build a set of tool use IDs that have results
   const toolUseIdsWithResults = new Set<string>()
@@ -931,7 +931,7 @@ async function getAgentSystemPrompt(
   }
 }
 
-/**
+/*    *
  * Resolve a skill name from agent frontmatter to a registered command name.
  *
  * Plugin skills are registered with namespaced names (e.g., "my-plugin:my-skill")
@@ -941,7 +941,7 @@ async function getAgentSystemPrompt(
  * 1. Exact match via hasCommand (name, userFacingName, aliases)
  * 2. Prefix with agent's plugin name (e.g., "my-skill" → "my-plugin:my-skill")
  * 3. Suffix match — find any command whose name ends with ":skillName"
- */
+     */
 function resolveSkillName(
   skillName: string,
   allSkills: Command[],

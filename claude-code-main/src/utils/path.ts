@@ -5,7 +5,7 @@ import { getFsImplementation } from './fsOperations.js'
 import { getPlatform } from './platform.js'
 import { posixPathToWindowsPath } from './windowsPaths.js'
 
-/**
+/*    *
  * Expands a path that may contain tilde notation (~) to an absolute path.
  *
  * On Windows, POSIX-style paths (e.g., `/c/Users/...`) are automatically converted
@@ -28,7 +28,7 @@ import { posixPathToWindowsPath } from './windowsPaths.js'
  * expandPath('~/Documents') // '/home/user/Documents'
  * expandPath('./src', '/project') // '/project/src'
  * expandPath('/absolute/path') // '/absolute/path'
- */
+     */
 export function expandPath(path: string, baseDir?: string): string {
   // Set default baseDir to getCwd() if not provided
   const actualBaseDir = baseDir ?? getCwd() ?? getFsImplementation().cwd()
@@ -66,7 +66,7 @@ export function expandPath(path: string, baseDir?: string): string {
 
   // On Windows, convert POSIX-style paths (e.g., /c/Users/...) to Windows format
   let processedPath = trimmedPath
-  if (getPlatform() === 'windows' && trimmedPath.match(/^\/[a-z]\//i)) {
+  if (getPlatform() === 'windows' && trimmedPath.match(/^\/[a-z]\// i)) {
     try {
       processedPath = posixPathToWindowsPath(trimmedPath)
     } catch {
@@ -84,32 +84,32 @@ export function expandPath(path: string, baseDir?: string): string {
   return resolve(actualBaseDir, processedPath).normalize('NFC')
 }
 
-/**
+/*    *
  * Converts an absolute path to a relative path from cwd, to save tokens in
  * tool output. If the path is outside cwd (relative path would start with ..),
  * returns the absolute path unchanged so it stays unambiguous.
  *
  * @param absolutePath - The absolute path to relativize
  * @returns Relative path if under cwd, otherwise the original absolute path
- */
+     */
 export function toRelativePath(absolutePath: string): string {
   const relativePath = relative(getCwd(), absolutePath)
   // If the relative path would go outside cwd (starts with ..), keep absolute
   return relativePath.startsWith('..') ? absolutePath : relativePath
 }
 
-/**
+/*    *
  * Gets the directory path for a given file or directory path.
  * If the path is a directory, returns the path itself.
  * If the path is a file or doesn't exist, returns the parent directory.
  *
  * @param path - The file or directory path
  * @returns The directory path
- */
+     */
 export function getDirectoryForPath(path: string): string {
   const absolutePath = expandPath(path)
   // SECURITY: Skip filesystem operations for UNC paths to prevent NTLM credential leaks.
-  if (absolutePath.startsWith('\\\\') || absolutePath.startsWith('//')) {
+  if (absolutePath.startsWith('\\\\') || absolutePath.startsWith('// ')) {
     return dirname(absolutePath)
   }
   try {
@@ -124,12 +124,12 @@ export function getDirectoryForPath(path: string): string {
   return dirname(absolutePath)
 }
 
-/**
+/*    *
  * Checks if a path contains directory traversal patterns that navigate to parent directories.
  *
  * @param path - The path to check for traversal patterns
  * @returns true if the path contains traversal (e.g., '../', '..\', or ends with '..')
- */
+     */
 export function containsPathTraversal(path: string): boolean {
   return /(?:^|[\\/])\.\.(?:[\\/]|$)/.test(path)
 }
@@ -137,7 +137,7 @@ export function containsPathTraversal(path: string): boolean {
 // Re-export from the shared zero-dep source.
 export { sanitizePath } from './sessionStoragePortable.js'
 
-/**
+/*    *
  * Normalizes a path for use as a JSON config key.
  * On Windows, paths can have inconsistent separators (C:\path vs C:/path)
  * depending on whether they come from git, Node.js APIs, or user input.
@@ -145,7 +145,7 @@ export { sanitizePath } from './sessionStoragePortable.js'
  *
  * @param path - The path to normalize
  * @returns The normalized path with consistent forward slashes
- */
+     */
 export function normalizePathForConfigKey(path: string): string {
   // First use Node's normalize to resolve . and .. segments
   const normalized = normalize(path)

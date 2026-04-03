@@ -15,15 +15,15 @@ export const STATS_CACHE_VERSION = 3
 const MIN_MIGRATABLE_VERSION = 1
 const STATS_CACHE_FILENAME = 'stats-cache.json'
 
-/**
+/*    *
  * Simple in-memory lock to prevent concurrent cache operations.
- */
+     */
 let statsCacheLockPromise: Promise<void> | null = null
 
-/**
+/*    *
  * Execute a function while holding the stats cache lock.
  * Only one operation can hold the lock at a time.
- */
+     */
 export async function withStatsCacheLock<T>(fn: () => Promise<T>): Promise<T> {
   // Wait for any existing lock to be released
   while (statsCacheLockPromise) {
@@ -45,11 +45,11 @@ export async function withStatsCacheLock<T>(fn: () => Promise<T>): Promise<T> {
   }
 }
 
-/**
+/*    *
  * Persisted stats cache stored on disk.
  * Contains aggregated historical stats that won't change.
  * All fields are bounded to prevent unbounded file growth.
- */
+     */
 export type PersistedStatsCache = {
   version: number
   // Last date that was fully computed (YYYY-MM-DD format)
@@ -95,7 +95,7 @@ function getEmptyCache(): PersistedStatsCache {
   }
 }
 
-/**
+/*    *
  * Migrate an older cache to the current schema.
  * Returns null if the version is unknown or too old to migrate.
  *
@@ -103,7 +103,7 @@ function getEmptyCache(): PersistedStatsCache {
  * transcript files have already aged out past cleanupPeriodDays.
  * Pre-migration days may undercount (e.g. v2 lacked subagent tokens);
  * we accept that rather than drop the history.
- */
+     */
 function migrateStatsCache(
   parsed: Partial<PersistedStatsCache> & { version: number },
 ): PersistedStatsCache | null {
@@ -140,10 +140,10 @@ function migrateStatsCache(
   }
 }
 
-/**
+/*    *
  * Load the stats cache from disk.
  * Returns an empty cache if the file doesn't exist or is invalid.
- */
+     */
 export async function loadStatsCache(): Promise<PersistedStatsCache> {
   const fs = getFsImplementation()
   const cachePath = getStatsCachePath()
@@ -207,10 +207,10 @@ export async function loadStatsCache(): Promise<PersistedStatsCache> {
   }
 }
 
-/**
+/*    *
  * Save the stats cache to disk atomically.
  * Uses a temp file + rename pattern to prevent corruption.
- */
+     */
 export async function saveStatsCache(
   cache: PersistedStatsCache,
 ): Promise<void> {
@@ -253,10 +253,10 @@ export async function saveStatsCache(
   }
 }
 
-/**
+/*    *
  * Merge new stats into an existing cache.
  * Used when incrementally adding new days to the cache.
- */
+     */
 export function mergeCacheWithNewStats(
   existingCache: PersistedStatsCache,
   newStats: {
@@ -397,9 +397,9 @@ export function mergeCacheWithNewStats(
   return result
 }
 
-/**
+/*    *
  * Extract the date portion (YYYY-MM-DD) from a Date object.
- */
+     */
 export function toDateString(date: Date): string {
   const parts = date.toISOString().split('T')
   const dateStr = parts[0]
@@ -409,26 +409,26 @@ export function toDateString(date: Date): string {
   return dateStr
 }
 
-/**
+/*    *
  * Get today's date in YYYY-MM-DD format.
- */
+     */
 export function getTodayDateString(): string {
   return toDateString(new Date())
 }
 
-/**
+/*    *
  * Get yesterday's date in YYYY-MM-DD format.
- */
+     */
 export function getYesterdayDateString(): string {
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
   return toDateString(yesterday)
 }
 
-/**
+/*    *
  * Check if a date string is before another date string.
  * Both should be in YYYY-MM-DD format.
- */
+     */
 export function isDateBefore(date1: string, date2: string): boolean {
   return date1 < date2
 }

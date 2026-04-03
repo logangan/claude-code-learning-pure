@@ -1,12 +1,12 @@
-/**
+/*    *
  * ANSI Control Characters and Escape Sequence Introducers
  *
  * Based on ECMA-48 / ANSI X3.64 standards.
- */
+     */
 
-/**
+/*    *
  * C0 (7-bit) control characters
- */
+     */
 export const C0 = {
   NUL: 0x00,
   SOH: 0x01,
@@ -48,9 +48,9 @@ export const ESC = '\x1b'
 export const BEL = '\x07'
 export const SEP = ';'
 
-/**
+/*    *
  * Escape sequence type introducers (byte after ESC)
- */
+     */
 export const ESC_TYPE = {
   CSI: 0x5b, // [ - Control Sequence Introducer
   OSC: 0x5d, // ] - Operating System Command
@@ -61,15 +61,15 @@ export const ESC_TYPE = {
   ST: 0x5c, // \ - String Terminator
 } as const
 
-/** Check if a byte is a C0 control character */
+/*    * Check if a byte is a C0 control character     */
 export function isC0(byte: number): boolean {
   return byte < 0x20 || byte === 0x7f
 }
 
-/**
+/*    *
  * Check if a byte is an ESC sequence final byte (0-9, :, ;, <, =, >, ?, @ through ~)
  * ESC sequences have a wider final byte range than CSI
- */
+     */
 export function isEscFinal(byte: number): boolean {
   return byte >= 0x30 && byte <= 0x7e
 }

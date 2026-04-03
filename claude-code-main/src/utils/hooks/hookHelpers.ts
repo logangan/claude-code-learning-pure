@@ -10,9 +10,9 @@ import type { SetAppState } from '../messageQueueManager.js'
 import { hasSuccessfulToolCall } from '../messages.js'
 import { addFunctionHook } from './sessionHooks.js'
 
-/**
+/*    *
  * Schema for hook responses (shared by prompt and agent hooks)
- */
+     */
 export const hookResponseSchema = lazySchema(() =>
   z.object({
     ok: z.boolean().describe('Whether the condition was met'),
@@ -23,10 +23,10 @@ export const hookResponseSchema = lazySchema(() =>
   }),
 )
 
-/**
+/*    *
  * Add hook input JSON to prompt, either replacing $ARGUMENTS placeholder or appending.
  * Also supports indexed arguments like $ARGUMENTS[0], $ARGUMENTS[1], or shorthand $0, $1, etc.
- */
+     */
 export function addArgumentsToPrompt(
   prompt: string,
   jsonInput: string,
@@ -34,10 +34,10 @@ export function addArgumentsToPrompt(
   return substituteArguments(prompt, jsonInput)
 }
 
-/**
+/*    *
  * Create a StructuredOutput tool configured for hook responses.
  * Reusable by agent hooks and background verification.
- */
+     */
 export function createStructuredOutputTool(): Tool {
   return {
     ...SyntheticOutputTool,
@@ -63,10 +63,10 @@ export function createStructuredOutputTool(): Tool {
   }
 }
 
-/**
+/*    *
  * Register a function hook that enforces structured output via SyntheticOutputTool.
  * Used by ask.tsx, execAgentHook.ts, and background verification.
- */
+     */
 export function registerStructuredOutputEnforcement(
   setAppState: SetAppState,
   sessionId: string,

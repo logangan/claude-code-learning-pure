@@ -1,4 +1,4 @@
-/**
+/*    *
  * Manages plugin installation metadata stored in installed_plugins.json
  *
  * This module separates plugin installation state (global) from enabled/disabled
@@ -11,7 +11,7 @@
  * Rationale: Installation is global (a plugin is either on disk or not), while
  * enabled/disabled state is per-repository (different projects may want different
  * plugins active).
- */
+     */
 
 import { dirname, join } from 'path'
 import { logForDebugging } from '../debug.js'
@@ -58,36 +58,36 @@ import { getPluginCachePath, getVersionedCachePath } from './pluginLoader.js'
 // Migration state to prevent running migration multiple times per session
 let migrationCompleted = false
 
-/**
+/*    *
  * Memoized cache of installed plugins data (V2 format)
  * Cleared by clearInstalledPluginsCache() when file is modified.
  * Prevents repeated filesystem reads within a single CLI session.
- */
+     */
 let installedPluginsCacheV2: InstalledPluginsFileV2 | null = null
 
-/**
+/*    *
  * Session-level snapshot of installed plugins at startup.
  * This is what the running session uses - it's NOT updated by background operations.
  * Background updates modify the disk file only.
- */
+     */
 let inMemoryInstalledPlugins: InstalledPluginsFileV2 | null = null
 
-/**
+/*    *
  * Get the path to the installed_plugins.json file
- */
+     */
 export function getInstalledPluginsFilePath(): string {
   return join(getPluginsDirectory(), 'installed_plugins.json')
 }
 
-/**
+/*    *
  * Get the path to the legacy installed_plugins_v2.json file.
  * Used only during migration to consolidate into single file.
- */
+     */
 export function getInstalledPluginsV2FilePath(): string {
   return join(getPluginsDirectory(), 'installed_plugins_v2.json')
 }
 
-/**
+/*    *
  * Clear the installed plugins cache
  * Call this when the file is modified to force a reload
  *
@@ -95,14 +95,14 @@ export function getInstalledPluginsV2FilePath(): string {
  * In most cases, this is only called during initialization or testing.
  * For background updates, use updateInstallationPathOnDisk() which preserves
  * the in-memory state.
- */
+     */
 export function clearInstalledPluginsCache(): void {
   installedPluginsCacheV2 = null
   inMemoryInstalledPlugins = null
   logForDebugging('Cleared installed plugins cache')
 }
 
-/**
+/*    *
  * Migrate to single plugin file format.
  *
  * This consolidates the V1/V2 dual-file system into a single file:
@@ -111,7 +111,7 @@ export function clearInstalledPluginsCache(): void {
  * 3. Clean up legacy non-versioned cache directories
  *
  * This migration runs once per session at startup.
- */
+     */
 export function migrateToSinglePluginFile(): void {
   if (migrationCompleted) {
     return
@@ -181,14 +181,14 @@ export function migrateToSinglePluginFile(): void {
   }
 }
 
-/**
+/*    *
  * Clean up legacy non-versioned cache directories.
  *
  * Legacy cache structure: ~/.claude/plugins/cache/{plugin-name}/
  * Versioned cache structure: ~/.claude/plugins/cache/{marketplace}/{plugin}/{version}/
  *
  * This function removes legacy directories that are not referenced by any installation.
- */
+     */
 function cleanupLegacyCache(v2Data: InstalledPluginsFileV2): void {
   const fs = getFsImplementation()
   const cachePath = getPluginCachePath()
@@ -244,18 +244,18 @@ function cleanupLegacyCache(v2Data: InstalledPluginsFileV2): void {
   }
 }
 
-/**
+/*    *
  * Reset migration state (for testing)
- */
+     */
 export function resetMigrationState(): void {
   migrationCompleted = false
 }
 
-/**
+/*    *
  * Read raw file data from installed_plugins.json
  * Returns null if file doesn't exist.
  * Throws error if file exists but can't be parsed.
- */
+     */
 function readInstalledPluginsFileRaw(): {
   version: number
   data: unknown
@@ -277,10 +277,10 @@ function readInstalledPluginsFileRaw(): {
   return { version, data }
 }
 
-/**
+/*    *
  * Migrate V1 data to V2 format.
  * All V1 plugins are migrated to 'user' scope since V1 had no scope concept.
- */
+     */
 function migrateV1ToV2(v1Data: InstalledPluginsFileV1): InstalledPluginsFileV2 {
   const v2Plugins: InstalledPluginsMapV2 = {}
 
@@ -304,14 +304,14 @@ function migrateV1ToV2(v1Data: InstalledPluginsFileV1): InstalledPluginsFileV2 {
   return { version: 2, plugins: v2Plugins }
 }
 
-/**
+/*    *
  * Load installed plugins in V2 format.
  *
  * Reads from installed_plugins.json. If file has version=1,
  * converts to V2 format in memory.
  *
  * @returns V2 format data with array-per-plugin structure
- */
+     */
 export function loadInstalledPluginsV2(): InstalledPluginsFileV2 {
   // Return cached V2 data if available
   if (installedPluginsCacheV2 !== null) {
@@ -363,10 +363,10 @@ export function loadInstalledPluginsV2(): InstalledPluginsFileV2 {
   }
 }
 
-/**
+/*    *
  * Save installed plugins in V2 format to installed_plugins.json.
  * This is the single source of truth after V1/V2 consolidation.
- */
+     */
 function saveInstalledPluginsV2(data: InstalledPluginsFileV2): void {
   const fs = getFsImplementation()
   const filePath = getInstalledPluginsFilePath()
@@ -393,7 +393,7 @@ function saveInstalledPluginsV2(data: InstalledPluginsFileV2): void {
   }
 }
 
-/**
+/*    *
  * Add or update a plugin installation entry at a specific scope.
  * Used for V2 format where each plugin has an array of installations.
  *
@@ -402,7 +402,7 @@ function saveInstalledPluginsV2(data: InstalledPluginsFileV2): void {
  * @param installPath - Path to versioned plugin directory
  * @param metadata - Additional installation metadata
  * @param projectPath - Project path (required for project/local scopes)
- */
+     */
 export function addPluginInstallation(
   pluginId: string,
   scope: PersistableScope,
@@ -442,13 +442,13 @@ export function addPluginInstallation(
   saveInstalledPluginsV2(data)
 }
 
-/**
+/*    *
  * Remove a plugin installation entry from a specific scope.
  *
  * @param pluginId - Plugin ID in "plugin@marketplace" format
  * @param scope - Installation scope to remove
  * @param projectPath - Project path (for project/local scopes)
- */
+     */
 export function removePluginInstallation(
   pluginId: string,
   scope: PersistableScope,
@@ -478,13 +478,13 @@ export function removePluginInstallation(
 // In-Memory vs Disk State Management (for non-in-place updates)
 // =============================================================================
 
-/**
+/*    *
  * Get the in-memory installed plugins (session state).
  * This snapshot is loaded at startup and used for the entire session.
  * It is NOT updated by background operations.
  *
  * @returns V2 format data representing the session's view of installed plugins
- */
+     */
 export function getInMemoryInstalledPlugins(): InstalledPluginsFileV2 {
   if (inMemoryInstalledPlugins === null) {
     inMemoryInstalledPlugins = loadInstalledPluginsV2()
@@ -492,13 +492,13 @@ export function getInMemoryInstalledPlugins(): InstalledPluginsFileV2 {
   return inMemoryInstalledPlugins
 }
 
-/**
+/*    *
  * Load installed plugins directly from disk, bypassing all caches.
  * Used by background updater to check for changes without affecting
  * the running session's view.
  *
  * @returns V2 format data read fresh from disk
- */
+     */
 export function loadInstalledPluginsFromDisk(): InstalledPluginsFileV2 {
   try {
     // Read from main file
@@ -523,7 +523,7 @@ export function loadInstalledPluginsFromDisk(): InstalledPluginsFileV2 {
   }
 }
 
-/**
+/*    *
  * Update a plugin's install path on disk only, without modifying in-memory state.
  * Used by background updater to record new version on disk while session
  * continues using the old version.
@@ -533,7 +533,7 @@ export function loadInstalledPluginsFromDisk(): InstalledPluginsFileV2 {
  * @param projectPath - Project path (for project/local scopes)
  * @param newPath - New install path (to new version directory)
  * @param newVersion - New version string
- */
+     */
 export function updateInstallationPathOnDisk(
   pluginId: string,
   scope: PersistableScope,
@@ -586,12 +586,12 @@ export function updateInstallationPathOnDisk(
   // Note: inMemoryInstalledPlugins is NOT updated
 }
 
-/**
+/*    *
  * Check if there are pending updates (disk differs from memory).
  * This happens when background updater has downloaded new versions.
  *
  * @returns true if any plugin has a different install path on disk vs memory
- */
+     */
 export function hasPendingUpdates(): boolean {
   const memoryState = getInMemoryInstalledPlugins()
   const diskState = loadInstalledPluginsFromDisk()
@@ -617,11 +617,11 @@ export function hasPendingUpdates(): boolean {
   return false
 }
 
-/**
+/*    *
  * Get the count of pending updates (installations where disk differs from memory).
  *
  * @returns Number of installations with pending updates
- */
+     */
 export function getPendingUpdateCount(): number {
   let count = 0
   const memoryState = getInMemoryInstalledPlugins()
@@ -648,11 +648,11 @@ export function getPendingUpdateCount(): number {
   return count
 }
 
-/**
+/*    *
  * Get details about pending updates for display.
  *
  * @returns Array of objects with pluginId, scope, oldVersion, newVersion
- */
+     */
 export function getPendingUpdatesDetails(): Array<{
   pluginId: string
   scope: string
@@ -695,22 +695,22 @@ export function getPendingUpdatesDetails(): Array<{
   return updates
 }
 
-/**
+/*    *
  * Reset the in-memory session state.
  * This should only be called at startup or for testing.
- */
+     */
 export function resetInMemoryState(): void {
   inMemoryInstalledPlugins = null
 }
 
-/**
+/*    *
  * Initialize the versioned plugins system.
  * This triggers V1→V2 migration and initializes the in-memory session state.
  *
  * This should be called early during startup in all modes (REPL and headless).
  *
  * @returns Promise that resolves when initialization is complete
- */
+     */
 export async function initializeVersionedPlugins(): Promise<void> {
   // Step 1: Migrate to single file format (consolidates V1/V2 files, cleans up legacy cache)
   migrateToSinglePluginFile()
@@ -733,7 +733,7 @@ export async function initializeVersionedPlugins(): Promise<void> {
   )
 }
 
-/**
+/*    *
  * Remove all plugin entries belonging to a specific marketplace from installed_plugins.json.
  *
  * Loads V2 data once, finds all plugin IDs matching the `@{marketplaceName}` suffix,
@@ -742,7 +742,7 @@ export async function initializeVersionedPlugins(): Promise<void> {
  * @param marketplaceName - The marketplace name (matched against `@{name}` suffix)
  * @returns orphanedPaths (for markPluginVersionOrphaned) and removedPluginIds
  *   (for deletePluginOptions) from the removed entries
- */
+     */
 export function removeAllPluginsForMarketplace(marketplaceName: string): {
   orphanedPaths: string[]
   removedPluginIds: string[]
@@ -781,7 +781,7 @@ export function removeAllPluginsForMarketplace(marketplaceName: string): {
   return { orphanedPaths: Array.from(orphanedPaths), removedPluginIds }
 }
 
-/**
+/*    *
  * Predicate: is this installation relevant to the current project context?
  *
  * V2 installed_plugins.json may contain project-scoped entries from OTHER
@@ -796,7 +796,7 @@ export function removeAllPluginsForMarketplace(marketplaceName: string): {
  *
  * getOriginalCwd() (not getCwd()) because "current project" is where Claude
  * Code was launched from, not wherever the working directory has drifted to.
- */
+     */
 export function isInstallationRelevantToCurrentProject(
   inst: PluginInstallationEntry,
 ): boolean {
@@ -807,14 +807,14 @@ export function isInstallationRelevantToCurrentProject(
   )
 }
 
-/**
+/*    *
  * Check if a plugin is installed in a way relevant to the current project.
  *
  * @param pluginId - Plugin ID in "plugin@marketplace" format
  * @returns True if the plugin has a user/managed-scoped installation, OR a
  *   project/local-scoped installation whose projectPath matches the current
  *   project. Returns false for plugins only installed in other projects.
- */
+     */
 export function isPluginInstalled(pluginId: string): boolean {
   const v2Data = loadInstalledPluginsV2()
   const installations = v2Data.plugins[pluginId]
@@ -830,7 +830,7 @@ export function isPluginInstalled(pluginId: string): boolean {
   return getSettings_DEPRECATED().enabledPlugins?.[pluginId] !== undefined
 }
 
-/**
+/*    *
  * True only if the plugin has a USER or MANAGED scope installation.
  *
  * Use this in UI flows that decide whether to offer installation at all.
@@ -845,7 +845,7 @@ export function isPluginInstalled(pluginId: string): boolean {
  * multiple scope entries per plugin — only the UI gate was wrong.
  *
  * @param pluginId - Plugin ID in "plugin@marketplace" format
- */
+     */
 export function isPluginGloballyInstalled(pluginId: string): boolean {
   const v2Data = loadInstalledPluginsV2()
   const installations = v2Data.plugins[pluginId]
@@ -861,7 +861,7 @@ export function isPluginGloballyInstalled(pluginId: string): boolean {
   return getSettings_DEPRECATED().enabledPlugins?.[pluginId] !== undefined
 }
 
-/**
+/*    *
  * Add or update a plugin's installation metadata
  *
  * Implements double-write: updates both V1 and V2 files.
@@ -870,7 +870,7 @@ export function isPluginGloballyInstalled(pluginId: string): boolean {
  * @param metadata - Installation metadata
  * @param scope - Installation scope (defaults to 'user' for backward compatibility)
  * @param projectPath - Project path (for project/local scopes)
- */
+     */
 export function addInstalledPlugin(
   pluginId: string,
   metadata: InstalledPlugin,
@@ -911,7 +911,7 @@ export function addInstalledPlugin(
   )
 }
 
-/**
+/*    *
  * Remove a plugin from the installed plugins registry
  * This should be called when a plugin is uninstalled.
  *
@@ -920,7 +920,7 @@ export function addInstalledPlugin(
  *
  * @param pluginId - Plugin ID in "plugin@marketplace" format
  * @returns The removed plugin metadata, or undefined if it wasn't installed
- */
+     */
 export function removeInstalledPlugin(
   pluginId: string,
 ): InstalledPlugin | undefined {
@@ -951,15 +951,15 @@ export function removeInstalledPlugin(
   return metadata
 }
 
-/**
+/*    *
  * Delete a plugin's cache directory
  * This physically removes the plugin files from disk
  *
  * @param installPath - Absolute path to the plugin's cache directory
- */
-/**
+     */
+/*    *
  * Export getGitCommitSha for use by pluginInstallationHelpers
- */
+     */
 export { getGitCommitSha }
 
 export function deletePluginCache(installPath: string): void {
@@ -995,18 +995,18 @@ export function deletePluginCache(installPath: string): void {
   }
 }
 
-/**
+/*    *
  * Get the git commit SHA from a git repository directory
  * Returns undefined if not a git repo or if operation fails
- */
+     */
 async function getGitCommitSha(dirPath: string): Promise<string | undefined> {
   const sha = await getHeadForDir(dirPath)
   return sha ?? undefined
 }
 
-/**
+/*    *
  * Try to read version from plugin manifest
- */
+     */
 function getPluginVersionFromManifest(
   pluginCachePath: string,
   pluginId: string,
@@ -1024,7 +1024,7 @@ function getPluginVersionFromManifest(
   }
 }
 
-/**
+/*    *
  * Sync installed_plugins.json with enabledPlugins from settings
  *
  * Checks the schema version and only updates if:
@@ -1044,7 +1044,7 @@ function getPluginVersionFromManifest(
  *
  * Being present in enabledPlugins (whether true or false) indicates the plugin
  * has been installed. The enabled/disabled state remains in settings.json.
- */
+     */
 export async function migrateFromEnabledPlugins(): Promise<void> {
   // Use merged settings for shouldSkipSync check
   const settings = getSettings_DEPRECATED()

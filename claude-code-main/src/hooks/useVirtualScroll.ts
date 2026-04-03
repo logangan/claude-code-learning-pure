@@ -10,21 +10,21 @@ import {
 import type { ScrollBoxHandle } from '../ink/components/ScrollBox.js'
 import type { DOMElement } from '../ink/dom.js'
 
-/**
+/*    *
  * Estimated height (rows) for items not yet measured. Intentionally LOW:
  * overestimating causes blank space (we stop mounting too early and the
  * viewport bottom shows empty spacer), while underestimating just mounts
  * a few extra items into overscan. The asymmetry means we'd rather err low.
- */
+     */
 const DEFAULT_ESTIMATE = 3
-/**
+/*    *
  * Extra rows rendered above and below the viewport. Generous because real
  * heights can be 10x the estimate for long tool results.
- */
+     */
 const OVERSCAN_ROWS = 80
-/** Items rendered before the ScrollBox has laid out (viewportHeight=0). */
+/*    * Items rendered before the ScrollBox has laid out (viewportHeight=0).     */
 const COLD_START_COUNT = 30
-/**
+/*    *
  * scrollTop quantization for the useSyncExternalStore snapshot. Without
  * this, every wheel tick (3-5 per notch) triggers a full React commit +
  * Yoga calculateLayout() + Ink diff cycle — the CPU spike. Visual scroll
@@ -33,19 +33,19 @@ const COLD_START_COUNT = 30
  * React thinks. React only needs to re-render when the mounted range must
  * shift; half of OVERSCAN_ROWS is the tightest safe bin (guarantees ≥40
  * rows of overscan remain before the new range is needed).
- */
+     */
 const SCROLL_QUANTUM = OVERSCAN_ROWS >> 1
-/**
+/*    *
  * Worst-case height assumed for unmeasured items when computing coverage.
  * A MessageRow can be as small as 1 row (single-line tool call). Using 1
  * here guarantees the mounted span physically reaches the viewport bottom
  * regardless of how small items actually are — at the cost of over-mounting
  * when items are larger (which is fine, overscan absorbs it).
- */
+     */
 const PESSIMISTIC_HEIGHT = 1
-/** Cap on mounted items to bound fiber allocation even in degenerate cases. */
+/*    * Cap on mounted items to bound fiber allocation even in degenerate cases.     */
 const MAX_MOUNTED_ITEMS = 300
-/**
+/*    *
  * Max NEW items to mount in a single commit. Scrolling into a fresh range
  * with PESSIMISTIC_HEIGHT=1 would mount 194 items at once (OVERSCAN_ROWS*2+
  * viewportH = 194); each fresh MessageRow render costs ~1.5ms (marked lexer
@@ -53,39 +53,39 @@ const MAX_MOUNTED_ITEMS = 300
  * toward the target over multiple commits keeps per-commit mount cost
  * bounded. The render-time clamp (scrollClampMin/Max) holds the viewport at
  * the edge of mounted content so there's no blank during catch-up.
- */
+     */
 const SLIDE_STEP = 25
 
 const NOOP_UNSUB = () => {}
 
 export type VirtualScrollResult = {
-  /** [startIndex, endIndex) half-open slice of items to render. */
+  /*    * [startIndex, endIndex) half-open slice of items to render.     */
   range: readonly [number, number]
-  /** Height (rows) of spacer before the first rendered item. */
+  /*    * Height (rows) of spacer before the first rendered item.     */
   topSpacer: number
-  /** Height (rows) of spacer after the last rendered item. */
+  /*    * Height (rows) of spacer after the last rendered item.     */
   bottomSpacer: number
-  /**
+  /*    *
    * Callback ref factory. Attach `measureRef(itemKey)` to each rendered
    * item's root Box; after Yoga layout, the computed height is cached.
-   */
+       */
   measureRef: (key: string) => (el: DOMElement | null) => void
-  /**
+  /*    *
    * Attach to the topSpacer Box. Its Yoga computedTop IS listOrigin
    * (first child of the virtualized region, so its top = cumulative
    * height of everything rendered before the list in the ScrollBox).
    * Drift-free: no subtraction of offsets, no dependence on item
    * heights that change between renders (tmux resize).
-   */
+       */
   spacerRef: RefObject<DOMElement | null>
-  /**
+  /*    *
    * Cumulative y-offset of each item in list-wrapper coords (NOT scrollbox
    * coords — logo/siblings before this list shift the origin).
    * offsets[i] = rows above item i; offsets[n] = totalHeight.
    * Recomputed every render — don't memo on identity.
-   */
+       */
   offsets: ArrayLike<number>
-  /**
+  /*    *
    * Read Yoga computedTop for item at index. Returns -1 if the item isn't
    * mounted or hasn't been laid out. Item Boxes are direct Yoga children
    * of the ScrollBox content wrapper (fragments collapse in the Ink DOM),
@@ -95,17 +95,17 @@ export type VirtualScrollResult = {
    * without waiting for Ink to re-render. StickyTracker walks the mount
    * range with this to find the viewport boundary at per-scroll-tick
    * granularity (finer than the 40-row quantum this hook re-renders at).
-   */
+       */
   getItemTop: (index: number) => number
-  /**
+  /*    *
    * Get the mounted DOMElement for item at index, or null. For
    * ScrollBox.scrollToElement — anchoring by element ref defers the
    * Yoga-position read to render time (deterministic; no throttle race).
-   */
+       */
   getItemElement: (index: number) => DOMElement | null
-  /** Measured Yoga height. undefined = not yet measured; 0 = rendered nothing. */
+  /*    * Measured Yoga height. undefined = not yet measured; 0 = rendered nothing.     */
   getItemHeight: (index: number) => number | undefined
-  /**
+  /*    *
    * Scroll so item `i` is in the mounted range. Sets scrollTop =
    * offsets[i] + listOrigin. The range logic finds start from
    * scrollTop vs offsets[] — BOTH use the same offsets value, so they
@@ -113,11 +113,11 @@ export type VirtualScrollResult = {
    * "true" position. Item i mounts; its screen position may be off by
    * a few-dozen rows (overscan-worth of estimate drift), but it's in
    * the DOM. Follow with getItemTop(i) for the precise position.
-   */
+       */
   scrollToIndex: (i: number) => void
 }
 
-/**
+/*    *
  * React-level virtualization for items inside a ScrollBox.
  *
  * The ScrollBox already does Ink-output-level viewport culling
@@ -138,11 +138,11 @@ export type VirtualScrollResult = {
  * during Ink's render phase, which does NOT fire ScrollBox.subscribe. The
  * at-bottom check below handles this — when pinned to the bottom, we render
  * the last N items regardless of what scrollTop claims.
- */
+     */
 export function useVirtualScroll(
   scrollRef: RefObject<ScrollBoxHandle | null>,
   itemKeys: readonly string[],
-  /**
+  /*    *
    * Terminal column count. On change, cached heights are stale (text
    * rewraps) — SCALED by oldCols/newCols rather than cleared. Clearing
    * made the pessimistic coverage back-walk mount ~190 items (every
@@ -157,7 +157,7 @@ export function useVirtualScroll(
    * (inflated pre-resize offsets overshoot post-resize scrollTop → end
    * loop stops short of tail) doesn't trigger: ratio<1 on widen scales
    * heights DOWN, keeping offsets roughly aligned with post-resize Yoga.
-   */
+       */
   columns: number,
 ): VirtualScrollResult {
   const heightCache = useRef(new Map<string, number>())
@@ -343,9 +343,9 @@ export function useVirtualScroll(
       // may undershoot which is fine — we just start mounting a bit early).
       // Then extend end by CUMULATIVE BEST-KNOWN HEIGHT, not estimated
       // offsets. The invariant is:
-      //   topSpacer + sum(real_heights[start..end]) >= scrollTop + viewportH + overscan
+      // topSpacer + sum(real_heights[start..end]) >= scrollTop + viewportH + overscan
       // Since topSpacer = offsets[start] ≤ scrollTop - overscan, we need:
-      //   sum(real_heights) >= viewportH + 2*overscan
+      // sum(real_heights) >= viewportH + 2*overscan
       // For unmeasured items, assume PESSIMISTIC_HEIGHT=1 — the smallest a
       // MessageRow can be. This over-mounts when items are large, but NEVER
       // leaves the viewport showing empty spacer during fast scroll through
@@ -353,12 +353,12 @@ export function useVirtualScroll(
       // coverage is computed with real values and the range tightens.
       // Advance start past item K only if K is safe to fold into topSpacer
       // without a visible jump. Two cases are safe:
-      //   (a) K is NOT currently mounted (itemRefs has no entry). Its
-      //       contribution to offsets has ALWAYS been the estimate — the
-      //       spacer already matches what was there. No layout change.
-      //   (b) K is mounted AND its height is cached. offsets[start+1] uses
-      //       the real height, so topSpacer = offsets[start+1] exactly
-      //       equals the Yoga span K occupied. Seamless unmount.
+      // (a) K is NOT currently mounted (itemRefs has no entry). Its
+      // contribution to offsets has ALWAYS been the estimate — the
+      // spacer already matches what was there. No layout change.
+      // (b) K is mounted AND its height is cached. offsets[start+1] uses
+      // the real height, so topSpacer = offsets[start+1] exactly
+      // equals the Yoga span K occupied. Seamless unmount.
       // The unsafe case — K is mounted but uncached — is the one-render
       // window between mount and useLayoutEffect measurement. Keeping K
       // mounted that one extra render lets the measurement land.
@@ -494,8 +494,7 @@ export function useVirtualScroll(
   // fresh-mount block becomes interruptible. The clamp (setClampBounds)
   // already handles viewport pinning so there's no visual artifact from
   // the deferred range lagging briefly behind scrollTop.
-  //
-  // Only defer range GROWTH (start moving earlier / end moving later adds
+  // // Only defer range GROWTH (start moving earlier / end moving later adds
   // fresh mounts). Shrinking is cheap (unmount = remove fiber, no parse)
   // and the deferred value lagging shrink causes stale overscan to stay
   // mounted one extra tick — harmless but fails tests checking exact
@@ -556,16 +555,14 @@ export function useVirtualScroll(
   // clamps scrollTop to this span so burst scrollTo calls that race past
   // React's async re-render show the EDGE of mounted content (the last/first
   // visible message) instead of blank spacer.
-  //
-  // Clamp MUST use the EFFECTIVE (deferred) range, not the immediate one.
+  // // Clamp MUST use the EFFECTIVE (deferred) range, not the immediate one.
   // During fast scroll, immediate [start,end] may already cover the new
   // scrollTop position, but the children still render at the deferred
   // (older) range. If clamp uses immediate bounds, the drain-gate in
   // render-node-to-output sees scrollTop within clamp → drains past the
   // deferred children's span → viewport lands in spacer → white flash.
   // Using effStart/effEnd keeps clamp synced with what's actually mounted.
-  //
-  // Skip clamp when sticky — render-node-to-output pins scrollTop=maxScroll
+  // // Skip clamp when sticky — render-node-to-output pins scrollTop=maxScroll
   // authoritatively. Clamping during cold-start/load causes flicker: first
   // render uses estimate-based offsets, clamp set, sticky-follow moves
   // scrollTop, measurement fires, offsets rebuild with real heights, second
@@ -601,8 +598,7 @@ export function useVirtualScroll(
   // heights for items mounted ≥1 frame ago are valid; brand-new items
   // haven't been laid out yet (that happens in resetAfterCommit → onRender,
   // after this effect).
-  //
-  // Distinguishing "h=0: Yoga hasn't run" (transient, skip) from "h=0:
+  // // Distinguishing "h=0: Yoga hasn't run" (transient, skip) from "h=0:
   // MessageRow rendered null" (permanent, cache it): getComputedWidth() > 0
   // proves Yoga HAS laid out this node (width comes from the container,
   // always non-zero for a Box in a column). If width is set and height is
@@ -610,8 +606,7 @@ export function useVirtualScroll(
   // doesn't block on it forever. Without this, a null-rendering message
   // at the start boundary freezes the range (seen as blank viewport when
   // scrolling down after scrolling up).
-  //
-  // NO setState. A setState here would schedule a second commit with
+  // // NO setState. A setState here would schedule a second commit with
   // shifted offsets, and since Ink writes stdout on every commit
   // (reconciler.resetAfterCommit → onRender), that's two writes with
   // different spacer heights → visible flicker. Heights propagate to

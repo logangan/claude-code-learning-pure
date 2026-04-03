@@ -4,7 +4,7 @@ import { getFsImplementation } from '../fsOperations.js'
 
 const SKILL_MD_RE = /^skill\.md$/i
 
-/**
+/*    *
  * Recursively walk a plugin directory, invoking onFile for each .md file.
  *
  * The namespace array tracks the subdirectory path relative to the root
@@ -17,7 +17,7 @@ const SKILL_MD_RE = /^skill\.md$/i
  *
  * Readdir errors are swallowed with a debug log so one bad directory doesn't
  * abort a plugin load.
- */
+     */
 export async function walkPluginMarkdown(
   rootDir: string,
   onFile: (fullPath: string, namespace: string[]) => Promise<void>,

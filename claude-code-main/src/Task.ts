@@ -19,11 +19,11 @@ export type TaskStatus =
   | 'failed'
   | 'killed'
 
-/**
+/*    *
  * True when a task is in a terminal state and will not transition further.
  * Used to guard against injecting messages into dead teammates, evicting
  * finished tasks from AppState, and orphan-cleanup paths.
- */
+     */
 export function isTerminalTaskStatus(status: TaskStatus): boolean {
   return status === 'completed' || status === 'failed' || status === 'killed'
 }
@@ -62,7 +62,7 @@ export type LocalShellSpawnInput = {
   timeout?: number
   toolUseId?: string
   agentId?: AgentId
-  /** UI display variant: description-as-label, dialog title, status bar pill. */
+  /*    * UI display variant: description-as-label, dialog title, status bar pill.     */
   kind?: 'bash' | 'monitor'
 }
 

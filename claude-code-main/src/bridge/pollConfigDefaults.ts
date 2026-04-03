@@ -1,18 +1,18 @@
-/**
+/*    *
  * Bridge poll interval defaults. Extracted from pollConfig.ts so callers
  * that don't need live GrowthBook tuning (daemon via Agent SDK) can avoid
  * the growthbook.ts → config.ts → file.ts → sessionStorage.ts → commands.ts
  * transitive dependency chain.
- */
+     */
 
-/**
+/*    *
  * Poll interval when actively seeking work (no transport / below maxSessions).
  * Governs user-visible "connecting…" latency on initial work pickup and
  * recovery speed after the server re-dispatches a work item.
- */
+     */
 const POLL_INTERVAL_MS_NOT_AT_CAPACITY = 2000
 
-/**
+/*    *
  * Poll interval when the transport is connected. Runs independently of
  * heartbeat — when both are enabled, the heartbeat loop breaks out to poll
  * at this interval. Set to 0 to disable at-capacity polling entirely.
@@ -26,15 +26,15 @@ const POLL_INTERVAL_MS_NOT_AT_CAPACITY = 2000
  * The transport auto-reconnects internally for 10 minutes on transient WS
  * failures, so poll is not the recovery path — it's strictly a liveness
  * signal plus a backstop for permanent close.
- */
+     */
 const POLL_INTERVAL_MS_AT_CAPACITY = 600_000
 
-/**
+/*    *
  * Multisession bridge (bridgeMain.ts) poll intervals. Defaults match the
  * single-session values so existing GrowthBook configs without these fields
  * preserve current behavior. Ops can tune these independently via the
  * tengu_bridge_poll_interval_config GB flag.
- */
+     */
 const MULTISESSION_POLL_INTERVAL_MS_NOT_AT_CAPACITY =
   POLL_INTERVAL_MS_NOT_AT_CAPACITY
 const MULTISESSION_POLL_INTERVAL_MS_PARTIAL_CAPACITY =

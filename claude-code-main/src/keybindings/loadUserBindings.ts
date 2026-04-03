@@ -1,4 +1,4 @@
-/**
+/*    *
  * User keybinding configuration loader with hot-reload support.
  *
  * Loads keybindings from ~/.claude/keybindings.json and watches
@@ -7,7 +7,7 @@
  * NOTE: User keybinding customization is currently only available for
  * Anthropic employees (USER_TYPE === 'ant'). External users always
  * use the default bindings.
- */
+     */
 
 import chokidar, { type FSWatcher } from 'chokidar'
 import { readFileSync } from 'fs'
@@ -30,14 +30,14 @@ import {
   validateBindings,
 } from './validate.js'
 
-/**
+/*    *
  * Check if keybinding customization is enabled.
  *
  * Returns true if the tengu_keybinding_customization_release GrowthBook gate is enabled.
  *
  * This function is exported so other parts of the codebase (e.g., /doctor)
  * can check the same condition consistently.
- */
+     */
 export function isKeybindingCustomizationEnabled(): boolean {
   return getFeatureValue_CACHED_MAY_BE_STALE(
     'tengu_keybinding_customization_release',
@@ -45,19 +45,19 @@ export function isKeybindingCustomizationEnabled(): boolean {
   )
 }
 
-/**
+/*    *
  * Time in milliseconds to wait for file writes to stabilize.
- */
+     */
 const FILE_STABILITY_THRESHOLD_MS = 500
 
-/**
+/*    *
  * Polling interval for checking file stability.
- */
+     */
 const FILE_STABILITY_POLL_INTERVAL_MS = 200
 
-/**
+/*    *
  * Result of loading keybindings, including any validation warnings.
- */
+     */
 export type KeybindingsLoadResult = {
   bindings: ParsedBinding[]
   warnings: KeybindingWarning[]
@@ -70,16 +70,16 @@ let cachedBindings: ParsedBinding[] | null = null
 let cachedWarnings: KeybindingWarning[] = []
 const keybindingsChanged = createSignal<[result: KeybindingsLoadResult]>()
 
-/**
+/*    *
  * Tracks the date (YYYY-MM-DD) when we last logged a custom keybindings load event.
  * Used to ensure we fire the event at most once per day.
- */
+     */
 let lastCustomBindingsLogDate: string | null = null
 
-/**
+/*    *
  * Log a telemetry event when custom keybindings are loaded, at most once per day.
  * This lets us estimate the percentage of users who customize their keybindings.
- */
+     */
 function logCustomBindingsLoadedOncePerDay(userBindingCount: number): void {
   const today = new Date().toISOString().slice(0, 10)
   if (lastCustomBindingsLogDate === today) return
@@ -89,9 +89,9 @@ function logCustomBindingsLoadedOncePerDay(userBindingCount: number): void {
   })
 }
 
-/**
+/*    *
  * Type guard to check if an object is a valid KeybindingBlock.
- */
+     */
 function isKeybindingBlock(obj: unknown): obj is KeybindingBlock {
   if (typeof obj !== 'object' || obj === null) return false
   const b = obj as Record<string, unknown>
@@ -102,34 +102,34 @@ function isKeybindingBlock(obj: unknown): obj is KeybindingBlock {
   )
 }
 
-/**
+/*    *
  * Type guard to check if an array contains only valid KeybindingBlocks.
- */
+     */
 function isKeybindingBlockArray(arr: unknown): arr is KeybindingBlock[] {
   return Array.isArray(arr) && arr.every(isKeybindingBlock)
 }
 
-/**
+/*    *
  * Get the path to the user keybindings file.
- */
+     */
 export function getKeybindingsPath(): string {
   return join(getClaudeConfigHomeDir(), 'keybindings.json')
 }
 
-/**
+/*    *
  * Parse default bindings (cached for performance).
- */
+     */
 function getDefaultParsedBindings(): ParsedBinding[] {
   return parseBindings(DEFAULT_BINDINGS)
 }
 
-/**
+/*    *
  * Load and parse keybindings from user config file.
  * Returns merged default + user bindings along with validation warnings.
  *
  * For external users, always returns default bindings only.
  * User customization is currently gated to Anthropic employees.
- */
+     */
 export async function loadKeybindings(): Promise<KeybindingsLoadResult> {
   const defaultBindings = getDefaultParsedBindings()
 
@@ -236,10 +236,10 @@ export async function loadKeybindings(): Promise<KeybindingsLoadResult> {
   }
 }
 
-/**
+/*    *
  * Load keybindings synchronously (for initial render).
  * Uses cached value if available.
- */
+     */
 export function loadKeybindingsSync(): ParsedBinding[] {
   if (cachedBindings) {
     return cachedBindings
@@ -249,13 +249,13 @@ export function loadKeybindingsSync(): ParsedBinding[] {
   return result.bindings
 }
 
-/**
+/*    *
  * Load keybindings synchronously with validation warnings.
  * Uses cached values if available.
  *
  * For external users, always returns default bindings only.
  * User customization is currently gated to Anthropic employees.
- */
+     */
 export function loadKeybindingsSyncWithWarnings(): KeybindingsLoadResult {
   if (cachedBindings) {
     return { bindings: cachedBindings, warnings: cachedWarnings }
@@ -344,12 +344,12 @@ export function loadKeybindingsSyncWithWarnings(): KeybindingsLoadResult {
   }
 }
 
-/**
+/*    *
  * Initialize file watching for keybindings.json.
  * Call this once when the app starts.
  *
  * For external users, this is a no-op since user customization is disabled.
- */
+     */
 export async function initializeKeybindingWatcher(): Promise<void> {
   if (initialized || disposed) return
 
@@ -403,9 +403,9 @@ export async function initializeKeybindingWatcher(): Promise<void> {
   registerCleanup(async () => disposeKeybindingWatcher())
 }
 
-/**
+/*    *
  * Clean up the file watcher.
- */
+     */
 export function disposeKeybindingWatcher(): void {
   disposed = true
   if (watcher) {
@@ -415,10 +415,10 @@ export function disposeKeybindingWatcher(): void {
   keybindingsChanged.clear()
 }
 
-/**
+/*    *
  * Subscribe to keybinding changes.
  * The listener receives the new parsed bindings when the file changes.
- */
+     */
 export const subscribeToKeybindingChanges = keybindingsChanged.subscribe
 
 async function handleChange(path: string): Promise<void> {
@@ -447,17 +447,17 @@ function handleDelete(path: string): void {
   keybindingsChanged.emit({ bindings: defaultBindings, warnings: [] })
 }
 
-/**
+/*    *
  * Get the cached keybinding warnings.
  * Returns empty array if no warnings or bindings haven't been loaded yet.
- */
+     */
 export function getCachedKeybindingWarnings(): KeybindingWarning[] {
   return cachedWarnings
 }
 
-/**
+/*    *
  * Reset internal state for testing.
- */
+     */
 export function resetKeybindingLoaderForTesting(): void {
   initialized = false
   disposed = false

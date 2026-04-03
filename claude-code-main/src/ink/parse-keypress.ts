@@ -1,9 +1,9 @@
-/**
+/*    *
  * Keyboard input parser - converts terminal input to key events
  *
  * Uses the termio tokenizer for escape sequence boundary detection,
  * then interprets sequences as keypresses.
- */
+     */
 import { Buffer } from 'buffer'
 import { PASTE_END, PASTE_START } from './termio/csi.js'
 import { createTokenizer, type Tokenizer } from './termio/tokenize.js'
@@ -80,7 +80,7 @@ function createPasteKey(content: string): ParsedKey {
   }
 }
 
-/** DECRPM status values (response to DECRQM) */
+/*    * DECRPM status values (response to DECRQM)     */
 export const DECRPM_STATUS = {
   NOT_RECOGNIZED: 0,
   SET: 1,
@@ -89,28 +89,28 @@ export const DECRPM_STATUS = {
   PERMANENTLY_RESET: 4,
 } as const
 
-/**
+/*    *
  * A response sequence received from the terminal (not a keypress).
  * Emitted in answer to queries like DECRQM, DA1, OSC 11, etc.
- */
+     */
 export type TerminalResponse =
-  /** DECRPM: answer to DECRQM (request DEC private mode status) */
+  /*    * DECRPM: answer to DECRQM (request DEC private mode status)     */
   | { type: 'decrpm'; mode: number; status: number }
-  /** DA1: primary device attributes (used as a universal sentinel) */
+  /*    * DA1: primary device attributes (used as a universal sentinel)     */
   | { type: 'da1'; params: number[] }
-  /** DA2: secondary device attributes (terminal version info) */
+  /*    * DA2: secondary device attributes (terminal version info)     */
   | { type: 'da2'; params: number[] }
-  /** Kitty keyboard protocol: current flags (answer to CSI ? u) */
+  /*    * Kitty keyboard protocol: current flags (answer to CSI ? u)     */
   | { type: 'kittyKeyboard'; flags: number }
-  /** DSR: cursor position report (answer to CSI 6 n) */
+  /*    * DSR: cursor position report (answer to CSI 6 n)     */
   | { type: 'cursorPosition'; row: number; col: number }
-  /** OSC response: generic operating-system-command reply (e.g. OSC 11 bg color) */
+  /*    * OSC response: generic operating-system-command reply (e.g. OSC 11 bg color)     */
   | { type: 'osc'; code: number; data: string }
-  /** XTVERSION: terminal name/version string (answer to CSI > 0 q).
-   *  Example values: "xterm.js(5.5.0)", "ghostty 1.2.0", "iTerm2 3.6". */
+  /*    * XTVERSION: terminal name/version string (answer to CSI > 0 q).
+   *  Example values: "xterm.js(5.5.0)", "ghostty 1.2.0", "iTerm2 3.6".     */
   | { type: 'xtversion'; name: string }
 
-/**
+/*    *
  * Try to recognize a sequence token as a terminal response.
  * Returns null if the sequence is not a known response pattern
  * (i.e. it should be treated as a keypress).
@@ -118,7 +118,7 @@ export type TerminalResponse =
  * These patterns are syntactically distinguishable from keyboard input —
  * no physical key produces CSI ? ... c or CSI ? ... $ y, so they can be
  * safely parsed out of the input stream at any time.
- */
+     */
 function parseTerminalResponse(s: string): TerminalResponse | null {
   // CSI-prefixed responses
   if (s.startsWith('\x1b[')) {
@@ -302,12 +302,12 @@ export function parseMultipleKeypresses(
 }
 
 const keyName: Record<string, string> = {
-  /* xterm/gnome ESC O letter */
+  /*     xterm/gnome ESC O letter     */
   OP: 'f1',
   OQ: 'f2',
   OR: 'f3',
   OS: 'f4',
-  /* Application keypad mode (numpad digits 0-9) */
+  /*     Application keypad mode (numpad digits 0-9)     */
   Op: '0',
   Oq: '1',
   Or: '2',
@@ -318,7 +318,7 @@ const keyName: Record<string, string> = {
   Ow: '7',
   Ox: '8',
   Oy: '9',
-  /* Application keypad mode (numpad operators) */
+  /*     Application keypad mode (numpad operators)     */
   Oj: '*',
   Ok: '+',
   Ol: ',',
@@ -326,18 +326,18 @@ const keyName: Record<string, string> = {
   On: '.',
   Oo: '/',
   OM: 'return',
-  /* xterm/rxvt ESC [ number ~ */
+  /*     xterm/rxvt ESC [ number ~     */
   '[11~': 'f1',
   '[12~': 'f2',
   '[13~': 'f3',
   '[14~': 'f4',
-  /* from Cygwin and used in libuv */
+  /*     from Cygwin and used in libuv     */
   '[[A': 'f1',
   '[[B': 'f2',
   '[[C': 'f3',
   '[[D': 'f4',
   '[[E': 'f5',
-  /* common */
+  /*     common     */
   '[15~': 'f5',
   '[17~': 'f6',
   '[18~': 'f7',
@@ -346,7 +346,7 @@ const keyName: Record<string, string> = {
   '[21~': 'f10',
   '[23~': 'f11',
   '[24~': 'f12',
-  /* xterm ESC [ letter */
+  /*     xterm ESC [ letter     */
   '[A': 'up',
   '[B': 'down',
   '[C': 'right',
@@ -354,7 +354,7 @@ const keyName: Record<string, string> = {
   '[E': 'clear',
   '[F': 'end',
   '[H': 'home',
-  /* xterm/gnome ESC O letter */
+  /*     xterm/gnome ESC O letter     */
   OA: 'up',
   OB: 'down',
   OC: 'right',
@@ -362,20 +362,20 @@ const keyName: Record<string, string> = {
   OE: 'clear',
   OF: 'end',
   OH: 'home',
-  /* xterm/rxvt ESC [ number ~ */
+  /*     xterm/rxvt ESC [ number ~     */
   '[1~': 'home',
   '[2~': 'insert',
   '[3~': 'delete',
   '[4~': 'end',
   '[5~': 'pageup',
   '[6~': 'pagedown',
-  /* putty */
+  /*     putty     */
   '[[5~': 'pageup',
   '[[6~': 'pagedown',
-  /* rxvt */
+  /*     rxvt     */
   '[7~': 'home',
   '[8~': 'end',
-  /* rxvt keys with modifiers */
+  /*     rxvt keys with modifiers     */
   '[a': 'up',
   '[b': 'down',
   '[c': 'right',
@@ -401,7 +401,7 @@ const keyName: Record<string, string> = {
   '[6^': 'pagedown',
   '[7^': 'home',
   '[8^': 'end',
-  /* misc. */
+  /*     misc.     */
   '[Z': 'tab',
 }
 
@@ -453,7 +453,7 @@ const isCtrlKey = (code: string): boolean => {
   ].includes(code)
 }
 
-/**
+/*    *
  * Decode XTerm-style modifier value to individual flags.
  * Modifier encoding: 1 + (shift ? 1 : 0) + (alt ? 2 : 0) + (ctrl ? 4 : 0) + (super ? 8 : 0)
  *
@@ -461,7 +461,7 @@ const isCtrlKey = (code: string): boolean => {
  * modifier (bit 8, i.e. Cmd on macOS / Win key). Most legacy terminal
  * sequences can't express super — it only arrives via kitty keyboard
  * protocol (CSI u) or xterm modifyOtherKeys.
- */
+     */
 function decodeModifier(modifier: number): {
   shift: boolean
   meta: boolean
@@ -477,13 +477,13 @@ function decodeModifier(modifier: number): {
   }
 }
 
-/**
+/*    *
  * Map keycode to key name for modifyOtherKeys/CSI u sequences.
  * Handles both ASCII keycodes and Kitty keyboard protocol functional keys.
  *
  * Numpad codepoints are from Unicode Private Use Area, defined at:
- * https://sw.kovidgoyal.net/kitty/keyboard-protocol/#functional-key-definitions
- */
+ * https:// sw.kovidgoyal.net/kitty/keyboard-protocol/#functional-key-definitions
+     */
 function keycodeToName(keycode: number): string | undefined {
   switch (keycode) {
     case 9:
@@ -555,42 +555,42 @@ export type ParsedKey = {
   isPasted: boolean
 }
 
-/** A terminal response sequence (DECRPM, DA1, OSC reply, etc.) parsed
+/*    * A terminal response sequence (DECRPM, DA1, OSC reply, etc.) parsed
  *  out of the input stream. Not user input — consumers should dispatch
- *  to a response handler. */
+ *  to a response handler.     */
 export type ParsedResponse = {
   kind: 'response'
-  /** Raw escape sequence bytes, for debugging/logging */
+  /*    * Raw escape sequence bytes, for debugging/logging     */
   sequence: string
   response: TerminalResponse
 }
 
-/** SGR mouse event with coordinates. Emitted for clicks, drags, and
+/*    * SGR mouse event with coordinates. Emitted for clicks, drags, and
  *  releases (wheel events remain ParsedKey). col/row are 1-indexed
- *  from the terminal sequence (CSI < btn;col;row M/m). */
+ *  from the terminal sequence (CSI < btn;col;row M/m).     */
 export type ParsedMouse = {
   kind: 'mouse'
-  /** Raw SGR button code. Low 2 bits = button (0=left,1=mid,2=right),
-   *  bit 5 (0x20) = drag/motion, bit 6 (0x40) = wheel. */
+  /*    * Raw SGR button code. Low 2 bits = button (0=left,1=mid,2=right),
+   *  bit 5 (0x20) = drag/motion, bit 6 (0x40) = wheel.     */
   button: number
-  /** 'press' for M terminator, 'release' for m terminator */
+  /*    * 'press' for M terminator, 'release' for m terminator     */
   action: 'press' | 'release'
-  /** 1-indexed column (from terminal) */
+  /*    * 1-indexed column (from terminal)     */
   col: number
-  /** 1-indexed row (from terminal) */
+  /*    * 1-indexed row (from terminal)     */
   row: number
   sequence: string
 }
 
-/** Everything that can come out of the input parser: a user keypress/paste,
- *  a mouse click/drag event, or a terminal response to a query we sent. */
+/*    * Everything that can come out of the input parser: a user keypress/paste,
+ *  a mouse click/drag event, or a terminal response to a query we sent.     */
 export type ParsedInput = ParsedKey | ParsedMouse | ParsedResponse
 
-/**
+/*    *
  * Parse an SGR mouse event sequence into a ParsedMouse, or null if not a
  * mouse event or if it's a wheel event (wheel stays as ParsedKey for the
  * keybinding system). Button bit 0x40 = wheel, bit 0x20 = drag/motion.
- */
+     */
 function parseMouseEvent(s: string): ParsedMouse | null {
   const match = SGR_MOUSE_RE.exec(s)
   if (!match) return null

@@ -181,10 +181,10 @@ export function initSkillImprovement(): void {
   }
 }
 
-/**
+/*    *
  * Apply skill improvements by calling a side-channel LLM to rewrite the skill file.
  * Fire-and-forget — does not block the main conversation.
- */
+     */
 export async function applySkillImprovement(
   skillName: string,
   updates: SkillUpdate[],

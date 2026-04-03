@@ -1,4 +1,4 @@
-/**
+/*    *
  * Auto-install logic for the official Anthropic marketplace.
  *
  * This module handles automatically installing the official marketplace
@@ -6,7 +6,7 @@
  * - Enterprise policy restrictions
  * - Git availability
  * - Previous installation attempts
- */
+     */
 
 import { join } from 'path'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../../services/analytics/growthbook.js'
@@ -30,9 +30,9 @@ import {
 } from './officialMarketplace.js'
 import { fetchOfficialMarketplaceFromGcs } from './officialMarketplaceGcs.js'
 
-/**
+/*    *
  * Reason why the official marketplace was not installed
- */
+     */
 export type OfficialMarketplaceSkipReason =
   | 'already_attempted'
   | 'already_installed'
@@ -41,18 +41,18 @@ export type OfficialMarketplaceSkipReason =
   | 'gcs_unavailable'
   | 'unknown'
 
-/**
+/*    *
  * Check if official marketplace auto-install is disabled via environment variable.
- */
+     */
 export function isOfficialMarketplaceAutoInstallDisabled(): boolean {
   return isEnvTruthy(
     process.env.CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL,
   )
 }
 
-/**
+/*    *
  * Configuration for retry logic
- */
+     */
 export const RETRY_CONFIG = {
   MAX_ATTEMPTS: 10,
   INITIAL_DELAY_MS: 60 * 60 * 1000, // 1 hour
@@ -60,9 +60,9 @@ export const RETRY_CONFIG = {
   MAX_DELAY_MS: 7 * 24 * 60 * 60 * 1000, // 1 week
 }
 
-/**
+/*    *
  * Calculate next retry delay using exponential backoff
- */
+     */
 function calculateNextRetryDelay(retryCount: number): number {
   const delay =
     RETRY_CONFIG.INITIAL_DELAY_MS *
@@ -70,9 +70,9 @@ function calculateNextRetryDelay(retryCount: number): number {
   return Math.min(delay, RETRY_CONFIG.MAX_DELAY_MS)
 }
 
-/**
+/*    *
  * Determine if installation should be retried based on failure reason and retry state
- */
+     */
 function shouldRetryInstallation(
   config: ReturnType<typeof getGlobalConfig>,
 ): boolean {
@@ -116,21 +116,21 @@ function shouldRetryInstallation(
   )
 }
 
-/**
+/*    *
  * Result of the auto-install check
- */
+     */
 export type OfficialMarketplaceCheckResult = {
-  /** Whether the marketplace was successfully installed */
+  /*    * Whether the marketplace was successfully installed     */
   installed: boolean
-  /** Whether the installation was skipped (and why) */
+  /*    * Whether the installation was skipped (and why)     */
   skipped: boolean
-  /** Reason for skipping, if applicable */
+  /*    * Reason for skipping, if applicable     */
   reason?: OfficialMarketplaceSkipReason
-  /** Whether saving retry metadata to config failed */
+  /*    * Whether saving retry metadata to config failed     */
   configSaveFailed?: boolean
 }
 
-/**
+/*    *
  * Check and install the official marketplace on startup.
  *
  * This function is designed to be called as a fire-and-forget operation
@@ -143,7 +143,7 @@ export type OfficialMarketplaceCheckResult = {
  * 6. Record the result in GlobalConfig
  *
  * @returns Result indicating whether installation succeeded or was skipped
- */
+     */
 export async function checkAndInstallOfficialMarketplace(): Promise<OfficialMarketplaceCheckResult> {
   const config = getGlobalConfig()
 

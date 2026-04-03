@@ -1,8 +1,8 @@
-/**
+/*    *
  * Denial tracking infrastructure for permission classifiers.
  * Tracks consecutive denials and total denials to determine
  * when to fall back to prompting.
- */
+     */
 
 export type DenialTrackingState = {
   consecutiveDenials: number

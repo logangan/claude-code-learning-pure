@@ -76,12 +76,12 @@ export function isPromptTooLongMessage(msg: AssistantMessage): boolean {
   )
 }
 
-/**
+/*    *
  * Parse actual/limit token counts from a raw prompt-too-long API error
  * message like "prompt is too long: 137500 tokens > 135000 maximum".
  * The raw string may be wrapped in SDK prefixes or JSON envelopes, or
  * have different casing (Vertex), so this is intentionally lenient.
- */
+     */
 export function parsePromptTooLongTokenCounts(rawMessage: string): {
   actualTokens: number | undefined
   limitTokens: number | undefined
@@ -95,12 +95,12 @@ export function parsePromptTooLongTokenCounts(rawMessage: string): {
   }
 }
 
-/**
+/*    *
  * Returns how many tokens over the limit a prompt-too-long error reports,
  * or undefined if the message isn't PTL or its errorDetails are unparseable.
  * Reactive compact uses this gap to jump past multiple groups in one retry
  * instead of peeling one-at-a-time.
- */
+     */
 export function getPromptTooLongTokenGap(
   msg: AssistantMessage,
 ): number | undefined {
@@ -117,7 +117,7 @@ export function getPromptTooLongTokenGap(
   return gap > 0 ? gap : undefined
 }
 
-/**
+/*    *
  * Is this raw API error text a media-size rejection that stripImagesFromMessages
  * can fix? Reactive compact's summarize retry uses this to decide whether to
  * strip and retry (media error) or bail (anything else).
@@ -129,7 +129,7 @@ export function getPromptTooLongTokenGap(
  * isMediaSizeError(errorDetails) is tautologically true for that path. API
  * wording drift causes graceful degradation (errorDetails stays undefined,
  * caller short-circuits), not a false negative.
- */
+     */
 export function isMediaSizeError(raw: string): boolean {
   return (
     (raw.includes('image exceeds') && raw.includes('maximum')) ||
@@ -138,12 +138,12 @@ export function isMediaSizeError(raw: string): boolean {
   )
 }
 
-/**
+/*    *
  * Message-level predicate: is this assistant message a media-size rejection?
  * Parallel to isPromptTooLongMessage. Checks errorDetails (the raw API error
  * string populated by the getAssistantMessageFromError branches at ~L523/560/573)
  * rather than content text, since media errors have per-variant content strings.
- */
+     */
 export function isMediaSizeErrorMessage(msg: AssistantMessage): boolean {
   return (
     msg.isApiErrorMessage === true &&
@@ -209,11 +209,11 @@ export function getOauthOrgNotAllowedErrorMessage(): string {
     : OAUTH_ORG_NOT_ALLOWED_ERROR_MESSAGE
 }
 
-/**
+/*    *
  * Check if we're in CCR (Claude Code Remote) mode.
  * In CCR mode, auth is handled via JWTs provided by the infrastructure,
  * not via /login. Transient auth errors should suggest retrying, not logging in.
- */
+     */
 function isCCRMode(): boolean {
   return isEnvTruthy(process.env.CLAUDE_CODE_REMOTE)
 }
@@ -381,9 +381,9 @@ function logToolUseToolResultMismatch(
   }
 }
 
-/**
+/*    *
  * Type guard to check if a value is a valid Message response from the API
- */
+     */
 export function isValidAPIMessage(value: unknown): value is BetaMessage {
   return (
     typeof value === 'object' &&
@@ -397,7 +397,7 @@ export function isValidAPIMessage(value: unknown): value is BetaMessage {
   )
 }
 
-/** Lower-level error that AWS can return. */
+/*    * Lower-level error that AWS can return.     */
 type AmazonError = {
   Output?: {
     __type?: string
@@ -405,9 +405,9 @@ type AmazonError = {
   Version?: string
 }
 
-/**
+/*    *
  * Given a response that doesn't look quite right, see if it contains any known error types we can extract.
- */
+     */
 export function extractUnknownErrorFormat(value: unknown): string | undefined {
   // Check if value is a valid object first
   if (!value || typeof value !== 'object') {
@@ -933,10 +933,10 @@ export function getAssistantMessageFromError(
   })
 }
 
-/**
+/*    *
  * For 3P users, suggest a fallback model when the selected model is unavailable.
  * Returns a model name suggestion, or undefined if no suggestion is applicable.
- */
+     */
 function get3PModelFallbackSuggestion(model: string): string | undefined {
   if (getAPIProvider() === 'firstParty') {
     return undefined
@@ -958,10 +958,10 @@ function get3PModelFallbackSuggestion(model: string): string | undefined {
   return undefined
 }
 
-/**
+/*    *
  * Classifies an API error into a specific error type for analytics tracking.
  * Returns a standardized error type string suitable for Datadog tagging.
- */
+     */
 export function classifyAPIError(error: unknown): string {
   // Aborted requests
   if (error instanceof Error && error.message === 'Request was aborted.') {
@@ -1192,8 +1192,8 @@ export function getErrorMessageIfRefusal(
   logEvent('tengu_refusal_api_response', {})
 
   const baseMessage = getIsNonInteractiveSession()
-    ? `${API_ERROR_MESSAGE_PREFIX}: Claude Code is unable to respond to this request, which appears to violate our Usage Policy (https://www.anthropic.com/legal/aup). Try rephrasing the request or attempting a different approach.`
-    : `${API_ERROR_MESSAGE_PREFIX}: Claude Code is unable to respond to this request, which appears to violate our Usage Policy (https://www.anthropic.com/legal/aup). Please double press esc to edit your last message or start a new session for Claude Code to assist with a different task.`
+    ? `${API_ERROR_MESSAGE_PREFIX}: Claude Code is unable to respond to this request, which appears to violate our Usage Policy (https:// www.anthropic.com/legal/aup). Try rephrasing the request or attempting a different approach.`
+    : `${API_ERROR_MESSAGE_PREFIX}: Claude Code is unable to respond to this request, which appears to violate our Usage Policy (https:// www.anthropic.com/legal/aup). Please double press esc to edit your last message or start a new session for Claude Code to assist with a different task.`
 
   const modelSuggestion =
     model !== 'claude-sonnet-4-20250514'

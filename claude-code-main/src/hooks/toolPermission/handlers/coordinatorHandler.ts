@@ -13,7 +13,7 @@ type CoordinatorPermissionParams = {
   permissionMode: string | undefined
 }
 
-/**
+/*    *
  * Handles the coordinator worker permission flow.
  *
  * For coordinator workers, automated checks (hooks and classifier) are
@@ -22,7 +22,7 @@ type CoordinatorPermissionParams = {
  * Returns a PermissionDecision if the automated checks resolved the
  * permission, or null if the caller should fall through to the
  * interactive dialog.
- */
+     */
 async function handleCoordinatorPermission(
   params: CoordinatorPermissionParams,
 ): Promise<PermissionDecision | null> {

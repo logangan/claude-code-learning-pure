@@ -6,10 +6,10 @@ import {
 } from '../../services/analytics/index.js'
 import { getCharBudget } from '../../tools/SkillTool/prompt.js'
 
-/**
+/*    *
  * Logs a tengu_skill_loaded event for each skill available at session startup.
  * This enables analytics on which skills are available across sessions.
- */
+     */
 export async function logSkillsLoaded(
   cwd: string,
   contextWindowTokens: number,

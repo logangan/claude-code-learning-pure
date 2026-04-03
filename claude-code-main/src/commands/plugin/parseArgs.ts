@@ -43,9 +43,9 @@ export function parsePluginArgs(args?: string): ParsedCommand {
 
       // Check if the target looks like a marketplace (URL or path)
       const isMarketplace =
-        target.startsWith('http://') ||
-        target.startsWith('https://') ||
-        target.startsWith('file://') ||
+        target.startsWith('http:// ') ||
+        target.startsWith('https:// ') ||
+        target.startsWith('file:// ') ||
         target.includes('/') ||
         target.includes('\\')
 

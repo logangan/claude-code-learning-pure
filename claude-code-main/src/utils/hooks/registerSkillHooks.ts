@@ -4,7 +4,7 @@ import { logForDebugging } from '../debug.js'
 import type { HooksSettings } from '../settings/types.js'
 import { addSessionHook, removeSessionHook } from './sessionHooks.js'
 
-/**
+/*    *
  * Registers hooks from a skill's frontmatter as session hooks.
  *
  * Hooks are registered as session-scoped hooks that persist for the duration
@@ -16,7 +16,7 @@ import { addSessionHook, removeSessionHook } from './sessionHooks.js'
  * @param hooks - The hooks settings from the skill's frontmatter
  * @param skillName - The name of the skill (for logging)
  * @param skillRoot - The base directory of the skill (for CLAUDE_PLUGIN_ROOT env var)
- */
+     */
 export function registerSkillHooks(
   setAppState: (updater: (prev: AppState) => AppState) => void,
   sessionId: string,

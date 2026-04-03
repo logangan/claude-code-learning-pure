@@ -12,11 +12,11 @@ export function setSessionSettingsCache(value: SettingsWithErrors): void {
   sessionSettingsCache = value
 }
 
-/**
+/*    *
  * Per-source cache for getSettingsForSource. Invalidated alongside the
  * merged sessionSettingsCache — same resetSettingsCache() triggers
  * (settings write, --add-dir, plugin init, hooks refresh).
- */
+     */
 const perSourceCache = new Map<SettingSource, SettingsJson | null>()
 
 export function getCachedSettingsForSource(
@@ -33,11 +33,11 @@ export function setCachedSettingsForSource(
   perSourceCache.set(source, value)
 }
 
-/**
+/*    *
  * Path-keyed cache for parseSettingsFile. Both getSettingsForSource and
  * loadSettingsFromDisk call parseSettingsFile on the same paths during
  * startup — this dedupes the disk read + zod parse.
- */
+     */
 type ParsedSettings = {
   settings: SettingsJson | null
   errors: ValidationError[]
@@ -58,11 +58,11 @@ export function resetSettingsCache(): void {
   parseFileCache.clear()
 }
 
-/**
+/*    *
  * Plugin settings base layer for the settings cascade.
  * pluginLoader writes here after loading plugins;
  * loadSettingsFromDisk reads it as the lowest-priority base.
- */
+     */
 let pluginSettingsBase: Record<string, unknown> | undefined
 
 export function getPluginSettingsBase(): Record<string, unknown> | undefined {

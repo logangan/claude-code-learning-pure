@@ -1,4 +1,4 @@
-/**
+/*    *
  * Tiny listener-set primitive for pure event signals (no stored state).
  *
  * Collapses the ~8-line `const listeners = new Set(); function subscribe(){…};
@@ -13,14 +13,14 @@
  *   const changed = createSignal<[SettingSource]>()
  *   export const subscribe = changed.subscribe
  *   // later: changed.emit('userSettings')
- */
+     */
 
 export type Signal<Args extends unknown[] = []> = {
-  /** Subscribe a listener. Returns an unsubscribe function. */
+  /*    * Subscribe a listener. Returns an unsubscribe function.     */
   subscribe: (listener: (...args: Args) => void) => () => void
-  /** Call all subscribed listeners with the given arguments. */
+  /*    * Call all subscribed listeners with the given arguments.     */
   emit: (...args: Args) => void
-  /** Remove all listeners. Useful in dispose/reset paths. */
+  /*    * Remove all listeners. Useful in dispose/reset paths.     */
   clear: () => void
 }
 

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Built-in terminal panel toggled with Meta+J.
  *
  * Uses tmux for shell persistence: a separate tmux server with a per-instance
@@ -13,7 +13,7 @@
  * When tmux is not available, falls back to a non-persistent shell via spawnSync.
  *
  * Uses the same suspend-Ink pattern as the external editor (promptEditor.ts).
- */
+     */
 
 import { spawn, spawnSync } from 'child_process'
 import { getSessionId } from '../bootstrap/state.js'
@@ -24,11 +24,11 @@ import { logForDebugging } from './debug.js'
 
 const TMUX_SESSION = 'panel'
 
-/**
+/*    *
  * Get the tmux socket name for the terminal panel.
  * Uses a unique socket per Claude Code instance (based on session ID)
  * so that each instance has its own isolated terminal panel.
- */
+     */
 export function getTerminalPanelSocket(): string {
   // Use first 8 chars of session UUID for uniqueness while keeping name short
   const sessionId = getSessionId()
@@ -37,9 +37,9 @@ export function getTerminalPanelSocket(): string {
 
 let instance: TerminalPanel | undefined
 
-/**
+/*    *
  * Return the singleton TerminalPanel, creating it lazily on first use.
- */
+     */
 export function getTerminalPanel(): TerminalPanel {
   if (!instance) {
     instance = new TerminalPanel()
@@ -172,13 +172,13 @@ class TerminalPanel {
 
   // ── helpers ───────────────────────────────────────────────────────
 
-  /** Ensure a tmux session exists, creating one if needed. */
+  /*    * Ensure a tmux session exists, creating one if needed.     */
   private ensureSession(): boolean {
     if (this.hasSession()) return true
     return this.createSession()
   }
 
-  /** Fallback when tmux is not available — runs a non-persistent shell. */
+  /*    * Fallback when tmux is not available — runs a non-persistent shell.     */
   private runShellDirect(): void {
     const shell = process.env.SHELL || '/bin/bash'
     const cwd = pwd()

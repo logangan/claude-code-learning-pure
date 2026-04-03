@@ -11,7 +11,7 @@ export type EnvironmentSelectionInfo = {
   selectedEnvironmentSource: SettingSource | null
 }
 
-/**
+/*    *
  * Gets information about available environments and the currently selected one.
  *
  * @returns Promise<EnvironmentSelectionInfo> containing:
@@ -20,7 +20,7 @@ export type EnvironmentSelectionInfo = {
  *     or null if no environments are available
  *   - selectedEnvironmentSource: the SettingSource where defaultEnvironmentId is configured,
  *     or null if using the default (first environment)
- */
+     */
 export async function getEnvironmentSelectionInfo(): Promise<EnvironmentSelectionInfo> {
   // Fetch available environments
   const environments = await fetchEnvironments()

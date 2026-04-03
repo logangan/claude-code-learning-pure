@@ -14,9 +14,9 @@ type ProcessQueueResult = {
   processed: boolean
 }
 
-/**
+/*    *
  * Check if a queued command is a slash command (value starts with '/').
- */
+     */
 function isSlashCommand(cmd: QueuedCommand): boolean {
   if (typeof cmd.value === 'string') {
     return cmd.value.trim().startsWith('/')
@@ -30,7 +30,7 @@ function isSlashCommand(cmd: QueuedCommand): boolean {
   return false
 }
 
-/**
+/*    *
  * Processes commands from the queue.
  *
  * Slash commands (starting with '/') and bash-mode commands are processed
@@ -48,7 +48,7 @@ function isSlashCommand(cmd: QueuedCommand): boolean {
  * until the queue is empty.
  *
  * @returns result with processed status
- */
+     */
 export function processQueueIfReady({
   executeInput,
 }: ProcessQueueParams): ProcessQueueResult {
@@ -86,10 +86,10 @@ export function processQueueIfReady({
   return { processed: true }
 }
 
-/**
+/*    *
  * Checks if the queue has pending commands.
  * Use this to determine if queue processing should be triggered.
- */
+     */
 export function hasQueuedCommands(): boolean {
   return hasCommandsInQueue()
 }

@@ -3,7 +3,7 @@ import { homedir } from 'os'
 import { join } from 'path'
 import { isFsInaccessible } from '../errors.js'
 
-export const CHROME_EXTENSION_URL = 'https://claude.ai/chrome'
+export const CHROME_EXTENSION_URL = 'https:// claude.ai/chrome'
 
 // Production extension ID
 const PROD_EXTENSION_ID = 'fcoeoabgfenejglbffodgkkbkcdhcgfn'
@@ -90,10 +90,10 @@ const CHROMIUM_BROWSERS: Record<ChromiumBrowser, BrowserDataConfig> = {
   },
 }
 
-/**
+/*    *
  * Get all browser data paths to check for extension installation.
  * Portable version that uses process.platform directly.
- */
+     */
 export function getAllBrowserDataPathsPortable(): BrowserPath[] {
   const home = homedir()
   const paths: BrowserPath[] = []
@@ -134,7 +134,7 @@ export function getAllBrowserDataPathsPortable(): BrowserPath[] {
   return paths
 }
 
-/**
+/*    *
  * Detects if the Claude in Chrome extension is installed by checking the Extensions
  * directory across all supported Chromium-based browsers and their profiles.
  *
@@ -143,7 +143,7 @@ export function getAllBrowserDataPathsPortable(): BrowserPath[] {
  * @param browserPaths - Array of browser data paths to check (from getAllBrowserDataPaths)
  * @param log - Optional logging callback for debug messages
  * @returns Object with isInstalled boolean and the browser where the extension was found
- */
+     */
 export async function detectExtensionInstallationPortable(
   browserPaths: BrowserPath[],
   log?: Logger,
@@ -212,9 +212,9 @@ export async function detectExtensionInstallationPortable(
   return { isInstalled: false, browser: null }
 }
 
-/**
+/*    *
  * Simple wrapper that returns just the boolean result
- */
+     */
 export async function isChromeExtensionInstalledPortable(
   browserPaths: BrowserPath[],
   log?: Logger,
@@ -223,10 +223,10 @@ export async function isChromeExtensionInstalledPortable(
   return result.isInstalled
 }
 
-/**
+/*    *
  * Convenience function that gets browser paths automatically.
  * Use this when you don't need to provide custom browser paths.
- */
+     */
 export function isChromeExtensionInstalled(log?: Logger): Promise<boolean> {
   const browserPaths = getAllBrowserDataPathsPortable()
   return isChromeExtensionInstalledPortable(browserPaths, log)

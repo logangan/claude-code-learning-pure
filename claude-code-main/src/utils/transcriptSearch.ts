@@ -16,11 +16,11 @@ const RENDERED_AS_SENTINEL = new Set([
 
 const searchTextCache = new WeakMap<RenderableMessage, string>()
 
-/** Flatten a RenderableMessage to lowercased searchable text. WeakMap-
+/*    * Flatten a RenderableMessage to lowercased searchable text. WeakMap-
  *  cached — messages are append-only and immutable so a hit is always
  *  valid. Lowercased at cache time: the only caller immediately
  *  .toLowerCase()d the result, re-lowering ~1.5MB on every keystroke
- *  (the backspace hang). Returns '' for non-searchable types. */
+ *  (the backspace hang). Returns '' for non-searchable types.     */
 export function renderableSearchText(msg: RenderableMessage): string {
   const cached = searchTextCache.get(msg)
   if (cached !== undefined) return cached
@@ -50,8 +50,7 @@ function computeSearchText(msg: RenderableMessage): string {
             // renderToolResultMessage — DIFFERENT text. Indexing b.content
             // yields phantoms: /malware → matches the reminder, /background
             // → matches the model-only ID string, none render.
-            //
-            // Duck-type the native Out instead. Covers the common shapes:
+            // // Duck-type the native Out instead. Covers the common shapes:
             // Bash {stdout,stderr}, Grep {content,filenames}, Read
             // {file.content}. Unknown shapes index empty — under-count is
             // honest, phantom is a lie. Proper fix is per-tool
@@ -127,10 +126,10 @@ function computeSearchText(msg: RenderableMessage): string {
   return t
 }
 
-/** Tool invocation display: renderToolUseMessage shows input fields like
+/*    * Tool invocation display: renderToolUseMessage shows input fields like
  *  command (Bash), pattern (Grep), file_path (Read/Edit), prompt (Agent).
  *  Same duck-type strategy as toolResultSearchText — known field names,
- *  unknown → empty. Under-count > phantom. */
+ *  unknown → empty. Under-count > phantom.     */
 export function toolUseSearchText(input: unknown): string {
   if (!input || typeof input !== 'object') return ''
   const o = input as Record<string, unknown>
@@ -163,11 +162,11 @@ export function toolUseSearchText(input: unknown): string {
   return parts.join('\n')
 }
 
-/** Duck-type the tool's native Out for searchable text. Known shapes:
+/*    * Duck-type the tool's native Out for searchable text. Known shapes:
  *  {stdout,stderr} (Bash/Shell), {content} (Grep), {file:{content}} (Read),
  *  {filenames:[]} (Grep/Glob), {output} (generic). Falls back to concating
  *  all top-level string fields — crude but better than indexing model-chatter.
- *  Empty for unknown shapes: under-count > phantom. */
+ *  Empty for unknown shapes: under-count > phantom.     */
 export function toolResultSearchText(r: unknown): string {
   if (!r || typeof r !== 'object') return typeof r === 'string' ? r : ''
   const o = r as Record<string, unknown>

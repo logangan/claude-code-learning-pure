@@ -19,10 +19,10 @@ const CLI_SYSPROMPT_PREFIX_VALUES = [
 
 export type CLISyspromptPrefix = (typeof CLI_SYSPROMPT_PREFIX_VALUES)[number]
 
-/**
+/*    *
  * All possible CLI sysprompt prefix values, used by splitSysPromptPrefix
  * to identify prefix blocks by content rather than position.
- */
+     */
 export const CLI_SYSPROMPT_PREFIXES: ReadonlySet<string> = new Set(
   CLI_SYSPROMPT_PREFIX_VALUES,
 )
@@ -45,10 +45,10 @@ export function getCLISyspromptPrefix(options?: {
   return DEFAULT_PREFIX
 }
 
-/**
+/*    *
  * Check if attribution header is enabled.
  * Enabled by default, can be disabled via env var or GrowthBook killswitch.
- */
+     */
 function isAttributionHeaderEnabled(): boolean {
   if (isEnvDefinedFalsy(process.env.CLAUDE_CODE_ATTRIBUTION_HEADER)) {
     return false
@@ -56,7 +56,7 @@ function isAttributionHeaderEnabled(): boolean {
   return getFeatureValue_CACHED_MAY_BE_STALE('tengu_attribution_header', true)
 }
 
-/**
+/*    *
  * Get attribution header for API requests.
  * Returns a header string with cc_version (including fingerprint) and cc_entrypoint.
  * Enabled by default, can be disabled via env var or GrowthBook killswitch.
@@ -69,7 +69,7 @@ function isAttributionHeaderEnabled(): boolean {
  *
  * We use a placeholder (instead of injecting from Zig) because same-length
  * replacement avoids Content-Length changes and buffer reallocation.
- */
+     */
 export function getAttributionHeader(fingerprint: string): string {
   if (!isAttributionHeaderEnabled()) {
     return ''

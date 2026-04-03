@@ -7,7 +7,7 @@ type TerminalEventInit = {
   cancelable?: boolean
 }
 
-/**
+/*    *
  * Base class for all terminal events with DOM-style propagation.
  *
  * Extends Event so existing event types (ClickEvent, InputEvent,
@@ -15,7 +15,7 @@ type TerminalEventInit = {
  *
  * Mirrors the browser's Event API: target, currentTarget, eventPhase,
  * stopPropagation(), preventDefault(), timeStamp.
- */
+     */
 export class TerminalEvent extends Event {
   readonly type: string
   readonly timeStamp: number
@@ -69,35 +69,35 @@ export class TerminalEvent extends Event {
 
   // -- Internal setters used by the Dispatcher
 
-  /** @internal */
+  /*    * @internal     */
   _setTarget(target: EventTarget): void {
     this._target = target
   }
 
-  /** @internal */
+  /*    * @internal     */
   _setCurrentTarget(target: EventTarget | null): void {
     this._currentTarget = target
   }
 
-  /** @internal */
+  /*    * @internal     */
   _setEventPhase(phase: EventPhase): void {
     this._eventPhase = phase
   }
 
-  /** @internal */
+  /*    * @internal     */
   _isPropagationStopped(): boolean {
     return this._propagationStopped
   }
 
-  /** @internal */
+  /*    * @internal     */
   _isImmediatePropagationStopped(): boolean {
     return this.didStopImmediatePropagation()
   }
 
-  /**
+  /*    *
    * Hook for subclasses to do per-node setup before each handler fires.
    * Default is a no-op.
-   */
+       */
   _prepareForTarget(_target: EventTarget): void {}
 }
 

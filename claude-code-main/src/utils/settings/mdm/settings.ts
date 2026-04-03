@@ -1,4 +1,4 @@
-/**
+/*    *
  * MDM (Mobile Device Management) profile enforcement for Claude Code managed settings.
  *
  * Reads enterprise settings from OS-level MDM configuration:
@@ -16,7 +16,7 @@
  *   constants.ts — shared constants and plist path builder (zero heavy imports)
  *   rawRead.ts   — subprocess I/O only (zero heavy imports, fires at main.tsx evaluation)
  *   settings.ts  — parsing, caching, first-source-wins logic (this file)
- */
+     */
 
 import { join } from 'path'
 import { logForDebugging } from '../../debug.js'
@@ -60,10 +60,10 @@ let mdmLoadPromise: Promise<void> | null = null
 // Startup load — fires early, awaited before first settings read
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Kick off async MDM/HKCU reads. Call this as early as possible in
  * startup so the subprocess runs in parallel with module loading.
- */
+     */
 export function startMdmSettingsLoad(): void {
   if (mdmLoadPromise) return
   mdmLoadPromise = (async () => {
@@ -97,10 +97,10 @@ export function startMdmSettingsLoad(): void {
   })()
 }
 
-/**
+/*    *
  * Await the in-flight MDM load. Call this before the first settings read.
  * If startMdmSettingsLoad() was called early enough, this resolves immediately.
- */
+     */
 export async function ensureMdmSettingsLoaded(): Promise<void> {
   if (!mdmLoadPromise) {
     startMdmSettingsLoad()
@@ -112,7 +112,7 @@ export async function ensureMdmSettingsLoaded(): Promise<void> {
 // Sync cache readers — used by the settings pipeline (loadSettingsFromDisk)
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Read admin-controlled MDM settings from the session cache.
  *
  * Returns settings from admin-only sources:
@@ -120,15 +120,15 @@ export async function ensureMdmSettingsLoaded(): Promise<void> {
  * - Windows: HKLM registry (requires admin)
  *
  * Does NOT include HKCU (user-writable) — use getHkcuSettings() for that.
- */
+     */
 export function getMdmSettings(): MdmResult {
   return mdmCache ?? EMPTY_RESULT
 }
 
-/**
+/*    *
  * Read HKCU registry settings (user-writable, lowest policy priority).
  * Only relevant on Windows — returns empty on other platforms.
- */
+     */
 export function getHkcuSettings(): MdmResult {
   return hkcuCache ?? EMPTY_RESULT
 }
@@ -137,18 +137,18 @@ export function getHkcuSettings(): MdmResult {
 // Cache management
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Clear the MDM and HKCU settings caches, forcing a fresh read on next load.
- */
+     */
 export function clearMdmSettingsCache(): void {
   mdmCache = null
   hkcuCache = null
   mdmLoadPromise = null
 }
 
-/**
+/*    *
  * Update the session caches directly. Used by the change detector poll.
- */
+     */
 export function setMdmSettingsCache(mdm: MdmResult, hkcu: MdmResult): void {
   mdmCache = mdm
   hkcuCache = hkcu
@@ -159,10 +159,10 @@ export function setMdmSettingsCache(mdm: MdmResult, hkcu: MdmResult): void {
 // Used by the 30-minute poll in changeDetector.ts.
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Fire a fresh MDM subprocess read and parse the results.
  * Does NOT update the cache — caller decides whether to apply.
- */
+     */
 export async function refreshMdmSettings(): Promise<{
   mdm: MdmResult
   hkcu: MdmResult
@@ -175,11 +175,11 @@ export async function refreshMdmSettings(): Promise<{
 // Parsing — converts raw subprocess output to validated MdmResult
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Parse JSON command output (plutil stdout or registry JSON value) into SettingsJson.
  * Filters invalid permission rules before schema validation so one bad rule
  * doesn't cause the entire MDM settings to be rejected.
- */
+     */
 export function parseCommandOutputAsSettings(
   stdout: string,
   sourcePath: string,
@@ -198,13 +198,13 @@ export function parseCommandOutputAsSettings(
   return { settings: parseResult.data, errors: ruleWarnings }
 }
 
-/**
+/*    *
  * Parse reg query stdout to extract a registry string value.
  * Matches both REG_SZ and REG_EXPAND_SZ, case-insensitive.
  *
  * Expected format:
  *     Settings    REG_SZ    {"json":"value"}
- */
+     */
 export function parseRegQueryStdout(
   stdout: string,
   valueName = 'Settings',
@@ -221,10 +221,10 @@ export function parseRegQueryStdout(
   return null
 }
 
-/**
+/*    *
  * Convert raw subprocess output into parsed MDM and HKCU results,
  * applying the first-source-wins policy.
- */
+     */
 function consumeRawReadResult(raw: RawReadResult): {
   mdm: MdmResult
   hkcu: MdmResult
@@ -272,11 +272,11 @@ function consumeRawReadResult(raw: RawReadResult): {
   return { mdm: EMPTY_RESULT, hkcu: EMPTY_RESULT }
 }
 
-/**
+/*    *
  * Check if file-based managed settings (managed-settings.json or any
  * managed-settings.d/*.json) exist and have content. Cheap sync check
  * used to skip HKCU when a higher-priority file-based source exists.
- */
+     */
 function hasManagedSettingsFile(): boolean {
   try {
     const filePath = join(getManagedFilePath(), 'managed-settings.json')

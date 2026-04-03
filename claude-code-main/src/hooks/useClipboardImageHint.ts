@@ -9,13 +9,13 @@ const FOCUS_CHECK_DEBOUNCE_MS = 1000
 // Don't show the hint more than once per this interval
 const HINT_COOLDOWN_MS = 30000
 
-/**
+/*    *
  * Hook that shows a notification when the terminal regains focus
  * and the clipboard contains an image.
  *
  * @param isFocused - Whether the terminal is currently focused
  * @param enabled - Whether image paste is enabled (onImagePaste is defined)
- */
+     */
 export function useClipboardImageHint(
   isFocused: boolean,
   enabled: boolean,

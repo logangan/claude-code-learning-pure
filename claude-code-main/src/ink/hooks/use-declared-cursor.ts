@@ -2,7 +2,7 @@ import { useCallback, useContext, useLayoutEffect, useRef } from 'react'
 import CursorDeclarationContext from '../components/CursorDeclarationContext.js'
 import type { DOMElement } from '../dom.js'
 
-/**
+/*    *
  * Declares where the terminal cursor should be parked after each frame.
  *
  * Terminal emulators render IME preedit text at the physical cursor
@@ -21,7 +21,7 @@ import type { DOMElement } from '../dom.js'
  * (no one-keystroke lag). Test env uses onImmediateRender (synchronous,
  * no microtask), so tests compensate by calling ink.onRender()
  * explicitly after render.
- */
+     */
 export function useDeclaredCursor({
   line,
   column,
@@ -41,13 +41,13 @@ export function useDeclaredCursor({
   // When active, set unconditionally. When inactive, clear conditionally
   // (only if the currently-declared node is ours). The node-identity check
   // handles two hazards:
-  //   1. A memo()ized active instance elsewhere (e.g. the search input in
-  //      a memo'd Footer) doesn't re-render this commit — an inactive
-  //      instance re-rendering here must not clobber it.
-  //   2. Sibling handoff (menu focus moving between list items) — when
-  //      focus moves opposite to sibling order, the newly-inactive item's
-  //      effect runs AFTER the newly-active item's set. Without the node
-  //      check it would clobber.
+  // 1. A memo()ized active instance elsewhere (e.g. the search input in
+  // a memo'd Footer) doesn't re-render this commit — an inactive
+  // instance re-rendering here must not clobber it.
+  // 2. Sibling handoff (menu focus moving between list items) — when
+  // focus moves opposite to sibling order, the newly-inactive item's
+  // effect runs AFTER the newly-active item's set. Without the node
+  // check it would clobber.
   // No dep array: must re-declare every commit so the active instance
   // re-claims the declaration after another instance's unmount-cleanup or
   // sibling handoff nulls it.

@@ -26,10 +26,10 @@ function normalizeUrl(url: string): string | undefined {
   }
 }
 
-/**
+/*    *
  * Fire-and-forget fetch of the official MCP registry.
  * Populates officialUrls for isOfficialMcpUrl lookups.
- */
+     */
 export async function prefetchOfficialMcpUrls(): Promise<void> {
   if (process.env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC) {
     return
@@ -37,7 +37,7 @@ export async function prefetchOfficialMcpUrls(): Promise<void> {
 
   try {
     const response = await axios.get<RegistryResponse>(
-      'https://api.anthropic.com/mcp-registry/v0/servers?version=latest&visibility=commercial',
+      'https:// api.anthropic.com/mcp-registry/v0/servers?version=latest&visibility=commercial',
       { timeout: 5000 },
     )
 
@@ -59,10 +59,10 @@ export async function prefetchOfficialMcpUrls(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Returns true iff the given (already-normalized via getLoggingSafeMcpBaseUrl)
  * URL is in the official MCP registry. Undefined registry → false (fail-closed).
- */
+     */
 export function isOfficialMcpUrl(normalizedUrl: string): boolean {
   return officialUrls?.has(normalizedUrl) ?? false
 }

@@ -46,12 +46,12 @@ export function hasRules(updates: PermissionUpdate[] | undefined): boolean {
   return extractRules(updates).length > 0
 }
 
-/**
+/*    *
  * Applies a single permission update to the context and returns the updated context
  * @param context The current permission context
  * @param update The permission update to apply
  * @returns The updated permission context
- */
+     */
 export function applyPermissionUpdate(
   context: ToolPermissionContext,
   update: PermissionUpdate,
@@ -187,12 +187,12 @@ export function applyPermissionUpdate(
   }
 }
 
-/**
+/*    *
  * Applies multiple permission updates to the context and returns the updated context
  * @param context The current permission context
  * @param updates The permission updates to apply
  * @returns The updated permission context
- */
+     */
 export function applyPermissionUpdates(
   context: ToolPermissionContext,
   updates: PermissionUpdate[],
@@ -215,10 +215,10 @@ export function supportsPersistence(
   )
 }
 
-/**
+/*    *
  * Persists a permission update to the appropriate settings source
  * @param update The permission update to persist
- */
+     */
 export function persistPermissionUpdate(update: PermissionUpdate): void {
   if (!supportsPersistence(update.destination)) return
 
@@ -341,23 +341,23 @@ export function persistPermissionUpdate(update: PermissionUpdate): void {
   }
 }
 
-/**
+/*    *
  * Persists multiple permission updates to the appropriate settings sources
  * Only persists updates with persistable sources
  * @param updates The permission updates to persist
- */
+     */
 export function persistPermissionUpdates(updates: PermissionUpdate[]): void {
   for (const update of updates) {
     persistPermissionUpdate(update)
   }
 }
 
-/**
+/*    *
  * Creates a Read rule suggestion for a directory.
  * @param dirPath The directory path to create a rule for
  * @param destination The destination for the permission rule (defaults to 'session')
  * @returns A PermissionUpdate for a Read rule, or undefined for the root directory
- */
+     */
 export function createReadRuleSuggestion(
   dirPath: string,
   destination: PermissionUpdateDestination = 'session',

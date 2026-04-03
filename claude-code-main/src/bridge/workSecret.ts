@@ -2,7 +2,7 @@ import axios from 'axios'
 import { jsonParse, jsonStringify } from '../utils/slowOperations.js'
 import type { WorkSecret } from './types.js'
 
-/** Decode a base64url-encoded work secret and validate its version. */
+/*    * Decode a base64url-encoded work secret and validate its version.     */
 export function decodeWorkSecret(secret: string): WorkSecret {
   const json = Buffer.from(secret, 'base64url').toString('utf-8')
   const parsed: unknown = jsonParse(json)
@@ -31,23 +31,23 @@ export function decodeWorkSecret(secret: string): WorkSecret {
   return parsed as WorkSecret
 }
 
-/**
+/*    *
  * Build a WebSocket SDK URL from the API base URL and session ID.
  * Strips the HTTP(S) protocol and constructs a ws(s):// ingress URL.
  *
  * Uses /v2/ for localhost (direct to session-ingress, no Envoy rewrite)
  * and /v1/ for production (Envoy rewrites /v1/ → /v2/).
- */
+     */
 export function buildSdkUrl(apiBaseUrl: string, sessionId: string): string {
   const isLocalhost =
     apiBaseUrl.includes('localhost') || apiBaseUrl.includes('127.0.0.1')
   const protocol = isLocalhost ? 'ws' : 'wss'
   const version = isLocalhost ? 'v2' : 'v1'
-  const host = apiBaseUrl.replace(/^https?:\/\//, '').replace(/\/+$/, '')
-  return `${protocol}://${host}/${version}/session_ingress/ws/${sessionId}`
+  const host = apiBaseUrl.replace(/^https?:\/\// , '').replace(/\/+$/, '')
+  return `${protocol}:// ${host}/${version}/session_ingress/ws/${sessionId}`
 }
 
-/**
+/*    *
  * Compare two session IDs regardless of their tagged-ID prefix.
  *
  * Tagged IDs have the form {tag}_{body} or {tag}_staging_{body}, where the
@@ -58,7 +58,7 @@ export function buildSdkUrl(apiBaseUrl: string, sessionId: string): string {
  *
  * Without this, replBridge rejects its own session as "foreign" at the
  * work-received check when the ccr_v2_compat_enabled gate is on.
- */
+     */
 export function sameSessionId(a: string, b: string): boolean {
   if (a === b) return true
   // The body is everything after the last underscore — this handles both
@@ -72,12 +72,12 @@ export function sameSessionId(a: string, b: string): boolean {
   return aBody.length >= 4 && aBody === bBody
 }
 
-/**
+/*    *
  * Build a CCR v2 session URL from the API base URL and session ID.
- * Unlike buildSdkUrl, this returns an HTTP(S) URL (not ws://) and points at
+ * Unlike buildSdkUrl, this returns an HTTP(S) URL (not ws:// ) and points at
  * /v1/code/sessions/{id} — the child CC will derive the SSE stream path
  * and worker endpoints from this base.
- */
+     */
 export function buildCCRv2SdkUrl(
   apiBaseUrl: string,
   sessionId: string,
@@ -86,14 +86,14 @@ export function buildCCRv2SdkUrl(
   return `${base}/v1/code/sessions/${sessionId}`
 }
 
-/**
+/*    *
  * Register this bridge as the worker for a CCR v2 session.
  * Returns the worker_epoch, which must be passed to the child CC process
  * so its CCRClient can include it in every heartbeat/state/event request.
  *
  * Mirrors what environment-manager does in the container path
  * (api-go/environment-manager/cmd/cmd_task_run.go RegisterWorker).
- */
+     */
 export async function registerWorker(
   sessionUrl: string,
   accessToken: string,

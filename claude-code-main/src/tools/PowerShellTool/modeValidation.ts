@@ -1,10 +1,10 @@
-/**
+/*    *
  * PowerShell permission mode validation.
  *
  * Checks if commands should be auto-allowed based on the current permission mode.
  * In acceptEdits mode, filesystem-modifying PowerShell cmdlets are auto-allowed.
  * Follows the same patterns as BashTool/modeValidation.ts.
- */
+     */
 
 import type { ToolPermissionContext } from '../../Tool.js'
 import type { PermissionResult } from '../../utils/permissions/PermissionResult.js'
@@ -22,14 +22,14 @@ import {
   resolveToCanonical,
 } from './readOnlyValidation.js'
 
-/**
+/*    *
  * Filesystem-modifying cmdlets that are auto-allowed in acceptEdits mode.
  * Stored as canonical (lowercase) cmdlet names.
  *
  * Tier 3 cmdlets with complex parameter binding removed — they fall through to
  * 'ask'. Only simple write cmdlets (first positional = -Path) are auto-allowed
  * here, and they get path validation via CMDLET_PATH_CONFIG in pathValidation.ts.
- */
+     */
 const ACCEPT_EDITS_ALLOWED_CMDLETS = new Set([
   'set-content',
   'add-content',
@@ -46,21 +46,21 @@ function isAcceptEditsAllowedCmdlet(name: string): boolean {
   return ACCEPT_EDITS_ALLOWED_CMDLETS.has(canonical)
 }
 
-/**
+/*    *
  * New-Item -ItemType values that create filesystem links (reparse points or
  * hard links). All three redirect path resolution at runtime — symbolic links
  * and junctions are directory/file reparse points; hard links alias a file's
  * inode. Any of these let a later relative-path write land outside the
  * validator's view.
- */
+     */
 const LINK_ITEM_TYPES = new Set(['symboliclink', 'junction', 'hardlink'])
 
-/**
+/*    *
  * Check if a lowered, dash-normalized arg (colon-value stripped) is an
  * unambiguous PowerShell abbreviation of New-Item's -ItemType or -Type param.
  * Min prefixes: `-it` (avoids ambiguity with other New-Item params), `-ty`
  * (avoids `-t` colliding with `-Target`).
- */
+     */
 function isItemTypeParamAbbrev(p: string): boolean {
   return (
     (p.length >= 3 && '-itemtype'.startsWith(p)) ||
@@ -68,7 +68,7 @@ function isItemTypeParamAbbrev(p: string): boolean {
   )
 }
 
-/**
+/*    *
  * Detects New-Item creating a filesystem link (-ItemType SymbolicLink /
  * Junction / HardLink, or the -Type alias). Links poison subsequent path
  * resolution the same way Set-Location/New-PSDrive do: a relative path
@@ -78,7 +78,7 @@ function isItemTypeParamAbbrev(p: string): boolean {
  * Handles PS parameter abbreviation (`-it`, `-ite`, ... `-itemtype`; `-ty`,
  * `-typ`, `-type`), unicode dash prefixes (en-dash/em-dash/horizontal-bar),
  * and colon-bound values (`-it:Junction`).
- */
+     */
 export function isSymlinkCreatingCommand(cmd: {
   name: string
   args: string[]
@@ -116,7 +116,7 @@ export function isSymlinkCreatingCommand(cmd: {
   return false
 }
 
-/**
+/*    *
  * Checks if commands should be handled differently based on the current permission mode.
  *
  * In acceptEdits mode, auto-allows filesystem-modifying PowerShell cmdlets.
@@ -128,7 +128,7 @@ export function isSymlinkCreatingCommand(cmd: {
  * @returns
  * - 'allow' if the current mode permits auto-approval
  * - 'passthrough' if no mode-specific handling applies
- */
+     */
 export function checkPermissionMode(
   input: { command: string },
   parsed: ParsedPowerShellCommand,
@@ -245,22 +245,19 @@ export function checkPermissionMode(
     for (const cmd of segment.commands) {
       if (cmd.elementType !== 'CommandAst') {
         // SECURITY: This guard is load-bearing for THREE cases. Do not narrow it.
-        //
-        // 1. Expression pipeline sources (designed): '/etc/passwd' | Remove-Item
-        //    — the string literal is CommandExpressionAst, piped value binds to
-        //    -Path. We cannot statically know what path it represents.
-        //
-        // 2. Control-flow statements (accidental but relied upon):
-        //    foreach ($x in ...) { Remove-Item $x }. Non-PipelineAst statements
-        //    produce a synthetic CommandExpressionAst entry in segment.commands
-        //    (parser.ts transformStatement). Without this guard, Remove-Item $x
-        //    in nestedCommands would be checked below and auto-allowed — but $x
-        //    is a loop-bound variable we cannot validate.
-        //
-        // 3. Non-PipelineAst redirection coverage (accidental): cmd && cmd2 > /tmp
-        //    also produces a synthetic element here. isReadOnlyCommand relies on
-        //    the same accident (its allowlist rejects the synthetic element's
-        //    full-text name), so both paths fail safe together.
+        // // 1. Expression pipeline sources (designed): '/etc/passwd' | Remove-Item
+        // — the string literal is CommandExpressionAst, piped value binds to
+        // -Path. We cannot statically know what path it represents.
+        // // 2. Control-flow statements (accidental but relied upon):
+        // foreach ($x in ...) { Remove-Item $x }. Non-PipelineAst statements
+        // produce a synthetic CommandExpressionAst entry in segment.commands
+        // (parser.ts transformStatement). Without this guard, Remove-Item $x
+        // in nestedCommands would be checked below and auto-allowed — but $x
+        // is a loop-bound variable we cannot validate.
+        // // 3. Non-PipelineAst redirection coverage (accidental): cmd && cmd2 > /tmp
+        // also produces a synthetic element here. isReadOnlyCommand relies on
+        // the same accident (its allowlist rejects the synthetic element's
+        // full-text name), so both paths fail safe together.
         return {
           behavior: 'passthrough',
           message: `Pipeline contains expression source (${cmd.elementType}) that cannot be statically validated`,
@@ -279,21 +276,20 @@ export function checkPermissionMode(
       // SECURITY: elementTypes whitelist — same as isAllowlistedCommand.
       // deriveSecurityFlags above checks hasSubExpressions/etc. but does NOT
       // flag bare Variable/Other elementTypes. `Remove-Item $env:PATH`:
-      //   elementTypes = ['StringConstant', 'Variable']
-      //   deriveSecurityFlags: no subexpression → passes
-      //   checkPathConstraints: resolves literal text '$env:PATH' as relative
-      //     path → cwd/$env:PATH → inside cwd → allow
-      //   RUNTIME: PowerShell expands $env:PATH → deletes actual env value path
+      // elementTypes = ['StringConstant', 'Variable']
+      // deriveSecurityFlags: no subexpression → passes
+      // checkPathConstraints: resolves literal text '$env:PATH' as relative
+      // path → cwd/$env:PATH → inside cwd → allow
+      // RUNTIME: PowerShell expands $env:PATH → deletes actual env value path
       // isAllowlistedCommand rejects non-StringConstant/Parameter; this is the
       // acceptEdits parity gate.
-      //
-      // Also check colon-bound expression metachars (same as isAllowlistedCommand's
+      // // Also check colon-bound expression metachars (same as isAllowlistedCommand's
       // colon-bound check). `Remove-Item -Path:(1 > /tmp/x)`:
-      //   elementTypes = ['StringConstant', 'Parameter'] — passes whitelist above
-      //   deriveSecurityFlags: ParenExpressionAst in .Argument not detected by
-      //     Get-SecurityPatterns (ParenExpressionAst not in FindAll filter)
-      //   checkPathConstraints: literal text '-Path:(1 > /tmp/x)' not a path
-      //   RUNTIME: paren evaluates, redirection writes /tmp/x → arbitrary write
+      // elementTypes = ['StringConstant', 'Parameter'] — passes whitelist above
+      // deriveSecurityFlags: ParenExpressionAst in .Argument not detected by
+      // Get-SecurityPatterns (ParenExpressionAst not in FindAll filter)
+      // checkPathConstraints: literal text '-Path:(1 > /tmp/x)' not a path
+      // RUNTIME: paren evaluates, redirection writes /tmp/x → arbitrary write
       if (cmd.elementTypes) {
         for (let i = 1; i < cmd.elementTypes.length; i++) {
           const t = cmd.elementTypes[i]

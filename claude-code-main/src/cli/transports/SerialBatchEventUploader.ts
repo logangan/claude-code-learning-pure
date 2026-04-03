@@ -1,6 +1,6 @@
 import { jsonStringify } from '../../utils/slowOperations.js'
 
-/**
+/*    *
  * Serial ordered event uploader with batching, retry, and backpressure.
  *
  * - enqueue() adds events to a pending buffer
@@ -12,9 +12,9 @@ import { jsonStringify } from '../../utils/slowOperations.js'
  *   in which case the failing batch is dropped and drain advances
  * - flush() blocks until pending is empty and kicks drain if needed
  * - Backpressure: enqueue() blocks when maxQueueSize is reached
- */
+     */
 
-/**
+/*    *
  * Throw from config.send() to make the uploader wait a server-supplied
  * duration before retrying (e.g. 429 with Retry-After). When retryAfterMs
  * is set, it overrides exponential backoff for that attempt — clamped to
@@ -22,7 +22,7 @@ import { jsonStringify } from '../../utils/slowOperations.js'
  * neither hot-loop nor stall the client, and many sessions sharing a rate
  * limit don't all pounce at the same instant. Without retryAfterMs, behaves
  * like any other thrown error (exponential backoff).
- */
+     */
 export class RetryableError extends Error {
   constructor(
     message: string,
@@ -33,31 +33,31 @@ export class RetryableError extends Error {
 }
 
 type SerialBatchEventUploaderConfig<T> = {
-  /** Max items per POST (1 = no batching) */
+  /*    * Max items per POST (1 = no batching)     */
   maxBatchSize: number
-  /**
+  /*    *
    * Max serialized bytes per POST. First item always goes in regardless of
    * size; subsequent items only if cumulative JSON bytes stay under this.
    * Undefined = no byte limit (count-only batching).
-   */
+       */
   maxBatchBytes?: number
-  /** Max pending items before enqueue() blocks */
+  /*    * Max pending items before enqueue() blocks     */
   maxQueueSize: number
-  /** The actual HTTP call — caller controls payload format */
+  /*    * The actual HTTP call — caller controls payload format     */
   send: (batch: T[]) => Promise<void>
-  /** Base delay for exponential backoff (ms) */
+  /*    * Base delay for exponential backoff (ms)     */
   baseDelayMs: number
-  /** Max delay cap (ms) */
+  /*    * Max delay cap (ms)     */
   maxDelayMs: number
-  /** Random jitter range added to retry delay (ms) */
+  /*    * Random jitter range added to retry delay (ms)     */
   jitterMs: number
-  /**
+  /*    *
    * After this many consecutive send() failures, drop the failing batch
    * and move on to the next pending item with a fresh failure budget.
    * Undefined = retry indefinitely (default).
-   */
+       */
   maxConsecutiveFailures?: number
-  /** Called when a batch is dropped for hitting maxConsecutiveFailures. */
+  /*    * Called when a batch is dropped for hitting maxConsecutiveFailures.     */
   onBatchDropped?: (batchSize: number, failures: number) => void
 }
 
@@ -76,28 +76,28 @@ export class SerialBatchEventUploader<T> {
     this.config = config
   }
 
-  /**
+  /*    *
    * Monotonic count of batches dropped via maxConsecutiveFailures. Callers
    * can snapshot before flush() and compare after to detect silent drops
    * (flush() resolves normally even when batches were dropped).
-   */
+       */
   get droppedBatchCount(): number {
     return this.droppedBatches
   }
 
-  /**
+  /*    *
    * Pending queue depth. After close(), returns the count at close time —
    * close() clears the queue but shutdown diagnostics may read this after.
-   */
+       */
   get pendingCount(): number {
     return this.closed ? this.pendingAtClose : this.pending.length
   }
 
-  /**
+  /*    *
    * Add events to the pending buffer. Returns immediately if space is
    * available. Blocks (awaits) if the buffer is full — caller pauses
    * until drain frees space.
-   */
+       */
   async enqueue(events: T | T[]): Promise<void> {
     if (this.closed) return
     const items = Array.isArray(events) ? events : [events]
@@ -118,10 +118,10 @@ export class SerialBatchEventUploader<T> {
     void this.drain()
   }
 
-  /**
+  /*    *
    * Block until all pending events have been sent.
    * Used at turn boundaries and graceful shutdown.
-   */
+       */
   flush(): Promise<void> {
     if (this.pending.length === 0 && !this.draining) {
       return Promise.resolve()
@@ -132,10 +132,10 @@ export class SerialBatchEventUploader<T> {
     })
   }
 
-  /**
+  /*    *
    * Drop pending events and stop processing.
    * Resolves any blocked enqueue() and flush() callers.
-   */
+       */
   close(): void {
     if (this.closed) return
     this.closed = true
@@ -149,10 +149,10 @@ export class SerialBatchEventUploader<T> {
     this.flushResolvers = []
   }
 
-  /**
+  /*    *
    * Drain loop. At most one instance runs at a time (guarded by this.draining).
    * Sends batches serially. On failure, backs off and retries indefinitely.
-   */
+       */
   private async drain(): Promise<void> {
     if (this.draining || this.closed) return
     this.draining = true
@@ -201,7 +201,7 @@ export class SerialBatchEventUploader<T> {
     }
   }
 
-  /**
+  /*    *
    * Pull the next batch from pending. Respects both maxBatchSize and
    * maxBatchBytes. The first item is always taken; subsequent items only
    * if adding them keeps the cumulative JSON size under maxBatchBytes.
@@ -209,7 +209,7 @@ export class SerialBatchEventUploader<T> {
    * Un-serializable items (BigInt, circular refs, throwing toJSON) are
    * dropped in place — they can never be sent and leaving them at
    * pending[0] would poison the queue and hang flush() forever.
-   */
+       */
   private takeBatch(): T[] {
     const { maxBatchSize, maxBatchBytes } = this.config
     if (maxBatchBytes === undefined) {

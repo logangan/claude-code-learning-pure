@@ -18,31 +18,31 @@ import {
   logEvent,
 } from '../analytics/index.js'
 
-/** Configuration for the waiting state shown after the user opens a URL. */
+/*    * Configuration for the waiting state shown after the user opens a URL.     */
 export type ElicitationWaitingState = {
-  /** Button label, e.g. "Retry now" or "Skip confirmation" */
+  /*    * Button label, e.g. "Retry now" or "Skip confirmation"     */
   actionLabel: string
-  /** Whether to show a visible Cancel button (e.g. for error-based retry flow) */
+  /*    * Whether to show a visible Cancel button (e.g. for error-based retry flow)     */
   showCancel?: boolean
 }
 
 export type ElicitationRequestEvent = {
   serverName: string
-  /** The JSON-RPC request ID, unique per server connection. */
+  /*    * The JSON-RPC request ID, unique per server connection.     */
   requestId: string | number
   params: ElicitRequestParams
   signal: AbortSignal
-  /**
+  /*    *
    * Resolves the elicitation. For explicit elicitations, all actions are
    * meaningful. For error-based retry (-32042), 'accept' is a no-op —
    * the retry is driven by onWaitingDismiss instead.
-   */
+       */
   respond: (response: ElicitResult) => void
-  /** For URL elicitations: shown after user opens the browser. */
+  /*    * For URL elicitations: shown after user opens the browser.     */
   waitingState?: ElicitationWaitingState
-  /** Called when phase 2 (waiting) is dismissed by user action or completion. */
+  /*    * Called when phase 2 (waiting) is dismissed by user action or completion.     */
   onWaitingDismiss?: (action: 'dismiss' | 'retry' | 'cancel') => void
-  /** Set to true by the completion notification handler when the server confirms completion. */
+  /*    * Set to true by the completion notification handler when the server confirms completion.     */
   completed?: boolean
 }
 
@@ -50,7 +50,7 @@ function getElicitationMode(params: ElicitRequestParams): 'form' | 'url' {
   return params.mode === 'url' ? 'url' : 'form'
 }
 
-/** Find a queued elicitation event by server name and elicitationId. */
+/*    * Find a queued elicitation event by server name and elicitationId.     */
 function findElicitationInQueue(
   queue: ElicitationRequestEvent[],
   serverName: string,
@@ -256,11 +256,11 @@ export async function runElicitationHooks(
   }
 }
 
-/**
+/*    *
  * Run ElicitationResult hooks after the user has responded, then fire a
  * `elicitation_response` notification. Returns a (potentially modified)
  * ElicitResult — hooks may override the action/content or block the response.
- */
+     */
 export async function runElicitationResultHooks(
   serverName: string,
   result: ElicitResult,

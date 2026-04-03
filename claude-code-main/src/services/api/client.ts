@@ -29,7 +29,7 @@ import {
   isEnvTruthy,
 } from '../../utils/envUtils.js'
 
-/**
+/*    *
  * Environment variables for different client types:
  *
  * Direct API:
@@ -42,15 +42,15 @@ import {
  *
  * Foundry (Azure):
  * - ANTHROPIC_FOUNDRY_RESOURCE: Your Azure resource name (e.g., 'my-resource')
- *   For the full endpoint: https://{resource}.services.ai.azure.com/anthropic/v1/messages
+ *   For the full endpoint: https:// {resource}.services.ai.azure.com/anthropic/v1/messages
  * - ANTHROPIC_FOUNDRY_BASE_URL: Optional. Alternative to resource - provide full base URL directly
- *   (e.g., 'https://my-resource.services.ai.azure.com')
+ *   (e.g., 'https:// my-resource.services.ai.azure.com')
  *
  * Authentication (one of the following):
  * - ANTHROPIC_FOUNDRY_API_KEY: Your Microsoft Foundry API key (if using API key auth)
  * - Azure AD authentication: If no API key is provided, uses DefaultAzureCredential
  *   which supports multiple auth methods (environment variables, managed identity,
- *   Azure CLI, etc.). See: https://docs.microsoft.com/en-us/javascript/api/@azure/identity
+ *   Azure CLI, etc.). See: https:// docs.microsoft.com/en-us/javascript/api/@azure/identity
  *
  * Vertex AI:
  * - Model-specific region variables (highest priority):
@@ -68,7 +68,7 @@ import {
  * 2. Global CLOUD_ML_REGION variable
  * 3. Default region from config
  * 4. Fallback region (us-east5)
- */
+     */
 
 function createStderrLogger(): ClientOptions['logger'] {
   return {
@@ -205,7 +205,7 @@ export async function getAnthropicClient({
         } = await import('@azure/identity')
         azureADTokenProvider = getBearerTokenProvider(
           new AzureCredential(),
-          'https://cognitiveservices.azure.com/.default',
+          'https:// cognitiveservices.azure.com/.default',
         )
       }
     }
@@ -244,8 +244,7 @@ export async function getAnthropicClient({
     // 2. Credential files (service account JSON, ADC file)
     // 3. gcloud config
     // 4. GCE metadata server (causes 12s timeout outside GCP)
-    //
-    // We only set projectId if user hasn't configured other discovery methods
+    // // We only set projectId if user hasn't configured other discovery methods
     // to avoid interfering with their existing auth setup
 
     // Check project environment variables in same order as google-auth-library
@@ -271,14 +270,13 @@ export async function getAnthropicClient({
           }),
         } as unknown as GoogleAuth)
       : new GoogleAuth({
-          scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+          scopes: ['https:// www.googleapis.com/auth/cloud-platform'],
           // Only use ANTHROPIC_VERTEX_PROJECT_ID as last resort fallback
           // This prevents the 12-second metadata server timeout when:
           // - No project env vars are set AND
           // - No credential keyfile is specified AND
           // - ADC file exists but lacks project_id field
-          //
-          // Risk: If auth project != API target project, this could cause billing/audit issues
+          // // Risk: If auth project != API target project, this could cause billing/audit issues
           // Mitigation: Users can set GOOGLE_CLOUD_PROJECT to override
           ...(hasProjectEnvVar || hasKeyFile
             ? {}

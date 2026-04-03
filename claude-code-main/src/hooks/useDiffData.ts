@@ -27,10 +27,10 @@ export type DiffData = {
   loading: boolean
 }
 
-/**
+/*    *
  * Hook to fetch current git diff data on demand.
  * Fetches both stats and hunks when component mounts.
- */
+     */
 export function useDiffData(): DiffData {
   const [diffResult, setDiffResult] = useState<GitDiffResult | null>(null)
   const [hunks, setHunks] = useState<Map<string, StructuredPatchHunk[]>>(

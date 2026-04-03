@@ -1,4 +1,4 @@
-/**
+/*    *
  * Shell-agnostic git operation tracking for usage metrics.
  *
  * Detects `git commit`, `git push`, `gh pr create`, `glab mr create`, and
@@ -6,7 +6,7 @@
  * and fires analytics events. The regexes operate on raw command text so they
  * work identically for Bash and PowerShell (both invoke git/gh/glab/curl as
  * external binaries with the same argv syntax).
- */
+     */
 
 import { getCommitCounter, getPrCounter } from '../../bootstrap/state.js'
 import {
@@ -14,12 +14,12 @@ import {
   logEvent,
 } from '../../services/analytics/index.js'
 
-/**
+/*    *
  * Build a regex that matches `git <subcmd>` while tolerating git's global
  * options between `git` and the subcommand (e.g. `-c key=val`, `-C path`,
  * `--git-dir=path`). Common when the model retries with
  * `git -c commit.gpgsign=false commit` after a signing failure.
- */
+     */
 function gitCmdRe(subcmd: string, suffix = ''): RegExp {
   return new RegExp(
     `\\bgit(?:\\s+-[cC]\\s+\\S+|\\s+--\\S+=\\S+)*\\s+${subcmd}\\b${suffix}`,
@@ -51,10 +51,10 @@ const GH_PR_ACTIONS: readonly { re: RegExp; action: PrAction; op: string }[] = [
   { re: /\bgh\s+pr\s+ready\b/, action: 'ready', op: 'pr_ready' },
 ]
 
-/**
+/*    *
  * Parse PR info from a GitHub PR URL.
  * Returns { prNumber, prUrl, prRepository } or null if not a valid PR URL.
- */
+     */
 function parsePrUrl(
   url: string,
 ): { prNumber: number; prUrl: string; prRepository: string } | null {
@@ -69,7 +69,7 @@ function parsePrUrl(
   return null
 }
 
-/** Find a GitHub PR URL embedded anywhere in stdout and parse it. */
+/*    * Find a GitHub PR URL embedded anywhere in stdout and parse it.     */
 function findPrInStdout(stdout: string): ReturnType<typeof parsePrUrl> {
   const m = stdout.match(/https:\/\/github\.com\/[^/\s]+\/[^/\s]+\/pull\/\d+/)
   return m ? parsePrUrl(m[0]) : null
@@ -83,13 +83,13 @@ export function parseGitCommitId(stdout: string): string | undefined {
   return match?.[1]
 }
 
-/**
+/*    *
  * Parse branch name from git push output. Push writes progress to stderr but
  * the ref update line ("abc..def  branch -> branch", "* [new branch]
  * branch -> branch", or " + abc...def  branch -> branch (forced update)") is
  * the signal. Works on either stdout or stderr. Git prefixes each ref line
  * with a status flag (space, +, -, *, !, =); the char class tolerates any.
- */
+     */
 function parseGitPushBranch(output: string): string | undefined {
   const match = output.match(
     /^\s*[+\-*!= ]?\s*(?:\[new branch\]|\S+\.\.+\S+)\s+\S+\s*->\s*(\S+)/m,
@@ -97,19 +97,19 @@ function parseGitPushBranch(output: string): string | undefined {
   return match?.[1]
 }
 
-/**
+/*    *
  * gh pr merge/close/ready print "✓ <Verb> pull request owner/repo#1234" with
  * no URL. Extract the PR number from the text.
- */
+     */
 function parsePrNumberFromText(stdout: string): number | undefined {
   const match = stdout.match(/[Pp]ull request (?:\S+#)?#?(\d+)/)
   return match?.[1] ? parseInt(match[1], 10) : undefined
 }
 
-/**
+/*    *
  * Extract target ref from `git merge <ref>` / `git rebase <ref>` command.
  * Skips flags and keywords — first non-flag argument is the ref.
- */
+     */
 function parseRefFromCommand(
   command: string,
   verb: string,
@@ -124,14 +124,14 @@ function parseRefFromCommand(
   return undefined
 }
 
-/**
+/*    *
  * Scan bash command + output for git operations worth surfacing in the
  * collapsed tool-use summary ("committed a1b2c3, created PR #42, ran 3 bash
  * commands"). Checks the command to avoid matching SHAs/URLs that merely
  * appear in unrelated output (e.g. `git log`).
  *
  * Pass stdout+stderr concatenated — git push writes the ref update to stderr.
- */
+     */
 export function detectGitOperation(
   command: string,
   output: string,

@@ -155,11 +155,11 @@ async function segmentedCommandPermissionResult(
   }
 }
 
-/**
+/*    *
  * Builds a command segment, stripping output redirections to avoid
  * treating filenames as commands in permission checking.
  * Uses ParsedCommand to preserve original quoting.
- */
+     */
 async function buildSegmentWithoutRedirections(
   segmentCommand: string,
 ): Promise<string> {
@@ -173,11 +173,11 @@ async function buildSegmentWithoutRedirections(
   return parsed?.withoutOutputRedirections() ?? segmentCommand
 }
 
-/**
+/*    *
  * Wrapper that resolves an IParsedCommand (from a pre-parsed AST root if
  * available, else via ParsedCommand.parse) and delegates to
  * bashToolCheckCommandOperatorPermissions.
- */
+     */
 export async function checkCommandOperatorPermissions(
   input: z.infer<typeof BashTool.inputSchema>,
   bashToolHasPermissionFn: (
@@ -201,10 +201,10 @@ export async function checkCommandOperatorPermissions(
   )
 }
 
-/**
+/*    *
  * Checks if the command has special operators that require behavior beyond
  * simple subcommand checking.
- */
+     */
 async function bashToolCheckCommandOperatorPermissions(
   input: z.infer<typeof BashTool.inputSchema>,
   bashToolHasPermissionFn: (

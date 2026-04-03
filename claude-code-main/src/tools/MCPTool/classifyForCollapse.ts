@@ -1,4 +1,4 @@
-/**
+/*    *
  * Classify an MCP tool as a search/read operation for UI collapsing.
  * Returns { isSearch: false, isRead: false } for tools that should not
  * collapse (e.g., send_message, create_*, update_*).
@@ -8,7 +8,7 @@
  * e.g., "slack" vs "claude_ai_Slack"), so matching is keyed on the tool
  * name alone after normalizing camelCase/kebab-case to snake_case.
  * Unknown tool names don't collapse (conservative).
- */
+     */
 
 // prettier-ignore
 const SEARCH_TOOLS = new Set([

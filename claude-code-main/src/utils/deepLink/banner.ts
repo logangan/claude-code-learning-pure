@@ -1,4 +1,4 @@
-/**
+/*    *
  * Deep Link Origin Banner
  *
  * Builds the warning text shown when a session was opened by an external
@@ -10,7 +10,7 @@
  * The user must press Enter to submit; this banner primes them to read the
  * prompt (which may use homoglyphs or padding to hide instructions) and
  * notice which directory — and therefore which CLAUDE.md — was loaded.
- */
+     */
 
 import { stat } from 'fs/promises'
 import { homedir } from 'os'
@@ -21,26 +21,26 @@ import { getGitDir } from '../git.js'
 
 const STALE_FETCH_WARN_MS = 7 * 24 * 60 * 60 * 1000
 
-/**
+/*    *
  * Above this length, a pre-filled prompt no longer fits on one screen
  * (~12-15 lines on an 80-col terminal). The banner switches from "review
  * carefully" to an explicit "scroll to review the entire prompt" so a
  * malicious tail buried past line 60 isn't silently off-screen.
- */
+     */
 const LONG_PREFILL_THRESHOLD = 1000
 
 export type DeepLinkBannerInfo = {
-  /** Resolved working directory the session launched in. */
+  /*    * Resolved working directory the session launched in.     */
   cwd: string
-  /** Length of the ?q= prompt pre-filled in the input box. Undefined = no prefill. */
+  /*    * Length of the ?q= prompt pre-filled in the input box. Undefined = no prefill.     */
   prefillLength?: number
-  /** The ?repo= slug if the cwd was resolved from the githubRepoPaths MRU. */
+  /*    * The ?repo= slug if the cwd was resolved from the githubRepoPaths MRU.     */
   repo?: string
-  /** Last-fetch timestamp for the repo (FETCH_HEAD mtime). Undefined = never fetched or not a git repo. */
+  /*    * Last-fetch timestamp for the repo (FETCH_HEAD mtime). Undefined = never fetched or not a git repo.     */
   lastFetch?: Date
 }
 
-/**
+/*    *
  * Build the multi-line warning banner for a deep-link-originated session.
  *
  * Always shows the working directory so the user can see which CLAUDE.md
@@ -50,7 +50,7 @@ export type DeepLinkBannerInfo = {
  * When the cwd was resolved from a ?repo= slug, also shows the slug and the
  * clone's last-fetch age so the user knows which local clone was selected
  * and whether its CLAUDE.md may be stale relative to upstream.
- */
+     */
 export function buildDeepLinkBanner(info: DeepLinkBannerInfo): string {
   const lines = [
     `This session was opened by an external deep link in ${tildify(info.cwd)}`,
@@ -74,7 +74,7 @@ export function buildDeepLinkBanner(info: DeepLinkBannerInfo): string {
   return lines.join('\n')
 }
 
-/**
+/*    *
  * Read the mtime of .git/FETCH_HEAD, which git updates on every fetch or
  * pull. Returns undefined if the directory is not a git repo or has never
  * been fetched.
@@ -84,7 +84,7 @@ export function buildDeepLinkBanner(info: DeepLinkBannerInfo): string {
  * both and return whichever is newer so a recently-fetched main repo
  * doesn't read as "never fetched" just because the deep link landed in
  * a worktree.
- */
+     */
 export async function readLastFetchTime(
   cwd: string,
 ): Promise<Date | undefined> {
@@ -110,11 +110,11 @@ async function mtimeOrUndefined(p: string): Promise<Date | undefined> {
   }
 }
 
-/**
+/*    *
  * Shorten home-dir-prefixed paths to ~ notation for the banner.
  * Not using getDisplayPath() because cwd is the current working directory,
  * so the relative-path branch would collapse it to the empty string.
- */
+     */
 function tildify(p: string): string {
   const home = homedir()
   if (p === home) return '~'

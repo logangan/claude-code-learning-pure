@@ -9,7 +9,7 @@ import { clearSessionMessagesCache } from '../../utils/sessionStorage.js'
 import { clearBetaTracingState } from '../../utils/telemetry/betaSessionTracing.js'
 import { resetMicrocompactState } from './microCompact.js'
 
-/**
+/*    *
  * Run cleanup of caches and tracking state after compaction.
  * Call this after both auto-compact and manual /compact to free memory
  * held by tracking structures that are invalidated by compaction.
@@ -27,7 +27,7 @@ import { resetMicrocompactState } from './microCompact.js'
  * would corrupt the MAIN thread's state. All compaction callers should
  * pass querySource — undefined is only safe for callers that are
  * genuinely main-thread-only (/compact, /clear).
- */
+     */
 export function runPostCompactCleanup(querySource?: QuerySource): void {
   // Subagents (agent:*) run in the same process and share module-level
   // state with the main thread. Only reset main-thread module-level state
@@ -41,11 +41,11 @@ export function runPostCompactCleanup(querySource?: QuerySource): void {
   resetMicrocompactState()
   if (feature('CONTEXT_COLLAPSE')) {
     if (isMainThreadCompact) {
-      /* eslint-disable @typescript-eslint/no-require-imports */
+      /*     eslint-disable @typescript-eslint/no-require-imports     */
       ;(
         require('../contextCollapse/index.js') as typeof import('../contextCollapse/index.js')
       ).resetContextCollapse()
-      /* eslint-enable @typescript-eslint/no-require-imports */
+      /*     eslint-enable @typescript-eslint/no-require-imports     */
     }
   }
   if (isMainThreadCompact) {

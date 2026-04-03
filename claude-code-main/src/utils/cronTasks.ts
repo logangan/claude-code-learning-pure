@@ -1,13 +1,11 @@
 // Scheduled prompts, stored in <project>/.claude/scheduled_tasks.json.
-//
-// Tasks come in two flavors:
-//   - One-shot (recurring: false/undefined) — fire once, then auto-delete.
-//   - Recurring (recurring: true) — fire on schedule, reschedule from now,
-//     persist until explicitly deleted via CronDelete or auto-expire after
-//     a configurable limit (DEFAULT_CRON_JITTER_CONFIG.recurringMaxAgeMs).
-//
-// File format:
-//   { "tasks": [{ id, cron, prompt, createdAt, recurring?, permanent? }] }
+// // Tasks come in two flavors:
+// - One-shot (recurring: false/undefined) — fire once, then auto-delete.
+// - Recurring (recurring: true) — fire on schedule, reschedule from now,
+// persist until explicitly deleted via CronDelete or auto-expire after
+// a configurable limit (DEFAULT_CRON_JITTER_CONFIG.recurringMaxAgeMs).
+// // File format:
+// { "tasks": [{ id, cron, prompt, createdAt, recurring?, permanent? }] }
 
 import { randomUUID } from 'crypto'
 import { readFileSync } from 'fs'
@@ -29,13 +27,13 @@ import { jsonStringify } from './slowOperations.js'
 
 export type CronTask = {
   id: string
-  /** 5-field cron string (local time) — validated on write, re-validated on read. */
+  /*    * 5-field cron string (local time) — validated on write, re-validated on read.     */
   cron: string
-  /** Prompt to enqueue when the task fires. */
+  /*    * Prompt to enqueue when the task fires.     */
   prompt: string
-  /** Epoch ms when the task was created. Anchor for missed-task detection. */
+  /*    * Epoch ms when the task was created. Anchor for missed-task detection.     */
   createdAt: number
-  /**
+  /*    *
    * Epoch ms of the most recent fire. Written back by the scheduler after
    * each recurring fire so next-fire computation survives process restarts.
    * The scheduler anchors first-sight from `lastFiredAt ?? createdAt` — a
@@ -43,29 +41,29 @@ export type CronTask = {
    * `30 14 27 2 *` whose next-from-now is next year); a fired-before task
    * reconstructs the same `nextFireAt` the prior process had in memory.
    * Never set for one-shots (they're deleted on fire).
-   */
+       */
   lastFiredAt?: number
-  /** When true, the task reschedules after firing instead of being deleted. */
+  /*    * When true, the task reschedules after firing instead of being deleted.     */
   recurring?: boolean
-  /**
+  /*    *
    * When true, the task is exempt from recurringMaxAgeMs auto-expiry.
    * System escape hatch for assistant mode's built-in tasks (catch-up/
    * morning-checkin/dream) — the installer's writeIfMissing() skips existing
    * files so re-install can't recreate them. Not settable via CronCreateTool;
    * only written directly to scheduled_tasks.json by src/assistant/install.ts.
-   */
+       */
   permanent?: boolean
-  /**
+  /*    *
    * Runtime-only flag. false → session-scoped (never written to disk).
    * File-backed tasks leave this undefined; writeCronTasks strips it so
    * the on-disk shape stays { id, cron, prompt, createdAt, lastFiredAt?, recurring?, permanent? }.
-   */
+       */
   durable?: boolean
-  /**
+  /*    *
    * Runtime-only. When set, the task was created by an in-process teammate.
    * The scheduler routes fires to that teammate's queue instead of the main
    * REPL's. Never written to disk (teammate crons are always session-only).
-   */
+       */
   agentId?: string
 }
 
@@ -73,21 +71,21 @@ type CronFile = { tasks: CronTask[] }
 
 const CRON_FILE_REL = join('.claude', 'scheduled_tasks.json')
 
-/**
+/*    *
  * Path to the cron file. `dir` defaults to getProjectRoot() — pass it
  * explicitly from contexts that don't run through main.tsx (e.g. the Agent
  * SDK daemon, which has no bootstrap state).
- */
+     */
 export function getCronFilePath(dir?: string): string {
   return join(dir ?? getProjectRoot(), CRON_FILE_REL)
 }
 
-/**
+/*    *
  * Read and parse .claude/scheduled_tasks.json. Returns an empty task list if the file
  * is missing, empty, or malformed. Tasks with invalid cron strings are
  * silently dropped (logged at debug level) so a single bad entry never
  * blocks the whole file.
- */
+     */
 export async function readCronTasks(dir?: string): Promise<CronTask[]> {
   const fs = getFsImplementation()
   let raw: string
@@ -139,10 +137,10 @@ export async function readCronTasks(dir?: string): Promise<CronTask[]> {
   return out
 }
 
-/**
+/*    *
  * Sync check for whether the cron file has any valid tasks. Used by
  * cronScheduler.start() to decide whether to auto-enable. One file read.
- */
+     */
 export function hasCronTasksSync(dir?: string): boolean {
   let raw: string
   try {
@@ -157,11 +155,11 @@ export function hasCronTasksSync(dir?: string): boolean {
   return Array.isArray(tasks) && tasks.length > 0
 }
 
-/**
+/*    *
  * Overwrite .claude/scheduled_tasks.json with the given tasks. Creates .claude/ if
  * missing. Empty task list writes an empty file (rather than deleting) so
  * the file watcher sees a change event on last-task-removed.
- */
+     */
 export async function writeCronTasks(
   tasks: CronTask[],
   dir?: string,
@@ -181,7 +179,7 @@ export async function writeCronTasks(
   )
 }
 
-/**
+/*    *
  * Append a task. Returns the generated id. Caller is responsible for having
  * already validated the cron string (the tool does this via validateInput).
  *
@@ -190,7 +188,7 @@ export async function writeCronTasks(
  * written to .claude/scheduled_tasks.json and dies with the process. The
  * scheduler merges session tasks into its tick loop directly, so no file
  * change event is needed.
- */
+     */
 export async function addCronTask(
   cron: string,
   prompt: string,
@@ -218,7 +216,7 @@ export async function addCronTask(
   return id
 }
 
-/**
+/*    *
  * Remove tasks by id. No-op if none match (e.g. another session raced us).
  * Used for both fire-once cleanup and explicit CronDelete.
  *
@@ -227,7 +225,7 @@ export async function addCronTask(
  * Daemon callers pass `dir` explicitly; they have no session, and the
  * `dir !== undefined` guard keeps this function from touching bootstrap
  * state on that path (tests enforce this).
- */
+     */
 export async function removeCronTasks(
   ids: string[],
   dir?: string,
@@ -247,7 +245,7 @@ export async function removeCronTasks(
   await writeCronTasks(remaining, dir)
 }
 
-/**
+/*    *
  * Stamp `lastFiredAt` on the given recurring tasks and write back. Batched
  * so N fires in one scheduler tick = one read-modify-write, not N. Only
  * touches file-backed tasks — session tasks die with the process, no point
@@ -257,7 +255,7 @@ export async function removeCronTasks(
  * Scheduler lock means at most one process calls this; chokidar picks up
  * the write and triggers a reload which re-seeds `nextFireAt` from the
  * just-written `lastFiredAt` — idempotent (same computation, same answer).
- */
+     */
 export async function markCronTasksFired(
   ids: string[],
   firedAt: number,
@@ -277,14 +275,14 @@ export async function markCronTasksFired(
   await writeCronTasks(tasks, dir)
 }
 
-/**
+/*    *
  * File-backed tasks + session-only tasks, merged. Session tasks get
  * `durable: false` so callers can distinguish them. File tasks are
  * returned as-is (durable undefined → truthy).
  *
  * Only merges when `dir` is undefined — daemon callers (explicit `dir`)
  * have no session store to merge with.
- */
+     */
 export async function listAllCronTasks(dir?: string): Promise<CronTask[]> {
   const fileTasks = await readCronTasks(dir)
   if (dir !== undefined) return fileTasks
@@ -295,10 +293,10 @@ export async function listAllCronTasks(dir?: string): Promise<CronTask[]> {
   return [...fileTasks, ...sessionTasks]
 }
 
-/**
+/*    *
  * Next fire time in epoch ms for a cron string, strictly after `fromMs`.
  * Returns null if invalid or no match in the next 366 days.
- */
+     */
 export function nextCronRunMs(cron: string, fromMs: number): number | null {
   const fields = parseCronExpression(cron)
   if (!fields) return null
@@ -306,31 +304,31 @@ export function nextCronRunMs(cron: string, fromMs: number): number | null {
   return next ? next.getTime() : null
 }
 
-/**
+/*    *
  * Cron scheduler tuning knobs. Sourced at runtime from the
  * `tengu_kairos_cron_config` GrowthBook JSON config (see cronJitterConfig.ts)
  * so ops can adjust behavior fleet-wide without shipping a client build.
  * Defaults here preserve the pre-config behavior exactly.
- */
+     */
 export type CronJitterConfig = {
-  /** Recurring-task forward delay as a fraction of the interval between fires. */
+  /*    * Recurring-task forward delay as a fraction of the interval between fires.     */
   recurringFrac: number
-  /** Upper bound on recurring forward delay regardless of interval length. */
+  /*    * Upper bound on recurring forward delay regardless of interval length.     */
   recurringCapMs: number
-  /** One-shot backward lead: maximum ms a task may fire early. */
+  /*    * One-shot backward lead: maximum ms a task may fire early.     */
   oneShotMaxMs: number
-  /**
+  /*    *
    * One-shot backward lead: minimum ms a task fires early when the minute-mod
    * gate matches. 0 = taskIds hashing near zero fire on the exact mark. Raise
    * this to guarantee nobody lands on the wall-clock boundary.
-   */
+       */
   oneShotFloorMs: number
-  /**
+  /*    *
    * Jitter fires landing on minutes where `minute % N === 0`. 30 → :00/:30
    * (the human-rounding hotspots). 15 → :00/:15/:30/:45. 1 → every minute.
-   */
+       */
   oneShotMinuteMod: number
-  /**
+  /*    *
    * Recurring tasks auto-expire this many ms after creation (unless marked
    * `permanent`). Cron is the primary driver of multi-day sessions (p99
    * uptime 61min → 53h post-#19931), and unbounded recurrence lets Tier-1
@@ -341,7 +339,7 @@ export type CronJitterConfig = {
    * deleted because install.ts's writeIfMissing() skips existing files.
    *
    * `0` = unlimited (tasks never auto-expire).
-   */
+       */
   recurringMaxAgeMs: number
 }
 
@@ -354,17 +352,17 @@ export const DEFAULT_CRON_JITTER_CONFIG: CronJitterConfig = {
   recurringMaxAgeMs: 7 * 24 * 60 * 60 * 1000,
 }
 
-/**
+/*    *
  * taskId is an 8-hex-char UUID slice (see {@link addCronTask}) → parse as
  * u32 → [0, 1). Stable across restarts, uniformly distributed across the
  * fleet. Non-hex ids (hand-edited JSON) fall back to 0 = no jitter.
- */
+     */
 function jitterFrac(taskId: string): number {
   const frac = parseInt(taskId.slice(0, 8), 16) / 0x1_0000_0000
   return Number.isFinite(frac) ? frac : 0
 }
 
-/**
+/*    *
  * Same as {@link nextCronRunMs}, plus a deterministic per-task delay to
  * avoid a thundering herd when many sessions schedule the same cron string
  * (e.g. `0 * * * *` → everyone hits inference at :00).
@@ -377,7 +375,7 @@ function jitterFrac(taskId: string): number {
  *
  * Only used for recurring tasks. One-shot tasks use
  * {@link oneShotJitteredNextCronRunMs} (backward jitter, minute-gated).
- */
+     */
 export function jitteredNextCronRunMs(
   cron: string,
   fromMs: number,
@@ -397,7 +395,7 @@ export function jitteredNextCronRunMs(
   return t1 + jitter
 }
 
-/**
+/*    *
  * Same as {@link nextCronRunMs}, minus a deterministic per-task lead time
  * when the fire time lands on a minute boundary matching
  * {@link CronJitterConfig.oneShotMinuteMod}.
@@ -417,7 +415,7 @@ export function jitteredNextCronRunMs(
  * `0 15 * * *`, step expressions, and `0,30 9 * * *` all get jitter
  * when they land on a matching minute. Clamped to `fromMs` so a task created
  * inside its own jitter window doesn't fire before it was created.
- */
+     */
 export function oneShotJitteredNextCronRunMs(
   cron: string,
   fromMs: number,
@@ -444,12 +442,12 @@ export function oneShotJitteredNextCronRunMs(
   return Math.max(t1 - lead, fromMs)
 }
 
-/**
+/*    *
  * A task is "missed" when its next scheduled run (computed from createdAt)
  * is in the past. Surfaced to the user at startup. Works for both one-shot
  * and recurring tasks — a recurring task whose window passed while Claude
  * was down is still "missed".
- */
+     */
 export function findMissedTasks(tasks: CronTask[], nowMs: number): CronTask[] {
   return tasks.filter(t => {
     const next = nextCronRunMs(t.cron, t.createdAt)

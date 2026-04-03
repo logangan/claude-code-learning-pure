@@ -1,7 +1,7 @@
-/**
+/*    *
  * Tracks which tool uses were auto-approved by classifiers.
  * Populated from useCanUseTool.ts and permissions.ts, read from UserToolSuccessMessage.tsx.
- */
+     */
 
 import { feature } from 'bun:bundle'
 import { createSignal } from './signal.js'

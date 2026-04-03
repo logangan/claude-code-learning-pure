@@ -1,8 +1,8 @@
 import type { AppState } from '../state/AppState.js'
 
-/**
+/*    *
  * Parse `@agent-name message` syntax for direct team member messaging.
- */
+     */
 export function parseDirectMemberMessage(input: string): {
   recipientName: string
   message: string
@@ -33,9 +33,9 @@ type WriteToMailboxFn = (
   teamName: string,
 ) => Promise<void>
 
-/**
+/*    *
  * Send a direct message to a team member, bypassing the model.
- */
+     */
 export async function sendDirectMemberMessage(
   recipientName: string,
   message: string,

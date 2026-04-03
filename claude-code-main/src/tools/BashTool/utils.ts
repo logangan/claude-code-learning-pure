@@ -14,11 +14,11 @@ import { shouldMaintainProjectWorkingDir } from '../../utils/envUtils.js'
 import { maybeResizeAndDownsampleImageBuffer } from '../../utils/imageResizer.js'
 import { getMaxOutputLength } from '../../utils/shell/outputLimits.js'
 import { countCharInString, plural } from '../../utils/stringUtils.js'
-/**
+/*    *
  * Strips leading and trailing lines that contain only whitespace/newlines.
  * Unlike trim(), this preserves whitespace within content lines and only removes
  * completely empty lines from the beginning and end.
- */
+     */
 export function stripEmptyLines(content: string): string {
   const lines = content.split('\n')
 
@@ -43,19 +43,19 @@ export function stripEmptyLines(content: string): string {
   return lines.slice(startIndex, endIndex + 1).join('\n')
 }
 
-/**
+/*    *
  * Check if content is a base64 encoded image data URL
- */
+     */
 export function isImageOutput(content: string): boolean {
   return /^data:image\/[a-z0-9.+_-]+;base64,/i.test(content)
 }
 
 const DATA_URI_RE = /^data:([^;]+);base64,(.+)$/
 
-/**
+/*    *
  * Parse a data-URI string into its media type and base64 payload.
  * Input is trimmed before matching.
- */
+     */
 export function parseDataUri(
   s: string,
 ): { mediaType: string; data: string } | null {
@@ -64,10 +64,10 @@ export function parseDataUri(
   return { mediaType: match[1], data: match[2] }
 }
 
-/**
+/*    *
  * Build an image tool_result block from shell stdout containing a data URI.
  * Returns null if parse fails so callers can fall through to text handling.
- */
+     */
 export function buildImageToolResult(
   stdout: string,
   toolUseID: string,
@@ -95,7 +95,7 @@ export function buildImageToolResult(
 // into memory.
 const MAX_IMAGE_FILE_SIZE = 20 * 1024 * 1024
 
-/**
+/*    *
  * Resize image output from a shell tool. stdout is capped at
  * getMaxOutputLength() when read back from the shell output file — if the
  * full output spilled to disk, re-read it from there, since truncated base64
@@ -106,7 +106,7 @@ const MAX_IMAGE_FILE_SIZE = 20 * 1024 * 1024
  *
  * Returns the re-encoded data URI on success, or null if the source didn't
  * parse as a data URI (caller decides whether to flip isImage).
- */
+     */
 export async function resizeShellImageOutput(
   stdout: string,
   outputFilePath: string | undefined,
@@ -191,10 +191,10 @@ export function resetCwdIfOutsideProject(
   return false
 }
 
-/**
+/*    *
  * Creates a human-readable summary of structured content blocks.
  * Used to display MCP results with images and text in the UI.
- */
+     */
 export function createContentSummary(content: ContentBlockParam[]): string {
   const parts: string[] = []
   let textCount = 0

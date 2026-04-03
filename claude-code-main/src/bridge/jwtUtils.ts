@@ -4,7 +4,7 @@ import { logForDiagnosticsNoPII } from '../utils/diagLogs.js'
 import { errorMessage } from '../utils/errors.js'
 import { jsonParse } from '../utils/slowOperations.js'
 
-/** Format a millisecond duration as a human-readable string (e.g. "5m 30s"). */
+/*    * Format a millisecond duration as a human-readable string (e.g. "5m 30s").     */
 function formatDuration(ms: number): string {
   if (ms < 60_000) return `${Math.round(ms / 1000)}s`
   const m = Math.floor(ms / 60_000)
@@ -12,12 +12,12 @@ function formatDuration(ms: number): string {
   return s > 0 ? `${m}m ${s}s` : `${m}m`
 }
 
-/**
+/*    *
  * Decode a JWT's payload segment without verifying the signature.
  * Strips the `sk-ant-si-` session-ingress prefix if present.
  * Returns the parsed JSON payload as `unknown`, or `null` if the
  * token is malformed or the payload is not valid JSON.
- */
+     */
 export function decodeJwtPayload(token: string): unknown | null {
   const jwt = token.startsWith('sk-ant-si-')
     ? token.slice('sk-ant-si-'.length)
@@ -31,10 +31,10 @@ export function decodeJwtPayload(token: string): unknown | null {
   }
 }
 
-/**
+/*    *
  * Decode the `exp` (expiry) claim from a JWT without verifying the signature.
  * @returns The `exp` value in Unix seconds, or `null` if unparseable
- */
+     */
 export function decodeJwtExpiry(token: string): number | null {
   const payload = decodeJwtPayload(token)
   if (
@@ -48,19 +48,19 @@ export function decodeJwtExpiry(token: string): number | null {
   return null
 }
 
-/** Refresh buffer: request a new token before expiry. */
+/*    * Refresh buffer: request a new token before expiry.     */
 const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000
 
-/** Fallback refresh interval when the new token's expiry is unknown. */
+/*    * Fallback refresh interval when the new token's expiry is unknown.     */
 const FALLBACK_REFRESH_INTERVAL_MS = 30 * 60 * 1000 // 30 minutes
 
-/** Max consecutive failures before giving up on the refresh chain. */
+/*    * Max consecutive failures before giving up on the refresh chain.     */
 const MAX_REFRESH_FAILURES = 3
 
-/** Retry delay when getAccessToken returns undefined. */
+/*    * Retry delay when getAccessToken returns undefined.     */
 const REFRESH_RETRY_DELAY_MS = 60_000
 
-/**
+/*    *
  * Creates a token refresh scheduler that proactively refreshes session tokens
  * before they expire. Used by both the standalone bridge and the REPL bridge.
  *
@@ -68,7 +68,7 @@ const REFRESH_RETRY_DELAY_MS = 60_000
  * session ID and the bridge's OAuth access token. The caller is responsible
  * for delivering the token to the appropriate transport (child process stdin
  * for standalone bridge, WebSocket reconnect for REPL bridge).
- */
+     */
 export function createTokenRefreshScheduler({
   getAccessToken,
   onRefresh,
@@ -78,7 +78,7 @@ export function createTokenRefreshScheduler({
   getAccessToken: () => string | undefined | Promise<string | undefined>
   onRefresh: (sessionId: string, oauthToken: string) => void
   label: string
-  /** How long before expiry to fire refresh. Defaults to 5 min. */
+  /*    * How long before expiry to fire refresh. Defaults to 5 min.     */
   refreshBufferMs?: number
 }): {
   schedule: (sessionId: string, token: string) => void
@@ -139,11 +139,11 @@ export function createTokenRefreshScheduler({
     timers.set(sessionId, timer)
   }
 
-  /**
+  /*    *
    * Schedule refresh using an explicit TTL (seconds until expiry) rather
    * than decoding a JWT's exp claim. Used by callers whose JWT is opaque
    * (e.g. POST /v1/code/sessions/{id}/bridge returns expires_in directly).
-   */
+       */
   function scheduleFromExpiresIn(
     sessionId: string,
     expiresInSeconds: number,

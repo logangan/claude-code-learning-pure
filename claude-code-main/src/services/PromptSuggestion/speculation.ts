@@ -958,13 +958,13 @@ export async function handleSpeculationAccept(
     return { queryRequired: !isComplete }
   } catch (error) {
     // Fail open: log error and fall back to normal query flow
-    /* eslint-disable no-restricted-syntax -- custom fallback message, not toError(e) */
+    /*     eslint-disable no-restricted-syntax -- custom fallback message, not toError(e)     */
     logError(
       error instanceof Error
         ? error
         : new Error('handleSpeculationAccept failed'),
     )
-    /* eslint-enable no-restricted-syntax */
+    /*     eslint-enable no-restricted-syntax     */
     logSpeculation(
       speculationState.id,
       'error',

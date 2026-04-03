@@ -1,6 +1,6 @@
-/**
+/*    *
  * OSC (Operating System Command) Types and Parser
- */
+     */
 
 import { Buffer } from 'buffer'
 import { env } from '../../utils/env.js'
@@ -10,17 +10,17 @@ import type { Action, Color, TabStatusAction } from './types.js'
 
 export const OSC_PREFIX = ESC + String.fromCharCode(ESC_TYPE.OSC)
 
-/** String Terminator (ESC \) - alternative to BEL for terminating OSC */
+/*    * String Terminator (ESC \) - alternative to BEL for terminating OSC     */
 export const ST = ESC + '\\'
 
-/** Generate an OSC sequence: ESC ] p1;p2;...;pN <terminator>
- * Uses ST terminator for Kitty (avoids beeps), BEL for others */
+/*    * Generate an OSC sequence: ESC ] p1;p2;...;pN <terminator>
+ * Uses ST terminator for Kitty (avoids beeps), BEL for others     */
 export function osc(...parts: (string | number)[]): string {
   const terminator = env.terminal === 'kitty' ? ST : BEL
   return `${OSC_PREFIX}${parts.join(SEP)}${terminator}`
 }
 
-/**
+/*    *
  * Wrap an escape sequence for terminal multiplexer passthrough.
  * tmux and GNU screen intercept escape sequences; DCS passthrough
  * tunnels them to the outer terminal unmodified.
@@ -31,7 +31,7 @@ export function osc(...parts: (string | number)[]): string {
  *
  * Do NOT wrap BEL: raw \x07 triggers tmux's bell-action (window flag);
  * wrapped \x07 is opaque DCS payload and tmux never sees the bell.
- */
+     */
 export function wrapForMultiplexer(sequence: string): string {
   if (process.env['TMUX']) {
     const escaped = sequence.replaceAll('\x1b', '\x1b\x1b')
@@ -43,7 +43,7 @@ export function wrapForMultiplexer(sequence: string): string {
   return sequence
 }
 
-/**
+/*    *
  * Which path setClipboard() will take, based on env state. Synchronous so
  * callers can show an honest toast without awaiting the copy itself.
  *
@@ -58,7 +58,7 @@ export function wrapForMultiplexer(sequence: string): string {
  * pbcopy gating uses SSH_CONNECTION specifically, not SSH_TTY — tmux panes
  * inherit SSH_TTY forever even after local reattach, but SSH_CONNECTION is
  * in tmux's default update-environment set and gets cleared.
- */
+     */
 export type ClipboardPath = 'native' | 'tmux-buffer' | 'osc52'
 
 export function getClipboardPath(): ClipboardPath {
@@ -69,24 +69,24 @@ export function getClipboardPath(): ClipboardPath {
   return 'osc52'
 }
 
-/**
+/*    *
  * Wrap a payload in tmux's DCS passthrough: ESC P tmux ; <payload> ESC \
  * tmux forwards the payload to the outer terminal, bypassing its own parser.
  * Inner ESCs must be doubled. Requires `set -g allow-passthrough on` in
  * ~/.tmux.conf; without it, tmux silently drops the whole DCS (no regression).
- */
+     */
 function tmuxPassthrough(payload: string): string {
   return `${ESC}Ptmux;${payload.replaceAll(ESC, ESC + ESC)}${ST}`
 }
 
-/**
+/*    *
  * Load text into tmux's paste buffer via `tmux load-buffer`.
  * -w (tmux 3.2+) propagates to the outer terminal's clipboard via tmux's
  * own OSC 52 emission. -w is dropped for iTerm2: tmux's OSC 52 emission
  * crashes the iTerm2 session over SSH.
  *
  * Returns true if the buffer was loaded successfully.
- */
+     */
 export async function tmuxLoadBuffer(text: string): Promise<boolean> {
   if (!process.env['TMUX']) return false
   const args =
@@ -101,7 +101,7 @@ export async function tmuxLoadBuffer(text: string): Promise<boolean> {
   return code === 0
 }
 
-/**
+/*    *
  * OSC 52 clipboard write: ESC ] 52 ; c ; <base64> BEL/ST
  * 'c' selects the clipboard (vs 'p' for primary selection on X11).
  *
@@ -120,7 +120,7 @@ export async function tmuxLoadBuffer(text: string): Promise<boolean> {
  * With `allow-passthrough on` + an OSC-52-capable outer terminal, selection
  * reaches the system clipboard; with either off, tmux silently drops the
  * DCS and prefix+] still works. See Greg Smith's "free pony" in
- * https://anthropic.slack.com/archives/C07VBSHV7EV/p1773177228548119.
+ * https:// anthropic.slack.com/archives/C07VBSHV7EV/p1773177228548119.
  *
  * If load-buffer fails entirely, fall through to raw OSC 52.
  *
@@ -134,7 +134,7 @@ export async function tmuxLoadBuffer(text: string): Promise<boolean> {
  *
  * Returns the sequence for the caller to write to stdout (raw OSC 52
  * outside tmux, DCS-wrapped inside).
- */
+     */
 export async function setClipboard(text: string): Promise<string> {
   const b64 = Buffer.from(text, 'utf8').toString('base64')
   const raw = osc(OSC.CLIPBOARD, 'c', b64)
@@ -162,12 +162,12 @@ export async function setClipboard(text: string): Promise<string> {
 // Cached after first attempt so repeated mouse-ups skip the probe chain.
 let linuxCopy: 'wl-copy' | 'xclip' | 'xsel' | null | undefined
 
-/**
+/*    *
  * Shell out to a native clipboard utility as a safety net for OSC 52.
  * Only called when not in an SSH session (over SSH, these would write to
  * the remote machine's clipboard — OSC 52 is the right path there).
  * Fire-and-forget: failures are silent since OSC 52 may have succeeded.
- */
+     */
 function copyNative(text: string): void {
   const opts = { input: text, useCwd: false, timeout: 2000 }
   switch (process.platform) {
@@ -218,14 +218,14 @@ function copyNative(text: string): void {
   }
 }
 
-/** @internal test-only */
+/*    * @internal test-only     */
 export function _resetLinuxCopyCache(): void {
   linuxCopy = undefined
 }
 
-/**
+/*    *
  * OSC command numbers
- */
+     */
 export const OSC = {
   SET_TITLE_AND_ICON: 0,
   SET_ICON: 1,
@@ -248,11 +248,11 @@ export const OSC = {
   TAB_STATUS: 21337, // Tab status extension
 } as const
 
-/**
+/*    *
  * Parse an OSC sequence into an action
  *
  * @param content - The sequence content (without ESC ] and terminator)
- */
+     */
 export function parseOSC(content: string): Action | null {
   const semicolonIdx = content.indexOf(';')
   const command = semicolonIdx >= 0 ? content.slice(0, semicolonIdx) : content
@@ -309,11 +309,11 @@ export function parseOSC(content: string): Action | null {
   return { type: 'unknown', sequence: `\x1b]${content}` }
 }
 
-/**
+/*    *
  * Parse an XParseColor-style color spec into an RGB Color.
  * Accepts `#RRGGBB` and `rgb:R/G/B` (1–4 hex digits per component, scaled
  * to 8-bit). Returns null on parse failure.
- */
+     */
 export function parseOscColor(spec: string): Color | null {
   const hex = spec.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i)
   if (hex) {
@@ -341,11 +341,11 @@ export function parseOscColor(spec: string): Color | null {
   return null
 }
 
-/**
+/*    *
  * Parse OSC 21337 payload: `key=value;key=value;...` with `\;` and `\\`
  * escapes inside values. Bare key or `key=` clears that field; unknown
  * keys are ignored.
- */
+     */
 function parseTabStatus(data: string): TabStatusAction {
   const action: TabStatusAction = {}
   for (const [key, value] of splitTabStatusPairs(data)) {
@@ -364,7 +364,7 @@ function parseTabStatus(data: string): TabStatusAction {
   return action
 }
 
-/** Split `k=v;k=v` honoring `\;` and `\\` escapes. Yields [key, unescapedValue]. */
+/*    * Split `k=v;k=v` honoring `\;` and `\\` escapes. Yields [key, unescapedValue].     */
 function* splitTabStatusPairs(data: string): Generator<[string, string]> {
   let key = ''
   let val = ''
@@ -395,11 +395,11 @@ function* splitTabStatusPairs(data: string): Generator<[string, string]> {
 
 // Output generators
 
-/** Start a hyperlink (OSC 8). Auto-assigns an id= param derived from the URL
+/*    * Start a hyperlink (OSC 8). Auto-assigns an id= param derived from the URL
  *  so terminals group wrapped lines of the same link together (the spec says
  *  cells with matching URI *and* nonempty id are joined; without an id each
  *  wrapped line is a separate link — inconsistent hover, partial tooltips).
- *  Empty url = close sequence (empty params per spec). */
+ *  Empty url = close sequence (empty params per spec).     */
 export function link(url: string, params?: Record<string, string>): string {
   if (!url) return LINK_END
   const p = { id: osc8Id(url), ...params }
@@ -416,19 +416,19 @@ function osc8Id(url: string): string {
   return (h >>> 0).toString(36)
 }
 
-/** End a hyperlink (OSC 8) */
+/*    * End a hyperlink (OSC 8)     */
 export const LINK_END = osc(OSC.HYPERLINK, '', '')
 
 // iTerm2 OSC 9 subcommands
 
-/** iTerm2 OSC 9 subcommand numbers */
+/*    * iTerm2 OSC 9 subcommand numbers     */
 export const ITERM2 = {
   NOTIFY: 0,
   BADGE: 2,
   PROGRESS: 4,
 } as const
 
-/** Progress operation codes (for use with ITERM2.PROGRESS) */
+/*    * Progress operation codes (for use with ITERM2.PROGRESS)     */
 export const PROGRESS = {
   CLEAR: 0,
   SET: 1,
@@ -436,26 +436,26 @@ export const PROGRESS = {
   INDETERMINATE: 3,
 } as const
 
-/**
+/*    *
  * Clear iTerm2 progress bar sequence (OSC 9;4;0;BEL)
  * Uses BEL terminator since this is for cleanup (not runtime notification)
  * and we want to ensure it's always sent regardless of terminal type.
- */
+     */
 export const CLEAR_ITERM2_PROGRESS = `${OSC_PREFIX}${OSC.ITERM2};${ITERM2.PROGRESS};${PROGRESS.CLEAR};${BEL}`
 
-/**
+/*    *
  * Clear terminal title sequence (OSC 0 with empty string + BEL).
  * Uses BEL terminator for cleanup — safe on all terminals.
- */
+     */
 export const CLEAR_TERMINAL_TITLE = `${OSC_PREFIX}${OSC.SET_TITLE_AND_ICON};${BEL}`
 
-/** Clear all three OSC 21337 tab-status fields. Used on exit. */
+/*    * Clear all three OSC 21337 tab-status fields. Used on exit.     */
 export const CLEAR_TAB_STATUS = osc(
   OSC.TAB_STATUS,
   'indicator=;status=;status-color=',
 )
 
-/**
+/*    *
  * Gate for emitting OSC 21337 (tab-status indicator). Ant-only while the
  * spec is unstable. Terminals that don't recognize it discard silently, so
  * emission is safe unconditionally — we don't gate on terminal detection
@@ -463,16 +463,16 @@ export const CLEAR_TAB_STATUS = osc(
  *
  * Callers must wrap output with wrapForMultiplexer() so tmux/screen
  * DCS-passthrough carries the sequence to the outer terminal.
- */
+     */
 export function supportsTabStatus(): boolean {
   return process.env.USER_TYPE === 'ant'
 }
 
-/**
+/*    *
  * Emit an OSC 21337 tab-status sequence. Omitted fields are left unchanged
  * by the receiving terminal; `null` sends an empty value to clear.
  * `;` and `\` in status text are escaped per the spec.
- */
+     */
 export function tabStatus(fields: TabStatusAction): string {
   const parts: string[] = []
   const rgb = (c: Color) =>

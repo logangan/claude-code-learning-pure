@@ -13,7 +13,7 @@ import * as authModule from '../utils/auth.js'
 import { isEnvTruthy } from '../utils/envUtils.js'
 import { lt } from '../utils/semver.js'
 
-/**
+/*    *
  * Runtime check for bridge mode entitlement.
  *
  * Remote Control requires a claude.ai subscription (the bridge auths to CCR
@@ -24,7 +24,7 @@ import { lt } from '../utils/semver.js'
  *
  * The `feature('BRIDGE_MODE')` guard ensures the GrowthBook string literal
  * is only referenced when bridge mode is enabled at build time.
- */
+     */
 export function isBridgeEnabled(): boolean {
   // Positive ternary pattern — see docs/feature-gating.md.
   // Negative pattern (if (!feature(...)) return) does not eliminate
@@ -35,7 +35,7 @@ export function isBridgeEnabled(): boolean {
     : false
 }
 
-/**
+/*    *
  * Blocking entitlement check for Remote Control.
  *
  * Returns cached `true` immediately (fast path). If the disk cache says
@@ -46,7 +46,7 @@ export function isBridgeEnabled(): boolean {
  * For user-facing error paths, prefer `getBridgeDisabledReason()` which gives
  * a specific diagnostic. For render-body UI visibility checks, use
  * `isBridgeEnabled()` instead.
- */
+     */
 export async function isBridgeEnabledBlocking(): Promise<boolean> {
   return feature('BRIDGE_MODE')
     ? isClaudeAISubscriber() &&
@@ -54,7 +54,7 @@ export async function isBridgeEnabledBlocking(): Promise<boolean> {
     : false
 }
 
-/**
+/*    *
  * Diagnostic message for why Remote Control is unavailable, or null if
  * it's enabled. Call this instead of a bare `isBridgeEnabledBlocking()`
  * check when you need to show the user an actionable error.
@@ -66,7 +66,7 @@ export async function isBridgeEnabledBlocking(): Promise<boolean> {
  * logins) leave oauthAccount unpopulated, so the gate falls back to
  * false and users see a dead-end "not enabled" message with no hint
  * that re-login would fix it. See CC-1165 / gh-33105.
- */
+     */
 export async function getBridgeDisabledReason(): Promise<string | null> {
   if (feature('BRIDGE_MODE')) {
     if (!isClaudeAISubscriber()) {
@@ -115,21 +115,21 @@ function getOauthAccountInfo(): ReturnType<
   }
 }
 
-/**
+/*    *
  * Runtime check for the env-less (v2) REPL bridge path.
  * Returns true when the GrowthBook flag `tengu_bridge_repl_v2` is enabled.
  *
  * This gates which implementation initReplBridge uses — NOT whether bridge
  * is available at all (see isBridgeEnabled above). Daemon/print paths stay
  * on the env-based implementation regardless of this gate.
- */
+     */
 export function isEnvLessBridgeEnabled(): boolean {
   return feature('BRIDGE_MODE')
     ? getFeatureValue_CACHED_MAY_BE_STALE('tengu_bridge_repl_v2', false)
     : false
 }
 
-/**
+/*    *
  * Kill-switch for the `cse_*` → `session_*` client-side retag shim.
  *
  * The shim exists because compat/convert.go:27 validates TagSession and the
@@ -137,7 +137,7 @@ export function isEnvLessBridgeEnabled(): boolean {
  * `cse_*`. Once the server tags by environment_kind and the frontend accepts
  * `cse_*` directly, flip this to false to make toCompatSessionId a no-op.
  * Defaults to true — the shim stays active until explicitly disabled.
- */
+     */
 export function isCseShimEnabled(): boolean {
   return feature('BRIDGE_MODE')
     ? getFeatureValue_CACHED_MAY_BE_STALE(
@@ -147,7 +147,7 @@ export function isCseShimEnabled(): boolean {
     : true
 }
 
-/**
+/*    *
  * Returns an error message if the current CLI version is below the
  * minimum required for the v1 (env-based) Remote Control path, or null if the
  * version is fine. The v2 (env-less) path uses checkEnvLessBridgeMinVersion()
@@ -156,7 +156,7 @@ export function isCseShimEnabled(): boolean {
  *
  * Uses cached (non-blocking) GrowthBook config. If GrowthBook hasn't
  * loaded yet, the default '0.0.0' means the check passes — a safe fallback.
- */
+     */
 export function checkBridgeMinVersion(): string | null {
   // Positive pattern — see docs/feature-gating.md.
   // Negative pattern (if (!feature(...)) return) does not eliminate
@@ -172,7 +172,7 @@ export function checkBridgeMinVersion(): string | null {
   return null
 }
 
-/**
+/*    *
  * Default for remoteControlAtStartup when the user hasn't explicitly set it.
  * When the CCR_AUTO_CONNECT build flag is present (ant-only) and the
  * tengu_cobalt_harbor GrowthBook gate is on, all sessions connect to CCR by
@@ -181,19 +181,19 @@ export function checkBridgeMinVersion(): string | null {
  *
  * Defined here rather than in config.ts to avoid a direct
  * config.ts → growthbook.ts import cycle (growthbook.ts → user.ts → config.ts).
- */
+     */
 export function getCcrAutoConnectDefault(): boolean {
   return feature('CCR_AUTO_CONNECT')
     ? getFeatureValue_CACHED_MAY_BE_STALE('tengu_cobalt_harbor', false)
     : false
 }
 
-/**
+/*    *
  * Opt-in CCR mirror mode — every local session spawns an outbound-only
  * Remote Control session that receives forwarded events. Separate from
  * getCcrAutoConnectDefault (bidirectional Remote Control). Env var wins for
  * local opt-in; GrowthBook controls rollout.
- */
+     */
 export function isCcrMirrorEnabled(): boolean {
   return feature('CCR_MIRROR')
     ? isEnvTruthy(process.env.CLAUDE_CODE_CCR_MIRROR) ||

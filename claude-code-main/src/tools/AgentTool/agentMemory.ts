@@ -12,20 +12,20 @@ import { sanitizePath } from '../../utils/path.js'
 // Persistent agent memory scope: 'user' (~/.claude/agent-memory/), 'project' (.claude/agent-memory/), or 'local' (.claude/agent-memory-local/)
 export type AgentMemoryScope = 'user' | 'project' | 'local'
 
-/**
+/*    *
  * Sanitize an agent type name for use as a directory name.
  * Replaces colons (invalid on Windows, used in plugin-namespaced agent
  * types like "my-plugin:my-agent") with dashes.
- */
+     */
 function sanitizeAgentTypeForPath(agentType: string): string {
   return agentType.replace(/:/g, '-')
 }
 
-/**
+/*    *
  * Returns the local agent memory directory, which is project-specific and not checked into VCS.
  * When CLAUDE_CODE_REMOTE_MEMORY_DIR is set, persists to the mount with project namespacing.
  * Otherwise, uses <cwd>/.claude/agent-memory-local/<agentType>/.
- */
+     */
 function getLocalAgentMemoryDir(dirName: string): string {
   if (process.env.CLAUDE_CODE_REMOTE_MEMORY_DIR) {
     return (
@@ -43,12 +43,12 @@ function getLocalAgentMemoryDir(dirName: string): string {
   return join(getCwd(), '.claude', 'agent-memory-local', dirName) + sep
 }
 
-/**
+/*    *
  * Returns the agent memory directory for a given agent type and scope.
  * - 'user' scope: <memoryBase>/agent-memory/<agentType>/
  * - 'project' scope: <cwd>/.claude/agent-memory/<agentType>/
  * - 'local' scope: see getLocalAgentMemoryDir()
- */
+     */
 export function getAgentMemoryDir(
   agentType: string,
   scope: AgentMemoryScope,
@@ -103,9 +103,9 @@ export function isAgentMemoryPath(absolutePath: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Returns the agent memory file path for a given agent type and scope.
- */
+     */
 export function getAgentMemoryEntrypoint(
   agentType: string,
   scope: AgentMemoryScope,
@@ -128,13 +128,13 @@ export function getMemoryScopeDisplay(
   }
 }
 
-/**
+/*    *
  * Load persistent memory for an agent with memory enabled.
  * Creates the memory directory if needed and returns a prompt with memory contents.
  *
  * @param agentType The agent's type name (used as directory name)
  * @param scope 'user' for ~/.claude/agent-memory/ or 'project' for .claude/agent-memory/
- */
+     */
 export function loadAgentMemoryPrompt(
   agentType: string,
   scope: AgentMemoryScope,

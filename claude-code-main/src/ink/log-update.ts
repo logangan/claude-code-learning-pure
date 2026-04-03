@@ -154,8 +154,7 @@ export class LogUpdate {
     // about to become backFrame (reused next render) so mutation is safe.
     // CURSOR_HOME after RESET_SCROLL_REGION is defensive — DECSTBM reset
     // homes cursor per spec but terminal implementations vary.
-    //
-    // decstbmSafe: caller passes false when the DECSTBM→diff sequence
+    // // decstbmSafe: caller passes false when the DECSTBM→diff sequence
     // can't be made atomic (no DEC 2026 / BSU/ESU). Without atomicity the
     // outer terminal renders the intermediate state — region scrolled,
     // edge rows not yet painted — a visible vertical jump on every frame
@@ -186,14 +185,12 @@ export class LogUpdate {
 
     // We have to use purely relative operations to manipulate the cursor since
     // we don't know its starting point.
-    //
-    // When content height >= viewport height AND cursor is at the bottom,
+    // // When content height >= viewport height AND cursor is at the bottom,
     // the cursor restore at the end of the previous frame caused terminal scroll.
     // viewportY tells us how many rows are in scrollback from content overflow.
     // Additionally, the cursor-restore scroll pushes 1 more row into scrollback.
     // We need fullReset if any changes are to rows that are now in scrollback.
-    //
-    // This early full-reset check only applies in "steady state" (not growing).
+    // // This early full-reset check only applies in "steady state" (not growing).
     // For growing, the viewportY calculation below (with cursorRestoreScroll)
     // catches unreachable scrollback rows in the diff loop instead.
     const cursorAtBottom = prev.cursor.y >= prev.screen.height
@@ -416,8 +413,7 @@ export class LogUpdate {
     // relative moves, and in alt-screen the next frame always begins with
     // CSI H (see ink.tsx onRender) which resets to (0,0) regardless. This
     // saves a CR + cursorMove round-trip (~6-10 bytes) every frame.
-    //
-    // Main screen: if cursor needs to be past the last line of content
+    // // Main screen: if cursor needs to be past the last line of content
     // (typical: cursor.y = screen.height), emit \n to create that line
     // since cursor movement can't create new lines.
     if (altScreen) {
@@ -520,10 +516,10 @@ function renderFrame(
   renderFrameSlice(screen, frame, 0, frame.screen.height, stylePool)
 }
 
-/**
+/*    *
  * Render a slice of rows from the frame's screen.
  * Each row is rendered followed by a newline. Cursor ends at (0, endY).
- */
+     */
 function renderFrameSlice(
   screen: VirtualScreen,
   frame: Frame,
@@ -624,7 +620,7 @@ function renderFrameSlice(
 
 type Delta = { dx: number; dy: number }
 
-/**
+/*    *
  * Write a cell with a pre-serialized style transition string (from
  * StylePool.transition). Inlines the txn logic to avoid closure/tuple/delta
  * allocations on every cell.
@@ -634,7 +630,7 @@ type Delta = { dx: number; dy: number }
  * skipped, styleStr is never pushed and the terminal's style state is
  * unchanged. Updating the virtual tracker anyway desyncs it from the
  * terminal, and the next transition is computed from phantom state.
- */
+     */
 function writeCellWithStyleStr(
   screen: VirtualScreen,
   cell: Cell,
@@ -720,7 +716,7 @@ function moveCursorTo(screen: VirtualScreen, targetX: number, targetY: number) {
   })
 }
 
-/**
+/*    *
  * Identify emoji where the terminal's wcwidth may disagree with Unicode.
  * On terminals with correct tables, the CHA we emit is a harmless no-op.
  *
@@ -729,7 +725,7 @@ function moveCursorTo(screen: VirtualScreen, targetX: number, targetY: number) {
  * 2. Text-by-default emoji + VS16 (U+FE0F): the base codepoint is width 1
  *    in wcwidth, but VS16 triggers emoji presentation making it width 2.
  *    Examples: ⚔️ (U+2694), ☠️ (U+2620), ❤️ (U+2764).
- */
+     */
 function needsWidthCompensation(char: string): boolean {
   const cp = char.codePointAt(0)
   if (cp === undefined) return false

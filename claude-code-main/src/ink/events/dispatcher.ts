@@ -33,7 +33,7 @@ function getHandler(
   return handlers[propName] as ((event: TerminalEvent) => void) | undefined
 }
 
-/**
+/*    *
  * Collect all listeners for an event in dispatch order.
  *
  * Uses react-dom's two-phase accumulation pattern:
@@ -42,7 +42,7 @@ function getHandler(
  * - Bubble handlers are appended (push) → target-first
  *
  * Result: [root-cap, ..., parent-cap, target-cap, target-bub, parent-bub, ..., root-bub]
- */
+     */
 function collectListeners(
   target: EventTarget,
   event: TerminalEvent,
@@ -78,12 +78,12 @@ function collectListeners(
   return listeners
 }
 
-/**
+/*    *
  * Execute collected listeners with propagation control.
  *
  * Before each handler, calls event._prepareForTarget(node) so event
  * subclasses can do per-node setup.
- */
+     */
 function processDispatchQueue(
   listeners: DispatchListener[],
   event: TerminalEvent,
@@ -115,10 +115,10 @@ function processDispatchQueue(
 
 // --
 
-/**
+/*    *
  * Map terminal event types to React scheduling priorities.
  * Mirrors react-dom's getEventPriority() switch.
- */
+     */
 function getEventPriority(eventType: string): number {
   switch (eventType) {
     case 'keydown':
@@ -147,7 +147,7 @@ type DiscreteUpdates = <A, B>(
   d: undefined,
 ) => boolean
 
-/**
+/*    *
  * Owns event dispatch state and the capture/bubble dispatch loop.
  *
  * The reconciler host config reads currentEvent and currentUpdatePriority
@@ -157,17 +157,17 @@ type DiscreteUpdates = <A, B>(
  *
  * discreteUpdates is injected after construction (by InkReconciler)
  * to break the import cycle.
- */
+     */
 export class Dispatcher {
   currentEvent: TerminalEvent | null = null
   currentUpdatePriority: number = DefaultEventPriority as number
   discreteUpdates: DiscreteUpdates | null = null
 
-  /**
+  /*    *
    * Infer event priority from the currently-dispatching event.
    * Called by the reconciler host config's resolveUpdatePriority
    * when no explicit priority has been set.
-   */
+       */
   resolveEventPriority(): number {
     if (this.currentUpdatePriority !== (NoEventPriority as number)) {
       return this.currentUpdatePriority
@@ -178,10 +178,10 @@ export class Dispatcher {
     return DefaultEventPriority as number
   }
 
-  /**
+  /*    *
    * Dispatch an event through capture and bubble phases.
    * Returns true if preventDefault() was NOT called.
-   */
+       */
   dispatch(target: EventTarget, event: TerminalEvent): boolean {
     const previousEvent = this.currentEvent
     this.currentEvent = event
@@ -200,10 +200,10 @@ export class Dispatcher {
     }
   }
 
-  /**
+  /*    *
    * Dispatch with discrete (sync) priority.
    * For user-initiated events: keyboard, click, focus, paste.
-   */
+       */
   dispatchDiscrete(target: EventTarget, event: TerminalEvent): boolean {
     if (!this.discreteUpdates) {
       return this.dispatch(target, event)
@@ -217,10 +217,10 @@ export class Dispatcher {
     )
   }
 
-  /**
+  /*    *
    * Dispatch with continuous priority.
    * For high-frequency events: resize, scroll, mouse move.
-   */
+       */
   dispatchContinuous(target: EventTarget, event: TerminalEvent): boolean {
     const previousPriority = this.currentUpdatePriority
     try {

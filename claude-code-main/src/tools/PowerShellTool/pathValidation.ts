@@ -1,10 +1,10 @@
-/**
+/*    *
  * PowerShell-specific path validation for command arguments.
  *
  * Extracts file paths from PowerShell commands using the AST parser
  * and validates they stay within allowed project directories.
  * Follows the same patterns as BashTool/pathValidation.ts.
- */
+     */
 
 import { homedir } from 'os'
 import { isAbsolute, resolve } from 'path'
@@ -60,7 +60,7 @@ type ResolvedPathCheckResult = PathCheckResult & {
   resolvedPath: string
 }
 
-/**
+/*    *
  * Per-cmdlet parameter configuration.
  *
  * Each entry declares:
@@ -84,40 +84,40 @@ type ResolvedPathCheckResult = PathCheckResult & {
  * they are merged in from COMMON_SWITCHES / COMMON_VALUE_PARAMS at lookup time.
  *
  * Parameter names are lowercase with leading dash to match runtime comparison.
- */
+     */
 type CmdletPathConfig = {
   operationType: FileOperationType
-  /** Parameter names that accept file paths (validated against allowed directories) */
+  /*    * Parameter names that accept file paths (validated against allowed directories)     */
   pathParams: string[]
-  /** Switch parameters that take no value (next arg is NOT consumed) */
+  /*    * Switch parameters that take no value (next arg is NOT consumed)     */
   knownSwitches: string[]
-  /** Value-taking parameters that are not paths (next arg IS consumed, not path-validated) */
+  /*    * Value-taking parameters that are not paths (next arg IS consumed, not path-validated)     */
   knownValueParams: string[]
-  /**
+  /*    *
    * Parameter names that accept a leaf filename resolved by PowerShell
    * relative to ANOTHER parameter (not cwd). Safe to extract only when the
    * value is a simple leaf (no `/`, `\`, `.`, `..`). Non-leaf values are
    * flagged as unvalidatable because validatePath resolves against cwd, not
    * the actual base — joining against -Path would need cross-parameter
    * tracking.
-   */
+       */
   leafOnlyPathParams?: string[]
-  /**
+  /*    *
    * Number of leading positional arguments to skip (NOT extracted as paths).
    * Used for cmdlets where positional-0 is a non-path value — e.g.,
    * Invoke-WebRequest's positional -Uri is a URL, not a local filesystem path.
-   * Without this, `iwr http://example.com` extracts `http://example.com` as
+   * Without this, `iwr http:// example.com` extracts `http://example.com` as
    * a path, and validatePath's provider-path regex (^[a-z]{2,}:) misfires on
    * the URL scheme with a confusing "non-filesystem provider" message.
-   */
+       */
   positionalSkip?: number
-  /**
+  /*    *
    * When true, this cmdlet only writes to disk when a pathParam is present.
-   * Without a path (e.g., `Invoke-WebRequest https://example.com` with no
+   * Without a path (e.g., `Invoke-WebRequest https:// example.com` with no
    * -OutFile), it's effectively a read operation — output goes to the pipeline,
    * not the filesystem. Skips the "write with no target path" forced-ask.
    * Cmdlets like Set-Content that ALWAYS write should NOT set this.
-   */
+       */
   optionalWrite?: boolean
 }
 
@@ -201,7 +201,7 @@ const CMDLET_PATH_CONFIG: Record<string, CmdletPathConfig> = {
     ],
   },
   // Out-File/Tee-Object/Export-Csv/Export-Clixml were absent, so path-level
-  // deny rules (Edit(/etc/**)) hard-blocked `Set-Content /etc/x` but only
+  // deny rules (Edit(/etc/*    *)) hard-blocked `Set-Content /etc/x` but only
   // *asked* for `Out-File /etc/x`. All four are write cmdlets that accept
   // file paths positionally.
   'out-file': {
@@ -259,8 +259,7 @@ const CMDLET_PATH_CONFIG: Record<string, CmdletPathConfig> = {
   // New-Item/Copy-Item/Move-Item were missing: `mkdir /etc/cron.d/evil` →
   // resolveToCanonical('mkdir') = 'new-item' via COMMON_ALIASES → not in
   // config → early return {paths:[], 'read'} → Edit deny never consulted.
-  //
-  // Copy-Item/Move-Item have DUAL path params (-Path source, -Destination
+  // // Copy-Item/Move-Item have DUAL path params (-Path source, -Destination
   // dest). operationType:'write' is imperfect — source is semantically a read
   // — but it means BOTH paths get Edit-deny validation, which is strictly
   // safer than extracting neither. A per-param operationType would be ideal
@@ -274,8 +273,7 @@ const CMDLET_PATH_CONFIG: Record<string, CmdletPathConfig> = {
     // -Name ../secret/evil` creates /allowed/../secret/evil = /secret/evil,
     // but we resolve cwd/../secret/evil which lands ELSEWHERE and can miss
     // the deny rule. This is a deny→ask downgrade, not fail-safe.
-    //
-    // -name is in leafOnlyPathParams: simple leaf filenames (`foo.txt`) are
+    // // -name is in leafOnlyPathParams: simple leaf filenames (`foo.txt`) are
     // extracted (resolves to cwd/foo.txt — slightly wrong, but -Path
     // extraction covers the directory, and a leaf can't traverse);
     // any value with `/`, `\`, `.`, `..` flags hasUnvalidatablePathArg →
@@ -768,7 +766,7 @@ const CMDLET_PATH_CONFIG: Record<string, CmdletPathConfig> = {
  * Checks if a lowercase parameter name (with leading dash) matches any entry
  * in the given param list, accounting for PowerShell's prefix-matching behavior
  * (e.g., -Lit matches -LiteralPath).
- */
+     */
 function matchesParam(paramLower: string, paramList: string[]): boolean {
   for (const p of paramList) {
     if (
@@ -781,7 +779,7 @@ function matchesParam(paramLower: string, paramList: string[]): boolean {
   return false
 }
 
-/**
+/*    *
  * Returns true if a colon-syntax value contains expression constructs that
  * mask the real runtime path (arrays, subexpressions, variables, backtick
  * escapes). The outer CommandParameterAst 'Parameter' element type hides
@@ -789,7 +787,7 @@ function matchesParam(paramLower: string, paramList: string[]): boolean {
  *
  * Used in three branches of extractPathsFromCommand: pathParams,
  * leafOnlyPathParams, and the unknown-param defense-in-depth branch.
- */
+     */
 function hasComplexColonValue(rawValue: string): boolean {
   return (
     rawValue.includes(',') ||
@@ -814,9 +812,9 @@ function formatDirectoryList(directories: string[]): string {
   return `${firstDirs}, and ${dirCount - MAX_DIRS_TO_LIST} more`
 }
 
-/**
+/*    *
  * Expands tilde (~) at the start of a path to the user's home directory.
- */
+     */
 function expandTilde(filePath: string): string {
   if (
     filePath === '~' ||
@@ -828,7 +826,7 @@ function expandTilde(filePath: string): string {
   return filePath
 }
 
-/**
+/*    *
  * Checks the raw user-provided path (pre-realpath) for dangerous removal
  * targets. safeResolvePath/realpathSync canonicalizes in ways that defeat
  * isDangerousRemovalPath: on Windows '/' → 'C:\' (fails the === '/' check);
@@ -836,7 +834,7 @@ function expandTilde(filePath: string): string {
  * /private/var (fails the === homedir() check). Checking the tilde-expanded,
  * backslash-normalized form catches the dangerous shapes (/, ~, /etc, /usr)
  * as the user typed them.
- */
+     */
 export function isDangerousRemovalRawPath(filePath: string): boolean {
   const expanded = expandTilde(filePath.replace(/^['"]|['"]$/g, '')).replace(
     /\\/g,
@@ -856,10 +854,10 @@ export function dangerousRemovalDeny(path: string): PermissionResult {
   }
 }
 
-/**
+/*    *
  * Checks if a resolved path is allowed for the given operation type.
  * Mirrors the logic in BashTool/pathValidation.ts isPathAllowed.
- */
+     */
 function isPathAllowed(
   resolvedPath: string,
   context: ToolPermissionContext,
@@ -976,11 +974,11 @@ function isPathAllowed(
   return { allowed: false }
 }
 
-/**
+/*    *
  * Best-effort deny check for paths obscured by :: or backtick syntax.
  * ONLY checks deny rules — never auto-allows. If the stripped guess
  * doesn't match a deny rule, we fall through to ask as before.
- */
+     */
 function checkDenyRuleForGuessedPath(
   strippedPath: string,
   cwd: string,
@@ -1007,9 +1005,9 @@ function checkDenyRuleForGuessedPath(
   return denyRule ? { resolvedPath, rule: denyRule } : null
 }
 
-/**
+/*    *
  * Validates a file system path, handling tilde expansion.
- */
+     */
 function validatePath(
   filePath: string,
   cwd: string,
@@ -1098,7 +1096,7 @@ function validatePath(
   // SECURITY: Block UNC paths — they can trigger network requests and
   // leak NTLM/Kerberos credentials
   if (
-    normalizedPath.startsWith('//') ||
+    normalizedPath.startsWith('// ') ||
     /DavWWWRoot/i.test(normalizedPath) ||
     /@SSL@/i.test(normalizedPath)
   ) {
@@ -1128,17 +1126,16 @@ function validatePath(
   // SECURITY: Block non-filesystem provider paths (env:, HKLM:, alias:, function:, etc.)
   // These paths access non-filesystem resources and must require manual approval.
   // This catches colon-syntax like -Path:env:HOME where the extracted value is 'env:HOME'.
-  //
-  // Platform split (findings #21/#28):
+  // // Platform split (findings #21/#28):
   // - Windows: require 2+ letters before ':' so native drive letters (C:, D:)
-  //   pass through to path.win32.isAbsolute/resolve which handle them correctly.
+  // pass through to path.win32.isAbsolute/resolve which handle them correctly.
   // - POSIX: ANY <letters>: prefix is a PowerShell PSDrive — single-letter drive
-  //   paths have no native meaning on Linux/macOS. `New-PSDrive -Name Z -Root /etc`
-  //   then `Get-Content Z:/secrets` would otherwise resolve via
-  //   path.posix.resolve(cwd, 'Z:/secrets') → '{cwd}/Z:/secrets' → inside cwd →
-  //   allowed, bypassing Read(/etc/**) deny rules. We cannot statically know what
-  //   filesystem root a PSDrive maps to, so treat all drive-prefixed paths on
-  //   POSIX as unvalidatable.
+  // paths have no native meaning on Linux/macOS. `New-PSDrive -Name Z -Root /etc`
+  // then `Get-Content Z:/secrets` would otherwise resolve via
+  // path.posix.resolve(cwd, 'Z:/secrets') → '{cwd}/Z:/secrets' → inside cwd →
+  // allowed, bypassing Read(/etc/*    *) deny rules. We cannot statically know what
+  // filesystem root a PSDrive maps to, so treat all drive-prefixed paths on
+  // POSIX as unvalidatable.
   // Include digits in PSDrive name (bug #23): `New-PSDrive -Name 1 ...`
   // creates drive `1:` — a valid PSDrive path prefix.
   // Windows regex requires 2+ chars to exclude single-letter native drive letters
@@ -1172,7 +1169,7 @@ function validatePath(
       }
     }
 
-    // For read operations with path traversal (e.g., /project/*/../../../etc/shadow),
+    // For read operations with path traversal (e.g., /project/    */../../../etc/shadow),
     // resolve the full path (including glob chars) and validate that resolved path.
     // This catches patterns that escape the working directory via `..` after the glob.
     if (containsPathTraversal(normalizedPath)) {
@@ -1200,13 +1197,12 @@ function validatePath(
     // statically validated. getGlobBaseDirectory returns the directory before
     // the first glob char; only that base is realpathed. Anything matched by
     // the glob (including symlinks) is never examined. Example:
-    //   /project/*/passwd with symlink /project/link → /etc
+    // /project/*    /passwd with symlink /project/link → /etc
     // Base dir is /project (allowed), but runtime expands * to 'link' and
     // reads /etc/passwd. We cannot validate symlinks inside glob expansion
     // without actually expanding the glob (requires filesystem access and
     // still races with attacker creating symlinks post-validation).
-    //
-    // Still check deny rules on the base directory so explicit Read(/project/**)
+    // // Still check deny rules on the base directory so explicit Read(/project/**)
     // deny rules fire. If no deny matches, force ask.
     const basePath = getGlobBaseDirectory(normalizedPath)
     const absoluteBasePath = isAbsolute(basePath)
@@ -1290,17 +1286,17 @@ function getGlobBaseDirectory(filePath: string): string {
  * Any other type (e.g., 'Other' for ArrayLiteralExpressionAst, 'SubExpression',
  * 'ScriptBlock', 'Variable', 'ExpandableString') cannot be statically validated
  * and must force an ask.
- */
+     */
 const SAFE_PATH_ELEMENT_TYPES = new Set<string>(['StringConstant', 'Parameter'])
 
-/**
+/*    *
  * Extract file paths from a parsed PowerShell command element.
  * Uses the AST args to find positional and named path parameters.
  *
  * If any path argument has a complex elementType (e.g., array literal,
  * subexpression) that cannot be statically validated, sets
  * hasUnvalidatablePathArg so the caller can force an ask.
- */
+     */
 function extractPathsFromCommand(cmd: ParsedCommandElement): {
   paths: string[]
   operationType: FileOperationType
@@ -1507,7 +1503,7 @@ function extractPathsFromCommand(cmd: ParsedCommandElement): {
   }
 }
 
-/**
+/*    *
  * Checks path constraints for PowerShell commands.
  * Extracts file paths from the parsed AST and validates they are
  * within allowed directories.
@@ -1524,7 +1520,7 @@ function extractPathsFromCommand(cmd: ParsedCommandElement): {
  * - 'ask' if any path command tries to access outside allowed directories
  * - 'deny' if a deny rule explicitly blocks the path
  * - 'passthrough' if no path commands were found or all paths are valid
- */
+     */
 export function checkPathConstraints(
   input: { command: string },
   parsed: ParsedPowerShellCommand,
@@ -1576,27 +1572,24 @@ function checkPathConstraintsForStatement(
 
   // SECURITY: BashTool parity — block path operations in compound commands
   // containing a cwd-changing cmdlet (BashTool/pathValidation.ts:630-655).
-  //
-  // When the compound contains Set-Location/Push-Location/Pop-Location/
+  // // When the compound contains Set-Location/Push-Location/Pop-Location/
   // New-PSDrive, relative paths in later statements resolve against the
   // CHANGED cwd at runtime, but this validator resolves them against the
   // STALE getCwd() snapshot. Example attack (finding #3):
-  //   Set-Location ./.claude; Set-Content ./settings.json '...'
+  // Set-Location ./.claude; Set-Content ./settings.json '...'
   // Validator sees ./settings.json → /project/settings.json (not a config file).
   // Runtime writes /project/.claude/settings.json (Claude's permission config).
-  //
-  // ALTERNATIVE APPROACH (rejected): simulate cwd through the statement chain
+  // // ALTERNATIVE APPROACH (rejected): simulate cwd through the statement chain
   // — after `Set-Location ./.claude`, validate subsequent statements with
   // cwd='./.claude'. This would be more permissive but requires careful
   // handling of:
-  //   - Push-Location/Pop-Location stack semantics
-  //   - Set-Location with no args (→ home on some platforms)
-  //   - New-PSDrive root mapping (arbitrary filesystem root)
-  //   - Conditional/loop statements where cd may or may not execute
-  //   - Error cases where the cd target can't be statically determined
+  // - Push-Location/Pop-Location stack semantics
+  // - Set-Location with no args (→ home on some platforms)
+  // - New-PSDrive root mapping (arbitrary filesystem root)
+  // - Conditional/loop statements where cd may or may not execute
+  // - Error cases where the cd target can't be statically determined
   // For now we take the conservative approach of requiring manual approval.
-  //
-  // Unlike BashTool which gates on `operationType !== 'read'`, we also block
+  // // Unlike BashTool which gates on `operationType !== 'read'`, we also block
   // READS (finding #27): `Set-Location ~; Get-Content ./.ssh/id_rsa` bypasses
   // Read(~/.ssh/**) deny rules because the validator matched the deny against
   // /project/.ssh/id_rsa. Reads from mis-resolved paths leak data just as

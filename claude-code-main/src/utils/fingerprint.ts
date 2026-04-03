@@ -1,18 +1,18 @@
 import { createHash } from 'crypto'
 import type { AssistantMessage, UserMessage } from '../types/message.js'
 
-/**
+/*    *
  * Hardcoded salt from backend validation.
  * Must match exactly for fingerprint validation to pass.
- */
+     */
 export const FINGERPRINT_SALT = '59cf53e54c78'
 
-/**
+/*    *
  * Extracts text content from the first user message.
  *
  * @param messages - Array of internal message types
  * @returns First text content, or empty string if not found
- */
+     */
 export function extractFirstMessageText(
   messages: (UserMessage | AssistantMessage)[],
 ): string {
@@ -37,7 +37,7 @@ export function extractFirstMessageText(
   return ''
 }
 
-/**
+/*    *
  * Computes 3-character fingerprint for Claude Code attribution.
  * Algorithm: SHA256(SALT + msg[4] + msg[7] + msg[20] + version)[:3]
  * IMPORTANT: Do not change this method without careful coordination with
@@ -46,7 +46,7 @@ export function extractFirstMessageText(
  * @param messageText - First user message text content
  * @param version - Version string (from MACRO.VERSION)
  * @returns 3-character hex fingerprint
- */
+     */
 export function computeFingerprint(
   messageText: string,
   version: string,
@@ -62,12 +62,12 @@ export function computeFingerprint(
   return hash.slice(0, 3)
 }
 
-/**
+/*    *
  * Computes fingerprint from the first user message.
  *
  * @param messages - Array of normalized messages
  * @returns 3-character hex fingerprint
- */
+     */
 export function computeFingerprintFromMessages(
   messages: (UserMessage | AssistantMessage)[],
 ): string {

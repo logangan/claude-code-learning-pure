@@ -8,10 +8,10 @@ import type { SettingsJson } from './types.js'
 import { SettingsSchema } from './types.js'
 import { getValidationTip } from './validationTips.js'
 
-/**
+/*    *
  * Helper type guards for specific Zod v4 issue types
  * In v4, issue types have different structures than v3
- */
+     */
 function isInvalidTypeIssue(issue: ZodIssue): issue is ZodIssue & {
   code: 'invalid_type'
   expected: string
@@ -42,31 +42,31 @@ function isTooSmallIssue(issue: ZodIssue): issue is ZodIssue & {
   return issue.code === 'too_small'
 }
 
-/** Field path in dot notation (e.g., "permissions.defaultMode", "env.DEBUG") */
+/*    * Field path in dot notation (e.g., "permissions.defaultMode", "env.DEBUG")     */
 export type FieldPath = string
 
 export type ValidationError = {
-  /** Relative file path */
+  /*    * Relative file path     */
   file?: string
-  /** Field path in dot notation */
+  /*    * Field path in dot notation     */
   path: FieldPath
-  /** Human-readable error message */
+  /*    * Human-readable error message     */
   message: string
-  /** Expected value or type */
+  /*    * Expected value or type     */
   expected?: string
-  /** The actual invalid value that was provided */
+  /*    * The actual invalid value that was provided     */
   invalidValue?: unknown
-  /** Suggestion for fixing the error */
+  /*    * Suggestion for fixing the error     */
   suggestion?: string
-  /** Link to relevant documentation */
+  /*    * Link to relevant documentation     */
   docLink?: string
-  /** MCP-specific metadata - only present for MCP configuration errors */
+  /*    * MCP-specific metadata - only present for MCP configuration errors     */
   mcpErrorMetadata?: {
-    /** Which configuration scope this error came from */
+    /*    * Which configuration scope this error came from     */
     scope: ConfigScope
-    /** The server name if error is specific to a server */
+    /*    * The server name if error is specific to a server     */
     serverName?: string
-    /** Severity of the error */
+    /*    * Severity of the error     */
     severity?: 'fatal' | 'warning'
   }
 }
@@ -76,12 +76,12 @@ export type SettingsWithErrors = {
   errors: ValidationError[]
 }
 
-/**
+/*    *
  * Format a Zod validation error into human-readable validation errors
- */
-/**
+     */
+/*    *
  * Get the type string for an unknown value (for error messages)
- */
+     */
 function getReceivedType(value: unknown): string {
   if (value === null) return 'null'
   if (value === undefined) return 'undefined'
@@ -172,10 +172,10 @@ export function formatZodError(
   })
 }
 
-/**
+/*    *
  * Validates that settings file content conforms to the SettingsSchema.
  * This is used during file edits to ensure the resulting file is valid.
- */
+     */
 export function validateSettingsFileContent(content: string):
   | {
       isValid: true
@@ -216,11 +216,11 @@ export function validateSettingsFileContent(content: string):
   }
 }
 
-/**
+/*    *
  * Filters invalid permission rules from raw parsed JSON data before schema validation.
  * This prevents one bad rule from poisoning the entire settings file.
  * Returns warnings for each filtered rule.
- */
+     */
 export function filterInvalidPermissionRules(
   data: unknown,
   filePath: string,

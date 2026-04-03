@@ -66,11 +66,11 @@ export async function getImageProcessor(): Promise<SharpFunction> {
   return sharp
 }
 
-/**
+/*    *
  * Get image creator for generating new images from scratch.
  * Note: image-processor-napi doesn't support image creation,
  * so this always uses sharp directly.
- */
+     */
 export async function getImageCreator(): Promise<SharpCreator> {
   if (imageCreatorModule) {
     return imageCreatorModule.default

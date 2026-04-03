@@ -7,11 +7,11 @@ import { logError } from './log.js'
 // Cached stdin override - computed once per process
 let cachedStdinOverride: ReadStream | undefined | null = null
 
-/**
+/*    *
  * Gets a ReadStream for /dev/tty when stdin is piped.
  * This allows interactive Ink rendering even when stdin is a pipe.
  * Result is cached for the lifetime of the process.
- */
+     */
 function getStdinOverride(): ReadStream | undefined {
   // Return cached result if already computed
   if (cachedStdinOverride !== null) {
@@ -59,12 +59,12 @@ function getStdinOverride(): ReadStream | undefined {
   }
 }
 
-/**
+/*    *
  * Returns base render options for Ink, including stdin override when needed.
  * Use this for all render() calls to ensure piped input works correctly.
  *
  * @param exitOnCtrlC - Whether to exit on Ctrl+C (usually false for dialogs)
- */
+     */
 export function getBaseRenderOptions(
   exitOnCtrlC: boolean = false,
 ): RenderOptions {

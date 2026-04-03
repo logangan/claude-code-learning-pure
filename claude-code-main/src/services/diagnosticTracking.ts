@@ -65,10 +65,10 @@ export class DiagnosticTrackingService {
     this.lastProcessedTimestamps.clear()
   }
 
-  /**
+  /*    *
    * Reset tracking state while keeping the service initialized.
    * This clears all tracked files and diagnostics.
-   */
+       */
   reset() {
     this.baseline.clear()
     this.rightFileDiagnosticsState.clear()
@@ -78,7 +78,7 @@ export class DiagnosticTrackingService {
   private normalizeFileUri(fileUri: string): string {
     // Remove our protocol prefixes
     const protocolPrefixes = [
-      'file://',
+      'file:// ',
       '_claude_fs_right:',
       '_claude_fs_left:',
     ]
@@ -96,10 +96,10 @@ export class DiagnosticTrackingService {
     return normalizePathForComparison(normalized)
   }
 
-  /**
+  /*    *
    * Ensure a file is opened in the IDE before processing.
    * This is important for language services like diagnostics to work properly.
-   */
+       */
   async ensureFileOpened(fileUri: string): Promise<void> {
     if (
       !this.initialized ||
@@ -128,10 +128,10 @@ export class DiagnosticTrackingService {
     }
   }
 
-  /**
+  /*    *
    * Capture baseline diagnostics for a specific file before editing.
    * This is called before editing a file to ensure we have a baseline to compare against.
-   */
+       */
   async beforeFileEdited(filePath: string): Promise<void> {
     if (
       !this.initialized ||
@@ -146,7 +146,7 @@ export class DiagnosticTrackingService {
     try {
       const result = await callIdeRpc(
         'getDiagnostics',
-        { uri: `file://${filePath}` },
+        { uri: `file:// ${filePath}` },
         this.mcpClient,
       )
       const diagnosticFile = this.parseDiagnosticResult(result)[0]
@@ -181,10 +181,10 @@ export class DiagnosticTrackingService {
     }
   }
 
-  /**
-   * Get new diagnostics from file://, _claude_fs_right, and _claude_fs_ URIs that aren't in the baseline.
+  /*    *
+   * Get new diagnostics from file:// , _claude_fs_right, and _claude_fs_ URIs that aren't in the baseline.
    * Only processes diagnostics for files that have been edited.
-   */
+       */
   async getNewDiagnostics(): Promise<DiagnosticFile[]> {
     if (
       !this.initialized ||
@@ -209,7 +209,7 @@ export class DiagnosticTrackingService {
     }
     const diagnosticsForFileUrisWithBaselines = allDiagnosticFiles
       .filter(file => this.baseline.has(this.normalizeFileUri(file.uri)))
-      .filter(file => file.uri.startsWith('file://'))
+      .filter(file => file.uri.startsWith('file:// '))
 
     const diagnosticsForClaudeFsRightUrisWithBaselinesMap = new Map<
       string,
@@ -318,7 +318,7 @@ export class DiagnosticTrackingService {
     )
   }
 
-  /**
+  /*    *
    * Handle the start of a new query. This method:
    * - Initializes the diagnostic tracker if not already initialized
    * - Resets the tracker if already initialized (for new query loops)
@@ -326,7 +326,7 @@ export class DiagnosticTrackingService {
    *
    * @param clients Array of MCP clients that may include an IDE client
    * @param shouldQuery Whether a query is actually being made (not just a command)
-   */
+       */
   async handleQueryStart(clients: MCPServerConnection[]): Promise<void> {
     // Only proceed if we should query and have clients
     if (!this.initialized) {
@@ -342,13 +342,13 @@ export class DiagnosticTrackingService {
     }
   }
 
-  /**
+  /*    *
    * Format diagnostics into a human-readable summary string.
    * This is useful for displaying diagnostics in messages or logs.
    *
    * @param files Array of diagnostic files to format
    * @returns Formatted string representation of the diagnostics
-   */
+       */
   static formatDiagnosticsSummary(files: DiagnosticFile[]): string {
     const truncationMarker = '…[truncated]'
     const result = files
@@ -379,9 +379,9 @@ export class DiagnosticTrackingService {
     return result
   }
 
-  /**
+  /*    *
    * Get the severity symbol for a diagnostic
-   */
+       */
   static getSeveritySymbol(severity: Diagnostic['severity']): string {
     return (
       {

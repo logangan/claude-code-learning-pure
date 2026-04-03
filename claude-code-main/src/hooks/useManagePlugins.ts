@@ -22,7 +22,7 @@ import { detectAndUninstallDelistedPlugins } from '../utils/plugins/pluginBlockl
 import { getFlaggedPlugins } from '../utils/plugins/pluginFlagging.js'
 import { loadAllPlugins } from '../utils/plugins/pluginLoader.js'
 
-/**
+/*    *
  * Hook to manage plugin state and synchronize with AppState.
  *
  * On mount: loads all plugins, runs delisting enforcement, surfaces flagged-
@@ -33,7 +33,7 @@ import { loadAllPlugins } from '../utils/plugins/pluginLoader.js'
  * Does NOT auto-refresh. All Layer-3 swap (commands, agents, hooks, MCP)
  * goes through refreshActivePlugins() via /reload-plugins for one consistent
  * mental model. See Outline: declarative-settings-hXHBMDIf4b PR 5c.
- */
+     */
 export function useManagePlugins({
   enabled = true,
 }: {
@@ -114,8 +114,7 @@ export function useManagePlugins({
       // with this metric. Calling loadPluginMcpServers directly (as
       // cli/handlers/plugins.ts does) gives the correct count and also
       // warms the cache for the MCP connection manager.
-      //
-      // Runs BEFORE setAppState so any errors pushed by these loaders make it
+      // // Runs BEFORE setAppState so any errors pushed by these loaders make it
       // into AppState.plugins.errors (Doctor UI), not just telemetry.
       const mcpServerCounts = await Promise.all(
         enabled.map(async p => {

@@ -1,11 +1,11 @@
 import { getSettingsForSource } from '../settings/settings.js'
 
-/**
+/*    *
  * Plugin names locked by org policy (policySettings.enabledPlugins).
  *
  * Returns null when managed settings declare no plugin entries (common
  * case — no policy in effect).
- */
+     */
 export function getManagedPluginNames(): Set<string> | null {
   const enabledPlugins = getSettingsForSource('policySettings')?.enabledPlugins
   if (!enabledPlugins) {

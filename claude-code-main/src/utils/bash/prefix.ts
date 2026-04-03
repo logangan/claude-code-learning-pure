@@ -120,7 +120,7 @@ async function handleWrapper(
   return !result?.commandPrefix ? null : `${command} ${result.commandPrefix}`
 }
 
-/**
+/*    *
  * Computes prefixes for a compound command (with && / || / ;).
  * For single commands, returns a single-element array with the prefix.
  *
@@ -131,7 +131,7 @@ async function handleWrapper(
  * @param excludeSubcommand — optional filter; return true for subcommands
  *   that should be excluded from the prefix suggestion (e.g. read-only
  *   commands that are already auto-allowed).
- */
+     */
 export async function getCompoundCommandPrefixesStatic(
   command: string,
   excludeSubcommand?: (subcommand: string) => boolean,
@@ -174,11 +174,11 @@ export async function getCompoundCommandPrefixesStatic(
   return collapsed
 }
 
-/**
+/*    *
  * Compute the longest common prefix of strings, aligned to word boundaries.
  * e.g. ["git fetch", "git worktree"] → "git"
  *      ["npm run test", "npm run lint"] → "npm run"
- */
+     */
 function longestCommonPrefix(strings: string[]): string {
   if (strings.length === 0) return ''
   if (strings.length === 1) return strings[0]!

@@ -27,45 +27,45 @@ type BetaJSONOutputFormat = Anthropic.Beta.Messages.BetaJSONOutputFormat
 type BetaThinkingConfigParam = Anthropic.Beta.Messages.BetaThinkingConfigParam
 
 export type SideQueryOptions = {
-  /** Model to use for the query */
+  /*    * Model to use for the query     */
   model: string
-  /**
+  /*    *
    * System prompt - string or array of text blocks (will be prefixed with CLI attribution).
    *
    * The attribution header is always placed in its own TextBlockParam block to ensure
    * server-side parsing correctly extracts the cc_entrypoint value without including
    * system prompt content.
-   */
+       */
   system?: string | TextBlockParam[]
-  /** Messages to send (supports cache_control on content blocks) */
+  /*    * Messages to send (supports cache_control on content blocks)     */
   messages: MessageParam[]
-  /** Optional tools (supports both standard Tool[] and BetaToolUnion[] for custom tool types) */
+  /*    * Optional tools (supports both standard Tool[] and BetaToolUnion[] for custom tool types)     */
   tools?: Tool[] | BetaToolUnion[]
-  /** Optional tool choice (use { type: 'tool', name: 'x' } for forced output) */
+  /*    * Optional tool choice (use { type: 'tool', name: 'x' } for forced output)     */
   tool_choice?: ToolChoice
-  /** Optional JSON output format for structured responses */
+  /*    * Optional JSON output format for structured responses     */
   output_format?: BetaJSONOutputFormat
-  /** Max tokens (default: 1024) */
+  /*    * Max tokens (default: 1024)     */
   max_tokens?: number
-  /** Max retries (default: 2) */
+  /*    * Max retries (default: 2)     */
   maxRetries?: number
-  /** Abort signal */
+  /*    * Abort signal     */
   signal?: AbortSignal
-  /** Skip CLI system prompt prefix (keeps attribution header for OAuth). For internal classifiers that provide their own prompt. */
+  /*    * Skip CLI system prompt prefix (keeps attribution header for OAuth). For internal classifiers that provide their own prompt.     */
   skipSystemPromptPrefix?: boolean
-  /** Temperature override */
+  /*    * Temperature override     */
   temperature?: number
-  /** Thinking budget (enables thinking), or `false` to send `{ type: 'disabled' }`. */
+  /*    * Thinking budget (enables thinking), or `false` to send `{ type: 'disabled' }`.     */
   thinking?: number | false
-  /** Stop sequences — generation stops when any of these strings is emitted */
+  /*    * Stop sequences — generation stops when any of these strings is emitted     */
   stop_sequences?: string[]
-  /** Attributes this call in tengu_api_success for COGS joining against reporting.sampling_calls. */
+  /*    * Attributes this call in tengu_api_success for COGS joining against reporting.sampling_calls.     */
   querySource: QuerySource
 }
 
-/**
+/*    *
  * Extract text from first user message for fingerprint computation.
- */
+     */
 function extractFirstUserMessageText(messages: MessageParam[]): string {
   const firstUserMessage = messages.find(m => m.role === 'user')
   if (!firstUserMessage) return ''
@@ -78,7 +78,7 @@ function extractFirstUserMessageText(messages: MessageParam[]): string {
   return textBlock?.type === 'text' ? textBlock.text : ''
 }
 
-/**
+/*    *
  * Lightweight API wrapper for "side queries" outside the main conversation loop.
  *
  * Use this instead of direct client.beta.messages.create() calls to ensure
@@ -103,7 +103,7 @@ function extractFirstUserMessageText(messages: MessageParam[]): string {
  * @example
  * // Model validation
  * await sideQuery({ querySource: 'model_validation', model, max_tokens: 1, messages: [{ role: 'user', content: 'Hi' }] })
- */
+     */
 export async function sideQuery(opts: SideQueryOptions): Promise<BetaMessage> {
   const {
     model,

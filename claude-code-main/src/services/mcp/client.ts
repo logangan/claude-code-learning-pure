@@ -113,7 +113,7 @@ import { buildMcpToolName } from './mcpStringUtils.js'
 import { normalizeNameForMCP } from './normalization.js'
 import { getLoggingSafeMcpBaseUrl } from './utils.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const fetchMcpSkillsForClient = feature('MCP_SKILLS')
   ? (
       require('../../skills/mcpSkills.js') as typeof import('../../skills/mcpSkills.js')
@@ -122,7 +122,7 @@ const fetchMcpSkillsForClient = feature('MCP_SKILLS')
 
 import { UnauthorizedError } from '@modelcontextprotocol/sdk/client/auth.js'
 import type { AssistantMessage } from 'src/types/message.js'
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import { classifyMcpToolForCollapse } from '../../tools/MCPTool/classifyForCollapse.js'
 import { clearKeychainCache } from '../../utils/secureStorage/macOsKeychainHelpers.js'
 import { sleep } from '../../utils/sleep.js'
@@ -143,12 +143,12 @@ import type {
   ServerResource,
 } from './types.js'
 
-/**
+/*    *
  * Custom error class to indicate that an MCP tool call failed due to
  * authentication issues (e.g., expired OAuth token returning 401).
  * This error should be caught at the tool execution layer to update
  * the client's status to 'needs-auth'.
- */
+     */
 export class McpAuthError extends Error {
   serverName: string
   constructor(serverName: string, message: string) {
@@ -158,10 +158,10 @@ export class McpAuthError extends Error {
   }
 }
 
-/**
+/*    *
  * Thrown when an MCP session has expired and the connection cache has been cleared.
  * The caller should get a fresh client via ensureConnectedClient and retry.
- */
+     */
 class McpSessionExpiredError extends Error {
   constructor(serverName: string) {
     super(`MCP server "${serverName}" session expired`)
@@ -169,11 +169,11 @@ class McpSessionExpiredError extends Error {
   }
 }
 
-/**
+/*    *
  * Thrown when an MCP tool returns `isError: true`. Carries the result's `_meta`
  * so SDK consumers can still receive it — per the MCP spec, `_meta` is on the
  * base Result type and is valid on error results.
- */
+     */
 export class McpToolCallError_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS extends TelemetrySafeError_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS {
   constructor(
     message: string,
@@ -185,11 +185,11 @@ export class McpToolCallError_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS extends T
   }
 }
 
-/**
+/*    *
  * Detects whether an error is an MCP "Session not found" error (HTTP 404 + JSON-RPC code -32001).
  * Per the MCP spec, servers return 404 when a session ID is no longer valid.
  * We check both signals to avoid false positives from generic 404s (wrong URL, server gone, etc.).
- */
+     */
 export function isMcpSessionExpiredError(error: Error): boolean {
   const httpStatus =
     'code' in error ? (error as Error & { code?: number }).code : undefined
@@ -205,22 +205,22 @@ export function isMcpSessionExpiredError(error: Error): boolean {
   )
 }
 
-/**
+/*    *
  * Default timeout for MCP tool calls (effectively infinite - ~27.8 hours).
- */
+     */
 const DEFAULT_MCP_TOOL_TIMEOUT_MS = 100_000_000
 
-/**
+/*    *
  * Cap on MCP tool descriptions and server instructions sent to the model.
  * OpenAPI-generated MCP servers have been observed dumping 15-60KB of endpoint
  * docs into tool.description; this caps the p95 tail without losing the intent.
- */
+     */
 const MAX_MCP_DESCRIPTION_LENGTH = 2048
 
-/**
+/*    *
  * Gets the timeout for MCP tool calls in milliseconds.
  * Uses MCP_TOOL_TIMEOUT environment variable if set, otherwise defaults to ~27.8 hours.
- */
+     */
 function getMcpToolTimeoutMs(): number {
   return (
     parseInt(process.env.MCP_TOOL_TIMEOUT || '', 10) ||
@@ -231,7 +231,7 @@ function getMcpToolTimeoutMs(): number {
 import { isClaudeInChromeMCPServer } from '../../utils/claudeInChrome/common.js'
 
 // Lazy: toolRendering.tsx pulls React/ink; only needed when Claude-in-Chrome MCP server is connected
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const claudeInChromeToolRendering =
   (): typeof import('../../utils/claudeInChrome/toolRendering.js') =>
     require('../../utils/claudeInChrome/toolRendering.js')
@@ -251,7 +251,7 @@ const isComputerUseMCPServer = feature('CHICAGO_MCP')
 import { mkdir, readFile, unlink, writeFile } from 'fs/promises'
 import { dirname, join } from 'path'
 import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import { jsonParse, jsonStringify } from '../../utils/slowOperations.js'
 
 const MCP_AUTH_CACHE_TTL_MS = 15 * 60 * 1000 // 15 min
@@ -315,11 +315,11 @@ export function clearMcpAuthCache(): void {
   })
 }
 
-/**
+/*    *
  * Spread-ready analytics field for the server's base URL. Calls
  * getLoggingSafeMcpBaseUrl once (not twice like the inline ternary it replaces).
  * Typed as AnalyticsMetadata since the URL is query-stripped and safe to log.
- */
+     */
 function mcpBaseUrlAnalytics(serverRef: ScopedMcpServerConfig): {
   mcpServerBaseUrl?: AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
 } {
@@ -332,11 +332,11 @@ function mcpBaseUrlAnalytics(serverRef: ScopedMcpServerConfig): {
     : {}
 }
 
-/**
+/*    *
  * Shared handler for sse/http/claudeai-proxy auth failures during connect:
  * emits tengu_mcp_server_needs_auth, caches the needs-auth entry, and returns
  * the needs-auth connection result.
- */
+     */
 function handleRemoteAuthFailure(
   name: string,
   serverRef: ScopedMcpServerConfig,
@@ -360,7 +360,7 @@ function handleRemoteAuthFailure(
   return { name, type: 'needs-auth', config: serverRef }
 }
 
-/**
+/*    *
  * Fetch wrapper for claude.ai proxy connections. Attaches the OAuth bearer
  * token and retries once on 401 via handleOAuth401Error (force-refresh).
  *
@@ -368,7 +368,7 @@ function handleRemoteAuthFailure(
  * memoize-cache staleness and clock drift. Without the same here, a single
  * stale token mass-401s every claude.ai connector and sticks them all in the
  * 15-min needs-auth cache.
- */
+     */
 export function createClaudeAiProxyFetch(innerFetch: FetchLike): FetchLike {
   return async (url, init) => {
     const doRequest = async () => {
@@ -428,11 +428,11 @@ type WsClientLike = {
   send(data: string): void
 }
 
-/**
+/*    *
  * Create a ws.WebSocket client with the MCP protocol.
  * Bun's ws shim types lack the 3-arg constructor (url, protocols, options)
  * that the real ws package supports, so we cast the constructor here.
- */
+     */
 async function createNodeWsClient(
   url: string,
   options: Record<string, unknown>,
@@ -457,20 +457,20 @@ function getConnectionTimeoutMs(): number {
   return parseInt(process.env.MCP_TIMEOUT || '', 10) || 30000
 }
 
-/**
+/*    *
  * Default timeout for individual MCP requests (auth, tool calls, etc.)
- */
+     */
 const MCP_REQUEST_TIMEOUT_MS = 60000
 
-/**
+/*    *
  * MCP Streamable HTTP spec requires clients to advertise acceptance of both
  * JSON and SSE on every POST. Servers that enforce this strictly reject
  * requests without it (HTTP 406).
- * https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#sending-messages-to-the-server
- */
+ * https:// modelcontextprotocol.io/specification/2025-03-26/basic/transports#sending-messages-to-the-server
+     */
 const MCP_STREAMABLE_HTTP_ACCEPT = 'application/json, text/event-stream'
 
-/**
+/*    *
  * Wraps a fetch function to apply a fresh timeout signal to each request.
  * This avoids the bug where a single AbortSignal.timeout() created at connection
  * time becomes stale after 60 seconds, causing all subsequent requests to fail
@@ -480,7 +480,7 @@ const MCP_STREAMABLE_HTTP_ACCEPT = 'application/json, text/event-stream'
  * present on POSTs. The MCP SDK sets this inside StreamableHTTPClientTransport.send(),
  * but it is attached to a Headers instance that passes through an object spread here,
  * and some runtimes/agents have been observed dropping it before it reaches the wire.
- * See https://github.com/anthropics/claude-agent-sdk-typescript/issues/202.
+ * See https:// github.com/anthropics/claude-agent-sdk-typescript/issues/202.
  * Normalizing here (the last wrapper before fetch()) guarantees it is sent.
  *
  * GET requests are excluded from the timeout since, for MCP transports, they are
@@ -488,7 +488,7 @@ const MCP_STREAMABLE_HTTP_ACCEPT = 'application/json, text/event-stream'
  * a separate fetch wrapper with its own timeout in auth.ts.)
  *
  * @param baseFetch - The fetch function to wrap
- */
+     */
 export function wrapFetchWithTimeout(baseFetch: FetchLike): FetchLike {
   return async (url: string | URL, init?: RequestInit) => {
     const method = (init?.method ?? 'GET').toUpperCase()
@@ -572,12 +572,12 @@ function isIncludedMcpTool(tool: Tool): boolean {
   )
 }
 
-/**
+/*    *
  * Generates the cache key for a server connection
  * @param name Server name
  * @param serverRef Server configuration
  * @returns Cache key string
- */
+     */
 export function getServerCacheKey(
   name: string,
   serverRef: ScopedMcpServerConfig,
@@ -585,13 +585,13 @@ export function getServerCacheKey(
   return `${name}-${jsonStringify(serverRef)}`
 }
 
-/**
+/*    *
  * TODO (ollie): The memoization here increases complexity by a lot, and im not sure it really improves performance
  * Attempts to connect to a single MCP server
  * @param name Server name
  * @param serverRef Scoped server configuration
  * @returns A wrapped client (either connected or failed)
- */
+     */
 export const connectToServer = memoize(
   async (
     name: string,
@@ -1011,7 +1011,7 @@ export const connectToServer = memoize(
         return {
           roots: [
             {
-              uri: `file://${getOriginalCwd()}`,
+              uri: `file:// ${getOriginalCwd()}`,
             },
           ],
         }
@@ -1640,11 +1640,11 @@ export const connectToServer = memoize(
   getServerCacheKey,
 )
 
-/**
+/*    *
  * Clears the memoize cache for a specific server
  * @param name Server name
  * @param serverRef Server configuration
- */
+     */
 export async function clearServerCache(
   name: string,
   serverRef: ScopedMcpServerConfig,
@@ -1672,7 +1672,7 @@ export async function clearServerCache(
   }
 }
 
-/**
+/*    *
  * Ensures a valid connected client for an MCP server.
  * For most server types, uses the memoization cache if available, or reconnects
  * if the cache was cleared (e.g., after onclose). This ensures tool/resource
@@ -1684,7 +1684,7 @@ export async function clearServerCache(
  * @param client The connected MCP server client
  * @returns Connected MCP server client (same or reconnected)
  * @throws Error if server cannot be connected
- */
+     */
 export async function ensureConnectedClient(
   client: ConnectedMCPServer,
 ): Promise<ConnectedMCPServer> {
@@ -1703,10 +1703,10 @@ export async function ensureConnectedClient(
   return connectedClient
 }
 
-/**
+/*    *
  * Compares two MCP server configurations to determine if they are equivalent.
  * Used to detect when a server needs to be reconnected due to config changes.
- */
+     */
 export function areMcpConfigsEqual(
   a: ScopedMcpServerConfig,
   b: ScopedMcpServerConfig,
@@ -1725,11 +1725,11 @@ export function areMcpConfigsEqual(
 // reconnects), bounded to prevent unbounded growth with many MCP servers.
 const MCP_FETCH_CACHE_SIZE = 20
 
-/**
+/*    *
  * Encode MCP tool input for the auto-mode security classifier.
  * Exported so the auto-mode eval scripts can mirror production encoding
  * for `mcp__*` tool stubs without duplicating this logic.
- */
+     */
 export function mcpToolInputToAutoClassifierInput(
   input: Record<string, unknown>,
   toolName: string,
@@ -2106,13 +2106,13 @@ export const fetchCommandsForClient = memoizeWithLRU(
   MCP_FETCH_CACHE_SIZE,
 )
 
-/**
+/*    *
  * Call an IDE tool directly as an RPC
  * @param toolName The name of the tool to call
  * @param args The arguments to pass to the tool
  * @param client The IDE client to use for the RPC call
  * @returns The result of the tool call
- */
+     */
 export async function callIdeRpc(
   toolName: string,
   args: Record<string, unknown>,
@@ -2127,13 +2127,13 @@ export async function callIdeRpc(
   return result.content
 }
 
-/**
+/*    *
  * Note: This should not be called by UI components directly, they should use the reconnectMcpServer
  * function from useManageMcpConnections.
  * @param name Server name
  * @param config Server configuration
  * @returns Object containing the client connection and its resources
- */
+     */
 export async function reconnectMcpServerImpl(
   name: string,
   config: ScopedMcpServerConfig,
@@ -2472,9 +2472,9 @@ export function prefetchAllMcpResources(
   })
 }
 
-/**
+/*    *
  * Transform result content from an MCP tool or MCP prompt into message blocks
- */
+     */
 export async function transformResultContent(
   resultContent: PromptMessage['content'],
   serverName: string,
@@ -2590,11 +2590,11 @@ export async function transformResultContent(
   }
 }
 
-/**
+/*    *
  * Decode base64 binary content, write it to disk with the proper extension,
  * and return a small text block with the file path. Replaces the old behavior
  * of dumping raw base64 into the context.
- */
+     */
 async function persistBlobToTextBlock(
   bytes: Buffer,
   mimeType: string | undefined,
@@ -2626,9 +2626,9 @@ async function persistBlobToTextBlock(
   ]
 }
 
-/**
+/*    *
  * Processes MCP tool result into a normalized format.
- */
+     */
 export type MCPResultType = 'toolResult' | 'structuredContent' | 'contentArray'
 
 export type TransformedMCPResult = {
@@ -2637,10 +2637,10 @@ export type TransformedMCPResult = {
   schema?: string
 }
 
-/**
+/*    *
  * Generates a compact, jq-friendly type signature for a value.
  * e.g. "{title: string, items: [{id: number, name: string}]}"
- */
+     */
 export function inferCompactSchema(value: unknown, depth = 2): string {
   if (value === null) return 'null'
   if (Array.isArray(value)) {
@@ -2705,11 +2705,11 @@ export async function transformMCPResult(
   )
 }
 
-/**
+/*    *
  * Check if MCP content contains any image blocks.
  * Used to decide whether to persist to file (images should use truncation instead
  * to preserve image compression and viewability).
- */
+     */
 function contentContainsImages(content: MCPToolResult): boolean {
   if (!content || typeof content === 'string') {
     return false
@@ -2798,18 +2798,18 @@ export async function processMCPResult(
   )
 }
 
-/**
+/*    *
  * Call an MCP tool, handling UrlElicitationRequiredError (-32042) by
  * displaying the URL elicitation to the user, waiting for the completion
  * notification, and retrying the tool call.
- */
+     */
 type MCPToolCallResult = {
   content: MCPToolResult
   _meta?: Record<string, unknown>
   structuredContent?: Record<string, unknown>
 }
 
-/** @internal Exported for testing. */
+/*    * @internal Exported for testing.     */
 export async function callMCPToolWithUrlElicitationRetry({
   client: connectedClient,
   clientConnection,
@@ -2830,7 +2830,7 @@ export async function callMCPToolWithUrlElicitationRetry({
   signal: AbortSignal
   setAppState: (f: (prev: AppState) => AppState) => void
   onProgress?: (data: MCPProgress) => void
-  /** Injectable for testing. Defaults to callMCPTool. */
+  /*    * Injectable for testing. Defaults to callMCPTool.     */
   callToolFn?: (opts: {
     client: ConnectedMCPServer
     tool: string
@@ -2839,8 +2839,8 @@ export async function callMCPToolWithUrlElicitationRetry({
     signal: AbortSignal
     onProgress?: (data: MCPProgress) => void
   }) => Promise<MCPToolCallResult>
-  /** Handler for URL elicitations when no hook handles them.
-   * In print/SDK mode, delegates to structuredIO. In REPL, falls back to queue. */
+  /*    * Handler for URL elicitations when no hook handles them.
+   * In print/SDK mode, delegates to structuredIO. In REPL, falls back to queue.     */
   handleElicitation?: (
     serverName: string,
     params: ElicitRequestURLParams,
@@ -3210,8 +3210,8 @@ async function callMCPTool({
       // Check for session expiry — two error shapes can surface here:
       // 1. Direct 404 + JSON-RPC -32001 from the server (StreamableHTTPError)
       // 2. -32000 "Connection closed" (McpError) — the SDK closes the transport
-      //    after the onerror handler fires, so the pending callTool() rejects
-      //    with this derived error instead of the original 404.
+      // after the onerror handler fires, so the pending callTool() rejects
+      // with this derived error instead of the original 404.
       // In both cases, clear the connection cache so the next tool call
       // creates a fresh session.
       const isSessionExpired = isMcpSessionExpiredError(e)
@@ -3251,14 +3251,14 @@ function extractToolUseId(message: AssistantMessage): string | undefined {
   return message.message.content[0].id
 }
 
-/**
+/*    *
  * Sets up SDK MCP clients by creating transports and connecting them.
  * This is used for SDK MCP servers that run in the same process as the SDK.
  *
  * @param sdkMcpConfigs - The SDK MCP server configurations
  * @param sendMcpMessage - Callback to send MCP messages through the control channel
  * @returns Connected clients, their tools, and transport map for message routing
- */
+     */
 export async function setupSdkMcpClients(
   sdkMcpConfigs: Record<string, McpSdkServerConfig>,
   sendMcpMessage: (

@@ -1,8 +1,8 @@
-/**
+/*    *
  * Vim Operator Functions
  *
  * Pure functions for executing vim operators (delete, change, yank, etc.)
- */
+     */
 
 import { Cursor } from '../utils/Cursor.js'
 import { firstGrapheme, lastGrapheme } from '../utils/intl.js'
@@ -20,9 +20,9 @@ import type {
   TextObjScope,
 } from './types.js'
 
-/**
+/*    *
  * Context for operator execution.
- */
+     */
 export type OperatorContext = {
   cursor: Cursor
   text: string
@@ -36,9 +36,9 @@ export type OperatorContext = {
   recordChange: (change: RecordedChange) => void
 }
 
-/**
+/*    *
  * Execute an operator with a simple motion.
- */
+     */
 export function executeOperatorMotion(
   op: Operator,
   motion: string,
@@ -53,9 +53,9 @@ export function executeOperatorMotion(
   ctx.recordChange({ type: 'operator', op, motion, count })
 }
 
-/**
+/*    *
  * Execute an operator with a find motion.
- */
+     */
 export function executeOperatorFind(
   op: Operator,
   findType: FindType,
@@ -74,9 +74,9 @@ export function executeOperatorFind(
   ctx.recordChange({ type: 'operatorFind', op, find: findType, char, count })
 }
 
-/**
+/*    *
  * Execute an operator with a text object.
- */
+     */
 export function executeOperatorTextObj(
   op: Operator,
   scope: TextObjScope,
@@ -96,9 +96,9 @@ export function executeOperatorTextObj(
   ctx.recordChange({ type: 'operatorTextObj', op, objType, scope, count })
 }
 
-/**
+/*    *
  * Execute a line operation (dd, cc, yy).
- */
+     */
 export function executeLineOp(
   op: Operator,
   count: number,
@@ -165,9 +165,9 @@ export function executeLineOp(
   ctx.recordChange({ type: 'operator', op, motion: op[0]!, count })
 }
 
-/**
+/*    *
  * Execute delete character (x command).
- */
+     */
 export function executeX(count: number, ctx: OperatorContext): void {
   const from = ctx.cursor.offset
 
@@ -193,9 +193,9 @@ export function executeX(count: number, ctx: OperatorContext): void {
   ctx.recordChange({ type: 'x', count })
 }
 
-/**
+/*    *
  * Execute replace character (r command).
- */
+     */
 export function executeReplace(
   char: string,
   count: number,
@@ -216,9 +216,9 @@ export function executeReplace(
   ctx.recordChange({ type: 'replace', char, count })
 }
 
-/**
+/*    *
  * Execute toggle case (~ command).
- */
+     */
 export function executeToggleCase(count: number, ctx: OperatorContext): void {
   const startOffset = ctx.cursor.offset
 
@@ -252,9 +252,9 @@ export function executeToggleCase(count: number, ctx: OperatorContext): void {
   ctx.recordChange({ type: 'toggleCase', count })
 }
 
-/**
+/*    *
  * Execute join lines (J command).
- */
+     */
 export function executeJoin(count: number, ctx: OperatorContext): void {
   const text = ctx.text
   const lines = text.split('\n')
@@ -288,9 +288,9 @@ export function executeJoin(count: number, ctx: OperatorContext): void {
   ctx.recordChange({ type: 'join', count })
 }
 
-/**
+/*    *
  * Execute paste (p/P command).
- */
+     */
 export function executePaste(
   after: boolean,
   count: number,
@@ -342,9 +342,9 @@ export function executePaste(
   }
 }
 
-/**
+/*    *
  * Execute indent (>> command).
- */
+     */
 export function executeIndent(
   dir: '>' | '<',
   count: number,
@@ -391,9 +391,9 @@ export function executeIndent(
   ctx.recordChange({ type: 'indent', dir, count })
 }
 
-/**
+/*    *
  * Execute open line (o/O command).
- */
+     */
 export function executeOpenLine(
   direction: 'above' | 'below',
   ctx: OperatorContext,
@@ -419,9 +419,9 @@ export function executeOpenLine(
 // Internal Helpers
 // ============================================================================
 
-/**
+/*    *
  * Calculate the offset of a line's start position.
- */
+     */
 function getLineStartOffset(lines: string[], lineIndex: number): number {
   return lines.slice(0, lineIndex).join('\n').length + (lineIndex > 0 ? 1 : 0)
 }
@@ -474,11 +474,11 @@ function getOperatorRange(
   return { from, to, linewise }
 }
 
-/**
+/*    *
  * Get the range for a find-based operator.
  * Note: _findType is unused because Cursor.findCharacter already adjusts
  * the offset for t/T motions. All find types are treated as inclusive here.
- */
+     */
 function getOperatorRangeForFind(
   cursor: Cursor,
   target: Cursor,

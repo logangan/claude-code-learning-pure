@@ -28,10 +28,10 @@ import { SSETransport } from './transports/SSETransport.js'
 import type { Transport } from './transports/Transport.js'
 import { getTransportForUrl } from './transports/transportUtils.js'
 
-/**
+/*    *
  * Bidirectional streaming for SDK mode with session tracking
  * Supports WebSocket transport
- */
+     */
 export class RemoteIO extends StructuredIO {
   private url: URL
   private transport: Transport
@@ -222,12 +222,12 @@ export class RemoteIO extends StructuredIO {
     return this.ccrClient?.internalEventsPending ?? 0
   }
 
-  /**
+  /*    *
    * Send output to the transport.
    * In bridge mode, control_request messages are always echoed to stdout so the
    * bridge parent can detect permission requests. Other messages are echoed only
    * in debug mode.
-   */
+       */
   async write(message: StdoutMessage): Promise<void> {
     if (this.ccrClient) {
       await this.ccrClient.writeEvent(message)
@@ -241,9 +241,9 @@ export class RemoteIO extends StructuredIO {
     }
   }
 
-  /**
+  /*    *
    * Clean up connections gracefully
-   */
+       */
   close(): void {
     if (this.keepAliveTimer) {
       clearInterval(this.keepAliveTimer)

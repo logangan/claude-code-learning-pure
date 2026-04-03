@@ -1,6 +1,6 @@
-/**
+/*    *
  * Checks if input matches negative keyword patterns
- */
+     */
 export function matchesNegativeKeyword(input: string): boolean {
   const lowerInput = input.toLowerCase()
 
@@ -10,9 +10,9 @@ export function matchesNegativeKeyword(input: string): boolean {
   return negativePattern.test(lowerInput)
 }
 
-/**
+/*    *
  * Checks if input matches keep going/continuation patterns
- */
+     */
 export function matchesKeepGoingKeyword(input: string): boolean {
   const lowerInput = input.toLowerCase().trim()
 

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Plugin installation for headless/CCR mode.
  *
  * This module provides plugin installation without AppState updates,
@@ -7,7 +7,7 @@
  * When CLAUDE_CODE_PLUGIN_USE_ZIP_CACHE is enabled, plugins are stored as
  * ZIPs on a mounted volume. The storage layer (pluginLoader.ts) handles
  * ZIP creation on install and extraction on load transparently.
- */
+     */
 
 import { logEvent } from '../../services/analytics/index.js'
 import { registerCleanup } from '../cleanupRegistry.js'
@@ -32,14 +32,14 @@ import {
 } from './zipCache.js'
 import { syncMarketplacesToZipCache } from './zipCacheAdapters.js'
 
-/**
+/*    *
  * Install plugins for headless/CCR mode.
  *
  * This is the headless equivalent of performBackgroundPluginInstallations(),
  * but without AppState updates (no UI to update in headless mode).
  *
  * @returns true if any plugins were installed (caller should refresh MCP)
- */
+     */
 export async function installPluginsForHeadless(): Promise<boolean> {
   const zipCacheMode = isPluginZipCacheEnabled()
   logForDebugging(
@@ -49,8 +49,7 @@ export async function installPluginsForHeadless(): Promise<boolean> {
   // Register seed marketplaces (CLAUDE_CODE_PLUGIN_SEED_DIR) before diffing.
   // Idempotent; no-op if seed not configured. Without this, findMissingMarketplaces
   // would see seed entries as missing → clone → defeats seed's purpose.
-  //
-  // If registration changed state, clear caches so the early plugin-load pass
+  // // If registration changed state, clear caches so the early plugin-load pass
   // (which runs during CLI startup before this function) doesn't keep stale
   // "marketplace not found" results. Without this clear, a first-boot headless
   // run with a seed-cached plugin would show 0 plugin commands/agents/skills

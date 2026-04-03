@@ -12,9 +12,9 @@ const LIMITS = {
   MIN_COMPRESSION_RATIO: 0.5, // Below 0.5:1 might indicate already compressed malicious content
 }
 
-/**
+/*    *
  * State tracker for zip file validation during extraction
- */
+     */
 type ZipValidationState = {
   fileCount: number
   totalUncompressedSize: number
@@ -22,25 +22,25 @@ type ZipValidationState = {
   errors: string[]
 }
 
-/**
+/*    *
  * File metadata from fflate filter
- */
+     */
 type ZipFileMetadata = {
   name: string
   originalSize?: number
 }
 
-/**
+/*    *
  * Result of validating a single file in a zip archive
- */
+     */
 type FileValidationResult = {
   isValid: boolean
   error?: string
 }
 
-/**
+/*    *
  * Validates a file path to prevent path traversal attacks
- */
+     */
 export function isPathSafe(filePath: string): boolean {
   if (containsPathTraversal(filePath)) {
     return false
@@ -57,9 +57,9 @@ export function isPathSafe(filePath: string): boolean {
   return true
 }
 
-/**
+/*    *
  * Validates a single file during zip extraction
- */
+     */
 export function validateZipFile(
   file: ZipFileMetadata,
   state: ZipValidationState,
@@ -101,7 +101,7 @@ export function validateZipFile(
   return error ? { isValid: false, error } : { isValid: true }
 }
 
-/**
+/*    *
  * Unzips data from a Buffer and returns its contents as a record of file paths to Uint8Array data.
  * Uses unzipSync to avoid fflate worker termination crashes in bun.
  * Accepts raw zip bytes so that the caller can read the file asynchronously.
@@ -109,7 +109,7 @@ export function validateZipFile(
  * fflate is lazy-imported to avoid its ~196KB of top-level lookup tables (revfd
  * Int32Array(32769), rev Uint16Array(32768), etc.) being allocated at startup
  * when this module is reached via the plugin loader chain.
- */
+     */
 export async function unzipFile(
   zipData: Buffer,
 ): Promise<Record<string, Uint8Array>> {
@@ -140,7 +140,7 @@ export async function unzipFile(
   return result
 }
 
-/**
+/*    *
  * Parse Unix file modes from a zip's central directory.
  *
  * fflate's `unzipSync` returns only `Record<string, Uint8Array>` — it does not
@@ -156,15 +156,15 @@ export async function unzipFile(
  * Format per PKZIP APPNOTE.TXT §4.3.12 (central directory) and §4.3.16 (EOCD).
  * ZIP64 is not handled — returns `{}` on archives >4GB or >65535 entries,
  * which is fine for marketplace zips (~3.5MB) and MCPB bundles.
- */
+     */
 export function parseZipModes(data: Uint8Array): Record<string, number> {
   // Buffer view for readUInt* methods — shares memory, no copy.
   const buf = Buffer.from(data.buffer, data.byteOffset, data.byteLength)
   const modes: Record<string, number> = {}
 
   // 1. Find the End of Central Directory record (sig 0x06054b50). It lives in
-  //    the trailing 22 + 65535 bytes (fixed EOCD size + max comment length).
-  //    Scan backwards — the EOCD is typically the last 22 bytes.
+  // the trailing 22 + 65535 bytes (fixed EOCD size + max comment length).
+  // Scan backwards — the EOCD is typically the last 22 bytes.
   const minEocd = Math.max(0, buf.length - 22 - 0xffff)
   let eocd = -1
   for (let i = buf.length - 22; i >= minEocd; i--) {
@@ -179,7 +179,7 @@ export function parseZipModes(data: Uint8Array): Record<string, number> {
   let off = buf.readUInt32LE(eocd + 16) // central directory start offset
 
   // 2. Walk central directory entries (sig 0x02014b50). Each entry has a
-  //    46-byte fixed header followed by variable-length name/extra/comment.
+  // 46-byte fixed header followed by variable-length name/extra/comment.
   for (let i = 0; i < entryCount; i++) {
     if (off + 46 > buf.length || buf.readUInt32LE(off) !== 0x02014b50) break
     const versionMadeBy = buf.readUInt16LE(off + 4)
@@ -202,10 +202,10 @@ export function parseZipModes(data: Uint8Array): Record<string, number> {
   return modes
 }
 
-/**
+/*    *
  * Reads a zip file from disk asynchronously and unzips it.
  * Returns its contents as a record of file paths to Uint8Array data.
- */
+     */
 export async function readAndUnzipFile(
   filePath: string,
 ): Promise<Record<string, Uint8Array>> {

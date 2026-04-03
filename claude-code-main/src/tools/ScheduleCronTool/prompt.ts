@@ -8,7 +8,7 @@ const KAIROS_CRON_REFRESH_MS = 5 * 60 * 1000
 export const DEFAULT_MAX_AGE_DAYS =
   DEFAULT_CRON_JITTER_CONFIG.recurringMaxAgeMs / (24 * 60 * 60 * 1000)
 
-/**
+/*    *
  * Unified gate for the cron scheduling system. Combines the build-time
  * `feature('AGENT_TRIGGERS')` flag (dead code elimination) with the runtime
  * `tengu_kairos_cron` GrowthBook gate on a 5-minute refresh window.
@@ -32,7 +32,7 @@ export const DEFAULT_MAX_AGE_DAYS =
  * schedulers on their next isKilled poll tick, not just new ones.
  *
  * `CLAUDE_CODE_DISABLE_CRON` is a local override that wins over GB.
- */
+     */
 export function isKairosCronEnabled(): boolean {
   return feature('AGENT_TRIGGERS')
     ? !isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_CRON) &&
@@ -44,7 +44,7 @@ export function isKairosCronEnabled(): boolean {
     : false
 }
 
-/**
+/*    *
  * Kill switch for disk-persistent (durable) cron tasks. Narrower than
  * {@link isKairosCronEnabled} — flipping this off forces `durable: false` at
  * the call() site, leaving session-only cron (in-memory, GA) untouched.
@@ -52,7 +52,7 @@ export function isKairosCronEnabled(): boolean {
  * Defaults to `true` so Bedrock/Vertex/Foundry and DISABLE_TELEMETRY users get
  * durable cron. Does NOT consult CLAUDE_CODE_DISABLE_CRON (that kills the whole
  * scheduler via isKairosCronEnabled).
- */
+     */
 export function isDurableCronEnabled(): boolean {
   return getFeatureValue_CACHED_WITH_REFRESH(
     'tengu_kairos_cron_durable',

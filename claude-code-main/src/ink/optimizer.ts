@@ -1,6 +1,6 @@
 import type { Diff } from './frame.js'
 
-/**
+/*    *
  * Optimize a diff by applying all optimization rules in a single pass.
  * This reduces the number of patches that need to be written to the terminal.
  *
@@ -12,7 +12,7 @@ import type { Diff } from './frame.js'
  * - Dedupe consecutive hyperlinks with same URI
  * - Cancel cursor hide/show pairs
  * - Remove clear patches with count 0
- */
+     */
 export function optimize(diff: Diff): Diff {
   if (diff.length <= 1) {
     return diff

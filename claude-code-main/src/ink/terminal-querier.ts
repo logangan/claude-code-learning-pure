@@ -1,4 +1,4 @@
-/**
+/*    *
  * Query the terminal and await responses without timeouts.
  *
  * Terminal queries (DECRQM, DA1, OSC 11, etc.) share the stdin stream
@@ -18,19 +18,19 @@
  *     querier.flush(),
  *   ])
  *   // sync and grapheme are DECRPM responses or undefined if unsupported
- */
+     */
 
 import type { TerminalResponse } from './parse-keypress.js'
 import { csi } from './termio/csi.js'
 import { osc } from './termio/osc.js'
 
-/** A terminal query: an outbound request sequence paired with a matcher
+/*    * A terminal query: an outbound request sequence paired with a matcher
  *  that recognizes the expected inbound response. Built by `decrqm()`,
- *  `oscColor()`, `kittyKeyboard()`, etc. */
+ *  `oscColor()`, `kittyKeyboard()`, etc.     */
 export type TerminalQuery<T extends TerminalResponse = TerminalResponse> = {
-  /** Escape sequence to write to stdout */
+  /*    * Escape sequence to write to stdout     */
   request: string
-  /** Recognizes the expected response in the inbound stream */
+  /*    * Recognizes the expected response in the inbound stream     */
   match: (r: TerminalResponse) => r is T
 }
 
@@ -44,8 +44,8 @@ type XtversionResponse = Extract<TerminalResponse, { type: 'xtversion' }>
 
 // -- Query builders --
 
-/** DECRQM: request DEC private mode status (CSI ? mode $ p).
- *  Terminal replies with DECRPM (CSI ? mode ; status $ y) or ignores. */
+/*    * DECRQM: request DEC private mode status (CSI ? mode $ p).
+ *  Terminal replies with DECRPM (CSI ? mode ; status $ y) or ignores.     */
 export function decrqm(mode: number): TerminalQuery<DecrpmResponse> {
   return {
     request: csi(`?${mode}$p`),
@@ -53,9 +53,9 @@ export function decrqm(mode: number): TerminalQuery<DecrpmResponse> {
   }
 }
 
-/** Primary Device Attributes query (CSI c). Every terminal answers this —
+/*    * Primary Device Attributes query (CSI c). Every terminal answers this —
  *  used internally by flush() as a universal sentinel. Call directly if
- *  you want the DA1 params. */
+ *  you want the DA1 params.     */
 export function da1(): TerminalQuery<Da1Response> {
   return {
     request: csi('c'),
@@ -63,7 +63,7 @@ export function da1(): TerminalQuery<Da1Response> {
   }
 }
 
-/** Secondary Device Attributes query (CSI > c). Returns terminal version. */
+/*    * Secondary Device Attributes query (CSI > c). Returns terminal version.     */
 export function da2(): TerminalQuery<Da2Response> {
   return {
     request: csi('>c'),
@@ -71,8 +71,8 @@ export function da2(): TerminalQuery<Da2Response> {
   }
 }
 
-/** Query current Kitty keyboard protocol flags (CSI ? u).
- *  Terminal replies with CSI ? flags u or ignores. */
+/*    * Query current Kitty keyboard protocol flags (CSI ? u).
+ *  Terminal replies with CSI ? flags u or ignores.     */
 export function kittyKeyboard(): TerminalQuery<KittyResponse> {
   return {
     request: csi('?u'),
@@ -80,10 +80,10 @@ export function kittyKeyboard(): TerminalQuery<KittyResponse> {
   }
 }
 
-/** DECXCPR: request cursor position with DEC-private marker (CSI ? 6 n).
+/*    * DECXCPR: request cursor position with DEC-private marker (CSI ? 6 n).
  *  Terminal replies with CSI ? row ; col R. The `?` marker is critical —
  *  the plain DSR form (CSI 6 n → CSI row;col R) is ambiguous with
- *  modified F3 keys (Shift+F3 = CSI 1;2 R, etc.). */
+ *  modified F3 keys (Shift+F3 = CSI 1;2 R, etc.).     */
 export function cursorPosition(): TerminalQuery<CursorPosResponse> {
   return {
     request: csi('?6n'),
@@ -91,8 +91,8 @@ export function cursorPosition(): TerminalQuery<CursorPosResponse> {
   }
 }
 
-/** OSC dynamic color query (e.g. OSC 11 for bg color, OSC 10 for fg).
- *  The `?` data slot asks the terminal to reply with the current value. */
+/*    * OSC dynamic color query (e.g. OSC 11 for bg color, OSC 10 for fg).
+ *  The `?` data slot asks the terminal to reply with the current value.     */
 export function oscColor(code: number): TerminalQuery<OscResponse> {
   return {
     request: osc(code, '?'),
@@ -100,11 +100,11 @@ export function oscColor(code: number): TerminalQuery<OscResponse> {
   }
 }
 
-/** XTVERSION: request terminal name/version (CSI > 0 q).
+/*    * XTVERSION: request terminal name/version (CSI > 0 q).
  *  Terminal replies with DCS > | name ST (e.g. "xterm.js(5.5.0)") or ignores.
  *  This survives SSH — the query goes through the pty, not the environment,
  *  so it identifies the *client* terminal even when TERM_PROGRAM isn't
- *  forwarded. Used to detect xterm.js for wheel-scroll compensation. */
+ *  forwarded. Used to detect xterm.js for wheel-scroll compensation.     */
 export function xtversion(): TerminalQuery<XtversionResponse> {
   return {
     request: csi('>0q'),
@@ -114,7 +114,7 @@ export function xtversion(): TerminalQuery<XtversionResponse> {
 
 // -- Querier --
 
-/** Sentinel request sequence (DA1). Kept internal; flush() writes it. */
+/*    * Sentinel request sequence (DA1). Kept internal; flush() writes it.     */
 const SENTINEL = csi('c')
 
 type Pending =
@@ -126,16 +126,16 @@ type Pending =
   | { kind: 'sentinel'; resolve: () => void }
 
 export class TerminalQuerier {
-  /**
+  /*    *
    * Interleaved queue of queries and sentinels in send order. Terminals
    * respond in order, so each flush() barrier only drains queries queued
    * before it — concurrent batches from independent callers stay isolated.
-   */
+       */
   private queue: Pending[] = []
 
   constructor(private stdout: NodeJS.WriteStream) {}
 
-  /**
+  /*    *
    * Send a query and wait for its response.
    *
    * Resolves with the response when `query.match` matches an incoming
@@ -144,7 +144,7 @@ export class TerminalQuerier {
    *
    * Never rejects; never times out on its own. If you never call flush()
    * and the terminal doesn't respond, the promise remains pending.
-   */
+       */
   send<T extends TerminalResponse>(
     query: TerminalQuery<T>,
   ): Promise<T | undefined> {
@@ -158,7 +158,7 @@ export class TerminalQuerier {
     })
   }
 
-  /**
+  /*    *
    * Send the DA1 sentinel. Resolves when DA1's response arrives.
    *
    * As a side effect, all queries still pending when DA1 arrives are
@@ -166,7 +166,7 @@ export class TerminalQuerier {
    * the query). This is the barrier that makes send() timeout-free.
    *
    * Safe to call with no pending queries — still waits for a round-trip.
-   */
+       */
   flush(): Promise<void> {
     return new Promise(resolve => {
       this.queue.push({ kind: 'sentinel', resolve })
@@ -174,7 +174,7 @@ export class TerminalQuerier {
     })
   }
 
-  /**
+  /*    *
    * Dispatch a response parsed from stdin. Called by App.tsx's
    * processKeysInBatch for every `kind: 'response'` item.
    *
@@ -191,7 +191,7 @@ export class TerminalQuerier {
    *   sentinel keeps later batches intact when multiple callers have
    *   concurrent queries in flight.
    * - Unsolicited responses (no match, no sentinel) are silently dropped.
-   */
+       */
   onResponse(r: TerminalResponse): void {
     const idx = this.queue.findIndex(p => p.kind === 'query' && p.match(r))
     if (idx !== -1) {

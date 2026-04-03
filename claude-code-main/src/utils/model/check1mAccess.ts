@@ -3,11 +3,11 @@ import { isClaudeAISubscriber } from '../auth.js'
 import { getGlobalConfig } from '../config.js'
 import { is1mContextDisabled } from '../context.js'
 
-/**
+/*    *
  * Check if extra usage is enabled based on the cached disabled reason.
  * Extra usage is considered enabled if there's no disabled reason,
  * or if the disabled reason indicates it's provisioned but temporarily unavailable.
- */
+     */
 function isExtraUsageEnabled(): boolean {
   const reason = getGlobalConfig().cachedExtraUsageDisabledReason
   // undefined = no cache yet, treat as not enabled (conservative)

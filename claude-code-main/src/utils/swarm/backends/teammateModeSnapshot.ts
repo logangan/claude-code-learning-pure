@@ -1,10 +1,10 @@
-/**
+/*    *
  * Teammate mode snapshot module.
  *
  * Captures the teammate mode at session startup, following the same pattern
  * as hooksConfigSnapshot.ts. This ensures that runtime config changes don't
  * affect the teammate mode for the current session.
- */
+     */
 
 import { getGlobalConfig } from '../../../utils/config.js'
 import { logForDebugging } from '../../../utils/debug.js'
@@ -18,28 +18,28 @@ let initialTeammateMode: TeammateMode | null = null
 // CLI override (set before capture if --teammate-mode is provided)
 let cliTeammateModeOverride: TeammateMode | null = null
 
-/**
+/*    *
  * Set the CLI override for teammate mode.
  * Must be called before captureTeammateModeSnapshot().
- */
+     */
 export function setCliTeammateModeOverride(mode: TeammateMode): void {
   cliTeammateModeOverride = mode
 }
 
-/**
+/*    *
  * Get the current CLI override, if any.
  * Returns null if no CLI override was set.
- */
+     */
 export function getCliTeammateModeOverride(): TeammateMode | null {
   return cliTeammateModeOverride
 }
 
-/**
+/*    *
  * Clear the CLI override and update the snapshot to the new mode.
  * Called when user changes the setting in the UI, allowing their change to take effect.
  *
  * @param newMode - The new mode the user selected (passed directly to avoid race condition)
- */
+     */
 export function clearCliTeammateModeOverride(newMode: TeammateMode): void {
   cliTeammateModeOverride = null
   initialTeammateMode = newMode
@@ -48,11 +48,11 @@ export function clearCliTeammateModeOverride(newMode: TeammateMode): void {
   )
 }
 
-/**
+/*    *
  * Capture the teammate mode at session startup.
  * Called early in main.tsx, after CLI args are parsed.
  * CLI override takes precedence over config.
- */
+     */
 export function captureTeammateModeSnapshot(): void {
   if (cliTeammateModeOverride) {
     initialTeammateMode = cliTeammateModeOverride
@@ -68,10 +68,10 @@ export function captureTeammateModeSnapshot(): void {
   }
 }
 
-/**
+/*    *
  * Get the teammate mode for this session.
  * Returns the snapshot captured at startup, ignoring any runtime config changes.
- */
+     */
 export function getTeammateModeFromSnapshot(): TeammateMode {
   if (initialTeammateMode === null) {
     // This indicates an initialization bug - capture should happen in setup()

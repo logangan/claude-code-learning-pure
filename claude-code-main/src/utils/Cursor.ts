@@ -6,13 +6,13 @@ import {
   getWordSegmenter,
 } from './intl.js'
 
-/**
+/*    *
  * Kill ring for storing killed (cut) text that can be yanked (pasted) with Ctrl+Y.
  * This is global state that shares one kill ring across all input fields.
  *
  * Consecutive kills accumulate in the kill ring until the user types some
  * other key. Alt+Y cycles through previous kills after a yank.
- */
+     */
 const KILL_RING_MAX_SIZE = 10
 let killRing: string[] = []
 let killRingIndex = 0
@@ -110,7 +110,7 @@ export function resetYankState(): void {
   lastActionWasYank = false
 }
 
-/**
+/*    *
  * Text Processing Flow for Unicode Normalization:
  *
  * User Input (raw text, potentially mixed NFD/NFC)
@@ -128,7 +128,7 @@ export function resetYankState(): void {
  *
  * RULE: Once text enters MeasuredText, all operations
  * work on the normalized version.
- */
+     */
 
 // Pre-compiled regex patterns for Vim word detection (avoid creating in hot loops)
 export const VIM_WORD_CHAR_REGEX = /^[\p{L}\p{N}\p{M}_]$/u
@@ -318,10 +318,10 @@ export class Cursor {
     return new Cursor(this.measuredText, Math.min(nextOffset, this.text.length))
   }
 
-  /**
+  /*    *
    * If an [Image #N] chip ends at `offset`, return its bounds. Used by left()
    * to hop the cursor over the chip instead of stepping into it.
-   */
+       */
   imageRefEndingAt(offset: number): { start: number; end: number } | null {
     const m = this.text.slice(0, offset).match(/\[Image #\d+\]$/)
     return m ? { start: offset - m[0].length, end: offset } : null
@@ -332,11 +332,11 @@ export class Cursor {
     return m ? { start: offset, end: offset + m[0].length } : null
   }
 
-  /**
+  /*    *
    * If offset lands strictly inside an [Image #N] chip, snap it to the given
    * boundary. Used by word-movement methods so Ctrl+W / Alt+D never leave a
    * partial chip.
-   */
+       */
   snapOutOfImageRef(offset: number, toward: 'start' | 'end'): number {
     const re = /\[Image #\d+\]/g
     let m
@@ -407,10 +407,10 @@ export class Cursor {
     return new Cursor(this.measuredText, newOffset, 0)
   }
 
-  /**
+  /*    *
    * Move to the start of the current line (column 0).
    * This is the raw version used internally by startOfLine.
-   */
+       */
   private startOfCurrentLine(): Cursor {
     const { line } = this.getPosition()
     return new Cursor(
@@ -923,7 +923,7 @@ export class Cursor {
     return { cursor: prevWordCursor.modifyText(this), killed }
   }
 
-  /**
+  /*    *
    * Deletes a token before the cursor if one exists.
    * Supports pasted text refs: [Pasted text #1], [Pasted text #1 +10 lines],
    * [...Truncated text #1 +10 lines...]
@@ -933,7 +933,7 @@ export class Cursor {
    *
    * Returns null if no token found at cursor position.
    * Only triggers when cursor is at end of token (followed by whitespace or EOL).
-   */
+       */
   deleteTokenBefore(): Cursor | null {
     // Cursor at chip.start is the "selected" state — backspace deletes the
     // chip forward, not the char before it.
@@ -1051,14 +1051,14 @@ export class Cursor {
     return this.measuredText.getOffsetFromPosition(position)
   }
 
-  /**
+  /*    *
    * Find a character using vim f/F/t/T semantics.
    *
    * @param char - The character to find
    * @param type - 'f' (forward to), 'F' (backward to), 't' (forward till), 'T' (backward till)
    * @param count - Find the Nth occurrence
    * @returns The target offset, or null if not found
-   */
+       */
   findCharacter(
     char: string,
     type: 'f' | 'F' | 't' | 'T',
@@ -1136,10 +1136,10 @@ export class MeasuredText {
     this.navigationCache = new Map()
   }
 
-  /**
+  /*    *
    * Lazily computes and caches wrapped lines.
    * This expensive operation is deferred until actually needed.
-   */
+       */
   private get wrappedLines(): WrappedLine[] {
     if (!this._wrappedLines) {
       this._wrappedLines = this.measureWrappedText()
@@ -1165,11 +1165,11 @@ export class MeasuredText {
     isWordLike: boolean
   }>
 
-  /**
+  /*    *
    * Get word boundaries using Intl.Segmenter for proper Unicode word segmentation.
    * This correctly handles CJK (Chinese, Japanese, Korean) text where each character
    * is typically its own word, as well as scripts that use spaces between words.
-   */
+       */
   public getWordBoundaries(): Array<{
     start: number
     end: number
@@ -1188,13 +1188,13 @@ export class MeasuredText {
     return this.wordBoundariesCache
   }
 
-  /**
+  /*    *
    * Binary search for boundaries.
    * @param boundaries: Sorted array of boundaries
    * @param target: Target offset
    * @param findNext: If true, finds first boundary > target. If false, finds last boundary < target.
    * @returns The found boundary index, or appropriate default
-   */
+       */
   private binarySearchBoundary(
     boundaries: number[],
     target: number,
@@ -1264,9 +1264,9 @@ export class MeasuredText {
     return currentOffset
   }
 
-  /**
+  /*    *
    * Find the string offset that corresponds to a target display width.
-   */
+       */
   private offsetAtDisplayWidth(targetWidth: number): number {
     if (targetWidth <= 0) return 0
 
@@ -1509,10 +1509,10 @@ export class MeasuredText {
     })
   }
 
-  /**
+  /*    *
    * Snap an arbitrary code-unit offset to the start of the containing grapheme.
    * If offset is already on a boundary, returns it unchanged.
-   */
+       */
   snapToGraphemeBoundary(offset: number): number {
     if (offset <= 0) return 0
     if (offset >= this.text.length) return this.text.length

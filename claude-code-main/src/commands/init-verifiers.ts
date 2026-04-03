@@ -127,7 +127,7 @@ Based on the areas detected in Phase 1, you may need to create multiple verifier
 
    For web apps (playwright):
    - Dev server command (e.g., "npm run dev")
-   - Dev server URL (e.g., "http://localhost:3000")
+   - Dev server URL (e.g., "http:// localhost:3000")
    - Ready signal (text that appears when server is ready)
 
    For CLI tools:
@@ -152,7 +152,7 @@ Based on the areas detected in Phase 1, you may need to create multiple verifier
      - OAuth/SSO (redirect-based flow)
      - Other (let user describe)
    - **Test credentials**: What credentials should the verifier use?
-     - Ask for the login URL (e.g., "/login", "http://localhost:3000/auth")
+     - Ask for the login URL (e.g., "/login", "http:// localhost:3000/auth")
      - Ask for test username/email and password, or API key
      - Note: Suggest the user use environment variables for secrets (e.g., \`TEST_USER\`, \`TEST_PASSWORD\`) rather than hardcoding
    - **Post-login indicator**: How to confirm login succeeded?

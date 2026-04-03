@@ -1,4 +1,4 @@
-/**
+/*    *
  * Centralized plugin directory configuration.
  *
  * This module provides the single source of truth for the plugins directory path.
@@ -7,7 +7,7 @@
  * - Environment variable: CLAUDE_CODE_USE_COWORK_PLUGINS
  *
  * The base directory can be overridden via CLAUDE_CODE_PLUGIN_CACHE_DIR.
- */
+     */
 
 import { mkdirSync } from 'fs'
 import { readdir, rm, stat } from 'fs/promises'
@@ -22,7 +22,7 @@ import { expandTilde } from '../permissions/pathValidation.js'
 const PLUGINS_DIR = 'plugins'
 const COWORK_PLUGINS_DIR = 'cowork_plugins'
 
-/**
+/*    *
  * Get the plugins directory name based on current mode.
  * Uses session state (from --cowork flag) or env var.
  *
@@ -30,7 +30,7 @@ const COWORK_PLUGINS_DIR = 'cowork_plugins'
  * 1. Session state (set by CLI flag --cowork)
  * 2. Environment variable CLAUDE_CODE_USE_COWORK_PLUGINS
  * 3. Default: 'plugins'
- */
+     */
 function getPluginsDirectoryName(): string {
   // Session state takes precedence (set by CLI flag)
   if (getUseCoworkPlugins()) {
@@ -43,13 +43,13 @@ function getPluginsDirectoryName(): string {
   return PLUGINS_DIR
 }
 
-/**
+/*    *
  * Get the full path to the plugins directory.
  *
  * Priority:
  * 1. CLAUDE_CODE_PLUGIN_CACHE_DIR env var (explicit override)
  * 2. Default: ~/.claude/plugins or ~/.claude/cowork_plugins
- */
+     */
 export function getPluginsDirectory(): string {
   // expandTilde: when CLAUDE_CODE_PLUGIN_CACHE_DIR is set via settings.json
   // `env` (not shell), ~ is not expanded by the shell. Without this, a value
@@ -62,7 +62,7 @@ export function getPluginsDirectory(): string {
   return join(getClaudeConfigHomeDir(), getPluginsDirectoryName())
 }
 
-/**
+/*    *
  * Get the read-only plugin seed directories, if configured.
  *
  * Customers can pre-bake a populated plugins directory into their container
@@ -81,7 +81,7 @@ export function getPluginsDirectory(): string {
  *     cache/<marketplace>/<plugin>/<version>/...
  *
  * @returns Absolute paths to seed dirs in precedence order (empty if unset)
- */
+     */
 export function getPluginSeedDirs(): string[] {
   // Same tilde-expansion rationale as getPluginsDirectory (gh-30794).
   const raw = process.env.CLAUDE_CODE_PLUGIN_SEED_DIR
@@ -94,12 +94,12 @@ function sanitizePluginId(pluginId: string): string {
   return pluginId.replace(/[^a-zA-Z0-9\-_]/g, '-')
 }
 
-/** Pure path — no mkdir. For display (e.g. uninstall dialog). */
+/*    * Pure path — no mkdir. For display (e.g. uninstall dialog).     */
 export function pluginDataDirPath(pluginId: string): string {
   return join(getPluginsDirectory(), 'data', sanitizePluginId(pluginId))
 }
 
-/**
+/*    *
  * Persistent per-plugin data directory, exposed to plugins as
  * ${CLAUDE_PLUGIN_DATA}. Unlike the version-scoped install cache
  * (${CLAUDE_PLUGIN_ROOT}, which is orphaned and GC'd on every update),
@@ -115,18 +115,18 @@ export function pluginDataDirPath(pluginId: string): string {
  * Sync because it's called from substitutePluginVariables (sync, inside
  * String.replace) — making this async would cascade through 6 call sites
  * and their sync iteration loops. One mkdir in plugin-load path is cheap.
- */
+     */
 export function getPluginDataDir(pluginId: string): string {
   const dir = pluginDataDirPath(pluginId)
   mkdirSync(dir, { recursive: true })
   return dir
 }
 
-/**
+/*    *
  * Size of the data dir for the uninstall confirmation prompt. Returns null
  * when the dir is absent or empty so callers can skip the prompt entirely.
  * Recursive walk — not hot-path (only on uninstall).
- */
+     */
 export async function getPluginDataDirSize(
   pluginId: string,
 ): Promise<{ bytes: number; human: string } | null> {
@@ -159,12 +159,12 @@ export async function getPluginDataDirSize(
   return { bytes, human: formatFileSize(bytes) }
 }
 
-/**
+/*    *
  * Best-effort cleanup on last-scope uninstall. Failure is logged but does
  * not throw — the uninstall itself already succeeded; we don't want a
  * cleanup side-effect surfacing as "uninstall failed". Same rationale as
  * deletePluginOptions (pluginOptionsStorage.ts).
- */
+     */
 export async function deletePluginDataDir(pluginId: string): Promise<void> {
   const dir = pluginDataDirPath(pluginId)
   try {

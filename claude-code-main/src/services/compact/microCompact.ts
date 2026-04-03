@@ -80,11 +80,11 @@ function ensureCachedMCState(): import('./cachedMicrocompact.js').CachedMCState 
   return cachedMCState
 }
 
-/**
+/*    *
  * Get new pending cache edits to be included in the next API request.
  * Returns null if there are no new pending edits.
  * Clears the pending state (caller must pin them after insertion).
- */
+     */
 export function consumePendingCacheEdits():
   | import('./cachedMicrocompact.js').CacheEditsBlock
   | null {
@@ -93,10 +93,10 @@ export function consumePendingCacheEdits():
   return edits
 }
 
-/**
+/*    *
  * Get all previously-pinned cache edits that must be re-sent at their
  * original positions for cache hits.
- */
+     */
 export function getPinnedCacheEdits(): import('./cachedMicrocompact.js').PinnedCacheEdits[] {
   if (!cachedMCState) {
     return []
@@ -104,10 +104,10 @@ export function getPinnedCacheEdits(): import('./cachedMicrocompact.js').PinnedC
   return cachedMCState.pinnedEdits
 }
 
-/**
+/*    *
  * Pin a new cache_edits block to a specific user message position.
  * Called after inserting new edits so they are re-sent in subsequent calls.
- */
+     */
 export function pinCacheEdits(
   userMessageIndex: number,
   block: import('./cachedMicrocompact.js').CacheEditsBlock,
@@ -117,10 +117,10 @@ export function pinCacheEdits(
   }
 }
 
-/**
+/*    *
  * Marks all registered tools as sent to the API.
  * Called after a successful API response.
- */
+     */
 export function markToolsSentToAPIState(): void {
   if (cachedMCState && cachedMCModule) {
     cachedMCModule.markToolsSentToAPI(cachedMCState)
@@ -156,11 +156,11 @@ function calculateToolResultTokens(block: ToolResultBlockParam): number {
   }, 0)
 }
 
-/**
+/*    *
  * Estimate token count for messages by extracting text content
  * Used for rough token estimation when we don't have accurate API counts
  * Pads estimate by 4/3 to be conservative since we're approximating
- */
+     */
 export function estimateMessageTokens(messages: Message[]): number {
   let totalTokens = 0
 
@@ -219,10 +219,10 @@ export type MicrocompactResult = {
   }
 }
 
-/**
+/*    *
  * Walk messages and collect tool_use IDs whose tool name is in
  * COMPACTABLE_TOOLS, in encounter order. Shared by both microcompact paths.
- */
+     */
 function collectCompactableToolIds(messages: Message[]): string[] {
   const ids: string[] = []
   for (const message of messages) {
@@ -292,7 +292,7 @@ export async function microcompactMessages(
   return { messages }
 }
 
-/**
+/*    *
  * Cached microcompact path - uses cache editing API to remove tool results
  * without invalidating the cached prefix.
  *
@@ -301,7 +301,7 @@ export async function microcompactMessages(
  * - Uses count-based trigger/keep thresholds from GrowthBook config
  * - Takes precedence over regular microcompact (no disk persistence)
  * - Tracks tool results and queues cache edits for the API layer
- */
+     */
 async function cachedMicrocompactPath(
   messages: Message[],
   querySource: QuerySource | undefined,
@@ -398,7 +398,7 @@ async function cachedMicrocompactPath(
   return { messages }
 }
 
-/**
+/*    *
  * Time-based microcompact: when the gap since the last main-loop assistant
  * message exceeds the configured threshold, content-clear all but the most
  * recent N compactable tool results.
@@ -408,8 +408,8 @@ async function cachedMicrocompactPath(
  *
  * Unlike cached MC, this mutates message content directly. The cache is cold,
  * so there's no cached prefix to preserve via cache_edits.
- */
-/**
+     */
+/*    *
  * Check whether the time-based trigger should fire for this request.
  *
  * Returns the measured gap (minutes since last assistant message) when the
@@ -418,7 +418,7 @@ async function cachedMicrocompactPath(
  *
  * Extracted so other pre-request paths (e.g. snip force-apply) can consult
  * the same predicate without coupling to the tool-result clearing action.
- */
+     */
 export function evaluateTimeBasedTrigger(
   messages: Message[],
   querySource: QuerySource | undefined,

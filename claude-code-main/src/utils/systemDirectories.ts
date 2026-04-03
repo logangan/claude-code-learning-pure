@@ -19,11 +19,11 @@ type SystemDirectoriesOptions = {
   platform?: Platform
 }
 
-/**
+/*    *
  * Get cross-platform system directories
  * Handles differences between Windows, macOS, Linux, and WSL
  * @param options Optional overrides for testing (env, homedir, platform)
- */
+     */
 export function getSystemDirectories(
   options?: SystemDirectoriesOptions,
 ): SystemDirectories {

@@ -79,10 +79,10 @@ function getCommandFuse(commands: Command[]): Fuse<CommandSearchItem> {
   return fuse
 }
 
-/**
+/*    *
  * Type guard to check if a suggestion's metadata is a Command.
  * Commands have a name string and a type property.
- */
+     */
 function isCommandMetadata(metadata: unknown): metadata is Command {
   return (
     typeof metadata === 'object' &&
@@ -93,16 +93,16 @@ function isCommandMetadata(metadata: unknown): metadata is Command {
   )
 }
 
-/**
+/*    *
  * Represents a slash command found mid-input (not at the start)
- */
+     */
 export type MidInputSlashCommand = {
   token: string // e.g., "/com"
   startPos: number // Position of "/"
   partialCommand: string // e.g., "com"
 }
 
-/**
+/*    *
  * Finds a slash command token that appears mid-input (not at position 0).
  * A mid-input slash command is a "/" preceded by whitespace, where the cursor
  * is at or after the "/".
@@ -110,7 +110,7 @@ export type MidInputSlashCommand = {
  * @param input The full input string
  * @param cursorOffset The current cursor position
  * @returns The mid-input slash command info, or null if not found
- */
+     */
 export function findMidInputSlashCommand(
   input: string,
   cursorOffset: number,
@@ -153,14 +153,14 @@ export function findMidInputSlashCommand(
   }
 }
 
-/**
+/*    *
  * Finds the best matching command for a partial command string.
  * Delegates to generateCommandSuggestions and filters to prefix matches.
  *
  * @param partialCommand The partial command typed by the user (without "/")
  * @param commands Available commands
  * @returns The completion suffix (e.g., "mit" for partial "com" matching "commit"), or null
- */
+     */
 export function getBestCommandMatch(
   partialCommand: string,
   commands: Command[],
@@ -194,17 +194,17 @@ export function getBestCommandMatch(
   return null
 }
 
-/**
+/*    *
  * Checks if input is a command (starts with slash)
- */
+     */
 export function isCommandInput(input: string): boolean {
   return input.startsWith('/')
 }
 
-/**
+/*    *
  * Checks if a command input has arguments
  * A command with just a trailing space is considered to have no arguments
- */
+     */
 export function hasCommandArgs(input: string): boolean {
   if (!isCommandInput(input)) return false
 
@@ -215,21 +215,21 @@ export function hasCommandArgs(input: string): boolean {
   return true
 }
 
-/**
+/*    *
  * Formats a command with proper notation
- */
+     */
 export function formatCommand(command: string): string {
   return `/${command} `
 }
 
-/**
+/*    *
  * Generates a deterministic unique ID for a command suggestion.
  * Commands with the same name from different sources get unique IDs.
  *
  * Only prompt commands can have duplicates (from user settings, project
  * settings, plugins, etc). Built-in commands (local, local-jsx) are
  * defined once in code and can't have duplicates.
- */
+     */
 function getCommandId(cmd: Command): string {
   const commandName = getCommandName(cmd)
   if (cmd.type === 'prompt') {
@@ -243,10 +243,10 @@ function getCommandId(cmd: Command): string {
   return `${commandName}:${cmd.type}`
 }
 
-/**
+/*    *
  * Checks if a query matches any of the command's aliases.
  * Returns the matched alias if found, otherwise undefined.
- */
+     */
 function findMatchedAlias(
   query: string,
   aliases?: string[],
@@ -258,10 +258,10 @@ function findMatchedAlias(
   return aliases.find(alias => alias.toLowerCase().startsWith(query))
 }
 
-/**
+/*    *
  * Creates a suggestion item from a command.
  * Only shows the matched alias in parentheses if the user typed an alias.
- */
+     */
 function createCommandSuggestionItem(
   cmd: Command,
   matchedAlias?: string,
@@ -286,9 +286,9 @@ function createCommandSuggestionItem(
   }
 }
 
-/**
+/*    *
  * Generate command suggestions based on input
- */
+     */
 export function generateCommandSuggestions(
   input: string,
   commands: Command[],
@@ -497,9 +497,9 @@ export function generateCommandSuggestions(
   return fuseSuggestions
 }
 
-/**
+/*    *
  * Apply selected command to input
- */
+     */
 export function applyCommandSuggestion(
   suggestion: string | SuggestionItem,
   shouldExecute: boolean,
@@ -533,7 +533,7 @@ export function applyCommandSuggestion(
       commandObj.type !== 'prompt' ||
       (commandObj.argNames ?? []).length === 0
     ) {
-      onSubmit(newInput, /* isSubmittingSlashCommand */ true)
+      onSubmit(newInput, /*     isSubmittingSlashCommand     */ true)
     }
   }
 }
@@ -543,12 +543,12 @@ function cleanWord(word: string) {
   return word.toLowerCase().replace(/[^a-z0-9]/g, '')
 }
 
-/**
+/*    *
  * Find all /command patterns in text for highlighting.
  * Returns array of {start, end} positions.
  * Requires whitespace or start-of-string before the slash to avoid
  * matching paths like /usr/bin.
- */
+     */
 export function findSlashCommandPositions(
   text: string,
 ): Array<{ start: number; end: number }> {

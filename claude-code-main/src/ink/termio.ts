@@ -1,4 +1,4 @@
-/**
+/*    *
  * ANSI Parser Module
  *
  * A semantic ANSI escape sequence parser inspired by ghostty, tmux, and iTerm2.
@@ -18,7 +18,7 @@
  * const actions = parser.feed('\x1b[31mred\x1b[0m')
  * // => [{ type: 'text', graphemes: [...], style: { fg: { type: 'named', name: 'red' }, ... } }]
  * ```
- */
+     */
 
 // Parser
 export { Parser } from './termio/parser.js'

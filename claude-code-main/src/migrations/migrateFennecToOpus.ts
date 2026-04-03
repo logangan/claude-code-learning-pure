@@ -3,7 +3,7 @@ import {
   updateSettingsForSource,
 } from '../utils/settings/settings.js'
 
-/**
+/*    *
  * Migrate users on removed fennec model aliases to their new Opus 4.6 aliases.
  * - fennec-latest → opus
  * - fennec-latest[1m] → opus[1m]
@@ -14,7 +14,7 @@ import {
  * idempotent without a completion flag. Fennec aliases in project/local/policy
  * settings are left alone — we can't rewrite those, and reading merged
  * settings here would cause infinite re-runs + silent global promotion.
- */
+     */
 export function migrateFennecToOpus(): void {
   if (process.env.USER_TYPE !== 'ant') {
     return

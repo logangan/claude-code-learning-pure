@@ -1,4 +1,4 @@
-/**
+/*    *
  * Config/settings-backed NODE_EXTRA_CA_CERTS population for `caCerts.ts`.
  *
  * Split from `caCerts.ts` because `config.ts` → `file.ts` →
@@ -11,13 +11,13 @@
  * `getCACertificates()` only reads `process.env.NODE_EXTRA_CA_CERTS`. This
  * module is the one place allowed to import `config.ts` to *populate* that
  * env var at CLI startup. Only `init.ts` imports this file.
- */
+     */
 
 import { getGlobalConfig } from './config.js'
 import { logForDebugging } from './debug.js'
 import { getSettingsForSource } from './settings/settings.js'
 
-/**
+/*    *
  * Apply NODE_EXTRA_CA_CERTS from settings.json to process.env early in init,
  * BEFORE any TLS connections are made.
  *
@@ -30,7 +30,7 @@ import { getSettingsForSource } from './settings/settings.js'
  * This is safe to call before the trust dialog because we only read from
  * user-controlled files (~/.claude/settings.json and ~/.claude.json),
  * not from project-level settings.
- */
+     */
 export function applyExtraCACertsFromConfig(): void {
   if (process.env.NODE_EXTRA_CA_CERTS) {
     return // Already set in environment, nothing to do
@@ -44,7 +44,7 @@ export function applyExtraCACertsFromConfig(): void {
   }
 }
 
-/**
+/*    *
  * Read NODE_EXTRA_CA_CERTS from settings/config as a fallback.
  *
  * NODE_EXTRA_CA_CERTS is categorized as a non-safe env var (it allows
@@ -55,7 +55,7 @@ export function applyExtraCACertsFromConfig(): void {
  * We read from global config (~/.claude.json) and user settings
  * (~/.claude/settings.json). These are user-controlled files that don't
  * require trust approval.
- */
+     */
 function getExtraCertsPathFromConfig(): string | undefined {
   try {
     const globalConfig = getGlobalConfig()

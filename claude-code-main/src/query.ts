@@ -11,14 +11,14 @@ import {
   type AutoCompactTrackingState,
 } from './services/compact/autoCompact.js'
 import { buildPostCompactMessages } from './services/compact/compact.js'
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const reactiveCompact = feature('REACTIVE_COMPACT')
   ? (require('./services/compact/reactiveCompact.js') as typeof import('./services/compact/reactiveCompact.js'))
   : null
 const contextCollapse = feature('CONTEXT_COLLAPSE')
   ? (require('./services/contextCollapse/index.js') as typeof import('./services/contextCollapse/index.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import {
   logEvent,
   type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
@@ -62,14 +62,14 @@ import {
   getAttachmentMessages,
   startRelevantMemoryPrefetch,
 } from './utils/attachments.js'
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const skillPrefetch = feature('EXPERIMENTAL_SKILL_SEARCH')
   ? (require('./services/skillSearch/prefetch.js') as typeof import('./services/skillSearch/prefetch.js'))
   : null
 const jobClassifier = feature('TEMPLATES')
   ? (require('./jobs/classifier.js') as typeof import('./jobs/classifier.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import {
   remove as removeFromQueue,
   getCommandsByMaxPriority,
@@ -111,14 +111,14 @@ import {
 import { createBudgetTracker, checkTokenBudget } from './query/tokenBudget.js'
 import { count } from './utils/array.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const snipModule = feature('HISTORY_SNIP')
   ? (require('./services/compact/snipCompact.js') as typeof import('./services/compact/snipCompact.js'))
   : null
 const taskSummaryModule = feature('BG_SESSIONS')
   ? (require('./utils/taskSummary.js') as typeof import('./utils/taskSummary.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 function* yieldMissingToolResultBlocks(
   assistantMessages: AssistantMessage[],
@@ -148,7 +148,7 @@ function* yieldMissingToolResultBlocks(
   }
 }
 
-/**
+/*    *
  * The rules of thinking are lengthy and fortuitous. They require plenty of thinking
  * of most long duration and deep meditation for a wizard to wrap one's noggin around.
  *
@@ -160,10 +160,10 @@ function* yieldMissingToolResultBlocks(
  * Heed these rules well, young wizard. For they are the rules of thinking, and
  * the rules of thinking are the rules of the universe. If ye does not heed these
  * rules, ye will be punished with an entire day of debugging and hair pulling.
- */
+     */
 const MAX_OUTPUT_TOKENS_RECOVERY_LIMIT = 3
 
-/**
+/*    *
  * Is this a max_output_tokens error message? If so, the streaming loop should
  * withhold it from SDK callers until we know whether the recovery loop can
  * continue. Yielding early leaks an intermediate error to SDK callers (e.g.
@@ -171,7 +171,7 @@ const MAX_OUTPUT_TOKENS_RECOVERY_LIMIT = 3
  * recovery loop keeps running but nobody is listening.
  *
  * Mirrors reactiveCompact.isWithheldPromptTooLong.
- */
+     */
 function isWithheldMaxOutputTokens(
   msg: Message | StreamEvent | undefined,
 ): msg is AssistantMessage {
@@ -429,8 +429,7 @@ async function* queryLoop(
     // Runs BEFORE autocompact so that if collapse gets us under the
     // autocompact threshold, autocompact is a no-op and we keep granular
     // context instead of a single summary.
-    //
-    // Nothing is yielded — the collapsed view is a read-time projection
+    // // Nothing is yielded — the collapsed view is a read-time projection
     // over the REPL's full history. Summary messages live in the collapse
     // store, not the REPL array. This is what makes collapses persist
     // across turns: projectView() replays the commit log on every entry.
@@ -542,7 +541,7 @@ async function* queryLoop(
       }
     }
 
-    //TODO: no need to set toolUseContext.messages during set-up since it is updated here
+    // TODO: no need to set toolUseContext.messages during set-up since it is updated here
     toolUseContext = {
       ...toolUseContext,
       messages: messagesForQuery,
@@ -605,8 +604,7 @@ async function* queryLoop(
     // allowed — the preempt's synthetic error returns before the API call,
     // so reactive compact would never see a prompt-too-long to react to.
     // Widened to walrus so RC can act as fallback when proactive fails.
-    //
-    // Same skip for context-collapse: its recoverFromOverflow drains
+    // // Same skip for context-collapse: its recoverFromOverflow drains
     // staged collapses on a REAL API 413, then falls through to
     // reactiveCompact. A synthetic preempt here would return before the
     // API call and starve both recovery paths. The isAutoCompactEnabled()
@@ -792,8 +790,7 @@ async function* queryLoop(
             // Either subsystem's withhold is sufficient — they're
             // independent so turning one off doesn't break the other's
             // recovery path.
-            //
-            // feature() only works in if/ternary conditions (bun:bundle
+            // // feature() only works in if/ternary conditions (bun:bundle
             // tree-shaking constraint), so the collapse check is nested
             // rather than composed.
             let withheld = false
@@ -1546,18 +1543,15 @@ async function* queryLoop(
 
     // Get queued commands snapshot before processing attachments.
     // These will be sent as attachments so Claude can respond to them in the current turn.
-    //
-    // Drain pending notifications. LocalShellTask completions are 'next'
+    // // Drain pending notifications. LocalShellTask completions are 'next'
     // (when MONITOR_TOOL is on) and drain without Sleep. Other task types
     // (agent/workflow/framework) still default to 'later' — the Sleep flush
     // covers those. If all task types move to 'next', this branch could go.
-    //
-    // Slash commands are excluded from mid-turn drain — they must go through
+    // // Slash commands are excluded from mid-turn drain — they must go through
     // processSlashCommand after the turn ends (via useQueueProcessor), not be
     // sent to the model as text. Bash-mode commands are already excluded by
     // INLINE_NOTIFICATION_MODES in getQueuedCommandAttachments.
-    //
-    // Agent scoping: the queue is a process-global singleton shared by the
+    // // Agent scoping: the queue is a process-global singleton shared by the
     // coordinator and all in-process subagents. Each loop drains only what's
     // addressed to it — main thread drains agentId===undefined, subagents
     // drain their own agentId. User prompts (mode:'prompt') still go to main

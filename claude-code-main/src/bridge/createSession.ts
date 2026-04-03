@@ -22,7 +22,7 @@ type SessionEvent = {
   data: SDKMessage
 }
 
-/**
+/*    *
  * Create a session on a bridge environment via POST /v1/sessions.
  *
  * Used by both `claude remote-control` (empty session so the user has somewhere to
@@ -30,7 +30,7 @@ type SessionEvent = {
  * history).
  *
  * Returns the session ID on success, or null if creation fails (non-fatal).
- */
+     */
 export async function createBridgeSession({
   environmentId,
   title,
@@ -86,7 +86,7 @@ export async function createBridgeSession({
       const revision = branch || (await getDefaultBranch()) || undefined
       gitSource = {
         type: 'git_repository',
-        url: `https://${host}/${owner}/${name}`,
+        url: `https:// ${host}/${owner}/${name}`,
         revision,
       }
       gitOutcome = {
@@ -106,7 +106,7 @@ export async function createBridgeSession({
           const revision = branch || (await getDefaultBranch()) || undefined
           gitSource = {
             type: 'git_repository',
-            url: `https://github.com/${owner}/${name}`,
+            url: `https:// github.com/${owner}/${name}`,
             revision,
           }
           gitOutcome = {
@@ -179,14 +179,14 @@ export async function createBridgeSession({
   return sessionData.id
 }
 
-/**
+/*    *
  * Fetch a bridge session via GET /v1/sessions/{id}.
  *
  * Returns the session's environment_id (for `--session-id` resume) and title.
  * Uses the same org-scoped headers as create/archive — the environments-level
  * client in bridgeApi.ts uses a different beta header and no org UUID, which
  * makes the Sessions API return 404.
- */
+     */
 export async function getBridgeSession(
   sessionId: string,
   opts?: { baseUrl?: string; getAccessToken?: () => string | undefined },
@@ -243,7 +243,7 @@ export async function getBridgeSession(
   return response.data
 }
 
-/**
+/*    *
  * Archive a bridge session via POST /v1/sessions/{id}/archive.
  *
  * The CCR server never auto-archives sessions — archival is always an
@@ -259,7 +259,7 @@ export async function getBridgeSession(
  * Callers must handle errors — this function has no try/catch; 5xx,
  * timeouts, and network errors throw. Archival is best-effort during
  * cleanup; call sites wrap with .catch().
- */
+     */
 export async function archiveBridgeSession(
   sessionId: string,
   opts?: {
@@ -316,14 +316,14 @@ export async function archiveBridgeSession(
   }
 }
 
-/**
+/*    *
  * Update the title of a bridge session via PATCH /v1/sessions/{id}.
  *
  * Called when the user renames a session via /rename while a bridge
  * connection is active, so the title stays in sync on claude.ai/code.
  *
  * Errors are swallowed — title sync is best-effort.
- */
+     */
 export async function updateBridgeSessionTitle(
   sessionId: string,
   title: string,

@@ -52,10 +52,10 @@ import {
 
 const MAX_LSP_FILE_SIZE_BYTES = 10_000_000
 
-/**
+/*    *
  * Tool-compatible input schema (regular ZodObject instead of discriminated union)
  * We validate against the discriminated union in validateInput for better error messages
- */
+     */
 const inputSchema = lazySchema(() =>
   z.strictObject({
     operation: z
@@ -168,7 +168,7 @@ export const LSPTool = buildTool({
     const absolutePath = expandPath(input.filePath)
 
     // SECURITY: Skip filesystem operations for UNC paths to prevent NTLM credential leaks.
-    if (absolutePath.startsWith('\\\\') || absolutePath.startsWith('//')) {
+    if (absolutePath.startsWith('\\\\') || absolutePath.startsWith('// ')) {
       return { result: true }
     }
 
@@ -421,9 +421,9 @@ export const LSPTool = buildTool({
   },
 } satisfies ToolDef<InputSchema, Output>)
 
-/**
+/*    *
  * Maps LSPTool operation to LSP method and params
- */
+     */
 function getMethodAndParams(
   input: Input,
   absolutePath: string,
@@ -512,9 +512,9 @@ function getMethodAndParams(
   }
 }
 
-/**
+/*    *
  * Counts the total number of symbols including nested children
- */
+     */
 function countSymbols(symbols: DocumentSymbol[]): number {
   let count = symbols.length
   for (const symbol of symbols) {
@@ -525,18 +525,18 @@ function countSymbols(symbols: DocumentSymbol[]): number {
   return count
 }
 
-/**
+/*    *
  * Counts unique files from an array of locations
- */
+     */
 function countUniqueFiles(locations: Location[]): number {
   return new Set(locations.map(loc => loc.uri)).size
 }
 
-/**
+/*    *
  * Extracts a file path from a file:// URI, decoding percent-encoded characters.
- */
+     */
 function uriToFilePath(uri: string): string {
-  let filePath = uri.replace(/^file:\/\//, '')
+  let filePath = uri.replace(/^file:\/\// , '')
   // On Windows, file:///C:/path becomes /C:/path — strip the leading slash
   if (/^\/[A-Za-z]:/.test(filePath)) {
     filePath = filePath.slice(1)
@@ -549,10 +549,10 @@ function uriToFilePath(uri: string): string {
   return filePath
 }
 
-/**
+/*    *
  * Filters out locations whose file paths are gitignored.
  * Uses `git check-ignore` with batched path arguments for efficiency.
- */
+     */
 async function filterGitIgnoredLocations<T extends Location>(
   locations: T[],
   cwd: string,
@@ -610,16 +610,16 @@ async function filterGitIgnoredLocations<T extends Location>(
   })
 }
 
-/**
+/*    *
  * Checks if item is LocationLink (has targetUri) vs Location (has uri)
- */
+     */
 function isLocationLink(item: Location | LocationLink): item is LocationLink {
   return 'targetUri' in item
 }
 
-/**
+/*    *
  * Converts LocationLink to Location format for uniform handling
- */
+     */
 function toLocation(item: Location | LocationLink): Location {
   if (isLocationLink(item)) {
     return {
@@ -630,9 +630,9 @@ function toLocation(item: Location | LocationLink): Location {
   return item
 }
 
-/**
+/*    *
  * Formats LSP result based on operation type and extracts summary counts
- */
+     */
 function formatResult(
   operation: Input['operation'],
   result: unknown,
@@ -828,19 +828,19 @@ function formatResult(
   }
 }
 
-/**
+/*    *
  * Counts unique files from CallHierarchyItem array
  * Filters out items with undefined URIs
- */
+     */
 function countUniqueFilesFromCallItems(items: CallHierarchyItem[]): number {
   const validUris = items.map(item => item.uri).filter(uri => uri)
   return new Set(validUris).size
 }
 
-/**
+/*    *
  * Counts unique files from CallHierarchyIncomingCall array
  * Filters out calls with undefined URIs
- */
+     */
 function countUniqueFilesFromIncomingCalls(
   calls: CallHierarchyIncomingCall[],
 ): number {
@@ -848,10 +848,10 @@ function countUniqueFilesFromIncomingCalls(
   return new Set(validUris).size
 }
 
-/**
+/*    *
  * Counts unique files from CallHierarchyOutgoingCall array
  * Filters out calls with undefined URIs
- */
+     */
 function countUniqueFilesFromOutgoingCalls(
   calls: CallHierarchyOutgoingCall[],
 ): number {

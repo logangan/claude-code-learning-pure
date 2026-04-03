@@ -54,12 +54,12 @@ export type Theme = {
   clawd_background: string
   userMessageBackground: string
   userMessageBackgroundHover: string
-  /** Message-actions selection. Cool shift toward `suggestion` blue; distinct from default AND userMessageBackground. */
+  /*    * Message-actions selection. Cool shift toward `suggestion` blue; distinct from default AND userMessageBackground.     */
   messageActionsBackground: string
-  /** Text-selection highlight background (alt-screen mouse selection). Solid
+  /*    * Text-selection highlight background (alt-screen mouse selection). Solid
    *  bg that REPLACES the cell's bg while preserving its fg — matches native
    *  terminal selection. Previously SGR-7 inverse (swapped fg/bg per cell),
-   *  which fragmented badly over syntax highlighting. */
+   *  which fragmented badly over syntax highlighting.     */
   selectionBg: string
   bashMessageBackgroundColor: string
 
@@ -97,21 +97,21 @@ export const THEME_NAMES = [
   'dark-ansi',
 ] as const
 
-/** A renderable theme. Always resolvable to a concrete color palette. */
+/*    * A renderable theme. Always resolvable to a concrete color palette.     */
 export type ThemeName = (typeof THEME_NAMES)[number]
 
 export const THEME_SETTINGS = ['auto', ...THEME_NAMES] as const
 
-/**
+/*    *
  * A theme preference as stored in user config. `'auto'` follows the system
  * dark/light mode and is resolved to a ThemeName at runtime.
- */
+     */
 export type ThemeSetting = (typeof THEME_SETTINGS)[number]
 
-/**
+/*    *
  * Light theme using explicit RGB values to avoid inconsistencies
  * from users' custom terminal ANSI color definitions
- */
+     */
 const lightTheme: Theme = {
   autoAccept: 'rgb(135,0,255)', // Electric violet
   bashBorder: 'rgb(255,0,135)', // Vibrant pink
@@ -190,10 +190,10 @@ const lightTheme: Theme = {
   rainbow_violet_shimmer: 'rgb(230,180,210)',
 }
 
-/**
+/*    *
  * Light ANSI theme using only the 16 standard ANSI colors
  * for terminals without true color support
- */
+     */
 const lightAnsiTheme: Theme = {
   autoAccept: 'ansi:magenta',
   bashBorder: 'ansi:magenta',
@@ -271,10 +271,10 @@ const lightAnsiTheme: Theme = {
   rainbow_violet_shimmer: 'ansi:magentaBright',
 }
 
-/**
+/*    *
  * Dark ANSI theme using only the 16 standard ANSI colors
  * for terminals without true color support
- */
+     */
 const darkAnsiTheme: Theme = {
   autoAccept: 'ansi:magentaBright',
   bashBorder: 'ansi:magentaBright',
@@ -352,10 +352,10 @@ const darkAnsiTheme: Theme = {
   rainbow_violet_shimmer: 'ansi:magentaBright',
 }
 
-/**
+/*    *
  * Light daltonized theme (color-blind friendly) using explicit RGB values
  * to avoid inconsistencies from users' custom terminal ANSI color definitions
- */
+     */
 const lightDaltonizedTheme: Theme = {
   autoAccept: 'rgb(135,0,255)', // Electric violet
   bashBorder: 'rgb(0,102,204)', // Blue instead of pink
@@ -433,10 +433,10 @@ const lightDaltonizedTheme: Theme = {
   rainbow_violet_shimmer: 'rgb(230,180,210)',
 }
 
-/**
+/*    *
  * Dark theme using explicit RGB values to avoid inconsistencies
  * from users' custom terminal ANSI color definitions
- */
+     */
 const darkTheme: Theme = {
   autoAccept: 'rgb(175,135,255)', // Electric violet
   bashBorder: 'rgb(253,93,177)', // Bright pink
@@ -514,10 +514,10 @@ const darkTheme: Theme = {
   rainbow_violet_shimmer: 'rgb(230,180,210)',
 }
 
-/**
+/*    *
  * Dark daltonized theme (color-blind friendly) using explicit RGB values
  * to avoid inconsistencies from users' custom terminal ANSI color definitions
- */
+     */
 const darkDaltonizedTheme: Theme = {
   autoAccept: 'rgb(175,135,255)', // Electric violet
   bashBorder: 'rgb(51,153,255)', // Bright blue
@@ -619,10 +619,10 @@ const chalkForChart =
     ? new Chalk({ level: 2 }) // 256 colors
     : chalk
 
-/**
+/*    *
  * Converts a theme color to an ANSI escape sequence for use with asciichart.
  * Uses chalk to generate the escape codes, with 256-color mode for Apple Terminal.
- */
+     */
 export function themeColorToAnsi(themeColor: string): string {
   const rgbMatch = themeColor.match(/rgb\(\s?(\d+),\s?(\d+),\s?(\d+)\s?\)/)
   if (rgbMatch) {

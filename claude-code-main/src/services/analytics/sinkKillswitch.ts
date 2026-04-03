@@ -5,7 +5,7 @@ const SINK_KILLSWITCH_CONFIG_NAME = 'tengu_frond_boric'
 
 export type SinkName = 'datadog' | 'firstParty'
 
-/**
+/*    *
  * GrowthBook JSON config that disables individual analytics sinks.
  * Shape: { datadog?: boolean, firstParty?: boolean }
  * A value of true for a key stops all dispatch to that sink.
@@ -14,7 +14,7 @@ export type SinkName = 'datadog' | 'firstParty'
  * NOTE: Must NOT be called from inside is1PEventLoggingEnabled() -
  * growthbook.ts:isGrowthBookEnabled() calls that, so a lookup here would recurse.
  * Call at per-event dispatch sites instead.
- */
+     */
 export function isSinkKilled(sink: SinkName): boolean {
   const config = getDynamicConfig_CACHED_MAY_BE_STALE<
     Partial<Record<SinkName, boolean>>

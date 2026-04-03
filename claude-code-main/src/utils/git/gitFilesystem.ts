@@ -1,4 +1,4 @@
-/**
+/*    *
  * Filesystem-based git state reading — avoids spawning git subprocesses.
  *
  * Covers: resolving .git directories (including worktrees/submodules),
@@ -10,7 +10,7 @@
  *   - Packed-refs: `<sha> <refname>\n`, skip `#` and `^` lines (packed-backend.c)
  *   - .git file (worktree): `gitdir: <path>\n` with optional relative path (setup.c)
  *   - Shallow: mere existence of `<commonDir>/shallow` means shallow (shallow.c)
- */
+     */
 
 import { unwatchFile, watchFile } from 'fs'
 import { readdir, readFile, stat } from 'fs/promises'
@@ -27,16 +27,16 @@ import { parseGitConfigValue } from './gitConfigParser.js'
 
 const resolveGitDirCache = new Map<string, string | null>()
 
-/** Clear cached git dir resolutions. Exported for testing only. */
+/*    * Clear cached git dir resolutions. Exported for testing only.     */
 export function clearResolveGitDirCache(): void {
   resolveGitDirCache.clear()
 }
 
-/**
+/*    *
  * Resolve the actual .git directory for a repo.
  * Handles worktrees/submodules where .git is a file containing `gitdir: <path>`.
  * Memoized per startPath.
- */
+     */
 export async function resolveGitDir(
   startPath?: string,
 ): Promise<string | null> {
@@ -79,7 +79,7 @@ export async function resolveGitDir(
 // isSafeRefName — validate ref/branch names read from .git/
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Validate that a ref/branch name read from .git/ is safe to use in path
  * joins, as git positional arguments, and when interpolated into shell
  * commands (commit-push-pr skill interpolates the branch into shell).
@@ -94,7 +94,7 @@ export async function resolveGitDir(
  * while rejecting everything that could be dangerous in shell context
  * (newlines, backticks, `$`, `;`, `|`, `&`, `(`, `)`, `<`, `>`, spaces,
  * tabs, quotes, backslash) and path traversal (`..`).
- */
+     */
 export function isSafeRefName(name: string): boolean {
   if (!name || name.startsWith('-') || name.startsWith('/')) {
     return false
@@ -118,14 +118,14 @@ export function isSafeRefName(name: string): boolean {
   return true
 }
 
-/**
+/*    *
  * Validate that a string is a git SHA: 40 hex chars (SHA-1) or 64 hex chars
  * (SHA-256). Git never writes abbreviated SHAs to HEAD or ref files, so we
  * only accept full-length hashes.
  *
  * An attacker who controls .git/HEAD when detached, or a loose ref file,
  * could otherwise return arbitrary content that flows into shell contexts.
- */
+     */
 export function isValidGitSha(s: string): boolean {
   return /^[0-9a-f]{40}$/.test(s) || /^[0-9a-f]{64}$/.test(s)
 }
@@ -134,7 +134,7 @@ export function isValidGitSha(s: string): boolean {
 // readGitHead — parse .git/HEAD
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Parse .git/HEAD to determine current branch or detached SHA.
  *
  * HEAD format (per git source, refs/files-backend.c):
@@ -145,7 +145,7 @@ export function isValidGitSha(s: string): boolean {
  * Git strips trailing whitespace via strbuf_rtrim; .trim() is equivalent.
  * Git allows any whitespace between "ref:" and the path; we handle
  * this by trimming after slicing past "ref:".
- */
+     */
 export async function readGitHead(
   gitDir: string,
 ): Promise<
@@ -186,7 +186,7 @@ export async function readGitHead(
 // resolveRef — resolve loose/packed refs to SHAs
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Resolve a git ref (e.g. `refs/heads/main`) to a commit SHA.
  * Checks loose ref files first, then falls back to packed-refs.
  * Follows symrefs (e.g. `ref: refs/remotes/origin/main`).
@@ -199,7 +199,7 @@ export async function readGitHead(
  *   - Header: `# pack-refs with: <traits>\n`
  *   - Entries: `<40-hex-sha> <refname>\n`
  *   - Peeled:  `^<40-hex-sha>\n` (after annotated tag entries)
- */
+     */
 export async function resolveRef(
   gitDir: string,
   ref: string,
@@ -265,11 +265,11 @@ async function resolveRefInDir(
   return null
 }
 
-/**
+/*    *
  * Read the `commondir` file to find the shared git directory.
  * In a worktree, this points to the main repo's .git dir.
  * Returns null if no commondir file exists (regular repo).
- */
+     */
 export async function getCommonDir(gitDir: string): Promise<string | null> {
   try {
     const content = (await readFile(join(gitDir, 'commondir'), 'utf-8')).trim()
@@ -279,11 +279,11 @@ export async function getCommonDir(gitDir: string): Promise<string | null> {
   }
 }
 
-/**
+/*    *
  * Read a raw symref file and extract the branch name after a known prefix.
  * Returns null if the ref doesn't exist, isn't a symref, or doesn't match the prefix.
  * Checks loose file only — packed-refs doesn't store symrefs.
- */
+     */
 export async function readRawSymref(
   gitDir: string,
   refPath: string,
@@ -312,13 +312,11 @@ export async function readRawSymref(
 // GitFileWatcher — watches git files and caches derived values.
 // Lazily initialized on first cache access. Invalidates all cached
 // values when any watched file changes.
-//
-// Watches:
-//   .git/HEAD          — branch switches, detached HEAD
-//   .git/config        — remote URL changes
-//   .git/refs/heads/<branch> — new commits on the current branch
-//
-// When HEAD changes (branch switch), the branch ref watcher is updated
+// // Watches:
+// .git/HEAD          — branch switches, detached HEAD
+// .git/config        — remote URL changes
+// .git/refs/heads/<branch> — new commits on the current branch
+// // When HEAD changes (branch switch), the branch ref watcher is updated
 // to track the new branch's ref file.
 // ---------------------------------------------------------------------------
 
@@ -384,10 +382,10 @@ class GitFileWatcher {
     watchFile(path, { interval: WATCH_INTERVAL_MS }, callback)
   }
 
-  /**
+  /*    *
    * Watch the loose ref file for the current branch.
    * Called on startup and whenever HEAD changes (branch switch).
-   */
+       */
   private async watchCurrentBranchRef(): Promise<void> {
     if (!this.gitDir) {
       return
@@ -451,7 +449,7 @@ class GitFileWatcher {
     this.branchRefPath = null
   }
 
-  /**
+  /*    *
    * Get a cached value by key. On first call for a key, computes and caches it.
    * Subsequent calls return the cached value until a watched file changes,
    * which marks the entry dirty. The next get() re-computes from disk.
@@ -459,7 +457,7 @@ class GitFileWatcher {
    * Race condition handling: dirty is cleared BEFORE the async compute starts.
    * If a file change arrives during compute, it re-sets dirty, so the next
    * get() will re-read again rather than serving a stale value.
-   */
+       */
   async get<T>(key: string, compute: () => Promise<T>): Promise<T> {
     await this.ensureStarted()
     const existing = this.cache.get(key)
@@ -484,7 +482,7 @@ class GitFileWatcher {
     return value
   }
 
-  /** Reset all state. Stops file watchers. For testing only. */
+  /*    * Reset all state. Stops file watchers. For testing only.     */
   reset(): void {
     this.stopWatching()
     this.cache.clear()
@@ -581,15 +579,15 @@ export function getCachedDefaultBranch(): Promise<string> {
   return gitWatcher.get('defaultBranch', computeDefaultBranch)
 }
 
-/** Reset the git file watcher state. For testing only. */
+/*    * Reset the git file watcher state. For testing only.     */
 export function resetGitFileWatcher(): void {
   gitWatcher.reset()
 }
 
-/**
+/*    *
  * Read the HEAD SHA for an arbitrary directory (not using the watcher).
  * Used by plugins that need the HEAD of a specific repo, not the CWD repo.
- */
+     */
 export async function getHeadForDir(cwd: string): Promise<string | null> {
   const gitDir = await resolveGitDir(cwd)
   if (!gitDir) {
@@ -605,7 +603,7 @@ export async function getHeadForDir(cwd: string): Promise<string | null> {
   return head.sha
 }
 
-/**
+/*    *
  * Read the HEAD SHA for a git worktree directory (not the main repo).
  *
  * Unlike `getHeadForDir`, this reads `<worktreePath>/.git` directly as a
@@ -615,7 +613,7 @@ export async function getHeadForDir(cwd: string): Promise<string | null> {
  *
  * Returns null if the worktree doesn't exist (`.git` pointer ENOENT) or is
  * malformed. Caller can treat null as "not a valid worktree".
- */
+     */
 export async function readWorktreeHeadSha(
   worktreePath: string,
 ): Promise<string | null> {
@@ -639,9 +637,9 @@ export async function readWorktreeHeadSha(
   return head.sha
 }
 
-/**
+/*    *
  * Read the remote origin URL for an arbitrary directory via .git/config.
- */
+     */
 export async function getRemoteUrlForDir(cwd: string): Promise<string | null> {
   const gitDir = await resolveGitDir(cwd)
   if (!gitDir) {
@@ -659,11 +657,11 @@ export async function getRemoteUrlForDir(cwd: string): Promise<string | null> {
   return null
 }
 
-/**
+/*    *
  * Check if we're in a shallow clone by looking for <commonDir>/shallow.
  * Per git's shallow.c, mere existence of the file means shallow.
  * The shallow file lives in commonDir, not the per-worktree gitDir.
- */
+     */
 export async function isShallowClone(): Promise<boolean> {
   const gitDir = await resolveGitDir()
   if (!gitDir) {
@@ -678,11 +676,11 @@ export async function isShallowClone(): Promise<boolean> {
   }
 }
 
-/**
+/*    *
  * Count worktrees by reading <commonDir>/worktrees/ directory.
  * The worktrees/ directory lives in commonDir, not the per-worktree gitDir.
  * The main worktree is not listed there, so add 1.
- */
+     */
 export async function getWorktreeCountFromFs(): Promise<number> {
   try {
     const gitDir = await resolveGitDir()

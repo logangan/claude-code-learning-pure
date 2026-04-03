@@ -13,11 +13,11 @@ import {
   windowsPathToPosixPath,
 } from './windowsPaths.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const teamMemPaths = feature('TEAMMEM')
   ? (require('../memdir/teamMemPaths.js') as typeof import('../memdir/teamMemPaths.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 const IS_WINDOWS = process.platform === 'win32'
 
@@ -33,10 +33,10 @@ function toComparable(p: string): string {
   return IS_WINDOWS ? posixForm.toLowerCase() : posixForm
 }
 
-/**
+/*    *
  * Detects if a file path is a session-related file under ~/.claude.
  * Returns the type of session file or null if not a session file.
- */
+     */
 export function detectSessionFileType(
   filePath: string,
 ): 'session_memory' | 'session_transcript' | null {
@@ -58,10 +58,10 @@ export function detectSessionFileType(
   return null
 }
 
-/**
+/*    *
  * Checks if a glob/pattern string indicates session file access intent.
  * Used for Grep/Glob tools where we check patterns, not actual file paths.
- */
+     */
 export function detectSessionPatternType(
   pattern: string,
 ): 'session_memory' | 'session_transcript' | null {
@@ -81,9 +81,9 @@ export function detectSessionPatternType(
   return null
 }
 
-/**
+/*    *
  * Check if a file path is within the memdir directory.
- */
+     */
 export function isAutoMemFile(filePath: string): boolean {
   if (isAutoMemoryEnabled()) {
     return isAutoMemPath(filePath)
@@ -93,7 +93,7 @@ export function isAutoMemFile(filePath: string): boolean {
 
 export type MemoryScope = 'personal' | 'team'
 
-/**
+/*    *
  * Determine which memory store (if any) a path belongs to.
  *
  * Team dir is a subdirectory of memdir (getTeamMemPath = join(getAutoMemPath, 'team')),
@@ -102,7 +102,7 @@ export type MemoryScope = 'personal' | 'team'
  * Use this for scope-keyed telemetry where a single event name distinguishes
  * by scope field — the existing tengu_memdir_* / tengu_team_mem_* event-name
  * hierarchy handles the overlap differently (team writes intentionally fire both).
- */
+     */
 export function memoryScopeForPath(filePath: string): MemoryScope | null {
   if (feature('TEAMMEM') && teamMemPaths!.isTeamMemFile(filePath)) {
     return 'team'
@@ -113,9 +113,9 @@ export function memoryScopeForPath(filePath: string): MemoryScope | null {
   return null
 }
 
-/**
+/*    *
  * Check if a file path is within an agent memory directory.
- */
+     */
 function isAgentMemFile(filePath: string): boolean {
   if (isAutoMemoryEnabled()) {
     return isAgentMemoryPath(filePath)
@@ -123,13 +123,13 @@ function isAgentMemFile(filePath: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Check if a file is a Claude-managed memory file (NOT user-managed instruction files).
  * Includes: auto-memory (memdir), agent memory, session memory/transcripts.
  * Excludes: CLAUDE.md, CLAUDE.local.md, .claude/rules/*.md (user-managed).
  *
  * Use this for collapse/badge logic where user-managed files should show full diffs.
- */
+     */
 export function isAutoManagedMemoryFile(filePath: string): boolean {
   if (isAutoMemFile(filePath)) {
     return true
@@ -206,12 +206,12 @@ export function isMemoryDirectory(dirPath: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Check if a shell command string (Bash or PowerShell) targets memory files
  * by extracting absolute path tokens and checking them against memory
  * detection functions. Used for Bash/PowerShell grep/search commands in the
  * collapse logic.
- */
+     */
 export function isShellCommandTargetingMemory(command: string): boolean {
   const configDir = getClaudeConfigHomeDir()
   const memoryBase = getMemoryBaseDir()

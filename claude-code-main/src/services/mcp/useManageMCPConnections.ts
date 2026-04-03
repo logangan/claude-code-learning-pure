@@ -18,7 +18,7 @@ import type {
   ServerResource,
 } from './types.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const fetchMcpSkillsForClient = feature('MCP_SKILLS')
   ? (
       require('../../skills/mcpSkills.js') as typeof import('../../skills/mcpSkills.js')
@@ -60,7 +60,7 @@ import {
   useSetAppState,
 } from '../../state/AppState.js'
 import { errorMessage } from '../../utils/errors.js'
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import { logMCPDebug, logMCPError } from '../../utils/log.js'
 import { enqueue } from '../../utils/messageQueueManager.js'
 import {
@@ -89,17 +89,17 @@ const MAX_RECONNECT_ATTEMPTS = 5
 const INITIAL_BACKOFF_MS = 1000
 const MAX_BACKOFF_MS = 30000
 
-/**
+/*    *
  * Create a unique key for a plugin error to enable deduplication
- */
+     */
 function getErrorKey(error: PluginError): string {
   const plugin = 'plugin' in error ? error.plugin : 'no-plugin'
   return `${error.type}:${error.source}:${plugin}`
 }
 
-/**
+/*    *
  * Add errors to AppState, deduplicating to avoid showing the same error multiple times
- */
+     */
 function addErrorsToAppState(
   setAppState: (updater: (prev: AppState) => AppState) => void,
   newErrors: PluginError[],
@@ -131,7 +131,7 @@ function addErrorsToAppState(
   })
 }
 
-/**
+/*    *
  * Hook to manage MCP (Model Context Protocol) server connections and updates
  *
  * This hook:
@@ -139,7 +139,7 @@ function addErrorsToAppState(
  * 2. Sets up handlers for connection lifecycle events and sync with app state
  * 3. Manages automatic reconnection for SSE connections
  * 4. Returns a reconnect function
- */
+     */
 export function useManageMCPConnections(
   dynamicMcpConfig: Record<string, ScopedMcpServerConfig> | undefined,
   isStrictMcpConfig = false,
@@ -790,15 +790,15 @@ export function useManageMCPConnections(
         )
         // Clean up stale connections. Fire-and-forget — state updaters must
         // be synchronous. Three hazards to defuse before calling cleanup:
-        //   1. Pending reconnect timer would fire with the OLD config.
-        //   2. onclose (set at L254) starts reconnectWithBackoff with the
-        //      OLD config from its closure — it checks isMcpServerDisabled
-        //      but config-changed servers aren't disabled, so it'd race the
-        //      fresh connection and last updateServer wins.
-        //   3. clearServerCache internally calls connectToServer (memoized).
-        //      For never-connected servers (disabled/pending/failed) the
-        //      cache is empty → real connect attempt → spawn/OAuth just to
-        //      immediately kill it. Only connected servers need cleanup.
+        // 1. Pending reconnect timer would fire with the OLD config.
+        // 2. onclose (set at L254) starts reconnectWithBackoff with the
+        // OLD config from its closure — it checks isMcpServerDisabled
+        // but config-changed servers aren't disabled, so it'd race the
+        // fresh connection and last updateServer wins.
+        // 3. clearServerCache internally calls connectToServer (memoized).
+        // For never-connected servers (disabled/pending/failed) the
+        // cache is empty → real connect attempt → spawn/OAuth just to
+        // immediately kill it. Only connected servers need cleanup.
         for (const s of stale) {
           const timer = reconnectTimersRef.current.get(s.name)
           if (timer) {

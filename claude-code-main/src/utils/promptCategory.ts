@@ -5,14 +5,14 @@ import {
 } from '../constants/outputStyles.js'
 import { getSettings_DEPRECATED } from './settings/settings.js'
 
-/**
+/*    *
  * Determines the prompt category for agent usage.
  * Used for analytics to track different agent patterns.
  *
  * @param agentType - The type/name of the agent
  * @param isBuiltInAgent - Whether this is a built-in agent or custom
  * @returns The agent prompt category string
- */
+     */
 export function getQuerySourceForAgent(
   agentType: string | undefined,
   isBuiltInAgent: boolean,
@@ -27,12 +27,12 @@ export function getQuerySourceForAgent(
   }
 }
 
-/**
+/*    *
  * Determines the prompt category based on output style settings.
  * Used for analytics to track different output style usage.
  *
  * @returns The prompt category string or undefined for default
- */
+     */
 export function getQuerySourceForREPL(): QuerySource {
   const settings = getSettings_DEPRECATED()
   const style = settings?.outputStyle ?? DEFAULT_OUTPUT_STYLE_NAME

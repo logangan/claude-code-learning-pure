@@ -4,22 +4,22 @@ import { join as posixJoin } from 'path/posix'
 import { getSessionEnvVars } from '../sessionEnvVars.js'
 import type { ShellProvider } from './shellProvider.js'
 
-/**
+/*    *
  * PowerShell invocation flags + command. Shared by the provider's getSpawnArgs
  * and the hook spawn path in hooks.ts so the flag set stays in one place.
- */
+     */
 export function buildPowerShellArgs(cmd: string): string[] {
   return ['-NoProfile', '-NonInteractive', '-Command', cmd]
 }
 
-/**
+/*    *
  * Base64-encode a string as UTF-16LE for PowerShell's -EncodedCommand.
  * Same encoding the parser uses (parser.ts toUtf16LeBase64). The output
  * is [A-Za-z0-9+/=] only — survives ANY shell-quoting layer, including
  * @anthropic-ai/sandbox-runtime's shellquote.quote() which would otherwise
  * corrupt !$? to \!$? when re-wrapping a single-quoted string in double
  * quotes. Review 2964609818.
- */
+     */
 function encodePowerShellCommand(psCommand: string): string {
   return Buffer.from(psCommand, 'utf16le').toString('base64')
 }
@@ -72,15 +72,13 @@ export function createPowerShellProvider(shellPath: string): ShellProvider {
       // producing: bwrap ... sh -c 'pwsh -NoProfile ... -EncodedCommand ...'.
       // The non-sandbox path returns the bare PS command; getSpawnArgs() adds
       // the flags via buildPowerShellArgs().
-      //
-      // -EncodedCommand (base64 UTF-16LE), not -Command: the sandbox runtime
+      // // -EncodedCommand (base64 UTF-16LE), not -Command: the sandbox runtime
       // applies its OWN shellquote.quote() on top of whatever we build. Any
       // string containing ' triggers double-quote mode which escapes ! as \! —
       // POSIX sh preserves that literally, pwsh parse error. Base64 is
       // [A-Za-z0-9+/=] — no chars that any quoting layer can corrupt.
       // Review 2964609818.
-      //
-      // shellPath is POSIX-single-quoted so a space-containing install path
+      // // shellPath is POSIX-single-quoted so a space-containing install path
       // (e.g. /opt/my tools/pwsh) survives the inner `/bin/sh -c` word-split.
       // Flags and base64 are [A-Za-z0-9+/=-] only — no quoting needed.
       const commandString = opts.useSandbox

@@ -22,7 +22,7 @@ import type {
   TeammateSpawnResult,
 } from './types.js'
 
-/**
+/*    *
  * InProcessBackend implements TeammateExecutor for in-process teammates.
  *
  * Unlike pane-based backends (tmux/iTerm2), in-process teammates run in the
@@ -34,32 +34,32 @@ import type {
  * IMPORTANT: Before spawning, call setContext() to provide the ToolUseContext
  * needed for AppState access. This is intended for use via the TeammateExecutor
  * abstraction (getTeammateExecutor() in registry.ts).
- */
+     */
 export class InProcessBackend implements TeammateExecutor {
   readonly type = 'in-process' as const
 
-  /**
+  /*    *
    * Tool use context for AppState access.
    * Must be set via setContext() before spawn() is called.
-   */
+       */
   private context: ToolUseContext | null = null
 
-  /**
+  /*    *
    * Sets the ToolUseContext for this backend.
    * Called by TeammateTool before spawning to provide AppState access.
-   */
+       */
   setContext(context: ToolUseContext): void {
     this.context = context
   }
 
-  /**
+  /*    *
    * In-process backend is always available (no external dependencies).
-   */
+       */
   async isAvailable(): Promise<boolean> {
     return true
   }
 
-  /**
+  /*    *
    * Spawns an in-process teammate.
    *
    * Uses spawnInProcessTeammate() to:
@@ -68,7 +68,7 @@ export class InProcessBackend implements TeammateExecutor {
    * 3. Register teammate in AppState.tasks
    * 4. Start agent execution via startInProcessTeammate()
    * 5. Return spawn result with agentId, taskId, abortController
-   */
+       */
   async spawn(config: TeammateSpawnConfig): Promise<TeammateSpawnResult> {
     if (!this.context) {
       logForDebugging(
@@ -142,11 +142,11 @@ export class InProcessBackend implements TeammateExecutor {
     }
   }
 
-  /**
+  /*    *
    * Sends a message to an in-process teammate.
    *
    * All teammates use file-based mailboxes for simplicity.
-   */
+       */
   async sendMessage(agentId: string, message: TeammateMessage): Promise<void> {
     logForDebugging(
       `[InProcessBackend] sendMessage() to ${agentId}: ${message.text.substring(0, 50)}...`,
@@ -179,7 +179,7 @@ export class InProcessBackend implements TeammateExecutor {
     logForDebugging(`[InProcessBackend] sendMessage() completed for ${agentId}`)
   }
 
-  /**
+  /*    *
    * Gracefully terminates an in-process teammate.
    *
    * Sends a shutdown request message to the teammate and sets the
@@ -188,7 +188,7 @@ export class InProcessBackend implements TeammateExecutor {
    *
    * Unlike pane-based teammates, in-process teammates handle their own
    * exit via the shutdown flow - no external killPane() is needed.
-   */
+       */
   async terminate(agentId: string, reason?: string): Promise<boolean> {
     logForDebugging(
       `[InProcessBackend] terminate() called for ${agentId}: ${reason}`,
@@ -252,12 +252,12 @@ export class InProcessBackend implements TeammateExecutor {
     return true
   }
 
-  /**
+  /*    *
    * Force kills an in-process teammate immediately.
    *
    * Uses the teammate's AbortController to cancel all async operations
    * and updates the task state to 'killed'.
-   */
+       */
   async kill(agentId: string): Promise<boolean> {
     logForDebugging(`[InProcessBackend] kill() called for ${agentId}`)
 
@@ -289,12 +289,12 @@ export class InProcessBackend implements TeammateExecutor {
     return killed
   }
 
-  /**
+  /*    *
    * Checks if an in-process teammate is still active.
    *
    * Returns true if the teammate exists, has status 'running',
    * and its AbortController has not been aborted.
-   */
+       */
   async isActive(agentId: string): Promise<boolean> {
     logForDebugging(`[InProcessBackend] isActive() called for ${agentId}`)
 
@@ -330,10 +330,10 @@ export class InProcessBackend implements TeammateExecutor {
   }
 }
 
-/**
+/*    *
  * Factory function to create an InProcessBackend instance.
  * Used by the registry (Task #8) to get backend instances.
- */
+     */
 export function createInProcessBackend(): InProcessBackend {
   return new InProcessBackend()
 }

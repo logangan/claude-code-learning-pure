@@ -25,7 +25,7 @@ function shouldNotify(threshold: number): boolean {
 // This avoids having a separate stdin 'data' listener that would compete with
 // the main 'readable' listener and cause dropped input characters.
 
-/**
+/*    *
  * Hook that manages desktop notifications after a timeout period.
  *
  * Shows a notification in two cases:
@@ -34,7 +34,7 @@ function shouldNotify(threshold: number): boolean {
  *
  * @param message - The notification message to display
  * @param timeout - The timeout in milliseconds (defaults to 6000ms)
- */
+     */
 export function useNotifyAfterTimeout(
   message: string,
   notificationType: string,

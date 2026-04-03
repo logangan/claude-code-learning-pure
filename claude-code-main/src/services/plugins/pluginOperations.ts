@@ -1,4 +1,4 @@
-/**
+/*    *
  * Core plugin operations (install, uninstall, enable, disable, update)
  *
  * This module provides pure library functions that can be used by both:
@@ -10,7 +10,7 @@
  * - Do NOT write to console
  * - Return result objects indicating success/failure with messages
  * - Can throw errors for unexpected failures
- */
+     */
 import { dirname, join } from 'path'
 import { getOriginalCwd } from '../../bootstrap/state.js'
 import { isBuiltinPluginId } from '../../plugins/builtinPlugins.js'
@@ -68,13 +68,13 @@ import {
 } from '../../utils/settings/settings.js'
 import { plural } from '../../utils/stringUtils.js'
 
-/** Valid installable scopes (excludes 'managed' which can only be installed from managed-settings.json) */
+/*    * Valid installable scopes (excludes 'managed' which can only be installed from managed-settings.json)     */
 export const VALID_INSTALLABLE_SCOPES = ['user', 'project', 'local'] as const
 
-/** Installation scope type derived from VALID_INSTALLABLE_SCOPES */
+/*    * Installation scope type derived from VALID_INSTALLABLE_SCOPES     */
 export type InstallableScope = (typeof VALID_INSTALLABLE_SCOPES)[number]
 
-/** Valid scopes for update operations (includes 'managed' since managed plugins can be updated) */
+/*    * Valid scopes for update operations (includes 'managed' since managed plugins can be updated)     */
 export const VALID_UPDATE_SCOPES: readonly PluginScope[] = [
   'user',
   'project',
@@ -82,11 +82,11 @@ export const VALID_UPDATE_SCOPES: readonly PluginScope[] = [
   'managed',
 ] as const
 
-/**
+/*    *
  * Assert that a scope is a valid installable scope at runtime
  * @param scope The scope to validate
  * @throws Error if scope is not a valid installable scope
- */
+     */
 export function assertInstallableScope(
   scope: string,
 ): asserts scope is InstallableScope {
@@ -97,25 +97,25 @@ export function assertInstallableScope(
   }
 }
 
-/**
+/*    *
  * Type guard to check if a scope is an installable scope (not 'managed').
  * Use this for type narrowing in conditional blocks.
- */
+     */
 export function isInstallableScope(
   scope: PluginScope,
 ): scope is InstallableScope {
   return VALID_INSTALLABLE_SCOPES.includes(scope as InstallableScope)
 }
 
-/**
+/*    *
  * Get the project path for scopes that are project-specific.
  * Returns the original cwd for 'project' and 'local' scopes, undefined otherwise.
- */
+     */
 export function getProjectPathForScope(scope: PluginScope): string | undefined {
   return scope === 'project' || scope === 'local' ? getOriginalCwd() : undefined
 }
 
-/**
+/*    *
  * Is this plugin enabled (value === true) in .claude/settings.json?
  *
  * Distinct from V2 installed_plugins.json scope: that file tracks where a
@@ -124,7 +124,7 @@ export function getProjectPathForScope(scope: PluginScope): string | undefined {
  * a user-scope install with a project-scope enablement means "uninstall"
  * would succeed at removing the user install while leaving the project
  * enablement active — the plugin keeps running.
- */
+     */
 export function isPluginEnabledAtProjectScope(pluginId: string): boolean {
   return (
     getSettingsForSource('projectSettings')?.enabledPlugins?.[pluginId] === true
@@ -135,22 +135,22 @@ export function isPluginEnabledAtProjectScope(pluginId: string): boolean {
 // Result Types
 // ============================================================================
 
-/**
+/*    *
  * Result of a plugin operation
- */
+     */
 export type PluginOperationResult = {
   success: boolean
   message: string
   pluginId?: string
   pluginName?: string
   scope?: PluginScope
-  /** Plugins that declare this plugin as a dependency (warning on uninstall/disable) */
+  /*    * Plugins that declare this plugin as a dependency (warning on uninstall/disable)     */
   reverseDependents?: string[]
 }
 
-/**
+/*    *
  * Result of a plugin update operation
- */
+     */
 export type PluginUpdateResult = {
   success: boolean
   message: string
@@ -165,7 +165,7 @@ export type PluginUpdateResult = {
 // Helper Functions
 // ============================================================================
 
-/**
+/*    *
  * Search all editable settings scopes for a plugin ID matching the given input.
  *
  * If `plugin` contains `@`, it's treated as a full pluginId and returned if
@@ -176,7 +176,7 @@ export type PluginUpdateResult = {
  * of enabled/disabled state) plus the resolved full pluginId.
  *
  * Precedence: local > project > user (most specific wins).
- */
+     */
 function findPluginInSettings(plugin: string): {
   pluginId: string
   scope: InstallableScope
@@ -200,9 +200,9 @@ function findPluginInSettings(plugin: string): {
   return null
 }
 
-/**
+/*    *
  * Helper function to find a plugin from loaded plugins
- */
+     */
 function findPluginByIdentifier(
   plugin: string,
   plugins: LoadedPlugin[],
@@ -222,11 +222,11 @@ function findPluginByIdentifier(
   })
 }
 
-/**
+/*    *
  * Resolve a plugin ID from V2 installed plugins data for a plugin that may
  * have been delisted from its marketplace. Returns null if the plugin is not
  * found in V2 data.
- */
+     */
 function resolveDelistedPluginId(
   plugin: string,
 ): { pluginId: string; pluginName: string } | null {
@@ -250,11 +250,11 @@ function resolveDelistedPluginId(
   return null
 }
 
-/**
+/*    *
  * Get the most relevant installation for a plugin from V2 data.
  * For project/local scoped plugins, prioritizes installations matching the current project.
  * Priority order: local (matching project) > project (matching project) > user > first available
- */
+     */
 export function getPluginInstallationFromV2(pluginId: string): {
   scope: PluginScope
   projectPath?: string
@@ -302,7 +302,7 @@ export function getPluginInstallationFromV2(pluginId: string): {
 // Core Operations
 // ============================================================================
 
-/**
+/*    *
  * Install a plugin (settings-first).
  *
  * Order of operations:
@@ -317,7 +317,7 @@ export function getPluginInstallationFromV2(pluginId: string): {
  * @param plugin Plugin identifier (name or plugin@marketplace)
  * @param scope Installation scope: user, project, or local (defaults to 'user')
  * @returns Result indicating success/failure
- */
+     */
 export async function installPluginOp(
   plugin: string,
   scope: InstallableScope = 'user',
@@ -417,13 +417,13 @@ export async function installPluginOp(
   }
 }
 
-/**
+/*    *
  * Uninstall a plugin
  *
  * @param plugin Plugin name or plugin@marketplace identifier
  * @param scope Uninstall from scope: user, project, or local (defaults to 'user')
  * @returns Result indicating success/failure
- */
+     */
 export async function uninstallPluginOp(
   plugin: string,
   scope: InstallableScope = 'user',
@@ -557,7 +557,7 @@ export async function uninstallPluginOp(
   }
 }
 
-/**
+/*    *
  * Set plugin enabled/disabled status (settings-first).
  *
  * Resolves the plugin ID and scope from settings — does NOT pre-gate on
@@ -569,7 +569,7 @@ export async function uninstallPluginOp(
  * @param scope Optional scope. If not provided, auto-detects the most specific
  *   scope where the plugin is mentioned in settings.
  * @returns Result indicating success/failure
- */
+     */
 export async function setPluginEnabledOp(
   plugin: string,
   enabled: boolean,
@@ -746,13 +746,13 @@ export async function setPluginEnabledOp(
   }
 }
 
-/**
+/*    *
  * Enable a plugin
  *
  * @param plugin Plugin name or plugin@marketplace identifier
  * @param scope Optional scope. If not provided, finds the most specific scope for the current project.
  * @returns Result indicating success/failure
- */
+     */
 export async function enablePluginOp(
   plugin: string,
   scope?: InstallableScope,
@@ -760,13 +760,13 @@ export async function enablePluginOp(
   return setPluginEnabledOp(plugin, true, scope)
 }
 
-/**
+/*    *
  * Disable a plugin
  *
  * @param plugin Plugin name or plugin@marketplace identifier
  * @param scope Optional scope. If not provided, finds the most specific scope for the current project.
  * @returns Result indicating success/failure
- */
+     */
 export async function disablePluginOp(
   plugin: string,
   scope?: InstallableScope,
@@ -774,11 +774,11 @@ export async function disablePluginOp(
   return setPluginEnabledOp(plugin, false, scope)
 }
 
-/**
+/*    *
  * Disable all enabled plugins
  *
  * @returns Result indicating success/failure with count of disabled plugins
- */
+     */
 export async function disableAllPluginsOp(): Promise<PluginOperationResult> {
   const enabledPlugins = getPluginEditableScopes()
 
@@ -811,7 +811,7 @@ export async function disableAllPluginsOp(): Promise<PluginOperationResult> {
   }
 }
 
-/**
+/*    *
  * Update a plugin to the latest version.
  *
  * This function performs a NON-INPLACE update:
@@ -825,7 +825,7 @@ export async function disableAllPluginsOp(): Promise<PluginOperationResult> {
  * @param plugin Plugin name or plugin@marketplace identifier
  * @param scope Scope to update. Unlike install/uninstall/enable/disable, managed scope IS allowed.
  * @returns Result indicating success/failure with version info
- */
+     */
 export async function updatePluginOp(
   plugin: string,
   scope: PluginScope,
@@ -889,10 +889,10 @@ export async function updatePluginOp(
   })
 }
 
-/**
+/*    *
  * Perform the actual plugin update: fetch source, calculate version, copy to cache, update disk.
  * This is the core update execution extracted from updatePluginOp.
- */
+     */
 async function performPluginUpdate({
   pluginId,
   pluginName,
@@ -964,11 +964,11 @@ async function performPluginUpdate({
 
     // Verify sourcePath exists. This stat is required — neither downstream
     // op reliably surfaces ENOENT:
-    //   1. calculatePluginVersion → findGitRoot walks UP past a missing dir
-    //      to the marketplace .git, returning the same SHA as install-time →
-    //      silent false-positive {success: true, alreadyUpToDate: true}.
-    //   2. copyPluginToVersionedCache (when versions differ) throws a raw
-    //      ENOENT with no friendly message.
+    // 1. calculatePluginVersion → findGitRoot walks UP past a missing dir
+    // to the marketplace .git, returning the same SHA as install-time →
+    // silent false-positive {success: true, alreadyUpToDate: true}.
+    // 2. copyPluginToVersionedCache (when versions differ) throws a raw
+    // ENOENT with no friendly message.
     // TOCTOU is negligible for a user-managed local dir.
     try {
       await fs.stat(sourcePath)

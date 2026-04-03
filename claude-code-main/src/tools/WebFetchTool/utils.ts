@@ -181,7 +181,7 @@ export async function checkDomainBlocklist(
   }
   try {
     const response = await axios.get(
-      `https://api.anthropic.com/api/web/domain_info?domain=${encodeURIComponent(domain)}`,
+      `https:// api.anthropic.com/api/web/domain_info?domain=${encodeURIComponent(domain)}`,
       { timeout: DOMAIN_CHECK_TIMEOUT_MS },
     )
     if (response.status === 200) {
@@ -202,13 +202,13 @@ export async function checkDomainBlocklist(
   }
 }
 
-/**
+/*    *
  * Check if a redirect is safe to follow
  * Allows redirects that:
  * - Add or remove "www." in the hostname
  * - Keep the origin the same but change path/query params
  * - Or both of the above
- */
+     */
 export function isPermittedRedirect(
   originalUrl: string,
   redirectUrl: string,
@@ -242,7 +242,7 @@ export function isPermittedRedirect(
   }
 }
 
-/**
+/*    *
  * Helper function to handle fetching URLs with custom redirect handling
  * Recursively follows redirects if they pass the redirectChecker function
  *
@@ -251,7 +251,7 @@ export function isPermittedRedirect(
  * allow for an attacker to exploit an open redirect vulnerability in a
  * trusted domain to force a user to make a request to a malicious domain
  * unknowingly"
- */
+     */
 type RedirectInfo = {
   type: 'redirect'
   originalUrl: string

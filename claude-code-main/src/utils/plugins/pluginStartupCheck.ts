@@ -26,7 +26,7 @@ import {
 } from './pluginInstallationHelpers.js'
 import { isLocalPluginSource, type PluginScope } from './schemas.js'
 
-/**
+/*    *
  * Checks for enabled plugins across all settings sources, including --add-dir.
  *
  * Uses getInitialSettings() which merges all sources with policy as
@@ -35,7 +35,7 @@ import { isLocalPluginSource, type PluginScope } from './schemas.js'
  * getPluginEditableScopes() which serves a different purpose (scope tracking).
  *
  * @returns Array of plugin IDs (plugin@marketplace format) that are enabled
- */
+     */
 export async function checkEnabledPlugins(): Promise<string[]> {
   const settings = getInitialSettings()
   const enabledPlugins: string[] = []
@@ -71,7 +71,7 @@ export async function checkEnabledPlugins(): Promise<string[]> {
   return enabledPlugins
 }
 
-/**
+/*    *
  * Gets the user-editable scope that "owns" each enabled plugin.
  *
  * Used for scope tracking: determining where to write back when a user
@@ -92,7 +92,7 @@ export async function checkEnabledPlugins(): Promise<string[]> {
  * 5. flag (flagSettings) - session-only, not persisted
  *
  * @returns Map of plugin ID to the user-editable scope that owns it
- */
+     */
 export function getPluginEditableScopes(): Map<string, ExtendedPluginScope> {
   const result = new Map<string, ExtendedPluginScope>()
 
@@ -162,29 +162,29 @@ export function getPluginEditableScopes(): Map<string, ExtendedPluginScope> {
   return result
 }
 
-/**
+/*    *
  * Check if a scope is persistable (not session-only).
  * @param scope The scope to check
  * @returns true if the scope should be persisted to installed_plugins.json
- */
+     */
 export function isPersistableScope(
   scope: ExtendedPluginScope,
 ): scope is PersistablePluginScope {
   return scope !== 'flag'
 }
 
-/**
+/*    *
  * Convert SettingSource to plugin scope.
  * @param source The settings source
  * @returns The corresponding plugin scope
- */
+     */
 export function settingSourceToScope(
   source: SettingSource,
 ): ExtendedPluginScope {
   return SETTING_SOURCE_TO_SCOPE[source]
 }
 
-/**
+/*    *
  * Gets the list of currently installed plugins
  * Reads from installed_plugins.json which tracks global installation state.
  * Automatically runs migration on first call if needed.
@@ -193,7 +193,7 @@ export function settingSourceToScope(
  * (which triggers V1→V2 migration if needed).
  *
  * @returns Array of installed plugin IDs
- */
+     */
 export async function getInstalledPlugins(): Promise<string[]> {
   // Trigger sync in background (don't await - don't block startup)
   // This syncs enabledPlugins from settings.json to installed_plugins.json
@@ -208,11 +208,11 @@ export async function getInstalledPlugins(): Promise<string[]> {
   return installed
 }
 
-/**
+/*    *
  * Finds plugins that are enabled but not installed
  * @param enabledPlugins Array of enabled plugin IDs
  * @returns Array of missing plugin IDs
- */
+     */
 export async function findMissingPlugins(
   enabledPlugins: string[],
 ): Promise<string[]> {
@@ -249,26 +249,26 @@ export async function findMissingPlugins(
   }
 }
 
-/**
+/*    *
  * Result of plugin installation attempt
- */
+     */
 export type PluginInstallResult = {
   installed: string[]
   failed: Array<{ name: string; error: string }>
 }
 
-/**
+/*    *
  * Installation scope type for install functions (excludes 'managed' which is read-only)
- */
+     */
 type InstallableScope = Exclude<PluginScope, 'managed'>
 
-/**
+/*    *
  * Installs the selected plugins
  * @param pluginsToInstall Array of plugin IDs to install
  * @param onProgress Optional callback for installation progress
  * @param scope Installation scope: user, project, or local (defaults to 'user')
  * @returns Installation results with succeeded and failed plugins
- */
+     */
 export async function installSelectedPlugins(
   pluginsToInstall: string[],
   onProgress?: (name: string, index: number, total: number) => void,

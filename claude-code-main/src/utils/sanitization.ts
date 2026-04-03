@@ -1,4 +1,4 @@
-/**
+/*    *
  * Unicode Sanitization for Hidden Character Attack Mitigation
  *
  * This module implements security measures against Unicode-based hidden character attacks,
@@ -11,7 +11,7 @@
  * MCP (Model Context Protocol) implementation, where attackers could inject hidden instructions
  * using Unicode Tag characters that would be executed by Claude but remain invisible to users.
  *
- * Reference: https://embracethered.com/blog/posts/2024/hiding-and-finding-text-with-unicode-tags/
+ * Reference: https:// embracethered.com/blog/posts/2024/hiding-and-finding-text-with-unicode-tags/
  *
  * This implementation provides comprehensive protection by:
  * 1. Applying NFKC Unicode normalization to handle composed character sequences
@@ -20,7 +20,7 @@
  * 4. Maintaining performance with efficient regex processing
  *
  * The sanitization is always enabled to protect against these attacks.
- */
+     */
 
 export function partiallySanitizeUnicode(prompt: string): string {
   let current = prompt

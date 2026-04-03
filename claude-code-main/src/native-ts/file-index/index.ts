@@ -1,7 +1,7 @@
-/**
+/*    *
  * Pure-TypeScript port of vendor/file-index-src (Rust NAPI module).
  *
- * The native module wraps nucleo (https://github.com/helix-editor/nucleo) for
+ * The native module wraps nucleo (https:// github.com/helix-editor/nucleo) for
  * high-performance fuzzy file searching. This port reimplements the same API
  * and scoring behavior without native dependencies.
  *
@@ -13,7 +13,7 @@
  * Score semantics: lower = better. Score is position-in-results / result-count,
  * so the best match is 0.0. Paths containing "test" get a 1.05× penalty (capped
  * at 1.0) so non-test files rank slightly higher.
- */
+     */
 
 export type SearchResult = {
   path: string
@@ -50,11 +50,11 @@ export class FileIndex {
   // search() uses this to search the ready prefix while build continues.
   private readyCount = 0
 
-  /**
+  /*    *
    * Load paths from an array of strings.
    * This is the main way to populate the index — ripgrep collects files, we just search them.
    * Automatically deduplicates paths.
-   */
+       */
   loadFromFileList(fileList: string[]): void {
     // Deduplicate and filter empty strings (matches Rust HashSet behavior)
     const seen = new Set<string>()
@@ -69,7 +69,7 @@ export class FileIndex {
     this.buildIndex(paths)
   }
 
-  /**
+  /*    *
    * Async variant: yields to the event loop every ~8–12k paths so large
    * indexes (270k+ files) don't block the main thread for >10ms at a time.
    * Identical result to loadFromFileList.
@@ -79,7 +79,7 @@ export class FileIndex {
    *     returns partial results). For a 270k-path list this is ~5–10ms of
    *     sync work after the paths array is available.
    *   - done: resolves when the entire index is built.
-   */
+       */
   loadFromFileListAsync(fileList: string[]): {
     queryable: Promise<void>
     done: Promise<void>
@@ -166,10 +166,10 @@ export class FileIndex {
     this.charBits[i] = bits
   }
 
-  /**
+  /*    *
    * Search for files matching the query using fuzzy matching.
    * Returns top N results sorted by match score.
-   */
+       */
   search(query: string, limit: number): SearchResult[] {
     if (limit <= 0) return []
     if (query.length === 0) {
@@ -290,10 +290,10 @@ export class FileIndex {
   }
 }
 
-/**
+/*    *
  * Boundary/camelCase bonus for a match at position `pos` in the original-case
  * path. `first` enables the start-of-string bonus (only for needle[0]).
- */
+     */
 function scoreBonusAt(path: string, pos: number, first: boolean): number {
   if (pos === 0) return first ? BONUS_FIRST_CHAR : 0
   const prevCh = path.charCodeAt(pos - 1)
@@ -328,11 +328,11 @@ export function yieldToEventLoop(): Promise<void> {
 
 export { CHUNK_MS }
 
-/**
+/*    *
  * Extract unique top-level path segments, sorted by (length asc, then alpha asc).
  * Handles both Unix (/) and Windows (\) path separators.
  * Mirrors FileIndex::compute_top_level_entries in lib.rs.
- */
+     */
 function computeTopLevelEntries(
   paths: string[],
   limit: number,

@@ -354,7 +354,7 @@ import { sleep } from '../utils/sleep.js'
 import { isExtractModeActive } from '../memdir/paths.js'
 
 // Dead code elimination: conditional imports
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const coordinatorModeModule = feature('COORDINATOR_MODE')
   ? (require('../coordinator/coordinatorMode.js') as typeof import('../coordinator/coordinatorMode.js'))
   : null
@@ -374,7 +374,7 @@ const cronGate = feature('AGENT_TRIGGERS')
 const extractMemoriesModule = feature('EXTRACT_MEMORIES')
   ? (require('../services/extractMemories/extractMemories.js') as typeof import('../services/extractMemories/extractMemories.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 const SHUTDOWN_TEAM_PROMPT = `<system-reminder>
 You are running in non-interactive mode and cannot return a response to the user until your team is shut down.
@@ -420,11 +420,11 @@ function toBlocks(v: PromptValue): ContentBlockParam[] {
   return typeof v === 'string' ? [{ type: 'text', text: v }] : v
 }
 
-/**
+/*    *
  * Join prompt values from multiple queued commands into one. Strings are
  * newline-joined; if any value is a block array, all values are normalized
  * to blocks and concatenated.
- */
+     */
 export function joinPromptValues(values: PromptValue[]): PromptValue {
   if (values.length === 1) return values[0]!
   if (values.every(v => typeof v === 'string')) {
@@ -433,13 +433,13 @@ export function joinPromptValues(values: PromptValue[]): PromptValue {
   return values.flatMap(toBlocks)
 }
 
-/**
+/*    *
  * Whether `next` can be batched into the same ask() call as `head`. Only
  * prompt-mode commands batch, and only when the workload tag matches (so the
  * combined turn is attributed correctly) and the isMeta flag matches (so a
  * proactive tick can't merge into a user prompt and lose its hidden-in-
  * transcript marking when the head is spread over the merged command).
- */
+     */
 export function canBatchWith(
   head: QueuedCommand,
   next: QueuedCommand | undefined,
@@ -1253,13 +1253,13 @@ function runHeadlessStreaming(
   // Track which MCP clients have had elicitation handlers registered
   const elicitationRegistered = new Set<string>()
 
-  /**
+  /*    *
    * Register elicitation request/completion handlers on connected MCP clients
    * that haven't been registered yet. SDK MCP servers are excluded because they
    * route through SdkControlClientTransport. Hooks run first (matching REPL
    * behavior); if no hook responds, the request is forwarded to the SDK
    * consumer via the control protocol.
-   */
+       */
   function registerElicitationHandlers(clients: MCPServerConnection[]): void {
     for (const connection of clients) {
       if (
@@ -1510,8 +1510,7 @@ function runHeadlessStreaming(
   // Forward new messages from mutableMessages to the bridge.
   // Called incrementally during each turn (so claude.ai sees progress
   // and stays alive during permission waits) and again after the turn.
-  //
-  // writeMessages has its own UUID-based dedup (initialMessageUUIDs,
+  // // writeMessages has its own UUID-based dedup (initialMessageUUIDs,
   // recentPostedUUIDs) — the index cursor here is a pre-filter to avoid
   // O(n) re-scanning of already-sent messages on every call.
   function forwardMessagesToBridge(): void {
@@ -1773,8 +1772,7 @@ function runHeadlessStreaming(
     // control_request) — both inject via parseAgentsFromJson with
     // source='flagSettings'. loadMarkdownFilesForSubdir never assigns this
     // source, so it cleanly discriminates "injected, not disk-loadable".
-    //
-    // The previous filter used a negative set-diff (!freshAgentTypes.has(a))
+    // // The previous filter used a negative set-diff (!freshAgentTypes.has(a))
     // which also matched plugin agents that were in the poisoned initial
     // currentAgents but correctly excluded from freshAgentDefs after managed
     // settings applied — leaking policy-blocked agents into the init message.
@@ -2683,9 +2681,9 @@ function runHeadlessStreaming(
   // Set up UDS inbox callback so the query loop is kicked off
   // when a message arrives via the UDS socket in headless mode.
   if (feature('UDS_INBOX')) {
-    /* eslint-disable @typescript-eslint/no-require-imports */
+    /*     eslint-disable @typescript-eslint/no-require-imports     */
     const { setOnEnqueue } = require('../utils/udsMessaging.js')
-    /* eslint-enable @typescript-eslint/no-require-imports */
+    /*     eslint-enable @typescript-eslint/no-require-imports     */
     setOnEnqueue(() => {
       if (!inputClosed) {
         void run()
@@ -3815,13 +3813,11 @@ function runHeadlessStreaming(
         } else if (message.request.subtype === 'side_question') {
           // Same fire-and-forget pattern as generate_session_title above —
           // the forked agent's API roundtrip must not block the stdin loop.
-          //
-          // The snapshot captured by stopHooks (for querySource === 'sdk')
+          // // The snapshot captured by stopHooks (for querySource === 'sdk')
           // holds the exact systemPrompt/userContext/systemContext/messages
           // sent on the last main-thread turn. Reusing them gives a byte-
           // identical prefix → prompt cache hit.
-          //
-          // Fallback (resume before first turn completes — no snapshot yet):
+          // // Fallback (resume before first turn completes — no snapshot yet):
           // rebuild from scratch. buildSideQuestionFallbackParams mirrors
           // QueryEngine.ts:ask()'s system prompt assembly (including
           // --system-prompt / --append-system-prompt) so the rebuilt prefix
@@ -4142,10 +4138,10 @@ function runHeadlessStreaming(
   return output
 }
 
-/**
+/*    *
  * Creates a CanUseToolFn that incorporates a custom permission prompt tool.
  * This function converts the permissionPromptTool into a CanUseToolFn that can be used in ask.tsx
- */
+     */
 export function createCanUseToolWithPermissionPrompt(
   permissionPromptTool: PermissionPromptTool,
 ): CanUseToolFn {
@@ -4176,14 +4172,12 @@ export function createCanUseToolWithPermissionPrompt(
     }
 
     // Race the permission prompt tool against the abort signal.
-    //
-    // Why we need this: The permission prompt tool may block indefinitely waiting
+    // // Why we need this: The permission prompt tool may block indefinitely waiting
     // for user input (e.g., via stdin or a UI dialog). If the user triggers an
     // interrupt (Ctrl+C), we need to detect it even while the tool is blocked.
     // Without this race, the abort check would only run AFTER the tool completes,
     // which may never happen if the tool is waiting for input that will never come.
-    //
-    // The second check (combinedSignal.aborted) handles a race condition where
+    // // The second check (combinedSignal.aborted) handles a race condition where
     // abort fires after Promise.race resolves but before we reach this check.
     const { signal: combinedSignal, cleanup: cleanupAbortListener } =
       createCombinedAbortSignal(toolUseContext.abortController.signal)
@@ -4641,7 +4635,7 @@ function handleSetPermissionMode(
   }
 }
 
-/**
+/*    *
  * IDE-triggered channel enable. Derives the ChannelEntry from the connection's
  * pluginSource (IDE can't spoof kind/marketplace — we only take the server
  * name), appends it to session allowedChannels, and runs the full gate. On
@@ -4658,7 +4652,7 @@ function handleSetPermissionMode(
  * tool approval, that's IDE-side plumbing against its own pending-map. (Also
  * gated separately by tengu_harbor_permissions — not yet shipping on
  * interactive either.)
- */
+     */
 function handleChannelEnable(
   requestId: string,
   serverName: string,
@@ -4767,7 +4761,7 @@ function handleChannelEnable(
   })
 }
 
-/**
+/*    *
  * Re-register the channel notification handler after mcp_reconnect /
  * mcp_toggle creates a new client. handleChannelEnable bound the handler to
  * the OLD client object; allowedChannels survives the reconnect but the
@@ -4782,7 +4776,7 @@ function handleChannelEnable(
  * findChannelEntry internally and returns skip/session for an unlisted
  * server, so reconnecting a non-channel MCP server costs one feature-flag
  * check.
- */
+     */
 function reregisterChannelHandlerAfterReconnect(
   connection: MCPServerConnection,
 ): void {
@@ -4834,10 +4828,10 @@ function reregisterChannelHandlerAfterReconnect(
   )
 }
 
-/**
+/*    *
  * Emits an error message in the correct format based on outputFormat.
  * When using stream-json, writes JSON to stdout; otherwise writes plain text to stderr.
- */
+     */
 function emitLoadError(
   message: string,
   outputFormat: string | undefined,
@@ -4865,13 +4859,13 @@ function emitLoadError(
   }
 }
 
-/**
+/*    *
  * Removes an interrupted user message and its synthetic assistant sentinel
  * from the message array. Used during gateway-triggered restarts to clean up
  * the message history before re-enqueuing the interrupted prompt.
  *
  * @internal Exported for testing
- */
+     */
 export function removeInterruptedMessage(
   messages: Message[],
   interruptedUserMessage: NormalizedUserMessage,
@@ -4910,8 +4904,8 @@ async function loadInitialMessages(
       logEvent('tengu_continue_print', {})
 
       const result = await loadConversationForResume(
-        undefined /* sessionId */,
-        undefined /* file path */,
+        undefined /*     sessionId     */,
+        undefined /*     file path     */,
       )
       if (result) {
         // Match coordinator mode to the resumed session's mode
@@ -5232,12 +5226,12 @@ function getStructuredIO(
     : new StructuredIO(inputStream, options.replayUserMessages)
 }
 
-/**
+/*    *
  * Handles unexpected permission responses by looking up the unresolved tool
  * call in the transcript and enqueuing it for execution.
  *
  * Returns true if a permission was enqueued, false otherwise.
- */
+     */
 export async function handleOrphanedPermissionResponse({
   message,
   setAppState,
@@ -5309,10 +5303,10 @@ export type DynamicMcpState = {
   configs: Record<string, ScopedMcpServerConfig>
 }
 
-/**
+/*    *
  * Converts a process transport config to a scoped config.
  * The types are structurally compatible, so we just add the scope.
- */
+     */
 function toScopedConfig(
   config: McpServerConfigForProcessTransport,
 ): ScopedMcpServerConfig {
@@ -5322,18 +5316,18 @@ function toScopedConfig(
   return { ...config, scope: 'dynamic' } as ScopedMcpServerConfig
 }
 
-/**
+/*    *
  * State for SDK MCP servers that run in the SDK process.
- */
+     */
 export type SdkMcpState = {
   configs: Record<string, McpSdkServerConfig>
   clients: MCPServerConnection[]
   tools: Tools
 }
 
-/**
+/*    *
  * Result of handleMcpSetServers - contains new state and response data.
- */
+     */
 export type McpSetServersResult = {
   response: SDKControlMcpSetServersResponse
   newSdkState: SdkMcpState
@@ -5341,7 +5335,7 @@ export type McpSetServersResult = {
   sdkServersChanged: boolean
 }
 
-/**
+/*    *
  * Handles mcp_set_servers requests by processing both SDK and process-based servers.
  * SDK servers run in the SDK process; process-based servers are spawned by the CLI.
  *
@@ -5349,7 +5343,7 @@ export type McpSetServersResult = {
  * --mcp-config (see filterMcpServersByPolicy call in main.tsx). Without this,
  * SDK V2 Query.setMcpServers() was a second policy bypass vector. Blocked servers
  * are reported in response.errors so the SDK consumer knows why they weren't added.
- */
+     */
 export async function handleMcpSetServers(
   servers: Record<string, McpServerConfigForProcessTransport>,
   sdkState: SdkMcpState,
@@ -5443,10 +5437,10 @@ export async function handleMcpSetServers(
   }
 }
 
-/**
+/*    *
  * Reconciles the current set of dynamic MCP servers with a new desired state.
  * Handles additions, removals, and config changes.
- */
+     */
 export async function reconcileMcpServers(
   desiredConfigs: Record<string, McpServerConfigForProcessTransport>,
   currentState: DynamicMcpState,

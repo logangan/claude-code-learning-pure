@@ -57,10 +57,10 @@ export type Output = {
 
 export type Input = z.infer<InputSchema>
 
-/**
+/*    *
  * Generates a unique team name by checking if the provided name already exists.
  * If the name already exists, generates a new word slug.
- */
+     */
 function generateUniqueTeamName(providedName: string): string {
   // If the team doesn't exist, use the provided name
   if (!readTeamFile(providedName)) {

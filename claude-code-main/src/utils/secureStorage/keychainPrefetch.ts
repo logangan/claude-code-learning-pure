@@ -1,4 +1,4 @@
-/**
+/*    *
  * Minimal module for firing macOS keychain reads in parallel with main.tsx
  * module evaluation, same pattern as startMdmRawRead() in settings/mdm/rawRead.ts.
  *
@@ -19,7 +19,7 @@
  * cross-spawn, ~58ms of synchronous module init). The helpers file's own
  * import chain (envUtils, oauth constants, crypto) is already evaluated by
  * startupProfiler.ts at main.tsx:5, so no new module-init cost lands here.
- */
+     */
 
 import { execFile } from 'child_process'
 import { isBareMode } from '../envUtils.js'
@@ -62,10 +62,10 @@ function spawnSecurity(serviceName: string): Promise<SpawnResult> {
   })
 }
 
-/**
+/*    *
  * Fire both keychain reads in parallel. Called at main.tsx top-level
  * immediately after startMdmRawRead(). Non-darwin is a no-op.
- */
+     */
 export function startKeychainPrefetch(): void {
   if (process.platform !== 'darwin' || prefetchPromise || isBareMode()) return
 
@@ -88,29 +88,29 @@ export function startKeychainPrefetch(): void {
   )
 }
 
-/**
+/*    *
  * Await prefetch completion. Called in main.tsx preAction alongside
  * ensureMdmSettingsLoaded() — nearly free since subprocesses finish during
  * the ~65ms of main.tsx imports. Resolves immediately on non-darwin.
- */
+     */
 export async function ensureKeychainPrefetchCompleted(): Promise<void> {
   if (prefetchPromise) await prefetchPromise
 }
 
-/**
+/*    *
  * Consumed by getApiKeyFromConfigOrMacOSKeychain() in auth.ts before it
  * falls through to sync execSync. Returns null if prefetch hasn't completed.
- */
+     */
 export function getLegacyApiKeyPrefetchResult(): {
   stdout: string | null
 } | null {
   return legacyApiKeyPrefetch
 }
 
-/**
+/*    *
  * Clear prefetch result. Called alongside getApiKeyFromConfigOrMacOSKeychain
  * cache invalidation so a stale prefetch doesn't shadow a fresh write.
- */
+     */
 export function clearLegacyApiKeyPrefetch(): void {
   legacyApiKeyPrefetch = null
 }

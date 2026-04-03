@@ -49,9 +49,9 @@ const pathCache = new LRUCache<string, PathEntry[]>({
   ttl: CACHE_TTL,
 })
 
-/**
+/*    *
  * Parses a partial path into directory and prefix components
- */
+     */
 export function parsePartialPath(
   partialPath: string,
   basePath?: string,
@@ -77,10 +77,10 @@ export function parsePartialPath(
   return { directory, prefix }
 }
 
-/**
+/*    *
  * Scans a directory and returns subdirectories
  * Uses LRU cache to avoid repeated filesystem calls
- */
+     */
 export async function scanDirectory(
   dirPath: string,
 ): Promise<DirectoryEntry[]> {
@@ -115,9 +115,9 @@ export async function scanDirectory(
   }
 }
 
-/**
+/*    *
  * Main function to get directory completion suggestions
- */
+     */
 export async function getDirectoryCompletions(
   partialPath: string,
   options: CompletionOptions = {},
@@ -139,16 +139,16 @@ export async function getDirectoryCompletions(
   }))
 }
 
-/**
+/*    *
  * Clears the directory cache
- */
+     */
 export function clearDirectoryCache(): void {
   directoryCache.clear()
 }
 
-/**
+/*    *
  * Checks if a string looks like a path (starts with path-like prefixes)
- */
+     */
 export function isPathLikeToken(token: string): boolean {
   return (
     token.startsWith('~/') ||
@@ -161,10 +161,10 @@ export function isPathLikeToken(token: string): boolean {
   )
 }
 
-/**
+/*    *
  * Scans a directory and returns both files and subdirectories
  * Uses LRU cache to avoid repeated filesystem calls
- */
+     */
 export async function scanDirectoryForPaths(
   dirPath: string,
   includeHidden = false,
@@ -202,9 +202,9 @@ export async function scanDirectoryForPaths(
   }
 }
 
-/**
+/*    *
  * Get path completion suggestions for files and directories
- */
+     */
 export async function getPathCompletions(
   partialPath: string,
   options: PathCompletionOptions = {},
@@ -254,9 +254,9 @@ export async function getPathCompletions(
   })
 }
 
-/**
+/*    *
  * Clears both directory and path caches
- */
+     */
 export function clearPathCache(): void {
   directoryCache.clear()
   pathCache.clear()

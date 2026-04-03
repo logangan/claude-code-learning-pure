@@ -1,7 +1,7 @@
-/**
+/*    *
  * Safe wrappers for shell-quote library functions that handle errors gracefully
  * These are drop-in replacements for the original functions
- */
+     */
 
 import {
   type ParseEntry,
@@ -94,7 +94,7 @@ export function tryQuoteShellArgs(args: unknown[]): ShellQuoteResult {
   }
 }
 
-/**
+/*    *
  * Checks if parsed tokens contain malformed entries that suggest shell-quote
  * misinterpreted the command. This happens when input contains ambiguous
  * patterns (like JSON-like strings with semicolons) that shell-quote parses
@@ -113,7 +113,7 @@ export function tryQuoteShellArgs(args: unknown[]): ShellQuoteResult {
  *
  * Security: This prevents command injection via HackerOne #3482049 where
  * shell-quote's correct parsing of ambiguous input can be exploited.
- */
+     */
 export function hasMalformedTokens(
   command: string,
   parsed: ParseEntry[],
@@ -175,7 +175,7 @@ export function hasMalformedTokens(
   return false
 }
 
-/**
+/*    *
  * Detects commands containing '\' patterns that exploit the shell-quote library's
  * incorrect handling of backslashes inside single quotes.
  *
@@ -186,7 +186,7 @@ export function hasMalformedTokens(
  *
  * This means the pattern '\' <payload> '\' hides <payload> from security checks
  * because shell-quote thinks it's all one single-quoted string.
- */
+     */
 export function hasShellQuoteSingleQuoteBug(command: string): boolean {
   // Walk the command with correct bash single-quote semantics
   let inSingleQuote = false
@@ -215,26 +215,23 @@ export function hasShellQuoteSingleQuoteBug(command: string): boolean {
       // incorrectly treats \' as an escape sequence inside single quotes,
       // while bash treats backslash as literal. This creates a differential
       // where shell-quote merges tokens that bash treats as separate.
-      //
-      // Odd trailing \'s = always a bug:
-      //   '\' -> shell-quote: \' = literal ', still open. bash: \, closed.
-      //   'abc\' -> shell-quote: abc then \' = literal ', still open. bash: abc\, closed.
-      //   '\\\'  -> shell-quote: \\ + \', still open. bash: \\\, closed.
-      //
-      // Even trailing \'s = bug ONLY when a later ' exists in the command:
-      //   '\\' alone -> shell-quote backtracks, both parsers agree string closes. OK.
-      //   '\\' 'next' -> shell-quote: \' consumes the closing ', finds next ' as
-      //                   false close, merges tokens. bash: two separate tokens.
-      //
-      //   Detail: the regex alternation tries \' before [^']. For '\\', it matches
-      //   the first \ via [^'] (next char is \, not '), then the second \ via \'
-      //   (next char IS '). This consumes the closing '. The regex continues reading
-      //   until it finds another ' to close the match. If none exists, it backtracks
-      //   to [^'] for the second \ and closes correctly. If a later ' exists (e.g.,
-      //   the opener of the next single-quoted arg), no backtracking occurs and
-      //   tokens merge. See H1 report: git ls-remote 'safe\\' '--upload-pack=evil' 'repo'
-      //   shell-quote: ["git","ls-remote","safe\\\\ --upload-pack=evil repo"]
-      //   bash:        ["git","ls-remote","safe\\\\","--upload-pack=evil","repo"]
+      // // Odd trailing \'s = always a bug:
+      // '\' -> shell-quote: \' = literal ', still open. bash: \, closed.
+      // 'abc\' -> shell-quote: abc then \' = literal ', still open. bash: abc\, closed.
+      // '\\\'  -> shell-quote: \\ + \', still open. bash: \\\, closed.
+      // // Even trailing \'s = bug ONLY when a later ' exists in the command:
+      // '\\' alone -> shell-quote backtracks, both parsers agree string closes. OK.
+      // '\\' 'next' -> shell-quote: \' consumes the closing ', finds next ' as
+      // false close, merges tokens. bash: two separate tokens.
+      // //   Detail: the regex alternation tries \' before [^']. For '\\', it matches
+      // the first \ via [^'] (next char is \, not '), then the second \ via \'
+      // (next char IS '). This consumes the closing '. The regex continues reading
+      // until it finds another ' to close the match. If none exists, it backtracks
+      // to [^'] for the second \ and closes correctly. If a later ' exists (e.g.,
+      // the opener of the next single-quoted arg), no backtracking occurs and
+      // tokens merge. See H1 report: git ls-remote 'safe\\' '--upload-pack=evil' 'repo'
+      // shell-quote: ["git","ls-remote","safe\\\\ --upload-pack=evil repo"]
+      // bash:        ["git","ls-remote","safe\\\\","--upload-pack=evil","repo"]
       if (!inSingleQuote) {
         let backslashCount = 0
         let j = i - 1

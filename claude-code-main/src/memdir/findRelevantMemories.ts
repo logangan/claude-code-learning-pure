@@ -23,7 +23,7 @@ Return a list of filenames for the memories that will clearly be useful to Claud
 - If a list of recently-used tools is provided, do not select memories that are usage reference or API documentation for those tools (Claude Code is already exercising them). DO still select memories containing warnings, gotchas, or known issues about those tools — active use is exactly when those matter.
 `
 
-/**
+/*    *
  * Find memory files relevant to a query by scanning memory file headers
  * and asking Sonnet to select the most relevant ones.
  *
@@ -35,7 +35,7 @@ Return a list of filenames for the memories that will clearly be useful to Claud
  * `alreadySurfaced` filters paths shown in prior turns before the
  * Sonnet call, so the selector spends its 5-slot budget on fresh
  * candidates instead of re-picking files the caller will discard.
- */
+     */
 export async function findRelevantMemories(
   query: string,
   memoryDir: string,
@@ -64,10 +64,10 @@ export async function findRelevantMemories(
   // Fires even on empty selection: selection-rate needs the denominator,
   // and -1 ages distinguish "ran, picked nothing" from "never ran".
   if (feature('MEMORY_SHAPE_TELEMETRY')) {
-    /* eslint-disable @typescript-eslint/no-require-imports */
+    /*     eslint-disable @typescript-eslint/no-require-imports     */
     const { logMemoryRecallShape } =
       require('./memoryShapeTelemetry.js') as typeof import('./memoryShapeTelemetry.js')
-    /* eslint-enable @typescript-eslint/no-require-imports */
+    /*     eslint-enable @typescript-eslint/no-require-imports     */
     logMemoryRecallShape(memories, selected)
   }
 

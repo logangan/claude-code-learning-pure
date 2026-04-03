@@ -1,14 +1,14 @@
-/**
+/*    *
  * Zod schema for keybindings.json configuration.
  * Used for validation and JSON schema generation.
- */
+     */
 
 import { z } from 'zod/v4'
 import { lazySchema } from '../utils/lazySchema.js'
 
-/**
+/*    *
  * Valid context names where keybindings can be applied.
- */
+     */
 export const KEYBINDING_CONTEXTS = [
   'Global',
   'Chat',
@@ -31,9 +31,9 @@ export const KEYBINDING_CONTEXTS = [
   'Plugin',
 ] as const
 
-/**
+/*    *
  * Human-readable descriptions for each keybinding context.
- */
+     */
 export const KEYBINDING_CONTEXT_DESCRIPTIONS: Record<
   (typeof KEYBINDING_CONTEXTS)[number],
   string
@@ -58,9 +58,9 @@ export const KEYBINDING_CONTEXT_DESCRIPTIONS: Record<
   Plugin: 'When the plugin dialog is open',
 }
 
-/**
+/*    *
  * All valid keybinding action identifiers.
- */
+     */
 export const KEYBINDING_ACTIONS = [
   // App-level actions (Global context)
   'app:interrupt',
@@ -171,9 +171,9 @@ export const KEYBINDING_ACTIONS = [
   'voice:pushToTalk',
 ] as const
 
-/**
+/*    *
  * Schema for a single keybinding block.
- */
+     */
 export const KeybindingBlockSchema = lazySchema(() =>
   z
     .object({
@@ -207,10 +207,10 @@ export const KeybindingBlockSchema = lazySchema(() =>
     .describe('A block of keybindings for a specific context'),
 )
 
-/**
+/*    *
  * Schema for the entire keybindings.json file.
  * Uses object wrapper format with optional $schema and $docs metadata.
- */
+     */
 export const KeybindingsSchema = lazySchema(() =>
   z
     .object({
@@ -228,9 +228,9 @@ export const KeybindingsSchema = lazySchema(() =>
     ),
 )
 
-/**
+/*    *
  * TypeScript types derived from the schema.
- */
+     */
 export type KeybindingsSchemaType = z.infer<
   ReturnType<typeof KeybindingsSchema>
 >

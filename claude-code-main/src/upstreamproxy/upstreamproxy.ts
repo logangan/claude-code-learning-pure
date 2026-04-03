@@ -1,4 +1,4 @@
-/**
+/*    *
  * CCR upstreamproxy — container-side wiring.
  *
  * When running inside a CCR session container with upstreamproxy configured,
@@ -17,7 +17,7 @@
  * A broken proxy setup must never break an otherwise-working session.
  *
  * Design doc: api-go/ccr/docs/plans/CCR_AUTH_DESIGN.md § "Week-1 pilot scope".
- */
+     */
 
 import { mkdir, readFile, unlink, writeFile } from 'fs/promises'
 import { homedir } from 'os'
@@ -45,9 +45,9 @@ const NO_PROXY_LIST = [
   // Anthropic API: no upstream route will ever match, and the MITM breaks
   // non-Bun runtimes (Python httpx/certifi doesn't trust the forged CA).
   // Three forms because NO_PROXY parsing differs across runtimes:
-  //   *.anthropic.com  — Bun, curl, Go (glob match)
-  //   .anthropic.com   — Python urllib/httpx (suffix match, strips leading dot)
-  //   anthropic.com    — apex domain fallback
+  // *.anthropic.com  — Bun, curl, Go (glob match)
+  // .anthropic.com   — Python urllib/httpx (suffix match, strips leading dot)
+  // anthropic.com    — apex domain fallback
   'anthropic.com',
   '.anthropic.com',
   '*.anthropic.com',
@@ -70,12 +70,12 @@ type UpstreamProxyState = {
 
 let state: UpstreamProxyState = { enabled: false }
 
-/**
+/*    *
  * Initialize upstreamproxy. Called once from init.ts. Safe to call when the
  * feature is off or the token file is absent — returns {enabled: false}.
  *
  * Overridable paths are for tests; production uses the defaults.
- */
+     */
 export async function initUpstreamProxy(opts?: {
   tokenPath?: string
   systemCaPath?: string
@@ -118,7 +118,7 @@ export async function initUpstreamProxy(opts?: {
   const baseUrl =
     opts?.ccrBaseUrl ??
     process.env.ANTHROPIC_BASE_URL ??
-    'https://api.anthropic.com'
+    'https:// api.anthropic.com'
   const caBundlePath =
     opts?.caBundlePath ?? join(homedir(), '.ccr', 'ca-bundle.crt')
 
@@ -152,11 +152,11 @@ export async function initUpstreamProxy(opts?: {
   return state
 }
 
-/**
+/*    *
  * Env vars to merge into every agent subprocess. Empty when the proxy is
  * disabled. Called from subprocessEnv() so Bash/MCP/LSP/hooks all inherit
  * the same recipe.
- */
+     */
 export function getUpstreamProxyEnv(): Record<string, string> {
   if (!state.enabled || !state.port || !state.caBundlePath) {
     // Child CLI processes can't re-initialize the relay (token file was
@@ -182,7 +182,7 @@ export function getUpstreamProxyEnv(): Record<string, string> {
     }
     return {}
   }
-  const proxyUrl = `http://127.0.0.1:${state.port}`
+  const proxyUrl = `http:// 127.0.0.1:${state.port}`
   // HTTPS only: the relay handles CONNECT and nothing else. Plain HTTP has
   // no credentials to inject, so routing it through the relay would just
   // break the request with a 405.
@@ -198,7 +198,7 @@ export function getUpstreamProxyEnv(): Record<string, string> {
   }
 }
 
-/** Test-only: reset module state between test cases. */
+/*    * Test-only: reset module state between test cases.     */
 export function resetUpstreamProxyForTests(): void {
   state = { enabled: false }
 }
@@ -217,11 +217,11 @@ async function readToken(path: string): Promise<string | null> {
   }
 }
 
-/**
+/*    *
  * prctl(PR_SET_DUMPABLE, 0) via libc FFI. Blocks same-UID ptrace of this
  * process, so a prompt-injected `gdb -p $PPID` can't scrape the token from
  * the heap. Linux-only; silently no-ops elsewhere.
- */
+     */
 function setNonDumpable(): void {
   if (process.platform !== 'linux' || typeof Bun === 'undefined') return
   try {

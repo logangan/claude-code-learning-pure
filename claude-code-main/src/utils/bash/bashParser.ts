@@ -1,4 +1,4 @@
-/**
+/*    *
  * Pure-TypeScript bash parser producing tree-sitter-bash-compatible ASTs.
  *
  * Downstream code in parser.ts, ast.ts, prefix.ts, ParsedCommand.ts walks this
@@ -7,7 +7,7 @@
  *
  * Grammar reference: tree-sitter-bash. Validated against a 3449-input golden
  * corpus generated from the WASM parser.
- */
+     */
 
 export type TsNode = {
   type: string
@@ -21,26 +21,26 @@ type ParserModule = {
   parse: (source: string, timeoutMs?: number) => TsNode | null
 }
 
-/**
+/*    *
  * 50ms wall-clock cap — bails out on pathological/adversarial input.
  * Pass `Infinity` via `parse(src, Infinity)` to disable (e.g. correctness
  * tests, where CI jitter would otherwise cause spurious null returns).
- */
+     */
 const PARSE_TIMEOUT_MS = 50
 
-/** Node budget cap — bails out before OOM on deeply nested input. */
+/*    * Node budget cap — bails out before OOM on deeply nested input.     */
 const MAX_NODES = 50_000
 
 const MODULE: ParserModule = { parse: parseSource }
 
 const READY = Promise.resolve()
 
-/** No-op: pure-TS parser needs no async init. Kept for API compatibility. */
+/*    * No-op: pure-TS parser needs no async init. Kept for API compatibility.     */
 export function ensureParserInitialized(): Promise<void> {
   return READY
 }
 
-/** Always succeeds — pure-TS needs no init. */
+/*    * Always succeeds — pure-TS needs no init.     */
 export function getParserModule(): ParserModule | null {
   return MODULE
 }
@@ -68,9 +68,9 @@ type TokenType =
 type Token = {
   type: TokenType
   value: string
-  /** UTF-8 byte offset of first char */
+  /*    * UTF-8 byte offset of first char     */
   start: number
-  /** UTF-8 byte offset one past last char */
+  /*    * UTF-8 byte offset one past last char     */
   end: number
 }
 
@@ -102,21 +102,21 @@ export const SHELL_KEYWORDS = new Set([
   'select',
 ])
 
-/**
+/*    *
  * Lexer state. Tracks both JS-string index (for charAt) and UTF-8 byte offset
  * (for TsNode positions). ASCII fast path: byte == char index. Non-ASCII
  * advances byte count per-codepoint.
- */
+     */
 type Lexer = {
   src: string
   len: number
-  /** JS string index */
+  /*    * JS string index     */
   i: number
-  /** UTF-8 byte offset */
+  /*    * UTF-8 byte offset     */
   b: number
-  /** Pending heredoc delimiters awaiting body scan at next newline */
+  /*    * Pending heredoc delimiters awaiting body scan at next newline     */
   heredocs: HeredocPending[]
-  /** Precomputed byte offset for each char index (lazy for non-ASCII) */
+  /*    * Precomputed byte offset for each char index (lazy for non-ASCII)     */
   byteTable: Uint32Array | null
 }
 
@@ -124,7 +124,7 @@ type HeredocPending = {
   delim: string
   stripTabs: boolean
   quoted: boolean
-  /** Filled after body scan */
+  /*    * Filled after body scan     */
   bodyStart: number
   bodyEnd: number
   endStart: number
@@ -142,7 +142,7 @@ function makeLexer(src: string): Lexer {
   }
 }
 
-/** Advance one JS char, updating byte offset for UTF-8. */
+/*    * Advance one JS char, updating byte offset for UTF-8.     */
 function advance(L: Lexer): void {
   const c = L.src.charCodeAt(L.i)
   L.i++
@@ -244,11 +244,11 @@ function isBaseDigit(c: string): boolean {
   return isIdentChar(c) || c === '@'
 }
 
-/**
+/*    *
  * Unquoted heredoc delimiter chars. Bash accepts most non-metacharacters —
  * not just identifiers. Stop at whitespace, redirects, pipe/list operators,
  * and structural tokens. Allows !, -, ., +, etc. (e.g. <<!HEREDOC!).
- */
+     */
 function isHeredocDelimChar(c: string): boolean {
   return (
     c !== '' &&
@@ -295,10 +295,10 @@ function skipBlanks(L: Lexer): void {
   }
 }
 
-/**
+/*    *
  * Scan next token. Context-sensitive: `cmd` mode treats [ as operator (test
  * command start), `arg` mode treats [ as word char (glob/subscript).
- */
+     */
 function nextToken(L: Lexer, ctx: 'cmd' | 'arg' = 'arg'): Token {
   skipBlanks(L)
   const start = L.b
@@ -596,14 +596,14 @@ type ParseState = {
   L: Lexer
   src: string
   srcBytes: number
-  /** True when byte offsets == char indices (no multi-byte UTF-8) */
+  /*    * True when byte offsets == char indices (no multi-byte UTF-8)     */
   isAscii: boolean
   nodeCount: number
   deadline: number
   aborted: boolean
-  /** Depth of backtick nesting — inside `...`, ` terminates words */
+  /*    * Depth of backtick nesting — inside `...`, ` terminates words     */
   inBacktick: number
-  /** When set, parseSimpleCommand stops at this token (for `[` backtrack) */
+  /*    * When set, parseSimpleCommand stops at this token (for `[` backtrack)     */
   stopToken: string | null
 }
 
@@ -656,7 +656,7 @@ function checkBudget(P: ParseState): void {
   }
 }
 
-/** Build a node. Slices text from source by byte range via char-index lookup. */
+/*    * Build a node. Slices text from source by byte range via char-index lookup.     */
 function mk(
   P: ParseState,
   type: string,
@@ -751,7 +751,7 @@ function parseProgram(P: ParseState): TsNode {
   return mk(P, 'program', progStart, progEnd, children)
 }
 
-/** Packed as (b << 16) | i — avoids heap alloc on every backtrack. */
+/*    * Packed as (b << 16) | i — avoids heap alloc on every backtrack.     */
 type LexSave = number
 function saveLex(L: Lexer): LexSave {
   return L.b * 0x10000 + L.i
@@ -761,11 +761,11 @@ function restoreLex(L: Lexer, s: LexSave): void {
   L.b = s >>> 16
 }
 
-/**
+/*    *
  * Parse a sequence of statements separated by ; & newline. Returns a flat list
  * where ; and & are sibling leaves (NOT wrapped in 'list' — only && || get
  * that). Stops at terminator or EOF.
- */
+     */
 function parseStatements(P: ParseState, terminator: string | null): TsNode[] {
   const out: TsNode[] = []
   while (true) {
@@ -870,12 +870,12 @@ function parseStatements(P: ParseState, terminator: string | null): TsNode[] {
   return out
 }
 
-/**
+/*    *
  * Parse pipeline chains joined by && ||. Left-associative nesting.
  * tree-sitter quirk: trailing redirect on the last pipeline wraps the ENTIRE
  * list in a redirected_statement — `a > x && b > y` becomes
  * redirected_statement(list(redirected_statement(a,>x), &&, b), >y).
- */
+     */
 function parseAndOr(P: ParseState): TsNode | null {
   let left = parsePipeline(P)
   if (!left) return null
@@ -929,12 +929,12 @@ function skipNewlines(P: ParseState): void {
   }
 }
 
-/**
+/*    *
  * Parse commands joined by | or |&. Flat children with operator leaves.
  * tree-sitter quirk: `a | b 2>nul | c` hoists the redirect on `b` to wrap
  * the preceding pipeline fragment — pipeline(redirected_statement(
  * pipeline(a,|,b), 2>nul), |, c).
- */
+     */
 function parsePipeline(P: ParseState): TsNode | null {
   let first = parseCommand(P)
   if (!first) return null
@@ -991,7 +991,7 @@ function parsePipeline(P: ParseState): TsNode | null {
   return mk(P, 'pipeline', parts[0]!.startIndex, last.endIndex, parts)
 }
 
-/** Parse a single command: simple, compound, or control structure. */
+/*    * Parse a single command: simple, compound, or control structure.     */
 function parseCommand(P: ParseState): TsNode | null {
   skipBlanks(P.L)
   const save = saveLex(P.L)
@@ -1134,10 +1134,10 @@ function parseCommand(P: ParseState): TsNode | null {
   return parseSimpleCommand(P)
 }
 
-/**
+/*    *
  * Parse a simple command: [assignment]* word [arg|redirect]*
  * Returns variable_assignment if only one assignment and no command.
- */
+     */
 function parseSimpleCommand(P: ParseState): TsNode | null {
   const start = P.L.b
   const assignments: TsNode[] = []
@@ -1518,12 +1518,12 @@ function tryParseAssignment(P: ParseState): TsNode | null {
   return mk(P, 'variable_assignment', startB, end, kids)
 }
 
-/**
+/*    *
  * Parse subscript index content. Parsed arithmetically per tree-sitter grammar:
  * `${a[1+2]}` → binary_expression; `${a[++i]}` → unary_expression(word);
  * `${a[(($n+1))]}` → compound_statement(binary_expression). Falls back to
  * simple patterns (@, *) as word.
- */
+     */
 function parseSubscriptIndexInline(P: ParseState): TsNode | null {
   skipBlanks(P.L)
   const c = peek(P.L)
@@ -1558,7 +1558,7 @@ function parseSubscriptIndexInline(P: ParseState): TsNode | null {
   return parseArithExpr(P, ']', 'word')
 }
 
-/** Legacy byte-range subscript index parser — kept for callers that pre-scan. */
+/*    * Legacy byte-range subscript index parser — kept for callers that pre-scan.     */
 function parseSubscriptIndex(
   P: ParseState,
   startB: number,
@@ -1580,11 +1580,11 @@ function parseSubscriptIndex(
   return mk(P, 'word', startB, endB, [])
 }
 
-/**
+/*    *
  * Can the current position start a redirect destination literal?
  * Returns false at redirect ops, terminators, or file-descriptor-prefixed ops
  * so file_redirect's repeat1($._literal) stops at the right boundary.
- */
+     */
 function isRedirectLiteralStart(P: ParseState): boolean {
   const c = peek(P.L)
   if (c === '' || c === '\n') return false
@@ -1613,13 +1613,13 @@ function isRedirectLiteralStart(P: ParseState): boolean {
   return true
 }
 
-/**
+/*    *
  * Parse a redirect operator + destination(s).
  * @param greedy When true, file_redirect consumes repeat1($._literal) per
  *   grammar's prec.left — `cmd >f a b c` attaches `a b c` to the redirect.
  *   When false (preRedirect context), takes only 1 destination because
  *   command's dynamic precedence beats redirected_statement's prec(-1).
- */
+     */
 function tryParseRedirect(P: ParseState, greedy = false): TsNode | null {
   const save = saveLex(P.L)
   skipBlanks(P.L)
@@ -2000,11 +2000,11 @@ function restoreLexToByte(P: ParseState, targetByte: number): void {
   P.L.b = targetByte
 }
 
-/**
+/*    *
  * Parse a word-position element: bare word, string, expansion, or concatenation
  * thereof. Returns a single node; if multiple adjacent fragments, wraps in
  * concatenation.
- */
+     */
 function parseWord(P: ParseState, _ctx: 'cmd' | 'arg'): TsNode | null {
   skipBlanks(P.L)
   const parts: TsNode[] = []
@@ -2738,12 +2738,12 @@ function parseExpansionBody(P: ParseState): TsNode[] {
       op === '%' ||
       op === '%%' ||
       op === '/' ||
-      op === '//' ||
+      op === '// ' ||
       op === '^' ||
       op === '^^' ||
       op === ',' ||
       op === ',,'
-    if (op === '/' || op === '//') {
+    if (op === '/' || op === '// ') {
       // Optional /# or /% anchor prefix — anonymous node
       const ac = peek(P.L)
       if (ac === '#' || ac === '%') {
@@ -3783,11 +3783,11 @@ function parseTestUnary(P: ParseState, closer: string): TsNode | null {
   return parseTestBinary(P, closer)
 }
 
-/**
+/*    *
  * Parse `!`-negated or test-operator (`-f`) or parenthesized primary — but NOT
  * a binary comparison. Used as LHS of binary_expression so `! x =~ y` binds
  * `!` to `x` only, not the whole `x =~ y`.
- */
+     */
 function parseTestNegatablePrimary(
   P: ParseState,
   closer: string,
@@ -4068,15 +4068,15 @@ function parseTestPrimary(P: ParseState, closer: string): TsNode | null {
   return parseWord(P, 'arg')
 }
 
-/**
+/*    *
  * Arithmetic context modes:
  * - 'var': bare identifiers → variable_name (default, used in $((..)), ((..)))
  * - 'word': bare identifiers → word (c-style for head condition/update clauses)
  * - 'assign': identifiers with = → variable_assignment (c-style for init clause)
- */
+     */
 type ArithMode = 'var' | 'word' | 'assign'
 
-/** Operator precedence table (higher = tighter binding). */
+/*    * Operator precedence table (higher = tighter binding).     */
 const ARITH_PREC: Record<string, number> = {
   '=': 2,
   '+=': 2,
@@ -4110,7 +4110,7 @@ const ARITH_PREC: Record<string, number> = {
   '**': 14,
 }
 
-/** Right-associative operators (assignment and exponent). */
+/*    * Right-associative operators (assignment and exponent).     */
 const ARITH_RIGHT_ASSOC = new Set([
   '=',
   '+=',
@@ -4134,7 +4134,7 @@ function parseArithExpr(
   return parseArithTernary(P, stop, mode)
 }
 
-/** Top-level: comma-separated list. arithmetic_expansion emits multiple children. */
+/*    * Top-level: comma-separated list. arithmetic_expansion emits multiple children.     */
 function parseArithCommaList(
   P: ParseState,
   stop: string,
@@ -4187,7 +4187,7 @@ function parseArithTernary(
   return cond
 }
 
-/** Scan next arithmetic binary operator; returns [text, length] or null. */
+/*    * Scan next arithmetic binary operator; returns [text, length] or null.     */
 function scanArithOp(P: ParseState): [string, number] | null {
   const c = peek(P.L)
   const c1 = peek(P.L, 1)
@@ -4228,7 +4228,7 @@ function scanArithOp(P: ParseState): [string, number] | null {
   return null
 }
 
-/** Precedence-climbing binary expression parser. */
+/*    * Precedence-climbing binary expression parser.     */
 function parseArithBinary(
   P: ParseState,
   stop: string,

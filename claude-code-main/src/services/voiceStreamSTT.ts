@@ -1,13 +1,10 @@
 // Anthropic voice_stream speech-to-text client for push-to-talk.
-//
-// Only reachable in ant builds (gated by feature('VOICE_MODE') in useVoice.ts import).
-//
-// Connects to Anthropic's voice_stream WebSocket endpoint using the same
+// // Only reachable in ant builds (gated by feature('VOICE_MODE') in useVoice.ts import).
+// // Connects to Anthropic's voice_stream WebSocket endpoint using the same
 // OAuth credentials as Claude Code.  The endpoint uses conversation_engine
 // backed models for speech-to-text.  Designed for hold-to-talk: hold the
 // keybinding to record, release to stop and submit.
-//
-// The wire protocol uses JSON control messages (KeepAlive, CloseStream) and
+// // The wire protocol uses JSON control messages (KeepAlive, CloseStream) and
 // binary audio frames.  The server responds with TranscriptText and
 // TranscriptEndpoint JSON messages.
 
@@ -132,8 +129,8 @@ export async function connectVoiceStream(
   const wsBaseUrl =
     process.env.VOICE_STREAM_BASE_URL ||
     getOauthConfig()
-      .BASE_API_URL.replace('https://', 'wss://')
-      .replace('http://', 'ws://')
+      .BASE_API_URL.replace('https:// ', 'wss://')
+      .replace('http:// ', 'ws://')
 
   if (process.env.VOICE_STREAM_BASE_URL) {
     logForDebugging(
@@ -386,8 +383,7 @@ export async function connectVoiceStream(
           // is a prefix of the other). When detected, emit the previous
           // text as final so the caller can accumulate it, preventing
           // the new segment from overwriting and losing the old one.
-          //
-          // Nova 3's interims are cumulative across segments AND can
+          // // Nova 3's interims are cumulative across segments AND can
           // revise earlier text ("Hello?" → "Hello."). Revision breaks
           // the prefix check, causing false auto-finalize → the same
           // text committed once AND re-appearing in the cumulative
@@ -501,8 +497,7 @@ export async function connectVoiceStream(
   // retry). With a listener registered, ws does NOT abort on our behalf —
   // we destroy the request; 'error' does not fire, 'close' does (suppressed
   // via upgradeRejected above).
-  //
-  // Bun's ws shim historically didn't implement this event (a warning
+  // // Bun's ws shim historically didn't implement this event (a warning
   // is logged once at registration). Under Bun a non-101 upgrade falls
   // through to the generic 'error' + 'close' 1002 path with no recoverable
   // status; the attemptGenRef guard in useVoice.ts still surfaces the

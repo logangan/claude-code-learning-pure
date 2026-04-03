@@ -8,11 +8,11 @@ import { useSetAppState } from '../../state/AppState.js'
 import type { ToolUseConfirm } from './PermissionRequest.js'
 import { logUnaryPermissionEvent } from './utils.js'
 
-/**
+/*    *
  * Shared feedback-mode state + handlers for shell permission dialogs (Bash,
  * PowerShell). Encapsulates the yes/no input-mode toggle, feedback text state,
  * focus tracking, and reject handling.
- */
+     */
 export function useShellPermissionFeedback({
   toolUseConfirm,
   onDone,

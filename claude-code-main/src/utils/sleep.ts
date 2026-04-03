@@ -1,4 +1,4 @@
-/**
+/*    *
  * Abort-responsive sleep. Resolves after `ms` milliseconds, or immediately
  * when `signal` aborts (so backoff loops don't block shutdown).
  *
@@ -10,7 +10,7 @@
  * Pass `abortError` to customize the rejection error (implies
  * `throwOnAbort: true`). Useful for retry loops that catch a specific
  * error class (e.g. `APIUserAbortError`).
- */
+     */
 export function sleep(
   ms: number,
   signal?: AbortSignal,
@@ -57,7 +57,7 @@ function rejectWithTimeout(reject: (e: Error) => void, message: string): void {
   reject(new Error(message))
 }
 
-/**
+/*    *
  * Race a promise against a timeout. Rejects with `Error(message)` if the
  * promise doesn't settle within `ms`. The timeout timer is cleared when
  * the promise settles (no dangling timer) and unref'd so it doesn't
@@ -66,7 +66,7 @@ function rejectWithTimeout(reject: (e: Error) => void, message: string): void {
  * Note: this doesn't cancel the underlying work — if the promise is
  * backed by a runaway async operation, that keeps running. This just
  * returns control to the caller.
- */
+     */
 export function withTimeout<T>(
   promise: Promise<T>,
   ms: number,

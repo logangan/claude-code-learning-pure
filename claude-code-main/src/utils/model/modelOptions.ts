@@ -377,11 +377,11 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
 
 // @[MODEL LAUNCH]: Add the new model ID to the appropriate family pattern below
 // so the "newer version available" hint works correctly.
-/**
+/*    *
  * Map a full model name to its family alias and the marketing name of the
  * version the alias currently resolves to. Used to detect when a user has
  * a specific older version pinned and a newer one is available.
- */
+     */
 function getModelFamilyInfo(
   model: string,
 ): { alias: string; currentVersionName: string } | null {
@@ -423,11 +423,11 @@ function getModelFamilyInfo(
   return null
 }
 
-/**
+/*    *
  * Returns a ModelOption for a known Anthropic model with a human-readable
  * label, and an upgrade hint if a newer version is available via the alias.
  * Returns null if the model is not recognized.
- */
+     */
 function getKnownModelOption(model: string): ModelOption | null {
   const marketingName = getMarketingNameForModel(model)
   if (!marketingName) return null
@@ -524,10 +524,10 @@ export function getModelOptions(fastMode = false): ModelOption[] {
   }
 }
 
-/**
+/*    *
  * Filter model options by the availableModels allowlist.
  * Always preserves the "Default" option (value: null).
- */
+     */
 function filterModelOptionsByAllowlist(options: ModelOption[]): ModelOption[] {
   const settings = getSettings_DEPRECATED() || {}
   if (!settings.availableModels) {

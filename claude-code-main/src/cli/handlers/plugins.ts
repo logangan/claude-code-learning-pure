@@ -1,8 +1,8 @@
-/**
+/*    *
  * Plugin and marketplace subcommand handlers — extracted from main.tsx for lazy loading.
  * These are dynamically imported only when `claude plugin *` or `claude plugin marketplace *` runs.
- */
-/* eslint-disable custom-rules/no-process-exit -- CLI subcommand handlers intentionally exit */
+     */
+/*     eslint-disable custom-rules/no-process-exit -- CLI subcommand handlers intentionally exit     */
 import figures from 'figures'
 import { basename, dirname } from 'path'
 import { setUseCoworkPlugins } from '../../bootstrap/state.js'
@@ -62,9 +62,9 @@ import { cliError, cliOk } from '../exit.js'
 // Re-export for main.tsx to reference in option definitions
 export { VALID_INSTALLABLE_SCOPES, VALID_UPDATE_SCOPES }
 
-/**
+/*    *
  * Helper function to handle marketplace command errors consistently.
- */
+     */
 export function handleMarketplaceError(error: unknown, action: string): never {
   logError(error)
   cliError(`${figures.cross} Failed to ${action}: ${errorMessage(error)}`)
@@ -171,10 +171,10 @@ export async function pluginListHandler(options: {
   const pluginIds = Object.keys(installedData.plugins)
 
   // Load all plugins once. The JSON and human paths both need:
-  //  - loadErrors (to show load failures per plugin)
-  //  - inline plugins (session-only via --plugin-dir, source='name@inline')
-  //    which are NOT in installedData.plugins (V2 bookkeeping) — they must
-  //    be surfaced separately or `plugin list` silently ignores --plugin-dir.
+  // - loadErrors (to show load failures per plugin)
+  // - inline plugins (session-only via --plugin-dir, source='name@inline')
+  // which are NOT in installedData.plugins (V2 bookkeeping) — they must
+  // be surfaced separately or `plugin list` silently ignores --plugin-dir.
   const {
     enabled: loadedEnabled,
     disabled: loadedDisabled,
@@ -454,7 +454,7 @@ export async function marketplaceAddHandler(
 
     if (!parsed) {
       cliError(
-        `${figures.cross} Invalid marketplace source format. Try: owner/repo, https://..., or ./path`,
+        `${figures.cross} Invalid marketplace source format. Try: owner/repo, https:// ..., or ./path`,
       )
     }
 

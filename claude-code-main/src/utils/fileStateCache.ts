@@ -21,12 +21,12 @@ export const READ_FILE_STATE_CACHE_SIZE = 100
 // This prevents unbounded memory growth from large file contents
 const DEFAULT_MAX_CACHE_SIZE_BYTES = 25 * 1024 * 1024
 
-/**
+/*    *
  * A file state cache that normalizes all path keys before access.
  * This ensures consistent cache hits regardless of whether callers pass
  * relative vs absolute paths with redundant segments (e.g. /foo/../bar)
  * or mixed path separators on Windows (/ vs \).
- */
+     */
 export class FileStateCache {
   private cache: LRUCache<string, FileState>
 
@@ -92,12 +92,12 @@ export class FileStateCache {
   }
 }
 
-/**
+/*    *
  * Factory function to create a size-limited FileStateCache.
  * Uses LRUCache's built-in size-based eviction to prevent memory bloat.
  * Note: Images are not cached (see FileReadTool) so size limit is mainly
  * for large text files, notebooks, and other editable content.
- */
+     */
 export function createFileStateCacheWithSizeLimit(
   maxEntries: number,
   maxSizeBytes: number = DEFAULT_MAX_CACHE_SIZE_BYTES,

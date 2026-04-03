@@ -18,11 +18,11 @@ type SupportsHyperlinksOptions = {
   stdoutSupported?: boolean
 }
 
-/**
+/*    *
  * Returns whether stdout supports OSC 8 hyperlinks.
  * Extends the supports-hyperlinks library with additional terminal detection.
  * @param options Optional overrides for testing (env, stdoutSupported)
- */
+     */
 export function supportsHyperlinks(
   options?: SupportsHyperlinksOptions,
 ): boolean {

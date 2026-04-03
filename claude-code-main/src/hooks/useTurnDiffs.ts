@@ -90,13 +90,13 @@ function computeTurnStats(turn: TurnDiff): void {
   }
 }
 
-/**
+/*    *
  * Extract turn-based diffs from messages.
  * A turn is defined as a user prompt followed by assistant responses and tool results.
  * Each turn with file edits is included in the result.
  *
  * Uses incremental accumulation - only processes new messages since last render.
- */
+     */
 export function useTurnDiffs(messages: Message[]): TurnDiff[] {
   const cache = useRef<TurnDiffCache>({
     completedTurns: [],

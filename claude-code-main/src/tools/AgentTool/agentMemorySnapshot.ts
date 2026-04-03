@@ -24,10 +24,10 @@ const syncedMetaSchema = lazySchema(() =>
 )
 type SyncedMeta = z.infer<ReturnType<typeof syncedMetaSchema>>
 
-/**
+/*    *
  * Returns the path to the snapshot directory for an agent in the current project.
  * e.g., <cwd>/.claude/agent-memory-snapshots/<agentType>/
- */
+     */
 export function getSnapshotDirForAgent(agentType: string): string {
   return join(getCwd(), '.claude', SNAPSHOT_BASE, agentType)
 }
@@ -92,9 +92,9 @@ async function saveSyncedMeta(
   }
 }
 
-/**
+/*    *
  * Check if a snapshot exists and whether it's newer than what we last synced.
- */
+     */
 export async function checkAgentMemorySnapshot(
   agentType: string,
   scope: AgentMemoryScope,
@@ -143,9 +143,9 @@ export async function checkAgentMemorySnapshot(
   return { action: 'none' }
 }
 
-/**
+/*    *
  * Initialize local agent memory from a snapshot (first-time setup).
- */
+     */
 export async function initializeFromSnapshot(
   agentType: string,
   scope: AgentMemoryScope,
@@ -158,9 +158,9 @@ export async function initializeFromSnapshot(
   await saveSyncedMeta(agentType, scope, snapshotTimestamp)
 }
 
-/**
+/*    *
  * Replace local agent memory with the snapshot.
- */
+     */
 export async function replaceFromSnapshot(
   agentType: string,
   scope: AgentMemoryScope,
@@ -185,9 +185,9 @@ export async function replaceFromSnapshot(
   await saveSyncedMeta(agentType, scope, snapshotTimestamp)
 }
 
-/**
+/*    *
  * Mark the current snapshot as synced without changing local memory.
- */
+     */
 export async function markSnapshotSynced(
   agentType: string,
   scope: AgentMemoryScope,

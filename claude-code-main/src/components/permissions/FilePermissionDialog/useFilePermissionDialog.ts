@@ -47,9 +47,9 @@ export type UseFilePermissionDialogResult<T> = {
   noInputMode: boolean
 }
 
-/**
+/*    *
  * Hook for handling file permission dialogs with common logic
- */
+     */
 export function useFilePermissionDialog<T extends ToolInput>({
   filePath,
   completionType,

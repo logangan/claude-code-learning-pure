@@ -4,10 +4,10 @@ import { isRunningWithBun } from '../utils/bundledMode.js'
 import { getPlatform } from '../utils/platform.js'
 import type { KeybindingBlock } from './types.js'
 
-/**
+/*    *
  * Default keybindings that match current Claude Code behavior.
  * These are loaded first, then user keybindings.json overrides them.
- */
+     */
 
 // Platform-specific image paste shortcut:
 // - Windows: alt+v (ctrl+v is system paste)

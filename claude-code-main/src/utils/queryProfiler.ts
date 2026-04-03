@@ -1,4 +1,4 @@
-/**
+/*    *
  * Query profiling utility for measuring and reporting time spent in the query
  * pipeline from user input to first token arrival. Enable by setting CLAUDE_CODE_PROFILE_QUERY=1
  *
@@ -25,7 +25,7 @@
  * - query_tool_execution_start/end: Tool execution
  * - query_recursive_call: Before recursive query call
  * - query_end: End of query
- */
+     */
 
 import { logForDebugging } from './debug.js'
 import { isEnvTruthy } from './envUtils.js'
@@ -44,9 +44,9 @@ let queryCount = 0
 // Track first token received time separately for summary
 let firstTokenTime: number | null = null
 
-/**
+/*    *
  * Start profiling a new query session
- */
+     */
 export function startQueryProfile(): void {
   if (!ENABLED) return
 
@@ -63,9 +63,9 @@ export function startQueryProfile(): void {
   queryCheckpoint('query_user_input_received')
 }
 
-/**
+/*    *
  * Record a checkpoint with the given name
- */
+     */
 export function queryCheckpoint(name: string): void {
   if (!ENABLED) return
 
@@ -83,18 +83,18 @@ export function queryCheckpoint(name: string): void {
   }
 }
 
-/**
+/*    *
  * End the current query profiling session
- */
+     */
 export function endQueryProfile(): void {
   if (!ENABLED) return
 
   queryCheckpoint('query_profile_end')
 }
 
-/**
+/*    *
  * Identify slow operations (> 100ms delta)
- */
+     */
 function getSlowWarning(deltaMs: number, name: string): string {
   // Don't flag the first checkpoint as slow - it measures time from process start,
   // not actual processing overhead
@@ -123,9 +123,9 @@ function getSlowWarning(deltaMs: number, name: string): string {
   return ''
 }
 
-/**
+/*    *
  * Get a formatted report of all checkpoints for the current/last query
- */
+     */
 function getQueryProfileReport(): string {
   if (!ENABLED) {
     return 'Query profiling not enabled (set CLAUDE_CODE_PROFILE_QUERY=1)'
@@ -210,9 +210,9 @@ function getQueryProfileReport(): string {
   return lines.join('\n')
 }
 
-/**
+/*    *
  * Get phase-based summary showing time spent in each major phase
- */
+     */
 function getPhaseSummary(
   marks: Array<{ name: string; startTime: number }>,
   baselineTime: number,
@@ -292,9 +292,9 @@ function getPhaseSummary(
   return lines.join('\n')
 }
 
-/**
+/*    *
  * Log the query profile report to debug output
- */
+     */
 export function logQueryProfileReport(): void {
   if (!ENABLED) return
   logForDebugging(getQueryProfileReport())

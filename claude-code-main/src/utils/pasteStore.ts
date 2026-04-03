@@ -7,33 +7,33 @@ import { isENOENT } from './errors.js'
 
 const PASTE_STORE_DIR = 'paste-cache'
 
-/**
+/*    *
  * Get the paste store directory (persistent across sessions).
- */
+     */
 function getPasteStoreDir(): string {
   return join(getClaudeConfigHomeDir(), PASTE_STORE_DIR)
 }
 
-/**
+/*    *
  * Generate a hash for paste content to use as filename.
  * Exported so callers can get the hash synchronously before async storage.
- */
+     */
 export function hashPastedText(content: string): string {
   return createHash('sha256').update(content).digest('hex').slice(0, 16)
 }
 
-/**
+/*    *
  * Get the file path for a paste by its content hash.
- */
+     */
 function getPastePath(hash: string): string {
   return join(getPasteStoreDir(), `${hash}.txt`)
 }
 
-/**
+/*    *
  * Store pasted text content to disk.
  * The hash should be pre-computed with hashPastedText() so the caller
  * can use it immediately without waiting for the async disk write.
- */
+     */
 export async function storePastedText(
   hash: string,
   content: string,
@@ -52,10 +52,10 @@ export async function storePastedText(
   }
 }
 
-/**
+/*    *
  * Retrieve pasted text content by its hash.
  * Returns null if not found or on error.
- */
+     */
 export async function retrievePastedText(hash: string): Promise<string | null> {
   try {
     const pastePath = getPastePath(hash)
@@ -69,10 +69,10 @@ export async function retrievePastedText(hash: string): Promise<string | null> {
   }
 }
 
-/**
+/*    *
  * Clean up old paste files that are no longer referenced.
  * This is a simple time-based cleanup - removes files older than cutoffDate.
- */
+     */
 export async function cleanupOldPastes(cutoffDate: Date): Promise<void> {
   const pasteDir = getPasteStoreDir()
 

@@ -94,11 +94,11 @@ function formatToolInput(input: unknown): string {
   }
 }
 
-/**
+/*    *
  * Extract recent conversation context from messages for the explainer.
  * Returns a summary of recent assistant messages to provide context
  * for "why" this command is being run.
- */
+     */
 function extractConversationContext(
   messages: Message[],
   maxChars = 1000,
@@ -132,18 +132,18 @@ function extractConversationContext(
   return contextParts.join('\n\n')
 }
 
-/**
+/*    *
  * Check if the permission explainer feature is enabled.
  * Enabled by default; users can opt out via config.
- */
+     */
 export function isPermissionExplainerEnabled(): boolean {
   return getGlobalConfig().permissionExplainerEnabled !== false
 }
 
-/**
+/*    *
  * Generate a permission explanation using Haiku with structured output.
  * Returns null if the feature is disabled, request is aborted, or an error occurs.
- */
+     */
 export async function generatePermissionExplanation({
   toolName,
   toolInput,

@@ -1,11 +1,11 @@
-/**
+/*    *
  * File persistence orchestrator
  *
  * This module provides the main orchestration logic for persisting files
  * at the end of each turn:
  * - BYOC mode: Upload files to Files API and collect file IDs
  * - 1P/Cloud mode: Query Files API listDirectory for file IDs (rclone handles sync)
- */
+     */
 
 import { feature } from 'bun:bundle'
 import { join, relative } from 'path'
@@ -36,7 +36,7 @@ import {
   type TurnStartTime,
 } from './types.js'
 
-/**
+/*    *
  * Execute file persistence for modified files in the outputs directory.
  *
  * Assembles all config internally:
@@ -47,7 +47,7 @@ import {
  * @param turnStartTime - The timestamp when the turn started
  * @param signal - Optional abort signal for cancellation
  * @returns Event data, or null if not enabled or no files to persist
- */
+     */
 export async function runFilePersistence(
   turnStartTime: TurnStartTime,
   signal?: AbortSignal,
@@ -143,10 +143,10 @@ export async function runFilePersistence(
   }
 }
 
-/**
+/*    *
  * Execute BYOC mode persistence: scan local filesystem for modified files,
  * then upload to Files API.
- */
+     */
 async function executeBYOCPersistence(
   turnStartTime: TurnStartTime,
   config: FilesApiConfig,
@@ -239,20 +239,20 @@ async function executeBYOCPersistence(
   }
 }
 
-/**
+/*    *
  * Execute Cloud (1P) mode persistence.
  * TODO: Read file_id from xattr on output files. xattr-based file IDs are
  * currently being added for 1P environments.
- */
+     */
 function executeCloudPersistence(): FilesPersistedEventData {
   logDebug('Cloud mode: xattr-based file ID reading not yet implemented')
   return { files: [], failed: [] }
 }
 
-/**
+/*    *
  * Execute file persistence and emit result via callback.
  * Handles errors internally.
- */
+     */
 export async function executeFilePersistence(
   turnStartTime: TurnStartTime,
   signal: AbortSignal,
@@ -268,13 +268,13 @@ export async function executeFilePersistence(
   }
 }
 
-/**
+/*    *
  * Check if file persistence is enabled.
  * Requires: feature flag ON, valid environment kind, session access token,
  * and CLAUDE_CODE_REMOTE_SESSION_ID.
  * This ensures only public-api/sessions users trigger file persistence,
  * not normal Claude Code CLI users.
- */
+     */
 export function isFilePersistenceEnabled(): boolean {
   if (feature('FILE_PERSISTENCE')) {
     return (

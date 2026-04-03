@@ -23,7 +23,7 @@ type SwarmWorkerPermissionParams = {
   suggestions: PermissionUpdate[] | undefined
 }
 
-/**
+/*    *
  * Handles the swarm worker permission flow.
  *
  * When running as a swarm worker:
@@ -36,7 +36,7 @@ type SwarmWorkerPermissionParams = {
  * or a Promise that resolves when the leader responds.
  * Returns null if swarms are not enabled or this is not a swarm worker,
  * so the caller can fall through to interactive handling.
- */
+     */
 async function handleSwarmWorkerPermission(
   params: SwarmWorkerPermissionParams,
 ): Promise<PermissionDecision | null> {

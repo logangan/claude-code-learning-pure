@@ -11,9 +11,9 @@ import {
   checkNeedsClaudeAiLogin,
 } from './preconditions.js'
 
-/**
+/*    *
  * Background remote session type for managing teleport sessions
- */
+     */
 export type BackgroundRemoteSession = {
   id: string
   command: string
@@ -25,9 +25,9 @@ export type BackgroundRemoteSession = {
   log: SDKMessage[]
 }
 
-/**
+/*    *
  * Precondition failures for background remote sessions
- */
+     */
 export type BackgroundRemoteSessionPrecondition =
   | { type: 'not_logged_in' }
   | { type: 'no_remote_environment' }
@@ -36,12 +36,12 @@ export type BackgroundRemoteSessionPrecondition =
   | { type: 'github_app_not_installed' }
   | { type: 'policy_blocked' }
 
-/**
+/*    *
  * Checks eligibility for creating a background remote session
  * Returns an array of failed preconditions (empty array means all checks passed)
  *
  * @returns Array of failed preconditions
- */
+     */
 export async function checkBackgroundRemoteSessionEligibility({
   skipBundle = false,
 }: {

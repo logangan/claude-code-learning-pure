@@ -38,7 +38,7 @@ export type SystemInitInputs = {
   fastMode: boolean | undefined
 }
 
-/**
+/*    *
  * Build the `system/init` SDKMessage — the first message on the SDK stream
  * carrying session metadata (cwd, tools, model, commands, etc.) that remote
  * clients use to render pickers and gate UI.
@@ -49,7 +49,7 @@ export type SystemInitInputs = {
  *   - useReplBridge (REPL Remote Control) — sent via writeSdkMessages() on
  *     bridge connect, since REPL uses query() directly and never hits the
  *     QueryEngine SDKMessage layer
- */
+     */
 export function buildSystemInitMessage(inputs: SystemInitInputs): SDKMessage {
   const settings = getSettings_DEPRECATED()
   const outputStyle = settings?.outputStyle ?? DEFAULT_OUTPUT_STYLE_NAME
@@ -86,10 +86,10 @@ export function buildSystemInitMessage(inputs: SystemInitInputs): SDKMessage {
   }
   // Hidden from public SDK types — ant-only UDS messaging socket path
   if (feature('UDS_INBOX')) {
-    /* eslint-disable @typescript-eslint/no-require-imports */
+    /*     eslint-disable @typescript-eslint/no-require-imports     */
     ;(initMessage as Record<string, unknown>).messaging_socket_path =
       require('../udsMessaging.js').getUdsMessagingSocketPath()
-    /* eslint-enable @typescript-eslint/no-require-imports */
+    /*     eslint-enable @typescript-eslint/no-require-imports     */
   }
   initMessage.fast_mode_state = getFastModeState(inputs.model, inputs.fastMode)
   return initMessage

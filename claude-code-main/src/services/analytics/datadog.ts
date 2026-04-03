@@ -10,7 +10,7 @@ import { isAnalyticsDisabled } from './config.js'
 import { getEventMetadata } from './metadata.js'
 
 const DATADOG_LOGS_ENDPOINT =
-  'https://http-intake.logs.us5.datadoghq.com/api/v2/logs'
+  'https:// http-intake.logs.us5.datadoghq.com/api/v2/logs'
 const DATADOG_CLIENT_TOKEN = 'pubbbf48e6d78dae54bceaa4acf463299bf'
 const DEFAULT_FLUSH_INTERVAL_MS = 15000
 const MAX_BATCH_SIZE = 100
@@ -143,11 +143,11 @@ export const initializeDatadog = memoize(async (): Promise<boolean> => {
   }
 })
 
-/**
+/*    *
  * Flush remaining Datadog logs and shut down.
  * Called from gracefulShutdown() before process.exit() since
  * forceExit() prevents the beforeExit handler from firing.
- */
+     */
 export async function shutdownDatadog(): Promise<void> {
   if (flushTimer) {
     clearTimeout(flushTimer)
@@ -280,7 +280,7 @@ export async function trackDatadogEvent(
 
 const NUM_USER_BUCKETS = 30
 
-/**
+/*    *
  * Gets a 'bucket' that the user ID falls into.
  *
  * For alerting purposes, we want to alert on the number of users impacted
@@ -291,7 +291,7 @@ const NUM_USER_BUCKETS = 30
  *
  * This allows us to estimate the number of unique users by counting unique buckets,
  * while preserving user privacy and reducing cardinality.
- */
+     */
 const getUserBucket = memoize((): number => {
   const userId = getOrCreateUserID()
   const hash = createHash('sha256').update(userId).digest('hex')

@@ -8,7 +8,7 @@ import {
   updateSettingsForSource,
 } from '../utils/settings/settings.js'
 
-/**
+/*    *
  * Migrate users who had "sonnet[1m]" saved to the explicit "sonnet-4-5-20250929[1m]".
  *
  * The "sonnet" alias now resolves to Sonnet 4.6, so users who previously set
@@ -21,7 +21,7 @@ import {
  * Reads from userSettings specifically (not merged settings) so we don't
  * promote a project-scoped "sonnet[1m]" to the global default. Runs once,
  * tracked by a completion flag in global config.
- */
+     */
 export function migrateSonnet1mToSonnet45(): void {
   const config = getGlobalConfig()
   if (config.sonnet1m45MigrationComplete) {

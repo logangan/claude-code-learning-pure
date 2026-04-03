@@ -34,7 +34,7 @@ function getConfigUrl(config: ScopedMcpServerConfig): string | undefined {
   return undefined
 }
 
-/**
+/*    *
  * Creates a pseudo-tool for an MCP server that is installed but not
  * authenticated. Surfaced in place of the server's real tools so the model
  * knows the server exists and can start the OAuth flow on the user's behalf.
@@ -45,7 +45,7 @@ function getConfigUrl(config: ScopedMcpServerConfig): string | undefined {
  * are swapped into appState.mcp.tools via the existing prefix-based
  * replacement (useManageMCPConnections.updateServer wipes anything matching
  * mcp__<server>__*, so this pseudo-tool is removed automatically).
- */
+     */
 export function createMcpAuthTool(
   serverName: string,
   config: ScopedMcpServerConfig,

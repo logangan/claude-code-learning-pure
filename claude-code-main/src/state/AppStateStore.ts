@@ -175,22 +175,22 @@ export type AppState = DeepImmutable<{
     tools: Tool[]
     commands: Command[]
     resources: Record<string, ServerResource[]>
-    /**
+    /*    *
      * Incremented by /reload-plugins to trigger MCP effects to re-run
      * and pick up newly-enabled plugin MCP servers. Effects read this
      * as a dependency; the value itself is not consumed.
-     */
+         */
     pluginReconnectKey: number
   }
   plugins: {
     enabled: LoadedPlugin[]
     disabled: LoadedPlugin[]
     commands: Command[]
-    /**
+    /*    *
      * Plugin system errors collected during loading and initialization.
      * See {@link PluginError} type documentation for complete details on error
      * structure, context fields, and display format.
-     */
+         */
     errors: PluginError[]
     // Installation status for background plugin/marketplace installation
     installationStatus: {
@@ -206,12 +206,12 @@ export type AppState = DeepImmutable<{
         error?: string
       }>
     }
-    /**
+    /*    *
      * Set to true when plugin state on disk has changed (background reconcile,
      * /plugin menu install, external settings edit) and active components are
      * stale. In interactive mode, user runs /reload-plugins to consume. In
      * headless mode, refreshPluginState() auto-consumes via refreshActivePlugins().
-     */
+         */
     needsRefresh: boolean
   }
   agentDefinitions: AgentDefinitionsResult
@@ -456,10 +456,10 @@ export type AppStateStore = Store<AppState>
 export function getDefaultAppState(): AppState {
   // Determine initial permission mode for teammates spawned with plan_mode_required
   // Use lazy require to avoid circular dependency with teammate.ts
-  /* eslint-disable @typescript-eslint/no-require-imports */
+  /*     eslint-disable @typescript-eslint/no-require-imports     */
   const teammateUtils =
     require('../utils/teammate.js') as typeof import('../utils/teammate.js')
-  /* eslint-enable @typescript-eslint/no-require-imports */
+  /*     eslint-enable @typescript-eslint/no-require-imports     */
   const initialMode: PermissionMode =
     teammateUtils.isTeammate() && teammateUtils.isPlanModeRequired()
       ? 'plan'

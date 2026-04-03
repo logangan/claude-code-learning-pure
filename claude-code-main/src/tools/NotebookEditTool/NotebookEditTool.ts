@@ -182,7 +182,7 @@ export const NotebookEditTool = buildTool({
       : resolve(getCwd(), notebook_path)
 
     // SECURITY: Skip filesystem operations for UNC paths to prevent NTLM credential leaks.
-    if (fullPath.startsWith('\\\\') || fullPath.startsWith('//')) {
+    if (fullPath.startsWith('\\\\') || fullPath.startsWith('// ')) {
       return { result: true }
     }
 

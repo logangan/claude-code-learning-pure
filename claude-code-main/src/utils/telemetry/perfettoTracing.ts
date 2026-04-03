@@ -1,8 +1,8 @@
-/**
+/*    *
  * Perfetto Tracing for Claude Code (Ant-only)
  *
  * This module generates traces in the Chrome Trace Event format that can be
- * viewed in ui.perfetto.dev or Chrome's chrome://tracing.
+ * viewed in ui.perfetto.dev or Chrome's chrome:// tracing.
  *
  * NOTE: This feature is ant-only and eliminated from external builds.
  *
@@ -20,7 +20,7 @@
  * 4. Trace file is written to ~/.claude/traces/trace-<session-id>.json
  *    or to the specified path
  * 5. Open in ui.perfetto.dev to visualize
- */
+     */
 
 import { feature } from 'bun:bundle'
 import { mkdirSync, writeFileSync } from 'fs'
@@ -39,10 +39,10 @@ import { djb2Hash } from '../hash.js'
 import { jsonStringify } from '../slowOperations.js'
 import { getAgentId, getAgentName, getParentSessionId } from '../teammate.js'
 
-/**
+/*    *
  * Chrome Trace Event format types
- * See: https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU
- */
+ * See: https:// docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU
+     */
 
 export type TraceEventPhase =
   | 'B' // Begin duration event
@@ -68,9 +68,9 @@ export type TraceEvent = {
   scope?: string
 }
 
-/**
+/*    *
  * Agent info for tracking hierarchy
- */
+     */
 type AgentInfo = {
   agentId: string
   agentName: string
@@ -79,9 +79,9 @@ type AgentInfo = {
   threadId: number
 }
 
-/**
+/*    *
  * Pending span for tracking begin/end pairs
- */
+     */
 type PendingSpan = {
   name: string
   category: string
@@ -122,16 +122,16 @@ const STALE_SPAN_TTL_MS = 30 * 60 * 1000 // 30 minutes
 const STALE_SPAN_CLEANUP_INTERVAL_MS = 60 * 1000 // 1 minute
 let staleSpanCleanupId: ReturnType<typeof setInterval> | null = null
 
-/**
+/*    *
  * Convert a string to a numeric hash for use as thread ID
- */
+     */
 function stringToNumericHash(str: string): number {
   return Math.abs(djb2Hash(str)) || 1 // Ensure non-zero
 }
 
-/**
+/*    *
  * Get or create a numeric process ID for an agent
- */
+     */
 function getProcessIdForAgent(agentId: string): number {
   const existing = agentIdToProcessId.get(agentId)
   if (existing !== undefined) return existing
@@ -141,9 +141,9 @@ function getProcessIdForAgent(agentId: string): number {
   return processIdCounter
 }
 
-/**
+/*    *
  * Get current agent info
- */
+     */
 function getCurrentAgentInfo(): AgentInfo {
   const agentId = getAgentId() ?? getSessionId()
   const agentName = getAgentName() ?? 'main'
@@ -166,24 +166,24 @@ function getCurrentAgentInfo(): AgentInfo {
   return info
 }
 
-/**
+/*    *
  * Get timestamp in microseconds relative to trace start
- */
+     */
 function getTimestamp(): number {
   return (Date.now() - startTimeMs) * 1000
 }
 
-/**
+/*    *
  * Generate a unique span ID
- */
+     */
 function generateSpanId(): string {
   return `span_${++spanIdCounter}`
 }
 
-/**
+/*    *
  * Evict pending spans older than STALE_SPAN_TTL_MS.
  * Mirrors the TTL cleanup pattern in sessionTracing.ts.
- */
+     */
 function evictStaleSpans(): void {
   const now = getTimestamp()
   const ttlUs = STALE_SPAN_TTL_MS * 1000 // Convert ms to microseconds
@@ -208,9 +208,9 @@ function evictStaleSpans(): void {
   }
 }
 
-/**
+/*    *
  * Build the full trace document (Chrome Trace JSON format).
- */
+     */
 function buildTraceDocument(): string {
   return jsonStringify({
     traceEvents: [...metadataEvents, ...events],
@@ -223,12 +223,12 @@ function buildTraceDocument(): string {
   })
 }
 
-/**
+/*    *
  * Drop the oldest half of events[] when over MAX_EVENTS. Called from the
  * stale-span cleanup interval (60s). The half-batch splice keeps this
  * amortized O(1) — we don't pay splice cost per-push. A synthetic marker
  * is inserted so the gap is visible in ui.perfetto.dev.
- */
+     */
 function evictOldestEvents(): void {
   if (events.length < MAX_EVENTS) return
   const dropped = events.splice(0, MAX_EVENTS / 2)
@@ -246,10 +246,10 @@ function evictOldestEvents(): void {
   )
 }
 
-/**
+/*    *
  * Initialize Perfetto tracing
  * Call this early in the application lifecycle
- */
+     */
 export function initializePerfettoTracing(): void {
   const envValue = process.env.CLAUDE_CODE_PERFETTO_TRACE
   logForDebugging(
@@ -334,9 +334,9 @@ export function initializePerfettoTracing(): void {
   }
 }
 
-/**
+/*    *
  * Emit metadata events for a process/agent
- */
+     */
 function emitProcessMetadata(agentInfo: AgentInfo): void {
   if (!isEnabled) return
 
@@ -378,17 +378,17 @@ function emitProcessMetadata(agentInfo: AgentInfo): void {
   }
 }
 
-/**
+/*    *
  * Check if Perfetto tracing is enabled
- */
+     */
 export function isPerfettoTracingEnabled(): boolean {
   return isEnabled
 }
 
-/**
+/*    *
  * Register a new agent in the trace
  * Call this when a subagent/teammate is spawned
- */
+     */
 export function registerAgent(
   agentId: string,
   agentName: string,
@@ -409,19 +409,19 @@ export function registerAgent(
   emitProcessMetadata(info)
 }
 
-/**
+/*    *
  * Unregister an agent from the trace.
  * Call this when an agent completes, fails, or is aborted to free memory.
- */
+     */
 export function unregisterAgent(agentId: string): void {
   if (!isEnabled) return
   agentRegistry.delete(agentId)
   agentIdToProcessId.delete(agentId)
 }
 
-/**
+/*    *
  * Start an API call span
- */
+     */
 export function startLLMRequestPerfettoSpan(args: {
   model: string
   promptTokens?: number
@@ -462,9 +462,9 @@ export function startLLMRequestPerfettoSpan(args: {
   return spanId
 }
 
-/**
+/*    *
  * End an API call span with response metadata
- */
+     */
 export function endLLMRequestPerfettoSpan(
   spanId: string,
   metadata: {
@@ -477,9 +477,9 @@ export function endLLMRequestPerfettoSpan(
     messageId?: string
     success?: boolean
     error?: string
-    /** Time spent in pre-request setup (client creation, retries) before the successful attempt */
+    /*    * Time spent in pre-request setup (client creation, retries) before the successful attempt     */
     requestSetupMs?: number
-    /** Timestamps (Date.now()) of each attempt start — used to emit retry sub-spans */
+    /*    * Timestamps (Date.now()) of each attempt start — used to emit retry sub-spans     */
     attemptStartTimes?: number[]
   },
 ): void {
@@ -684,9 +684,9 @@ export function endLLMRequestPerfettoSpan(
   pendingSpans.delete(spanId)
 }
 
-/**
+/*    *
  * Start a tool execution span
- */
+     */
 export function startToolPerfettoSpan(
   toolName: string,
   args?: Record<string, unknown>,
@@ -721,9 +721,9 @@ export function startToolPerfettoSpan(
   return spanId
 }
 
-/**
+/*    *
  * End a tool execution span
- */
+     */
 export function endToolPerfettoSpan(
   spanId: string,
   metadata?: {
@@ -762,9 +762,9 @@ export function endToolPerfettoSpan(
   pendingSpans.delete(spanId)
 }
 
-/**
+/*    *
  * Start a user input waiting span
- */
+     */
 export function startUserInputPerfettoSpan(context?: string): string {
   if (!isEnabled) return ''
 
@@ -795,9 +795,9 @@ export function startUserInputPerfettoSpan(context?: string): string {
   return spanId
 }
 
-/**
+/*    *
  * End a user input waiting span
- */
+     */
 export function endUserInputPerfettoSpan(
   spanId: string,
   metadata?: {
@@ -834,9 +834,9 @@ export function endUserInputPerfettoSpan(
   pendingSpans.delete(spanId)
 }
 
-/**
+/*    *
  * Emit an instant event (marker)
- */
+     */
 export function emitPerfettoInstant(
   name: string,
   category: string,
@@ -857,9 +857,9 @@ export function emitPerfettoInstant(
   })
 }
 
-/**
+/*    *
  * Emit a counter event for tracking metrics over time
- */
+     */
 export function emitPerfettoCounter(
   name: string,
   values: Record<string, number>,
@@ -879,9 +879,9 @@ export function emitPerfettoCounter(
   })
 }
 
-/**
+/*    *
  * Start an interaction span (wraps a full user request cycle)
- */
+     */
 export function startInteractionPerfettoSpan(userPrompt?: string): string {
   if (!isEnabled) return ''
 
@@ -912,9 +912,9 @@ export function startInteractionPerfettoSpan(userPrompt?: string): string {
   return spanId
 }
 
-/**
+/*    *
  * End an interaction span
- */
+     */
 export function endInteractionPerfettoSpan(spanId: string): void {
   if (!isEnabled || !spanId) return
 
@@ -945,9 +945,9 @@ export function endInteractionPerfettoSpan(spanId: string): void {
 // Periodic write helpers
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Stop the periodic write timer.
- */
+     */
 function stopWriteInterval(): void {
   if (staleSpanCleanupId) {
     clearInterval(staleSpanCleanupId)
@@ -959,9 +959,9 @@ function stopWriteInterval(): void {
   }
 }
 
-/**
+/*    *
  * Force-close any remaining open spans at session end.
- */
+     */
 function closeOpenSpans(): void {
   for (const [spanId, pending] of pendingSpans) {
     const endTime = getTimestamp()
@@ -982,11 +982,11 @@ function closeOpenSpans(): void {
   }
 }
 
-/**
+/*    *
  * Write the full trace to disk.  Errors are logged but swallowed so that a
  * transient I/O problem does not crash the session — the next periodic tick
  * (or the final exit write) will retry with a complete snapshot.
- */
+     */
 async function periodicWrite(): Promise<void> {
   if (!isEnabled || !tracePath || traceWritten) return
 
@@ -1004,10 +1004,10 @@ async function periodicWrite(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Final async write: close open spans and write the complete trace.
  * Idempotent — sets `traceWritten` on success so subsequent calls are no-ops.
- */
+     */
 async function writePerfettoTrace(): Promise<void> {
   if (!isEnabled || !tracePath || traceWritten) {
     logForDebugging(
@@ -1036,9 +1036,9 @@ async function writePerfettoTrace(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Final synchronous write (fallback for process 'exit' handler where async is forbidden).
- */
+     */
 function writePerfettoTraceSync(): void {
   if (!isEnabled || !tracePath || traceWritten) {
     logForDebugging(
@@ -1070,16 +1070,16 @@ function writePerfettoTraceSync(): void {
   }
 }
 
-/**
+/*    *
  * Get all recorded events (for testing)
- */
+     */
 export function getPerfettoEvents(): TraceEvent[] {
   return [...metadataEvents, ...events]
 }
 
-/**
+/*    *
  * Reset the tracer state (for testing)
- */
+     */
 export function resetPerfettoTracer(): void {
   if (staleSpanCleanupId) {
     clearInterval(staleSpanCleanupId)
@@ -1100,16 +1100,16 @@ export function resetPerfettoTracer(): void {
   traceWritten = false
 }
 
-/**
+/*    *
  * Trigger a periodic write immediately (for testing)
- */
+     */
 export async function triggerPeriodicWriteForTesting(): Promise<void> {
   await periodicWrite()
 }
 
-/**
+/*    *
  * Evict stale spans immediately (for testing)
- */
+     */
 export function evictStaleSpansForTesting(): void {
   evictStaleSpans()
 }

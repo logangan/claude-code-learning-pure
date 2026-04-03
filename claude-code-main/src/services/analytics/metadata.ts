@@ -1,10 +1,10 @@
 // biome-ignore-all assist/source/organizeImports: ANT-ONLY import markers must not be reordered
-/**
+/*    *
  * Shared event metadata enrichment for analytics systems
  *
  * This module provides a single source of truth for collecting and formatting
  * event metadata across all analytics systems (Datadog, 1P).
- */
+     */
 
 import { extname } from 'path'
 import memoize from 'lodash-es/memoize.js'
@@ -41,7 +41,7 @@ import {
 } from '../../utils/teammate.js'
 import { feature } from 'bun:bundle'
 
-/**
+/*    *
  * Marker type for verifying analytics metadata doesn't contain sensitive data
  *
  * This type forces explicit verification that string values being logged
@@ -53,10 +53,10 @@ import { feature } from 'bun:bundle'
  *
  * The type is `never` which means it can never actually hold a value - this is
  * intentional as it's only used for type-casting to document developer intent.
- */
+     */
 export type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS = never
 
-/**
+/*    *
  * Sanitizes tool names for analytics logging to avoid PII exposure.
  *
  * MCP tool names follow the format `mcp__<server>__<tool>` and can reveal
@@ -66,7 +66,7 @@ export type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS = never
  *
  * @param toolName - The tool name to sanitize
  * @returns The original name for built-in tools, or 'mcp_tool' for MCP tools
- */
+     */
 export function sanitizeToolNameForAnalytics(
   toolName: string,
 ): AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS {
@@ -76,18 +76,18 @@ export function sanitizeToolNameForAnalytics(
   return toolName as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
 }
 
-/**
+/*    *
  * Check if detailed tool name logging is enabled for OTLP events.
  * When enabled, MCP server/tool names and Skill names are logged.
  * Disabled by default to protect PII (user-specific server configurations).
  *
  * Enable with OTEL_LOG_TOOL_DETAILS=1
- */
+     */
 export function isToolDetailsLoggingEnabled(): boolean {
   return isEnvTruthy(process.env.OTEL_LOG_TOOL_DETAILS)
 }
 
-/**
+/*    *
  * Check if detailed tool name logging (MCP server/tool names) is enabled
  * for analytics events.
  *
@@ -98,7 +98,7 @@ export function isToolDetailsLoggingEnabled(): boolean {
  *   connectors added via `claude mcp add`, not customer-specific config
  *
  * Custom/user-configured MCPs stay sanitized (toolName='mcp_tool').
- */
+     */
 export function isAnalyticsToolDetailsLoggingEnabled(
   mcpServerType: string | undefined,
   mcpServerBaseUrl: string | undefined,
@@ -115,7 +115,7 @@ export function isAnalyticsToolDetailsLoggingEnabled(
   return false
 }
 
-/**
+/*    *
  * Built-in first-party MCP servers whose names are fixed reserved strings,
  * not user-configured — so logging them is not PII. Checked in addition to
  * isAnalyticsToolDetailsLoggingEnabled's transport/URL gates, which a stdio
@@ -124,8 +124,8 @@ export function isAnalyticsToolDetailsLoggingEnabled(
  * Feature-gated so the set is empty when the feature is off: the name
  * reservation (main.tsx, config.ts addMcpServer) is itself feature-gated, so
  * a user-configured 'computer-use' is possible in builds without the feature.
- */
-/* eslint-disable @typescript-eslint/no-require-imports */
+     */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const BUILTIN_MCP_SERVER_NAMES: ReadonlySet<string> = new Set(
   feature('CHICAGO_MCP')
     ? [
@@ -135,13 +135,13 @@ const BUILTIN_MCP_SERVER_NAMES: ReadonlySet<string> = new Set(
       ]
     : [],
 )
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
-/**
+/*    *
  * Spreadable helper for logEvent payloads — returns {mcpServerName, mcpToolName}
  * if the gate passes, empty object otherwise. Consolidates the identical IIFE
  * pattern at each tengu_tool_use_* call site.
- */
+     */
 export function mcpToolDetailsForAnalytics(
   toolName: string,
   mcpServerType: string | undefined,
@@ -166,13 +166,13 @@ export function mcpToolDetailsForAnalytics(
   }
 }
 
-/**
+/*    *
  * Extract MCP server and tool names from a full MCP tool name.
  * MCP tool names follow the format: mcp__<server>__<tool>
  *
  * @param toolName - The full tool name (e.g., 'mcp__slack__read_channel')
  * @returns Object with serverName and toolName, or undefined if not an MCP tool
- */
+     */
 export function extractMcpToolDetails(toolName: string):
   | {
       serverName: AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
@@ -205,13 +205,13 @@ export function extractMcpToolDetails(toolName: string):
   }
 }
 
-/**
+/*    *
  * Extract skill name from Skill tool input.
  *
  * @param toolName - The tool name (should be 'Skill')
  * @param input - The tool input containing the skill name
  * @returns The skill name if this is a Skill tool call, undefined otherwise
- */
+     */
 export function extractSkillName(
   toolName: string,
   input: unknown,
@@ -282,12 +282,12 @@ function truncateToolInputValue(value: unknown, depth = 0): unknown {
   return String(value)
 }
 
-/**
+/*    *
  * Serialize a tool's input arguments for the OTel tool_result event.
  * Truncates long strings and deep nesting to keep the output bounded while
  * preserving forensically useful fields like file paths, URLs, and MCP args.
  * Returns undefined when OTEL_LOG_TOOL_DETAILS is not enabled.
- */
+     */
 export function extractToolInputForTelemetry(
   input: unknown,
 ): string | undefined {
@@ -302,15 +302,15 @@ export function extractToolInputForTelemetry(
   return json
 }
 
-/**
+/*    *
  * Maximum length for file extensions to be logged.
  * Extensions longer than this are considered potentially sensitive
  * (e.g., hash-based filenames like "key-hash-abcd-123-456") and
  * will be replaced with 'other'.
- */
+     */
 const MAX_FILE_EXTENSION_LENGTH = 10
 
-/**
+/*    *
  * Extracts and sanitizes a file extension for analytics logging.
  *
  * Uses Node's path.extname for reliable cross-platform extension extraction.
@@ -319,7 +319,7 @@ const MAX_FILE_EXTENSION_LENGTH = 10
  *
  * @param filePath - The file path to extract the extension from
  * @returns The sanitized extension, 'other' for long extensions, or undefined if no extension
- */
+     */
 export function getFileExtensionForAnalytics(
   filePath: string,
 ): AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS | undefined {
@@ -336,7 +336,7 @@ export function getFileExtensionForAnalytics(
   return extension as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
 }
 
-/** Allow list of commands we extract file extensions from. */
+/*    * Allow list of commands we extract file extensions from.     */
 const FILE_COMMANDS = new Set([
   'rm',
   'mv',
@@ -357,18 +357,18 @@ const FILE_COMMANDS = new Set([
   'sed',
 ])
 
-/** Regex to split bash commands on compound operators (&&, ||, ;, |). */
+/*    * Regex to split bash commands on compound operators (&&, ||, ;, |).     */
 const COMPOUND_OPERATOR_REGEX = /\s*(?:&&|\|\||[;|])\s*/
 
-/** Regex to split on whitespace. */
+/*    * Regex to split on whitespace.     */
 const WHITESPACE_REGEX = /\s+/
 
-/**
+/*    *
  * Extracts file extensions from a bash command for analytics.
  * Best-effort: splits on operators and whitespace, extracts extensions
  * from non-flag args of allowed commands. No heavy shell parsing needed
  * because grep patterns and sed scripts rarely resemble file extensions.
- */
+     */
 export function getFileExtensionsFromBashCommand(
   command: string,
   simulatedSedEditFilePath?: string,
@@ -398,7 +398,7 @@ export function getFileExtensionsFromBashCommand(
 
     for (let i = 1; i < tokens.length; i++) {
       const arg = tokens[i]!
-      if (arg.charCodeAt(0) === 45 /* - */) continue
+      if (arg.charCodeAt(0) === 45 /*     -     */) continue
       const ext = getFileExtensionForAnalytics(arg)
       if (ext && !seen.has(ext)) {
         seen.add(ext)
@@ -411,9 +411,9 @@ export function getFileExtensionsFromBashCommand(
   return result as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
 }
 
-/**
+/*    *
  * Environment context metadata
- */
+     */
 export type EnvContext = {
   platform: string
   platformRaw: string
@@ -451,9 +451,9 @@ export type EnvContext = {
   vcs?: string
 }
 
-/**
+/*    *
  * Process metrics included with all analytics events.
- */
+     */
 export type ProcessMetrics = {
   uptime: number
   rss: number
@@ -466,9 +466,9 @@ export type ProcessMetrics = {
   cpuPercent: number | undefined
 }
 
-/**
+/*    *
  * Core event metadata shared across all analytics systems
- */
+     */
 export type EventMetadata = {
   model: string
   sessionId: string
@@ -495,9 +495,9 @@ export type EventMetadata = {
   observerMode?: 'backseat' | 'skillcoach' | 'both' // Which observer classifiers are gated on (ant-only; for BQ cohort splits on tengu_backseat_* events)
 }
 
-/**
+/*    *
  * Options for enriching event metadata
- */
+     */
 export type EnrichMetadataOptions = {
   // Model to use, falls back to getMainLoopModel() if not provided
   model?: unknown
@@ -507,10 +507,10 @@ export type EnrichMetadataOptions = {
   additionalMetadata?: Record<string, unknown>
 }
 
-/**
+/*    *
  * Get agent identification for analytics.
  * Priority: AsyncLocalStorage context (subagents) > env vars (swarm teammates)
- */
+     */
 function getAgentIdentification(): {
   agentId?: string
   parentSessionId?: string
@@ -560,17 +560,17 @@ function getAgentIdentification(): {
   return {}
 }
 
-/**
+/*    *
  * Extract base version from full version string. "2.0.36-dev.20251107.t174150.sha2709699" → "2.0.36-dev"
- */
+     */
 const getVersionBase = memoize((): string | undefined => {
   const match = MACRO.VERSION.match(/^\d+\.\d+\.\d+(?:-[a-z]+)?/)
   return match ? match[0] : undefined
 })
 
-/**
+/*    *
  * Builds the environment context object
- */
+     */
 const buildEnvContext = memoize(async (): Promise<EnvContext> => {
   const [packageManagers, runtimes, linuxDistroInfo, vcs] = await Promise.all([
     env.getPackageManagers(),
@@ -642,9 +642,9 @@ const buildEnvContext = memoize(async (): Promise<EnvContext> => {
 let prevCpuUsage: NodeJS.CpuUsage | null = null
 let prevWallTimeMs: number | null = null
 
-/**
+/*    *
  * Builds process metrics object for all users.
- */
+     */
 function buildProcessMetrics(): ProcessMetrics | undefined {
   try {
     const mem = process.memoryUsage()
@@ -681,7 +681,7 @@ function buildProcessMetrics(): ProcessMetrics | undefined {
   }
 }
 
-/**
+/*    *
  * Get core event metadata shared across all analytics systems.
  *
  * This function collects environment, runtime, and context information
@@ -689,7 +689,7 @@ function buildProcessMetrics(): ProcessMetrics | undefined {
  *
  * @param options - Configuration options
  * @returns Promise resolving to enriched metadata object
- */
+     */
 export async function getEventMetadata(
   options: EnrichMetadataOptions = {},
 ): Promise<EventMetadata> {
@@ -743,9 +743,9 @@ export async function getEventMetadata(
 }
 
 
-/**
+/*    *
  * Core event metadata for 1P event logging (snake_case format).
- */
+     */
 export type FirstPartyEventLoggingCoreMetadata = {
   session_id: string
   model: string
@@ -765,9 +765,9 @@ export type FirstPartyEventLoggingCoreMetadata = {
   team_name?: string
 }
 
-/**
+/*    *
  * Complete event logging metadata format for 1P events.
- */
+     */
 export type FirstPartyEventLoggingMetadata = {
   env: EnvironmentMetadata
   process?: string
@@ -783,7 +783,7 @@ export type FirstPartyEventLoggingMetadata = {
   additional: Record<string, unknown>
 }
 
-/**
+/*    *
  * Convert metadata to 1P event logging format (snake_case fields).
  *
  * The /api/event_logging/batch endpoint expects snake_case field names
@@ -792,7 +792,7 @@ export type FirstPartyEventLoggingMetadata = {
  * @param metadata - Core event metadata
  * @param additionalMetadata - Additional metadata to include
  * @returns Metadata formatted for 1P event logging
- */
+     */
 export function to1PEventFormat(
   metadata: EventMetadata,
   userMetadata: CoreUserData,
@@ -815,7 +815,7 @@ export function to1PEventFormat(
   // parallel type previously let #11318, #13924, #19448, and coworker_type all
   // ship fields that never reached BQ.
   // Adding a field? Update the monorepo proto first (go/cc-logging):
-  //   event_schemas/.../claude_code/v1/claude_code_internal_event.proto
+  // event_schemas/.../claude_code/v1/claude_code_internal_event.proto
   // then run `bun run generate:proto` here.
   const env: EnvironmentMetadata = {
     platform: envContext.platform,

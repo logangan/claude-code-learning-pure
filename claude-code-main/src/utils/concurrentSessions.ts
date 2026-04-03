@@ -22,12 +22,12 @@ function getSessionsDir(): string {
   return join(getClaudeConfigHomeDir(), 'sessions')
 }
 
-/**
+/*    *
  * Kind override from env. Set by the spawner (`claude --bg`, daemon
  * supervisor) so the child can register without the parent having to
  * write the file for it — cleanup-on-exit wiring then works for free.
  * Gated so the env-var string is DCE'd from external builds.
- */
+     */
 function envSessionKind(): SessionKind | undefined {
   if (feature('BG_SESSIONS')) {
     const k = process.env.CLAUDE_CODE_SESSION_KIND
@@ -36,16 +36,16 @@ function envSessionKind(): SessionKind | undefined {
   return undefined
 }
 
-/**
+/*    *
  * True when this REPL is running inside a `claude --bg` tmux session.
  * Exit paths (/exit, ctrl+c, ctrl+d) should detach the attached client
  * instead of killing the process.
- */
+     */
 export function isBgSession(): boolean {
   return envSessionKind() === 'bg'
 }
 
-/**
+/*    *
  * Write a PID file for this session and register cleanup.
  *
  * Registers all top-level sessions — interactive CLI, SDK (vscode, desktop,
@@ -55,7 +55,7 @@ export function isBgSession(): boolean {
  *
  * Returns true if registered, false if skipped.
  * Errors logged to debug, never thrown.
- */
+     */
 export async function registerSession(): Promise<boolean> {
   if (getAgentId() != null) return false
 
@@ -108,11 +108,11 @@ export async function registerSession(): Promise<boolean> {
   }
 }
 
-/**
+/*    *
  * Update this session's name in its PID registry file so ListPeers
  * can surface it. Best-effort: silently no-op if name is falsy, the
  * file doesn't exist (session not registered), or read/write fails.
- */
+     */
 async function updatePidFile(patch: Record<string, unknown>): Promise<void> {
   const pidFile = join(getSessionsDir(), `${process.pid}.json`)
   try {
@@ -135,23 +135,23 @@ export async function updateSessionName(
   await updatePidFile({ name })
 }
 
-/**
+/*    *
  * Record this session's Remote Control session ID so peer enumeration can
  * dedup: a session reachable over both UDS and bridge should only appear
  * once (local wins). Cleared on bridge teardown so stale IDs don't
  * suppress a legitimately-remote session after reconnect.
- */
+     */
 export async function updateSessionBridgeId(
   bridgeSessionId: string | null,
 ): Promise<void> {
   await updatePidFile({ bridgeSessionId })
 }
 
-/**
+/*    *
  * Push live activity state for `claude ps`. Fire-and-forget from REPL's
  * status-change effect — a dropped write just means ps falls back to
  * transcript-tail derivation for one refresh.
- */
+     */
 export async function updateSessionActivity(patch: {
   status?: SessionStatus
   waitingFor?: string
@@ -160,11 +160,11 @@ export async function updateSessionActivity(patch: {
   await updatePidFile({ ...patch, updatedAt: Date.now() })
 }
 
-/**
+/*    *
  * Count live concurrent CLI sessions (including this one).
  * Filters out stale PID files (crashed sessions) and deletes them.
  * Returns 0 on any error (conservative).
- */
+     */
 export async function countConcurrentSessions(): Promise<number> {
   const dir = getSessionsDir()
   let files: string[]

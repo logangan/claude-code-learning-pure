@@ -1,6 +1,5 @@
 // Voice keyterms for improving STT accuracy in the voice_stream endpoint.
-//
-// Provides domain-specific vocabulary hints (Deepgram "keywords") so the STT
+// // Provides domain-specific vocabulary hints (Deepgram "keywords") so the STT
 // engine correctly recognises coding terminology, project names, and branch
 // names that would otherwise be misheard.
 
@@ -32,11 +31,11 @@ const GLOBAL_KEYTERMS: readonly string[] = [
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
-/**
+/*    *
  * Split an identifier (camelCase, PascalCase, kebab-case, snake_case, or
  * path segments) into individual words.  Fragments of 2 chars or fewer are
  * discarded to avoid noise.
- */
+     */
 export function splitIdentifier(name: string): string[] {
   return name
     .replace(/([a-z])([A-Z])/g, '$1 $2')
@@ -54,12 +53,12 @@ function fileNameWords(filePath: string): string[] {
 
 const MAX_KEYTERMS = 50
 
-/**
+/*    *
  * Build a list of keyterms for the voice_stream STT endpoint.
  *
  * Combines hardcoded global coding terms with session context (project name,
  * git branch, recent files) without any model calls.
- */
+     */
 export async function getVoiceKeyterms(
   recentFiles?: ReadonlySet<string>,
 ): Promise<string[]> {

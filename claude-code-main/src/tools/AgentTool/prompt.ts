@@ -36,16 +36,16 @@ function getToolsDescription(agent: AgentDefinition): string {
   return 'All tools'
 }
 
-/**
+/*    *
  * Format one agent line for the agent_listing_delta attachment message:
  * `- type: whenToUse (Tools: ...)`.
- */
+     */
 export function formatAgentLine(agent: AgentDefinition): string {
   const toolsDescription = getToolsDescription(agent)
   return `- ${agent.agentType}: ${agent.whenToUse} (Tools: ${toolsDescription})`
 }
 
-/**
+/*    *
  * Whether the agent list should be injected as an attachment message instead
  * of embedded in the tool description. When true, getPrompt() returns a static
  * description and attachments.ts emits an agent_listing_delta attachment.
@@ -55,7 +55,7 @@ export function formatAgentLine(agent: AgentDefinition): string {
  * description changes → full tool-schema cache bust.
  *
  * Override with CLAUDE_CODE_AGENT_LIST_IN_MESSAGES=true/false for testing.
- */
+     */
 export function shouldInjectAgentListInMessages(): boolean {
   if (isEnvTruthy(process.env.CLAUDE_CODE_AGENT_LIST_IN_MESSAGES)) return true
   if (isEnvDefinedFalsy(process.env.CLAUDE_CODE_AGENT_LIST_IN_MESSAGES))

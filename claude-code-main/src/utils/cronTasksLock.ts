@@ -1,11 +1,9 @@
 // Scheduler lease lock for .claude/scheduled_tasks.json.
-//
-// When multiple Claude sessions run in the same project directory, only one
+// // When multiple Claude sessions run in the same project directory, only one
 // should drive the cron scheduler. The first session to acquire this lock
 // becomes the scheduler; others stay passive and periodically probe the lock.
 // If the owner dies (PID no longer running), a passive session takes over.
-//
-// Pattern mirrors computerUseLock.ts: O_EXCL atomic create, PID liveness
+// // Pattern mirrors computerUseLock.ts: O_EXCL atomic create, PID liveness
 // probe, stale-lock recovery, cleanup-on-exit.
 
 import { mkdir, readFile, unlink, writeFile } from 'fs/promises'
@@ -31,12 +29,12 @@ const schedulerLockSchema = lazySchema(() =>
 )
 type SchedulerLock = z.infer<ReturnType<typeof schedulerLockSchema>>
 
-/**
+/*    *
  * Options for out-of-REPL callers (Agent SDK daemon) that don't have
  * bootstrap state. When omitted, falls back to getProjectRoot() +
  * getSessionId() as before. lockIdentity should be stable for the lifetime
  * of one daemon process (e.g. a randomUUID() captured at startup).
- */
+     */
 export type SchedulerLockOptions = {
   dir?: string
   lockIdentity?: string
@@ -97,7 +95,7 @@ function registerLockCleanup(opts?: SchedulerLockOptions): void {
   })
 }
 
-/**
+/*    *
  * Try to acquire the scheduler lock for the current session.
  * Returns true on success, false if another live session holds it.
  *
@@ -107,7 +105,7 @@ function registerLockCleanup(opts?: SchedulerLockOptions): void {
  *   - Stale (PID dead / corrupt) → unlink and retry exclusive create once
  *
  * If two sessions race to recover a stale lock, only one create succeeds.
- */
+     */
 export async function tryAcquireSchedulerLock(
   opts?: SchedulerLockOptions,
 ): Promise<boolean> {
@@ -172,9 +170,9 @@ export async function tryAcquireSchedulerLock(
   return false
 }
 
-/**
+/*    *
  * Release the scheduler lock if the current session owns it.
- */
+     */
 export async function releaseSchedulerLock(
   opts?: SchedulerLockOptions,
 ): Promise<void> {

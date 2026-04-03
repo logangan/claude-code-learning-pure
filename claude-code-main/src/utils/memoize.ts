@@ -26,7 +26,7 @@ type LRUMemoizedFunction<Args extends unknown[], Result> = {
   }
 }
 
-/**
+/*    *
  * Creates a memoized function that returns cached values while refreshing in parallel.
  * This implements a write-through cache pattern:
  * - If cache is fresh, return immediately
@@ -36,7 +36,7 @@ type LRUMemoizedFunction<Args extends unknown[], Result> = {
  * @param f The function to memoize
  * @param cacheLifetimeMs The lifetime of cached values in milliseconds
  * @returns A memoized version of the function
- */
+     */
 export function memoizeWithTTL<Args extends unknown[], Result>(
   f: (...args: Args) => Result,
   cacheLifetimeMs: number = 5 * 60 * 1000, // Default 5 minutes
@@ -106,7 +106,7 @@ export function memoizeWithTTL<Args extends unknown[], Result>(
   return memoized
 }
 
-/**
+/*    *
  * Creates a memoized async function that returns cached values while refreshing in parallel.
  * This implements a write-through cache pattern for async functions:
  * - If cache is fresh, return immediately
@@ -116,7 +116,7 @@ export function memoizeWithTTL<Args extends unknown[], Result>(
  * @param f The async function to memoize
  * @param cacheLifetimeMs The lifetime of cached values in milliseconds
  * @returns A memoized version of the async function
- */
+     */
 export function memoizeWithTTLAsync<Args extends unknown[], Result>(
   f: (...args: Args) => Promise<Result>,
   cacheLifetimeMs: number = 5 * 60 * 1000, // Default 5 minutes
@@ -219,7 +219,7 @@ export function memoizeWithTTLAsync<Args extends unknown[], Result>(
   }
 }
 
-/**
+/*    *
  * Creates a memoized function with LRU (Least Recently Used) eviction policy.
  * This prevents unbounded memory growth by evicting the least recently used entries
  * when the cache reaches its maximum size.
@@ -230,7 +230,7 @@ export function memoizeWithTTLAsync<Args extends unknown[], Result>(
  *
  * @param f The function to memoize
  * @returns A memoized version of the function with cache management methods
- */
+     */
 export function memoizeWithLRU<
   Args extends unknown[],
   Result extends NonNullable<unknown>,

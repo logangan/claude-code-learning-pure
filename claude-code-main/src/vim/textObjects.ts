@@ -1,8 +1,8 @@
-/**
+/*    *
  * Vim Text Object Finding
  *
  * Functions for finding text object boundaries (iw, aw, i", a(, etc.)
- */
+     */
 
 import {
   isVimPunctuation,
@@ -13,9 +13,9 @@ import { getGraphemeSegmenter } from '../utils/intl.js'
 
 export type TextObjectRange = { start: number; end: number } | null
 
-/**
+/*    *
  * Delimiter pairs for text objects.
- */
+     */
 const PAIRS: Record<string, [string, string]> = {
   '(': ['(', ')'],
   ')': ['(', ')'],
@@ -32,9 +32,9 @@ const PAIRS: Record<string, [string, string]> = {
   '`': ['`', '`'],
 }
 
-/**
+/*    *
  * Find a text object at the given position.
- */
+     */
 export function findTextObject(
   text: string,
   offset: number,

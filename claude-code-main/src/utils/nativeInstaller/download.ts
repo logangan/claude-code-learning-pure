@@ -1,10 +1,10 @@
-/**
+/*    *
  * Download functionality for native installer
  *
  * Handles downloading Claude binaries from various sources:
  * - Artifactory NPM packages
  * - GCS bucket
- */
+     */
 
 import { feature } from 'bun:bundle'
 import axios from 'axios'
@@ -23,9 +23,9 @@ import { jsonStringify, writeFileSync_DEPRECATED } from '../slowOperations.js'
 import { getBinaryName, getPlatform } from './installer.js'
 
 const GCS_BUCKET_URL =
-  'https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases'
+  'https:// storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases'
 export const ARTIFACTORY_REGISTRY_URL =
-  'https://artifactory.infra.ant.dev/artifactory/api/npm/npm-all/'
+  'https:// artifactory.infra.ant.dev/artifactory/api/npm/npm-all/'
 
 export async function getLatestVersionFromArtifactory(
   tag: string = 'latest',
@@ -286,10 +286,10 @@ class StallTimeoutError extends Error {
   }
 }
 
-/**
+/*    *
  * Common logic for downloading and verifying a binary.
  * Includes stall detection (aborts if no bytes for 60s) and retry logic.
- */
+     */
 async function downloadAndVerifyBinary(
   binaryUrl: string,
   expectedChecksum: string,
@@ -500,7 +500,7 @@ export async function downloadVersion(
     await downloadVersionFromBinaryRepo(
       version,
       stagingPath,
-      'https://storage.googleapis.com/claude-code-ci-sentinel',
+      'https:// storage.googleapis.com/claude-code-ci-sentinel',
       { headers: { Authorization: `Bearer ${stdout.trim()}` } },
     )
     return 'binary'

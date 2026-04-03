@@ -35,10 +35,10 @@ const sequentialAppendBySession: Map<
   ) => Promise<boolean>
 > = new Map()
 
-/**
+/*    *
  * Gets or creates a sequential wrapper for a session
  * This ensures that log appends for a session are processed one at a time
- */
+     */
 function getOrCreateSequentialAppend(sessionId: string) {
   let sequentialAppend = sequentialAppendBySession.get(sessionId)
   if (!sequentialAppend) {
@@ -54,12 +54,12 @@ function getOrCreateSequentialAppend(sessionId: string) {
   return sequentialAppend
 }
 
-/**
+/*    *
  * Internal implementation of appendSessionLog with retry logic
  * Retries on transient errors (network, 5xx, 429). On 409, adopts the server's
  * last UUID and retries (handles stale state from killed process's in-flight
  * requests). Fails immediately on 401.
- */
+     */
 async function appendSessionLogImpl(
   sessionId: string,
   entry: TranscriptMessage,
@@ -185,11 +185,11 @@ async function appendSessionLogImpl(
   return false
 }
 
-/**
+/*    *
  * Append a log entry to the session using JWT token
  * Uses optimistic concurrency control with Last-Uuid header
  * Ensures sequential execution per session to prevent race conditions
- */
+     */
 export async function appendSessionLog(
   sessionId: string,
   entry: TranscriptMessage,
@@ -211,9 +211,9 @@ export async function appendSessionLog(
   return sequentialAppend(entry, url, headers)
 }
 
-/**
+/*    *
  * Get all session logs for hydration
- */
+     */
 export async function getSessionLogs(
   sessionId: string,
   url: string,
@@ -239,10 +239,10 @@ export async function getSessionLogs(
   return logs
 }
 
-/**
+/*    *
  * Get all session logs for hydration via OAuth
  * Used for teleporting sessions from the Sessions API
- */
+     */
 export async function getSessionLogsViaOAuth(
   sessionId: string,
   accessToken: string,
@@ -258,12 +258,12 @@ export async function getSessionLogsViaOAuth(
   return result
 }
 
-/**
+/*    *
  * Response shape from GET /v1/code/sessions/{id}/teleport-events.
  * WorkerEvent.payload IS the Entry (TranscriptMessage struct) — the CLI
  * writes it via AddWorkerEvent, the server stores it opaque, we read it
  * back here.
- */
+     */
 type TeleportEventsResponse = {
   data: Array<{
     event_id: string
@@ -277,7 +277,7 @@ type TeleportEventsResponse = {
   next_cursor?: string
 }
 
-/**
+/*    *
  * Get worker events (transcript) via the CCR v2 Sessions API. Replaces
  * getSessionLogsViaOAuth once session-ingress is retired.
  *
@@ -287,7 +287,7 @@ type TeleportEventsResponse = {
  *
  * Paginated (500/page default, server max 1000). session-ingress's one-shot
  * 50k is gone; we loop.
- */
+     */
 export async function getTeleportEvents(
   sessionId: string,
   accessToken: string,
@@ -333,17 +333,16 @@ export async function getTeleportEvents(
 
     if (response.status === 404) {
       // 404 on page 0 is ambiguous during the migration window:
-      //   (a) Session genuinely not found (not in Spanner AND not in
-      //       threadstore) — nothing to fetch.
-      //   (b) Route-level 404: endpoint not deployed yet, or session is
-      //       a threadstore session not yet backfilled into Spanner.
+      // (a) Session genuinely not found (not in Spanner AND not in
+      // threadstore) — nothing to fetch.
+      // (b) Route-level 404: endpoint not deployed yet, or session is
+      // a threadstore session not yet backfilled into Spanner.
       // We can't tell them apart from the response alone. Returning null
       // lets the caller fall back to session-ingress, which will correctly
       // return empty for case (a) and data for case (b). Once the backfill
       // is complete and session-ingress is gone, the fallback also returns
       // null → same "Failed to fetch session logs" error as today.
-      //
-      // 404 mid-pagination (pages > 0) means session was deleted between
+      // // 404 mid-pagination (pages > 0) means session was deleted between
       // pages — return what we have.
       logForDebugging(
         `[teleport] Session ${sessionId} not found (page ${pages})`,
@@ -414,9 +413,9 @@ export async function getTeleportEvents(
   return all
 }
 
-/**
+/*    *
  * Shared implementation for fetching session logs from a URL
- */
+     */
 async function fetchSessionLogsFromUrl(
   sessionId: string,
   url: string,
@@ -484,10 +483,10 @@ async function fetchSessionLogsFromUrl(
   }
 }
 
-/**
+/*    *
  * Walk backward through entries to find the last one with a uuid.
  * Some entry types (SummaryMessage, TagMessage) don't have one.
- */
+     */
 function findLastUuid(logs: Entry[] | null): UUID | undefined {
   if (!logs) {
     return undefined
@@ -496,18 +495,18 @@ function findLastUuid(logs: Entry[] | null): UUID | undefined {
   return entry && 'uuid' in entry ? (entry.uuid as UUID) : undefined
 }
 
-/**
+/*    *
  * Clear cached state for a session
- */
+     */
 export function clearSession(sessionId: string): void {
   lastUuidMap.delete(sessionId)
   sequentialAppendBySession.delete(sessionId)
 }
 
-/**
+/*    *
  * Clear all cached session state (all sessions).
  * Use this on /clear to free sub-agent session entries.
- */
+     */
 export function clearAllSessions(): void {
   lastUuidMap.clear()
   sequentialAppendBySession.clear()

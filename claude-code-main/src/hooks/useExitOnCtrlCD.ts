@@ -18,7 +18,7 @@ type UseKeybindingsHook = (
   options?: KeybindingOptions,
 ) => void
 
-/**
+/*    *
  * Handle ctrl+c and ctrl+d for exiting the application.
  *
  * Uses a time-based double-press mechanism:
@@ -41,7 +41,7 @@ type UseKeybindingsHook = (
  *                   ctrl+c/d handlers will manage cancel/exit, and Dialog's
  *                   handler would otherwise double-fire (child useInput runs
  *                   before parent useKeybindings, so both see every keypress).
- */
+     */
 export function useExitOnCtrlCD(
   useKeybindingsHook: UseKeybindingsHook,
   onInterrupt?: () => boolean,

@@ -31,7 +31,7 @@ import { isPowerShellToolEnabled } from './shell/shellToolUtils.js'
 // (and transitively parser.ts, validators, etc.) at startup on all
 // platforms, defeating tools.ts's lazy require. Deferred until the
 // first skill with `shell: powershell` actually runs.
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const getPowerShellTool = (() => {
   let cached: PromptShellTool | undefined
   return (): PromptShellTool => {
@@ -43,7 +43,7 @@ const getPowerShellTool = (() => {
     return cached
   }
 })()
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 // Pattern for code blocks: ```! command ```
 const BLOCK_PATTERN = /```!\s*\n?([\s\S]*?)\n?```/g
@@ -55,7 +55,7 @@ const BLOCK_PATTERN = /```!\s*\n?([\s\S]*?)\n?```/g
 // eslint-disable-next-line custom-rules/no-lookbehind-regex -- gated by text.includes('!`') below (PR#22986)
 const INLINE_PATTERN = /(?<=^|\s)!`([^`]+)`/gm
 
-/**
+/*    *
  * Parses prompt text and executes any embedded shell commands.
  * Supports two syntaxes:
  * - Code blocks: ```! command ```
@@ -65,7 +65,7 @@ const INLINE_PATTERN = /(?<=^|\s)!`([^`]+)`/gm
  *   This is *never* read from settings.defaultShell — it comes from .md
  *   frontmatter (author's choice) or is undefined for built-in commands.
  *   See docs/design/ps-shell-selection.md §5.3.
- */
+     */
 export async function executeShellCommandsInPrompt(
   text: string,
   context: ToolUseContext,

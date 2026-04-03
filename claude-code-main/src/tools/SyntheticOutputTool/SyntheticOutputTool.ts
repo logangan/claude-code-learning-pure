@@ -108,11 +108,11 @@ type CreateResult = { tool: Tool<InputSchema> } | { error: string }
 // cache brings 80-call workflows from ~110ms to ~4ms Ajv overhead.
 const toolCache = new WeakMap<object, CreateResult>()
 
-/**
+/*    *
  * Create a SyntheticOutputTool configured with the given JSON schema.
  * Returns {tool} on success or {error} with Ajv's diagnostic message
  * (e.g. "data/properties/bugs should be object") on invalid schema.
- */
+     */
 export function createSyntheticOutputTool(
   jsonSchema: Record<string, unknown>,
 ): CreateResult {

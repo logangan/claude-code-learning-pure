@@ -2,7 +2,7 @@ import { feature } from 'bun:bundle'
 import type { UUID } from 'crypto'
 import uniqBy from 'lodash-es/uniqBy.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const sessionTranscriptModule = feature('KAIROS')
   ? (require('../sessionTranscript/sessionTranscript.js') as typeof import('../sessionTranscript/sessionTranscript.js'))
   : null
@@ -79,7 +79,7 @@ import {
 } from '../../utils/sessionStorage.js'
 import { sleep } from '../../utils/sleep.js'
 import { jsonStringify } from '../../utils/slowOperations.js'
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import { asSystemPrompt } from '../../utils/systemPromptType.js'
 import { getTaskOutputPath } from '../../utils/task/diskOutput.js'
 import {
@@ -130,7 +130,7 @@ export const POST_COMPACT_MAX_TOKENS_PER_SKILL = 5_000
 export const POST_COMPACT_SKILLS_TOKEN_BUDGET = 25_000
 const MAX_COMPACT_STREAMING_RETRIES = 2
 
-/**
+/*    *
  * Strip image blocks from user messages before sending for compaction.
  * Images are not needed for generating a conversation summary and can
  * cause the compaction API call itself to hit the prompt-too-long limit,
@@ -141,7 +141,7 @@ const MAX_COMPACT_STREAMING_RETRIES = 2
  * Note: Only user messages contain images (either directly attached or within
  * tool_result content from tools). Assistant messages contain text, tool_use,
  * and thinking blocks but not images.
- */
+     */
 export function stripImagesFromMessages(messages: Message[]): Message[] {
   return messages.map(message => {
     if (message.type !== 'user') {
@@ -199,7 +199,7 @@ export function stripImagesFromMessages(messages: Message[]): Message[] {
   })
 }
 
-/**
+/*    *
  * Strip attachment types that are re-injected post-compaction anyway.
  * skill_discovery/skill_listing are re-surfaced by resetSentSkillNames()
  * + the next turn's discovery signal, so feeding them to the summarizer
@@ -207,7 +207,7 @@ export function stripImagesFromMessages(messages: Message[]): Message[] {
  *
  * No-op when EXPERIMENTAL_SKILL_SEARCH is off (the attachment types
  * don't exist on external builds).
- */
+     */
 export function stripReinjectedAttachments(messages: Message[]): Message[] {
   if (feature('EXPERIMENTAL_SKILL_SEARCH')) {
     return messages.filter(
@@ -227,7 +227,7 @@ export const ERROR_MESSAGE_NOT_ENOUGH_MESSAGES =
 const MAX_PTL_RETRIES = 3
 const PTL_RETRY_MARKER = '[earlier conversation truncated for compaction retry]'
 
-/**
+/*    *
  * Drops the oldest API-round groups from messages until tokenGap is covered.
  * Falls back to dropping 20% of groups when the gap is unparseable (some
  * Vertex/Bedrock error formats). Returns null when nothing can be dropped
@@ -239,7 +239,7 @@ const PTL_RETRY_MARKER = '[earlier conversation truncated for compaction retry]'
  * (compactMessages.ts) has the proper retry loop that peels from the tail;
  * this helper is the dumb-but-safe fallback for the proactive/manual path
  * that wasn't migrated in bfdb472f's unification.
- */
+     */
 export function truncateHeadForPTLRetry(
   messages: Message[],
   ptlResponse: AssistantMessage,
@@ -309,11 +309,11 @@ export interface CompactionResult {
   compactionUsage?: ReturnType<typeof getTokenUsage>
 }
 
-/**
+/*    *
  * Diagnosis context passed from autoCompactIfNeeded into compactConversation.
  * Lets the tengu_compact event disambiguate same-chain loops (H2) from
  * cross-agent (H1/H5) and manual-vs-auto (H3) compactions without joins.
- */
+     */
 export type RecompactionInfo = {
   isRecompactionInChain: boolean
   turnsSincePreviousCompact: number
@@ -322,11 +322,11 @@ export type RecompactionInfo = {
   querySource?: QuerySource
 }
 
-/**
+/*    *
  * Build the base post-compact messages array from a CompactionResult.
  * This ensures consistent ordering across all compaction paths.
  * Order: boundaryMarker, summaryMessages, messagesToKeep, attachments, hookResults
- */
+     */
 export function buildPostCompactMessages(result: CompactionResult): Message[] {
   return [
     result.boundaryMarker,
@@ -337,7 +337,7 @@ export function buildPostCompactMessages(result: CompactionResult): Message[] {
   ]
 }
 
-/**
+/*    *
  * Annotate a compact boundary with relink metadata for messagesToKeep.
  * Preserved messages keep their original parentUuids on disk (dedup-skipped);
  * the loader uses this to patch head→anchor and anchor's-other-children→tail.
@@ -345,7 +345,7 @@ export function buildPostCompactMessages(result: CompactionResult): Message[] {
  * `anchorUuid` = what sits immediately before keep[0] in the desired chain:
  *   - suffix-preserving (reactive/session-memory): last summary message
  *   - prefix-preserving (partial compact): the boundary itself
- */
+     */
 export function annotateBoundaryWithPreservedSegment(
   boundary: SystemCompactBoundaryMessage,
   anchorUuid: UUID,
@@ -366,11 +366,11 @@ export function annotateBoundaryWithPreservedSegment(
   }
 }
 
-/**
+/*    *
  * Merges user-supplied custom instructions with hook-provided instructions.
  * User instructions come first; hook instructions are appended.
  * Empty strings normalize to undefined.
- */
+     */
 export function mergeHookInstructions(
   userInstructions: string | undefined,
   hookInstructions: string | undefined,
@@ -380,10 +380,10 @@ export function mergeHookInstructions(
   return `${userInstructions}\n\n${hookInstructions}`
 }
 
-/**
+/*    *
  * Creates a compact version of a conversation by summarizing older messages
  * and preserving recent conversation history.
- */
+     */
 export async function compactConversation(
   messages: Message[],
   context: ToolUseContext,
@@ -762,13 +762,13 @@ export async function compactConversation(
   }
 }
 
-/**
+/*    *
  * Performs a partial compaction around the selected message index.
  * Direction 'from': summarizes messages after the index, keeps earlier ones.
  *   Prompt cache for kept (earlier) messages is preserved.
  * Direction 'up_to': summarizes messages before the index, keeps later ones.
  *   Prompt cache is invalidated since the summary precedes the kept messages.
- */
+     */
 export async function partialCompactConversation(
   allMessages: Message[],
   pivotIndex: number,
@@ -1395,7 +1395,7 @@ async function streamCompactSummary({
   }
 }
 
-/**
+/*    *
  * Creates attachment messages for recently accessed files to restore them after compaction.
  * This prevents the model from having to re-read files that were recently accessed.
  * Re-reads files using FileReadTool to get fresh content with proper validation.
@@ -1411,7 +1411,7 @@ async function streamCompactSummary({
  * @param maxFiles Maximum number of files to restore (default: 5)
  * @param preservedMessages Messages kept post-compact; Read results here are skipped
  * @returns Array of attachment messages for the most recently accessed files that fit within token budget
- */
+     */
 export async function createPostCompactFileAttachments(
   readFileState: Record<string, { content: string; timestamp: number }>,
   toolUseContext: ToolUseContext,
@@ -1463,10 +1463,10 @@ export async function createPostCompactFileAttachments(
   })
 }
 
-/**
+/*    *
  * Creates a plan file attachment if a plan file exists for the current session.
  * This ensures the plan is preserved after compaction.
- */
+     */
 export function createPlanAttachmentIfNeeded(
   agentId?: AgentId,
 ): AttachmentMessage | null {
@@ -1485,12 +1485,12 @@ export function createPlanAttachmentIfNeeded(
   })
 }
 
-/**
+/*    *
  * Creates an attachment for invoked skills to preserve their content across compaction.
  * Only includes skills scoped to the given agent (or main session when agentId is null/undefined).
  * This ensures skill guidelines remain available after the conversation is summarized
  * without leaking skills from other agent contexts.
- */
+     */
 export function createSkillAttachmentIfNeeded(
   agentId?: string,
 ): AttachmentMessage | null {
@@ -1533,12 +1533,12 @@ export function createSkillAttachmentIfNeeded(
   })
 }
 
-/**
+/*    *
  * Creates a plan_mode attachment if the user is currently in plan mode.
  * This ensures the model continues to operate in plan mode after compaction
  * (otherwise it would lose the plan mode instructions since those are
  * normally only injected on tool-use turns via getAttachmentMessages).
- */
+     */
 export async function createPlanModeAttachmentIfNeeded(
   context: ToolUseContext,
 ): Promise<AttachmentMessage | null> {
@@ -1559,12 +1559,12 @@ export async function createPlanModeAttachmentIfNeeded(
   })
 }
 
-/**
+/*    *
  * Creates attachments for async agents so the model knows about them after
  * compaction. Covers both agents still running in the background (so the model
  * doesn't spawn a duplicate) and agents that have finished but whose results
  * haven't been retrieved yet.
- */
+     */
 export async function createAsyncAgentAttachmentsIfNeeded(
   context: ToolUseContext,
 ): Promise<AttachmentMessage[]> {
@@ -1598,7 +1598,7 @@ export async function createAsyncAgentAttachmentsIfNeeded(
   })
 }
 
-/**
+/*    *
  * Scan messages for Read tool_use blocks and collect their file_path inputs
  * (normalized via expandPath). Used to dedup post-compact file restoration
  * against what's already visible in the preserved tail.
@@ -1606,7 +1606,7 @@ export async function createAsyncAgentAttachmentsIfNeeded(
  * Skips Reads whose tool_result is a dedup stub — the stub points at an
  * earlier full Read that may have been compacted away, so we want
  * createPostCompactFileAttachments to re-inject the real content.
- */
+     */
 function collectReadToolFilePaths(messages: Message[]): Set<string> {
   const stubIds = new Set<string>()
   for (const message of messages) {
@@ -1657,12 +1657,12 @@ function collectReadToolFilePaths(messages: Message[]): Set<string> {
 const SKILL_TRUNCATION_MARKER =
   '\n\n[... skill content truncated for compaction; use Read on the skill path if you need the full text]'
 
-/**
+/*    *
  * Truncate content to roughly maxTokens, keeping the head. roughTokenCountEstimation
  * uses ~4 chars/token (its default bytesPerToken), so char budget = maxTokens * 4
  * minus the marker so the result stays within budget. Marker tells the model it
  * can Read the full file if needed.
- */
+     */
 function truncateToTokens(content: string, maxTokens: number): string {
   if (roughTokenCountEstimation(content) <= maxTokens) {
     return content

@@ -1,4 +1,4 @@
-/**
+/*    *
  * PowerShell static command prefix extraction.
  *
  * Mirrors bash's getCommandPrefixStatic / getCompoundCommandPrefixesStatic
@@ -10,7 +10,7 @@
  * Feeds the "Yes, and don't ask again for: ___" editable input in the
  * permission dialog — static extractor provides a best-guess prefix, user
  * edits it down if needed.
- */
+     */
 
 import { getCommandSpec } from '../bash/registry.js'
 import { buildPrefix, DEPTH_RULES } from '../shell/specPrefix.js'
@@ -22,11 +22,11 @@ import {
   parsePowerShellCommand,
 } from './parser.js'
 
-/**
+/*    *
  * Extract a static prefix from a single parsed command element.
  * Returns null for commands we won't suggest (shells, eval cmdlets, path-like
  * invocations) or can't extract a meaningful prefix from.
- */
+     */
 async function extractPrefixFromElement(
   cmd: ParsedCommandElement,
 ): Promise<string | null> {
@@ -53,13 +53,11 @@ async function extractPrefixFromElement(
   }
 
   // External command. Guard the argv before feeding it to buildPrefix.
-  //
-  // elementTypes[0] (command name) must be a literal. `& $cmd status` has
+  // // elementTypes[0] (command name) must be a literal. `& $cmd status` has
   // elementTypes[0]='Variable', name='$cmd' — classifies as 'unknown' (no path
   // chars), passes NEVER_SUGGEST, getCommandSpec('$cmd')=null → returns bare
   // '$cmd' → dead rule. Cheap to gate here.
-  //
-  // elementTypes[1..] (args) must all be StringConstant or Parameter. Anything
+  // // elementTypes[1..] (args) must all be StringConstant or Parameter. Anything
   // dynamic (Variable/SubExpression/ScriptBlock/ExpandableString) would embed
   // `$foo`/`$(...)` in the prefix → dead rule.
   if (cmd.elementTypes?.[0] !== 'StringConstant') {
@@ -93,8 +91,7 @@ async function extractPrefixFromElement(
   // promoting 1 argv element to 3 prefix words. Rule PowerShell(git push
   // origin:*) then matches `git push origin --force` (3-element argv) — not
   // what the user approved.
-  //
-  // The old set-membership check (`!cmd.args.includes(word)`) was defeated
+  // // The old set-membership check (`!cmd.args.includes(word)`) was defeated
   // by decoy args: `git 'push origin' push origin` → args=['push origin',
   // 'push', 'origin'], prefix='git push origin'. Each word ∈ args (decoys at
   // indices 1,2 satisfy .includes()) → passed. Now POSITIONAL: walk args in
@@ -155,14 +152,14 @@ async function extractPrefixFromElement(
   return prefix
 }
 
-/**
+/*    *
  * Extract a prefix suggestion for a PowerShell command.
  *
  * Parses the command, takes the first CommandAst, returns a prefix suitable
  * for the permission dialog's "don't ask again for: ___" editable input.
  * Returns null when no safe prefix can be extracted (parse failure, shell
  * invocation, path-like name, bare subcommand-aware command).
- */
+     */
 export async function getCommandPrefixStatic(
   command: string,
 ): Promise<{ commandPrefix: string | null } | null> {
@@ -185,7 +182,7 @@ export async function getCommandPrefixStatic(
   return { commandPrefix: await extractPrefixFromElement(firstCommand) }
 }
 
-/**
+/*    *
  * Extract prefixes for all subcommands in a compound PowerShell command.
  *
  * For `Get-Process; git status && npm test`, returns per-subcommand prefixes.
@@ -200,7 +197,7 @@ export async function getCommandPrefixStatic(
  * which spawns pwsh.exe per subcommand — expensive and wasteful since we
  * already have the parsed elements here. Bash's equivalent passes text
  * because BashTool.isReadOnly works from regex/patterns, not parsed AST.
- */
+     */
 export async function getCompoundCommandPrefixesStatic(
   command: string,
   excludeSubcommand?: (element: ParsedCommandElement) => boolean,
@@ -245,11 +242,9 @@ export async function getCompoundCommandPrefixesStatic(
   // would suggest PowerShell(git:*) → auto-allows git push --force forever.
   // When LCP yields a bare subcommand-aware root, drop the group entirely
   // rather than suggest either the too-broad root or N un-collapsed rules.
-  //
-  // Bash's getCompoundCommandPrefixesStatic has this same collapse without
+  // // Bash's getCompoundCommandPrefixesStatic has this same collapse without
   // the guard (src/utils/bash/prefix.ts:360-365) — that's a separate fix.
-  //
-  // Grouping and word-comparison are case-insensitive (PowerShell is
+  // // Grouping and word-comparison are case-insensitive (PowerShell is
   // case-insensitive: Git === git, Get-Process === get-process). The Map key
   // is lowercased; the emitted prefix keeps the first-seen casing.
   const groups = new Map<string, string[]>()
@@ -283,14 +278,14 @@ export async function getCompoundCommandPrefixesStatic(
   return collapsed
 }
 
-/**
+/*    *
  * Word-aligned longest common prefix. Doesn't chop mid-word.
  * Case-insensitive comparison (PowerShell: Git === git), emits first
  * string's casing.
  * ["npm run test", "npm run lint"] → "npm run"
  * ["Git status", "git log"] → "Git" (first-seen casing)
  * ["Get-Process"] → "Get-Process"
- */
+     */
 function wordAlignedLCP(strings: string[]): string {
   if (strings.length === 0) return ''
   if (strings.length === 1) return strings[0]!

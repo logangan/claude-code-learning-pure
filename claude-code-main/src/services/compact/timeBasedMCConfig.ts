@@ -1,6 +1,6 @@
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../analytics/growthbook.js'
 
-/**
+/*    *
  * GrowthBook config for time-based microcompact.
  *
  * Triggers content-clearing microcompact when the gap since the last main-loop
@@ -14,16 +14,16 @@ import { getFeatureValue_CACHED_MAY_BE_STALE } from '../analytics/growthbook.js'
  *
  * Main thread only — subagents have short lifetimes where gap-based eviction
  * doesn't apply.
- */
+     */
 export type TimeBasedMCConfig = {
-  /** Master switch. When false, time-based microcompact is a no-op. */
+  /*    * Master switch. When false, time-based microcompact is a no-op.     */
   enabled: boolean
-  /** Trigger when (now − last assistant timestamp) exceeds this many minutes.
+  /*    * Trigger when (now − last assistant timestamp) exceeds this many minutes.
    *  60 is the safe choice: the server's 1h cache TTL is guaranteed expired
-   *  for all users, so we never force a miss that wouldn't have happened. */
+   *  for all users, so we never force a miss that wouldn't have happened.     */
   gapThresholdMinutes: number
-  /** Keep this many most-recent compactable tool results.
-   *  When set, takes priority over any default; older results are cleared. */
+  /*    * Keep this many most-recent compactable tool results.
+   *  When set, takes priority over any default; older results are cleared.     */
   keepRecent: number
 }
 

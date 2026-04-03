@@ -1,9 +1,9 @@
-/**
+/*    *
  * Shared helper functions for plugin installation
  *
  * This module contains common utilities used across the plugin installation
  * system to reduce code duplication and improve maintainability.
- */
+     */
 
 import { randomBytes } from 'crypto'
 import { rename, rm } from 'fs/promises'
@@ -58,23 +58,23 @@ import {
   isPluginZipCacheEnabled,
 } from './zipCache.js'
 
-/**
+/*    *
  * Plugin installation metadata for installed_plugins.json
- */
+     */
 export type PluginInstallationInfo = {
   pluginId: string
   installPath: string
   version?: string
 }
 
-/**
+/*    *
  * Get current ISO timestamp
- */
+     */
 export function getCurrentTimestamp(): string {
   return new Date().toISOString()
 }
 
-/**
+/*    *
  * Validate that a resolved path stays within a base directory.
  * Prevents path traversal attacks where malicious paths like './../../../etc/passwd'
  * could escape the expected directory.
@@ -83,7 +83,7 @@ export function getCurrentTimestamp(): string {
  * @param relativePath - The relative path to validate
  * @returns The validated absolute path
  * @throws Error if the path would escape the base directory
- */
+     */
 export function validatePathWithinBase(
   basePath: string,
   relativePath: string,
@@ -106,7 +106,7 @@ export function validatePathWithinBase(
   return resolvedPath
 }
 
-/**
+/*    *
  * Cache a plugin (local or external) and add it to installed_plugins.json
  *
  * This function combines the common pattern of:
@@ -124,7 +124,7 @@ export function validatePathWithinBase(
  * @param projectPath - Project path (required for project/local scopes)
  * @param localSourcePath - For local plugins, the resolved absolute path to the source directory
  * @returns The installation path
- */
+     */
 export async function cacheAndRegisterPlugin(
   pluginId: string,
   entry: PluginMarketplaceEntry,
@@ -225,7 +225,7 @@ export async function cacheAndRegisterPlugin(
   return finalPath
 }
 
-/**
+/*    *
  * Register a plugin installation without caching
  *
  * Used for local plugins that are already on disk and don't need remote caching.
@@ -235,7 +235,7 @@ export async function cacheAndRegisterPlugin(
  * @param scope - Installation scope (user, project, local, or managed). Defaults to 'user'.
  *                'managed' scope is used for plugins registered from managed settings.
  * @param projectPath - Project path (required for project/local scopes)
- */
+     */
 export function registerPluginInstallation(
   info: PluginInstallationInfo,
   scope: PluginScope = 'user',
@@ -255,12 +255,12 @@ export function registerPluginInstallation(
   )
 }
 
-/**
+/*    *
  * Parse plugin ID into components
  *
  * @param pluginId - Plugin ID in "plugin@marketplace" format
  * @returns Parsed components or null if invalid
- */
+     */
 export function parsePluginId(
   pluginId: string,
 ): { name: string; marketplace: string } | null {
@@ -275,10 +275,10 @@ export function parsePluginId(
   }
 }
 
-/**
+/*    *
  * Structured result from the install core. Wrappers format messages and
  * handle analytics/error-catching around this.
- */
+     */
 export type InstallCoreResult =
   | { ok: true; closure: string[]; depNote: string }
   | { ok: false; reason: 'local-source-no-location'; pluginName: string }
@@ -296,11 +296,11 @@ export type InstallCoreResult =
       blockedDependency: string
     }
 
-/**
+/*    *
  * Format a failed ResolutionResult into a user-facing message. Unified on
  * the richer CLI messages (the "Is the X marketplace added?" hint is useful
  * for UI users too).
- */
+     */
 export function formatResolutionError(
   r: ResolutionResult & { ok: false },
 ): string {
@@ -326,7 +326,7 @@ export function formatResolutionError(
   }
 }
 
-/**
+/*    *
  * Core plugin install logic, shared by the CLI path (`installPluginOp`) and
  * the interactive UI path (`installPluginFromMarketplace`). Given a
  * pre-resolved marketplace entry, this:
@@ -344,7 +344,7 @@ export function formatResolutionError(
  *
  * @param marketplaceInstallLocation Pass this if the caller already has it
  *   (from a prior marketplace search) to avoid a redundant lookup.
- */
+     */
 export async function installResolvedPlugin({
   pluginId,
   entry,
@@ -480,16 +480,16 @@ export async function installResolvedPlugin({
   return { ok: true, closure: resolution.closure, depNote }
 }
 
-/**
+/*    *
  * Result of a plugin installation operation
- */
+     */
 export type InstallPluginResult =
   | { success: true; message: string }
   | { success: false; error: string }
 
-/**
+/*    *
  * Parameters for installing a plugin from marketplace
- */
+     */
 export type InstallPluginParams = {
   pluginId: string
   entry: PluginMarketplaceEntry
@@ -498,11 +498,11 @@ export type InstallPluginParams = {
   trigger?: 'hint' | 'user'
 }
 
-/**
+/*    *
  * Install a single plugin from a marketplace with the specified scope.
  * Interactive-UI wrapper around `installResolvedPlugin` — adds try/catch,
  * analytics, and UI-style message formatting.
- */
+     */
 export async function installPluginFromMarketplace({
   pluginId,
   entry,

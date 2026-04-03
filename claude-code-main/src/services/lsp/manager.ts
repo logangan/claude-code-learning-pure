@@ -8,43 +8,43 @@ import {
 } from './LSPServerManager.js'
 import { registerLSPNotificationHandlers } from './passiveFeedback.js'
 
-/**
+/*    *
  * Initialization state of the LSP server manager
- */
+     */
 type InitializationState = 'not-started' | 'pending' | 'success' | 'failed'
 
-/**
+/*    *
  * Global singleton instance of the LSP server manager.
  * Initialized during Claude Code startup.
- */
+     */
 let lspManagerInstance: LSPServerManager | undefined
 
-/**
+/*    *
  * Current initialization state
- */
+     */
 let initializationState: InitializationState = 'not-started'
 
-/**
+/*    *
  * Error from last initialization attempt, if any
- */
+     */
 let initializationError: Error | undefined
 
-/**
+/*    *
  * Generation counter to prevent stale initialization promises from updating state
- */
+     */
 let initializationGeneration = 0
 
-/**
+/*    *
  * Promise that resolves when initialization completes (success or failure)
- */
+     */
 let initializationPromise: Promise<void> | undefined
 
-/**
+/*    *
  * Test-only sync reset. shutdownLspServerManager() is async and tears down
  * real connections; this only clears the module-scope singleton state so
  * reinitializeLspServerManager() early-returns on 'not-started' in downstream
  * tests on the same shard.
- */
+     */
 export function _resetLspManagerForTesting(): void {
   initializationState = 'not-started'
   initializationError = undefined
@@ -52,14 +52,14 @@ export function _resetLspManagerForTesting(): void {
   initializationGeneration++
 }
 
-/**
+/*    *
  * Get the singleton LSP server manager instance.
  * Returns undefined if not yet initialized, initialization failed, or still pending.
  *
  * Callers should check for undefined and handle gracefully, as initialization happens
  * asynchronously during Claude Code startup. Use getInitializationStatus() to
  * distinguish between pending, failed, and not-started states.
- */
+     */
 export function getLspServerManager(): LSPServerManager | undefined {
   // Don't return a broken instance if initialization failed
   if (initializationState === 'failed') {
@@ -68,11 +68,11 @@ export function getLspServerManager(): LSPServerManager | undefined {
   return lspManagerInstance
 }
 
-/**
+/*    *
  * Get the current initialization status of the LSP server manager.
  *
  * @returns Status object with current state and error (if failed)
- */
+     */
 export function getInitializationStatus():
   | { status: 'not-started' }
   | { status: 'pending' }
@@ -93,10 +93,10 @@ export function getInitializationStatus():
   return { status: 'success' }
 }
 
-/**
+/*    *
  * Check whether at least one language server is connected and healthy.
  * Backs LSPTool.isEnabled().
- */
+     */
 export function isLspConnected(): boolean {
   if (initializationState === 'failed') return false
   const manager = getLspServerManager()
@@ -109,7 +109,7 @@ export function isLspConnected(): boolean {
   return false
 }
 
-/**
+/*    *
  * Wait for LSP server manager initialization to complete.
  *
  * Returns immediately if initialization has already completed (success or failure).
@@ -117,7 +117,7 @@ export function isLspConnected(): boolean {
  * If initialization hasn't started, returns immediately.
  *
  * @returns Promise that resolves when initialization is complete
- */
+     */
 export async function waitForInitialization(): Promise<void> {
   // If already initialized or failed, return immediately
   if (initializationState === 'success' || initializationState === 'failed') {
@@ -132,7 +132,7 @@ export async function waitForInitialization(): Promise<void> {
   // If not started, return immediately (nothing to wait for)
 }
 
-/**
+/*    *
  * Initialize the LSP server manager singleton.
  *
  * This function is called during Claude Code startup. It synchronously creates
@@ -141,7 +141,7 @@ export async function waitForInitialization(): Promise<void> {
  *
  * Safe to call multiple times - will only initialize once (idempotent).
  * However, if initialization previously failed, calling again will retry.
- */
+     */
 export function initializeLspServerManager(): void {
   // --bare / SIMPLE: no LSP. LSP is for editor integration (diagnostics,
   // hover, go-to-def in the REPL). Scripted -p calls have no use for it.
@@ -207,12 +207,12 @@ export function initializeLspServerManager(): void {
     })
 }
 
-/**
+/*    *
  * Force re-initialization of the LSP server manager, even after a prior
  * successful init. Called from refreshActivePlugins() after plugin caches
  * are cleared, so newly-loaded plugin LSP servers are picked up.
  *
- * Fixes https://github.com/anthropics/claude-code/issues/15521:
+ * Fixes https:// github.com/anthropics/claude-code/issues/15521:
  * loadAllPlugins() is memoized and can be called very early in startup
  * (via getCommands prefetch in setup.ts) before marketplaces are reconciled,
  * caching an empty plugin list. initializeLspServerManager() then reads that
@@ -222,7 +222,7 @@ export function initializeLspServerManager(): void {
  * Safe to call when no LSP plugins changed: initialize() is just config
  * parsing (servers are lazy-started on first use). Also safe during pending
  * init: the generation counter invalidates the in-flight promise.
- */
+     */
 export function reinitializeLspServerManager(): void {
   if (initializationState === 'not-started') {
     // initializeLspServerManager() was never called (e.g. headless subcommand
@@ -252,7 +252,7 @@ export function reinitializeLspServerManager(): void {
   initializeLspServerManager()
 }
 
-/**
+/*    *
  * Shutdown the LSP server manager and clean up resources.
  *
  * This should be called during Claude Code shutdown. Stops all running LSP servers
@@ -263,7 +263,7 @@ export function reinitializeLspServerManager(): void {
  * This is acceptable during application exit when recovery is not possible.
  *
  * @returns Promise that resolves when shutdown completes (errors are swallowed)
- */
+     */
 export async function shutdownLspServerManager(): Promise<void> {
   if (lspManagerInstance === undefined) {
     return

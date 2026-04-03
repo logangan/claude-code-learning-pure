@@ -51,9 +51,9 @@ type AgenticSearchResult = {
   relevant_indices: number[]
 }
 
-/**
+/*    *
  * Extracts searchable text content from a message.
- */
+     */
 function extractMessageText(message: SerializedMessage): string {
   if (message.type !== 'user' && message.type !== 'assistant') {
     return ''
@@ -80,9 +80,9 @@ function extractMessageText(message: SerializedMessage): string {
   return ''
 }
 
-/**
+/*    *
  * Extracts a truncated transcript from session messages.
- */
+     */
 function extractTranscript(messages: SerializedMessage[]): string {
   if (messages.length === 0) return ''
 
@@ -107,9 +107,9 @@ function extractTranscript(messages: SerializedMessage[]): string {
     : text
 }
 
-/**
+/*    *
  * Checks if a log contains the query term in any searchable field.
- */
+     */
 function logContainsQuery(log: LogOption, queryLower: string): boolean {
   // Check title
   const title = getLogDisplayTitle(log).toLowerCase()
@@ -139,10 +139,10 @@ function logContainsQuery(log: LogOption, queryLower: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Performs an agentic search using Claude to find relevant sessions
  * based on semantic understanding of the query.
- */
+     */
 export async function agenticSessionSearch(
   query: string,
   logs: LogOption[],

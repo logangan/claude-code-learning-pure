@@ -136,9 +136,9 @@ export class WebSocketTransport implements Transport {
     }
   }
 
-  /**
+  /*    *
    * Starts listening for messages on the WebSocket.
-   */
+       */
   async start(): Promise<void> {
     if (this.started) {
       throw new Error('Start can only be called once per transport.')
@@ -153,9 +153,9 @@ export class WebSocketTransport implements Transport {
     // No explicit connection action needed here, just attaching listeners.
   }
 
-  /**
+  /*    *
    * Closes the WebSocket connection.
-   */
+       */
   async close(): Promise<void> {
     if (
       this.ws.readyState === WS_OPEN ||
@@ -167,9 +167,9 @@ export class WebSocketTransport implements Transport {
     this.handleCloseCleanup()
   }
 
-  /**
+  /*    *
    * Sends a JSON-RPC message over the WebSocket connection.
-   */
+       */
   async send(message: JSONRPCMessage): Promise<void> {
     if (this.ws.readyState !== WS_OPEN) {
       logForDiagnosticsNoPII('error', 'mcp_websocket_send_not_opened')

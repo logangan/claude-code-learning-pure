@@ -1,4 +1,4 @@
-/**
+/*    *
  * Plugin Zip Cache Module
  *
  * Manages plugins as ZIP archives in a mounted directory (e.g., Filestore).
@@ -27,7 +27,7 @@
  *       └── company-marketplace/
  *           └── plugin-b/
  *               └── 2.1.3.zip
- */
+     */
 
 import { randomBytes } from 'crypto'
 import {
@@ -49,18 +49,18 @@ import { getFsImplementation } from '../fsOperations.js'
 import { expandTilde } from '../permissions/pathValidation.js'
 import type { MarketplaceSource } from './schemas.js'
 
-/**
+/*    *
  * Check if the plugin zip cache mode is enabled.
- */
+     */
 export function isPluginZipCacheEnabled(): boolean {
   return isEnvTruthy(process.env.CLAUDE_CODE_PLUGIN_USE_ZIP_CACHE)
 }
 
-/**
+/*    *
  * Get the path to the zip cache directory.
  * Requires CLAUDE_CODE_PLUGIN_CACHE_DIR to be set.
  * Returns undefined if zip cache is not enabled.
- */
+     */
 export function getPluginZipCachePath(): string | undefined {
   if (!isPluginZipCacheEnabled()) {
     return undefined
@@ -69,9 +69,9 @@ export function getPluginZipCachePath(): string | undefined {
   return dir ? expandTilde(dir) : undefined
 }
 
-/**
+/*    *
  * Get the path to known_marketplaces.json in the zip cache.
- */
+     */
 export function getZipCacheKnownMarketplacesPath(): string {
   const cachePath = getPluginZipCachePath()
   if (!cachePath) {
@@ -80,9 +80,9 @@ export function getZipCacheKnownMarketplacesPath(): string {
   return join(cachePath, 'known_marketplaces.json')
 }
 
-/**
+/*    *
  * Get the path to installed_plugins.json in the zip cache.
- */
+     */
 export function getZipCacheInstalledPluginsPath(): string {
   const cachePath = getPluginZipCachePath()
   if (!cachePath) {
@@ -91,9 +91,9 @@ export function getZipCacheInstalledPluginsPath(): string {
   return join(cachePath, 'installed_plugins.json')
 }
 
-/**
+/*    *
  * Get the marketplaces directory within the zip cache.
- */
+     */
 export function getZipCacheMarketplacesDir(): string {
   const cachePath = getPluginZipCachePath()
   if (!cachePath) {
@@ -102,9 +102,9 @@ export function getZipCacheMarketplacesDir(): string {
   return join(cachePath, 'marketplaces')
 }
 
-/**
+/*    *
  * Get the plugins directory within the zip cache.
- */
+     */
 export function getZipCachePluginsDir(): string {
   const cachePath = getPluginZipCachePath()
   if (!cachePath) {
@@ -118,10 +118,10 @@ export function getZipCachePluginsDir(): string {
 let sessionPluginCachePath: string | null = null
 let sessionPluginCachePromise: Promise<string> | null = null
 
-/**
+/*    *
  * Get or create the session plugin cache directory.
  * This is a temp directory on local disk where plugins are extracted for the session.
- */
+     */
 export async function getSessionPluginCachePath(): Promise<string> {
   if (sessionPluginCachePath) {
     return sessionPluginCachePath
@@ -139,10 +139,10 @@ export async function getSessionPluginCachePath(): Promise<string> {
   return sessionPluginCachePromise
 }
 
-/**
+/*    *
  * Clean up the session plugin cache directory.
  * Should be called when the session ends.
- */
+     */
 export async function cleanupSessionPluginCache(): Promise<void> {
   if (!sessionPluginCachePath) {
     return
@@ -160,18 +160,18 @@ export async function cleanupSessionPluginCache(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Reset the session plugin cache path (for testing).
- */
+     */
 export function resetSessionPluginCache(): void {
   sessionPluginCachePath = null
   sessionPluginCachePromise = null
 }
 
-/**
+/*    *
  * Write data to a file in the zip cache atomically.
  * Writes to a temp file in the same directory, then renames.
- */
+     */
 export async function atomicWriteToZipCache(
   targetPath: string,
   data: string | Uint8Array,
@@ -204,7 +204,7 @@ export async function atomicWriteToZipCache(
 // store {os, attrs} so parseZipModes can recover exec bits on extraction.
 type ZipEntry = [Uint8Array, { os: number; attrs: number }]
 
-/**
+/*    *
  * Create a ZIP archive from a directory.
  * Resolves symlinks to actual file contents (replaces symlinks with real data).
  * Stores Unix mode bits in external_attr so extractZipToDirectory can restore
@@ -212,7 +212,7 @@ type ZipEntry = [Uint8Array, { os: number; attrs: number }]
  *
  * @param sourceDir - Directory to zip
  * @returns ZIP file as Uint8Array
- */
+     */
 export async function createZipFromDirectory(
   sourceDir: string,
 ): Promise<Uint8Array> {
@@ -228,10 +228,10 @@ export async function createZipFromDirectory(
   return zipData
 }
 
-/**
+/*    *
  * Recursively collect files from a directory for zipping.
  * Uses lstat to detect symlinks and tracks visited inodes for cycle detection.
- */
+     */
 async function collectFilesForZip(
   baseDir: string,
   relativePath: string,
@@ -322,12 +322,12 @@ async function collectFilesForZip(
   }
 }
 
-/**
+/*    *
  * Extract a ZIP file to a target directory.
  *
  * @param zipPath - Path to the ZIP file
  * @param targetDir - Directory to extract into
- */
+     */
 export async function extractZipToDirectory(
   zipPath: string,
   targetDir: string,
@@ -363,11 +363,11 @@ export async function extractZipToDirectory(
   )
 }
 
-/**
+/*    *
  * Convert a plugin directory to a ZIP in-place: zip → atomic write → delete dir.
  * Both call sites (cacheAndRegisterPlugin, copyPluginToVersionedCache) need the
  * same sequence; getting it wrong (non-atomic write, forgetting rm) corrupts cache.
- */
+     */
 export async function convertDirectoryToZipInPlace(
   dirPath: string,
   zipPath: string,
@@ -377,10 +377,10 @@ export async function convertDirectoryToZipInPlace(
   await rm(dirPath, { recursive: true, force: true })
 }
 
-/**
+/*    *
  * Get the relative path for a marketplace JSON file within the zip cache.
  * Format: marketplaces/{marketplace-name}.json
- */
+     */
 export function getMarketplaceJsonRelativePath(
   marketplaceName: string,
 ): string {
@@ -388,7 +388,7 @@ export function getMarketplaceJsonRelativePath(
   return join('marketplaces', `${sanitized}.json`)
 }
 
-/**
+/*    *
  * Check if a marketplace source type is supported by zip cache mode.
  *
  * Supported sources write to `join(cacheDir, name)` — syncMarketplacesToZipCache
@@ -398,7 +398,7 @@ export function getMarketplaceJsonRelativePath(
  *
  * Excluded: file/directory (installLocation is the user's path OUTSIDE cacheDir —
  * nonsensical in ephemeral containers), npm (node_modules bloat on Filestore mount).
- */
+     */
 export function isMarketplaceSourceSupportedByZipCache(
   source: MarketplaceSource,
 ): boolean {

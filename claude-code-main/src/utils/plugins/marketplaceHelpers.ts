@@ -7,12 +7,12 @@ import { checkGitAvailable } from './gitAvailability.js'
 import { getMarketplace } from './marketplaceManager.js'
 import type { KnownMarketplace, MarketplaceSource } from './schemas.js'
 
-/**
+/*    *
  * Format plugin failure details for user display
  * @param failures - Array of failures with names and reasons
  * @param includeReasons - Whether to include failure reasons (true for full errors, false for summaries)
  * @returns Formatted string like "plugin-a (reason); plugin-b (reason)" or "plugin-a, plugin-b"
- */
+     */
 export function formatFailureDetails(
   failures: Array<{ name: string; reason?: string; error?: string }>,
   includeReasons: boolean,
@@ -32,9 +32,9 @@ export function formatFailureDetails(
   return `${details}${moreText}`
 }
 
-/**
+/*    *
  * Extract source display string from marketplace configuration
- */
+     */
 export function getMarketplaceSourceDisplay(source: MarketplaceSource): string {
   switch (source.source) {
     case 'github':
@@ -54,9 +54,9 @@ export function getMarketplaceSourceDisplay(source: MarketplaceSource): string {
   }
 }
 
-/**
+/*    *
  * Create a plugin ID from plugin name and marketplace name
- */
+     */
 export function createPluginId(
   pluginName: string,
   marketplaceName: string,
@@ -64,10 +64,10 @@ export function createPluginId(
   return `${pluginName}@${marketplaceName}`
 }
 
-/**
+/*    *
  * Load marketplaces with graceful degradation for individual failures.
  * Blocked marketplaces (per enterprise policy) are excluded from the results.
- */
+     */
 export async function loadMarketplacesWithGracefulDegradation(
   config: Record<string, KnownMarketplace>,
 ): Promise<{
@@ -113,9 +113,9 @@ export async function loadMarketplacesWithGracefulDegradation(
   return { marketplaces, failures }
 }
 
-/**
+/*    *
  * Format marketplace loading failures into appropriate user messages
- */
+     */
 export function formatMarketplaceLoadingErrors(
   failures: Array<{ name: string; error: string }>,
   successCount: number,
@@ -152,10 +152,10 @@ function formatFailureErrors(
   return failures.map(f => `${f.name}: ${f.error}`).join('; ')
 }
 
-/**
+/*    *
  * Get the strict marketplace source allowlist from policy settings.
  * Returns null if no restriction is in place, or an array of allowed sources.
- */
+     */
 export function getStrictKnownMarketplaces(): MarketplaceSource[] | null {
   const policySettings = getSettingsForSource('policySettings')
   if (!policySettings?.strictKnownMarketplaces) {
@@ -164,10 +164,10 @@ export function getStrictKnownMarketplaces(): MarketplaceSource[] | null {
   return policySettings.strictKnownMarketplaces
 }
 
-/**
+/*    *
  * Get the marketplace source blocklist from policy settings.
  * Returns null if no blocklist is in place, or an array of blocked sources.
- */
+     */
 export function getBlockedMarketplaces(): MarketplaceSource[] | null {
   const policySettings = getSettingsForSource('policySettings')
   if (!policySettings?.blockedMarketplaces) {
@@ -176,18 +176,18 @@ export function getBlockedMarketplaces(): MarketplaceSource[] | null {
   return policySettings.blockedMarketplaces
 }
 
-/**
+/*    *
  * Get the custom plugin trust message from policy settings.
  * Returns undefined if not configured.
- */
+     */
 export function getPluginTrustMessage(): string | undefined {
   return getSettingsForSource('policySettings')?.pluginTrustMessage
 }
 
-/**
+/*    *
  * Compare two MarketplaceSource objects for equality.
  * Sources are equal if they have the same type and all relevant fields match.
- */
+     */
 function areSourcesEqual(a: MarketplaceSource, b: MarketplaceSource): boolean {
   if (a.source !== b.source) return false
 
@@ -222,7 +222,7 @@ function areSourcesEqual(a: MarketplaceSource, b: MarketplaceSource): boolean {
   }
 }
 
-/**
+/*    *
  * Extract the host/domain from a marketplace source.
  * Used for hostPattern matching in strictKnownMarketplaces.
  *
@@ -231,7 +231,7 @@ function areSourcesEqual(a: MarketplaceSource, b: MarketplaceSource): boolean {
  *
  * @param source - The marketplace source to extract host from
  * @returns The hostname string, or null if extraction fails or source type not supported
- */
+     */
 export function extractHostFromSource(
   source: MarketplaceSource,
 ): string | null {
@@ -267,14 +267,14 @@ export function extractHostFromSource(
   }
 }
 
-/**
+/*    *
  * Check if a source matches a hostPattern entry.
  * Extracts the host from the source and tests it against the regex pattern.
  *
  * @param source - The marketplace source to check
  * @param pattern - The hostPattern entry from strictKnownMarketplaces
  * @returns true if the source's host matches the pattern
- */
+     */
 function doesSourceMatchHostPattern(
   source: MarketplaceSource,
   pattern: MarketplaceSource & { source: 'hostPattern' },
@@ -294,14 +294,14 @@ function doesSourceMatchHostPattern(
   }
 }
 
-/**
+/*    *
  * Check if a source matches a pathPattern entry.
  * Tests the source's .path (file and directory sources only) against the regex pattern.
  *
  * @param source - The marketplace source to check
  * @param pattern - The pathPattern entry from strictKnownMarketplaces
  * @returns true if the source's path matches the pattern
- */
+     */
 function doesSourceMatchPathPattern(
   source: MarketplaceSource,
   pattern: MarketplaceSource & { source: 'pathPattern' },
@@ -320,10 +320,10 @@ function doesSourceMatchPathPattern(
   }
 }
 
-/**
+/*    *
  * Get hosts from hostPattern entries in the allowlist.
  * Used to provide helpful error messages.
- */
+     */
 export function getHostPatternsFromAllowlist(): string[] {
   const allowlist = getStrictKnownMarketplaces()
   if (!allowlist) return []
@@ -336,15 +336,15 @@ export function getHostPatternsFromAllowlist(): string[] {
     .map(entry => entry.hostPattern)
 }
 
-/**
+/*    *
  * Extract GitHub owner/repo from a git URL if it's a GitHub URL.
  * Returns null if not a GitHub URL.
  *
  * Handles:
  * - git@github.com:owner/repo.git
- * - https://github.com/owner/repo.git
- * - https://github.com/owner/repo
- */
+ * - https:// github.com/owner/repo.git
+ * - https:// github.com/owner/repo
+     */
 function extractGitHubRepoFromGitUrl(url: string): string | null {
   // SSH format: git@github.com:owner/repo.git
   const sshMatch = url.match(/^git@github\.com:([^/]+\/[^/]+?)(?:\.git)?$/)
@@ -363,11 +363,11 @@ function extractGitHubRepoFromGitUrl(url: string): string | null {
   return null
 }
 
-/**
+/*    *
  * Check if a blocked ref/path constraint matches a source.
  * If the blocklist entry has no ref/path, it matches ALL refs/paths (wildcard).
  * If the blocklist entry has a specific ref/path, it only matches that exact value.
- */
+     */
 function blockedConstraintMatches(
   blockedValue: string | undefined,
   sourceValue: string | undefined,
@@ -380,14 +380,14 @@ function blockedConstraintMatches(
   return (blockedValue || undefined) === (sourceValue || undefined)
 }
 
-/**
+/*    *
  * Check if two sources refer to the same GitHub repository, even if using
  * different source types (github vs git with GitHub URL).
  *
  * Blocklist matching is asymmetric:
  * - If blocklist entry has no ref/path, it blocks ALL refs/paths (wildcard)
  * - If blocklist entry has a specific ref/path, only that exact value is blocked
- */
+     */
 function areSourcesEquivalentForBlocklist(
   source: MarketplaceSource,
   blocked: MarketplaceSource,
@@ -451,13 +451,13 @@ function areSourcesEquivalentForBlocklist(
   return false
 }
 
-/**
+/*    *
  * Check if a marketplace source is explicitly in the blocklist.
  * Used for error message differentiation.
  *
  * This also catches attempts to bypass a github blocklist entry by using
- * git URLs (e.g., git@github.com:owner/repo.git or https://github.com/owner/repo.git).
- */
+ * git URLs (e.g., git@github.com:owner/repo.git or https:// github.com/owner/repo.git).
+     */
 export function isSourceInBlocklist(source: MarketplaceSource): boolean {
   const blocklist = getBlockedMarketplaces()
   if (blocklist === null) {
@@ -468,7 +468,7 @@ export function isSourceInBlocklist(source: MarketplaceSource): boolean {
   )
 }
 
-/**
+/*    *
  * Check if a marketplace source is allowed by enterprise policy.
  * Returns true if allowed (or no policy), false if blocked.
  * This check happens BEFORE downloading, so blocked sources never touch the filesystem.
@@ -476,7 +476,7 @@ export function isSourceInBlocklist(source: MarketplaceSource): boolean {
  * Policy precedence:
  * 1. blockedMarketplaces (blocklist) - if source matches, it's blocked
  * 2. strictKnownMarketplaces (allowlist) - if set, source must be in the list
- */
+     */
 export function isSourceAllowedByPolicy(source: MarketplaceSource): boolean {
   // Check blocklist first (takes precedence)
   if (isSourceInBlocklist(source)) {
@@ -504,9 +504,9 @@ export function isSourceAllowedByPolicy(source: MarketplaceSource): boolean {
   })
 }
 
-/**
+/*    *
  * Format a MarketplaceSource for display in error messages
- */
+     */
 export function formatSourceForDisplay(source: MarketplaceSource): string {
   switch (source.source) {
     case 'github':
@@ -532,9 +532,9 @@ export function formatSourceForDisplay(source: MarketplaceSource): string {
   }
 }
 
-/**
+/*    *
  * Reasons why no marketplaces are available in the Discover screen
- */
+     */
 export type EmptyMarketplaceReason =
   | 'git-not-installed'
   | 'all-blocked-by-policy'
@@ -543,10 +543,10 @@ export type EmptyMarketplaceReason =
   | 'no-marketplaces-configured'
   | 'all-plugins-installed'
 
-/**
+/*    *
  * Detect why no marketplaces are available.
  * Checks in order of priority: git availability → policy restrictions → config state → failures
- */
+     */
 export async function detectEmptyMarketplaceReason({
   configuredMarketplaceCount,
   failedMarketplaceCount,

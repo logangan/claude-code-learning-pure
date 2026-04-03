@@ -21,7 +21,7 @@ const POST_TIMEOUT_MS = 15_000
 // 3s here exceeds it, but the process lives ~2s longer for hooks+analytics.
 const CLOSE_GRACE_MS = 3000
 
-/**
+/*    *
  * Hybrid transport: WebSocket for reads, HTTP POST for writes.
  *
  * Write flow:
@@ -50,7 +50,7 @@ const CLOSE_GRACE_MS = 3000
  * Why serialize? Bridge mode fires writes via `void transport.write()`
  * (fire-and-forget). Without this, concurrent POSTs → concurrent Firestore
  * writes to the same document → collisions → retry storms → pages oncall.
- */
+     */
 export class HybridTransport extends WebSocketTransport {
   private postUrl: string
   private uploader: SerialBatchEventUploader<StdoutMessage>
@@ -107,13 +107,13 @@ export class HybridTransport extends WebSocketTransport {
     logForDiagnosticsNoPII('info', 'cli_hybrid_transport_initialized')
   }
 
-  /**
+  /*    *
    * Enqueue a message and wait for the queue to drain. Returning flush()
    * preserves the contract that `await write()` resolves after the event is
    * POSTed (relied on by tests and replBridge's initial flush). Fire-and-forget
    * callers (`void transport.write()`) are unaffected — they don't await,
    * so the later resolution doesn't add latency.
-   */
+       */
   override async write(message: StdoutMessage): Promise<void> {
     if (message.type === 'stream_event') {
       // Delay: accumulate stream_events briefly before enqueueing.
@@ -137,21 +137,21 @@ export class HybridTransport extends WebSocketTransport {
     return this.uploader.flush()
   }
 
-  /** Snapshot before/after writeBatch() to detect silent drops. */
+  /*    * Snapshot before/after writeBatch() to detect silent drops.     */
   get droppedBatchCount(): number {
     return this.uploader.droppedBatchCount
   }
 
-  /**
+  /*    *
    * Block until all pending events are POSTed. Used by bridge's initial
    * history flush so onStateChange('connected') fires after persistence.
-   */
+       */
   flush(): Promise<void> {
     void this.uploader.enqueue(this.takeStreamEvents())
     return this.uploader.flush()
   }
 
-  /** Take ownership of buffered stream_events and clear the delay timer. */
+  /*    * Take ownership of buffered stream_events and clear the delay timer.     */
   private takeStreamEvents(): StdoutMessage[] {
     if (this.streamEventTimer) {
       clearTimeout(this.streamEventTimer)
@@ -162,7 +162,7 @@ export class HybridTransport extends WebSocketTransport {
     return buffered
   }
 
-  /** Delay timer fired — enqueue accumulated stream_events. */
+  /*    * Delay timer fired — enqueue accumulated stream_events.     */
   private flushStreamEvents(): void {
     this.streamEventTimer = null
     void this.uploader.enqueue(this.takeStreamEvents())
@@ -194,11 +194,11 @@ export class HybridTransport extends WebSocketTransport {
     super.close()
   }
 
-  /**
+  /*    *
    * Single-attempt POST. Throws on retryable failures (429, 5xx, network)
    * so SerialBatchEventUploader re-queues and retries. Returns on success
    * and on permanent failures (4xx non-429, no token) so the uploader moves on.
-   */
+       */
   private async postOnce(events: StdoutMessage[]): Promise<void> {
     const sessionToken = getSessionIngressAuthToken()
     if (!sessionToken) {
@@ -261,11 +261,11 @@ export class HybridTransport extends WebSocketTransport {
   }
 }
 
-/**
+/*    *
  * Convert a WebSocket URL to the HTTP POST endpoint URL.
- * From: wss://api.example.com/v2/session_ingress/ws/<session_id>
- * To: https://api.example.com/v2/session_ingress/session/<session_id>/events
- */
+ * From: wss:// api.example.com/v2/session_ingress/ws/<session_id>
+ * To: https:// api.example.com/v2/session_ingress/session/<session_id>/events
+     */
 function convertWsUrlToPostUrl(wsUrl: URL): string {
   const protocol = wsUrl.protocol === 'wss:' ? 'https:' : 'http:'
 
@@ -278,5 +278,5 @@ function convertWsUrlToPostUrl(wsUrl: URL): string {
       : pathname + '/events'
   }
 
-  return `${protocol}//${wsUrl.host}${pathname}${wsUrl.search}`
+  return `${protocol}// ${wsUrl.host}${pathname}${wsUrl.search}`
 }

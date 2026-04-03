@@ -50,10 +50,10 @@ export function formatDirectoryList(directories: string[]): string {
   return `${firstDirs}, and ${dirCount - MAX_DIRS_TO_LIST} more`
 }
 
-/**
+/*    *
  * Extracts the base directory from a glob pattern for validation.
  * For example: "/path/to/*.txt" returns "/path/to"
- */
+     */
 export function getGlobBaseDirectory(path: string): string {
   const globMatch = path.match(GLOB_PATTERN_REGEX)
   if (!globMatch || globMatch.index === undefined) {
@@ -73,10 +73,10 @@ export function getGlobBaseDirectory(path: string): string {
   return beforeGlob.substring(0, lastSepIndex) || '/'
 }
 
-/**
+/*    *
  * Expands tilde (~) at the start of a path to the user's home directory.
  * Note: ~username expansion is not supported for security reasons.
- */
+     */
 export function expandTilde(path: string): string {
   if (
     path === '~' ||
@@ -88,7 +88,7 @@ export function expandTilde(path: string): string {
   return path
 }
 
-/**
+/*    *
  * Checks if a resolved path is writable according to the sandbox write allowlist.
  * When the sandbox is enabled, the user has explicitly configured which directories
  * are writable. We treat these as additional allowed write directories for path
@@ -97,7 +97,7 @@ export function expandTilde(path: string): string {
  *
  * Respects the deny-within-allow list: paths in denyWithinAllow (like
  * .claude/settings.json) are still blocked even if their parent is in allowOnly.
- */
+     */
 export function isPathInSandboxWriteAllowlist(resolvedPath: string): boolean {
   if (!SandboxManager.isSandboxingEnabled()) {
     return false
@@ -127,7 +127,7 @@ export function isPathInSandboxWriteAllowlist(resolvedPath: string): boolean {
 // Matches the getResolvedWorkingDirPaths pattern in filesystem.ts.
 const getResolvedSandboxConfigPath = memoize(getPathsForPermissionCheck)
 
-/**
+/*    *
  * Checks if a resolved path is allowed for the given operation type.
  *
  * @param precomputedPathsToCheck - Optional cached result of
@@ -137,7 +137,7 @@ const getResolvedSandboxConfigPath = memoize(getPathsForPermissionCheck)
  *   syscalls per inner check. Do NOT pass this for non-canonical paths
  *   (nonexistent files, UNC paths, etc.) — parent-directory symlink
  *   resolution is still required for those.
- */
+     */
 export function isPathAllowed(
   resolvedPath: string,
   context: ToolPermissionContext,
@@ -262,10 +262,10 @@ export function isPathAllowed(
   return { allowed: false }
 }
 
-/**
+/*    *
  * Validates a glob pattern by checking its base directory.
  * Returns the validation result for the base path where the glob would expand.
- */
+     */
 export function validateGlobPattern(
   cleanPath: string,
   cwd: string,
@@ -318,7 +318,7 @@ export function validateGlobPattern(
 const WINDOWS_DRIVE_ROOT_REGEX = /^[A-Za-z]:\/?$/
 const WINDOWS_DRIVE_CHILD_REGEX = /^[A-Za-z]:\/[^/]+$/
 
-/**
+/*    *
  * Checks if a resolved path is dangerous for removal operations (rm/rmdir).
  * Dangerous paths are:
  * - Wildcard '*' (removes all files in directory)
@@ -327,13 +327,13 @@ const WINDOWS_DRIVE_CHILD_REGEX = /^[A-Za-z]:\/[^/]+$/
  * - Home directory (~)
  * - Direct children of root (/usr, /tmp, /etc, etc.)
  * - Windows drive root (C:\, D:\) and direct children (C:\Windows, C:\Users)
- */
+     */
 export function isDangerousRemovalPath(resolvedPath: string): boolean {
   // Callers pass both slash forms; collapse runs so C:\\Windows (valid in
   // PowerShell) doesn't bypass the drive-child check.
   const forwardSlashed = resolvedPath.replace(/[\\/]+/g, '/')
 
-  if (forwardSlashed === '*' || forwardSlashed.endsWith('/*')) {
+  if (forwardSlashed === '*' || forwardSlashed.endsWith('/*    ')) {
     return true
   }
 
@@ -369,7 +369,7 @@ export function isDangerousRemovalPath(resolvedPath: string): boolean {
 /**
  * Validates a file system path, handling tilde expansion and glob patterns.
  * Returns whether the path is allowed and the resolved path for error messages.
- */
+     */
 export function validatePath(
   path: string,
   cwd: string,

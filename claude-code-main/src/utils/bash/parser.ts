@@ -43,10 +43,10 @@ function logLoadOnce(success: boolean): void {
   logEvent('tengu_tree_sitter_load', { success })
 }
 
-/**
+/*    *
  * Awaits WASM init (Parser.init + Language.load). Must be called before
  * parseCommand/parseCommandRaw for the parser to be available. Idempotent.
- */
+     */
 export async function ensureInitialized(): Promise<void> {
   if (feature('TREE_SITTER_BASH') || feature('TREE_SITTER_BASH_SHADOW')) {
     await ensureParserInitialized()
@@ -83,16 +83,16 @@ export async function parseCommand(
   return null
 }
 
-/**
+/*    *
  * SECURITY: Sentinel for "parser was loaded and attempted, but aborted"
  * (timeout / node budget / Rust panic). Distinct from `null` (module not
  * loaded). Adversarial input can trigger abort under MAX_COMMAND_LENGTH:
  * `(( a[0][0]... ))` with ~2800 subscripts hits PARSE_TIMEOUT_MICROS.
  * Callers MUST treat this as fail-closed (too-complex), NOT route to legacy.
- */
+     */
 export const PARSE_ABORTED = Symbol('parse-aborted')
 
-/**
+/*    *
  * Raw parse — skips findCommandNode/extractEnvVars which the security
  * walker in ast.ts doesn't use. Saves one tree walk per bash command.
  *
@@ -100,7 +100,7 @@ export const PARSE_ABORTED = Symbol('parse-aborted')
  *   - Node: parse succeeded
  *   - null: module not loaded / feature off / empty / over-length
  *   - PARSE_ABORTED: module loaded but parse failed (timeout/panic)
- */
+     */
 export async function parseCommandRaw(
   command: string,
 ): Promise<Node | null | typeof PARSE_ABORTED> {

@@ -55,7 +55,7 @@ function validateCommandForMode(
   }
 }
 
-/**
+/*    *
  * Checks if commands should be handled differently based on the current permission mode
  *
  * This is the main entry point for mode-based permission logic.
@@ -68,7 +68,7 @@ function validateCommandForMode(
  * - 'allow' if the current mode permits auto-approval
  * - 'ask' if the command needs approval in current mode
  * - 'passthrough' if no mode-specific handling applies
- */
+     */
 export function checkPermissionMode(
   input: z.infer<typeof BashTool.inputSchema>,
   toolPermissionContext: ToolPermissionContext,

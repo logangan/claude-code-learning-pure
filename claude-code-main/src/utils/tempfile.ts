@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'crypto'
 import { tmpdir } from 'os'
 import { join } from 'path'
 
-/**
+/*    *
  * Generate a temporary file path.
  *
  * @param prefix Optional prefix for the temp file name
@@ -15,7 +15,7 @@ import { join } from 'path'
  *   because a random UUID would change on every subprocess spawn and
  *   invalidate the prompt cache prefix.
  * @returns Temp file path
- */
+     */
 export function generateTempFilePath(
   prefix: string = 'claude-prompt',
   extension: string = '.md',

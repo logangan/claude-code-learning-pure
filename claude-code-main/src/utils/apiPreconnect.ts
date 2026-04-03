@@ -1,4 +1,4 @@
-/**
+/*    *
  * Preconnect to the Anthropic API to overlap TCP+TLS handshake with startup.
  *
  * The TCP+TLS handshake is ~100-200ms that normally blocks inside the first
@@ -21,7 +21,7 @@
  * - proxy/mTLS/unix socket configured (preconnect would use wrong transport —
  *   the SDK passes a custom dispatcher/agent that doesn't share the global pool)
  * - Bedrock/Vertex/Foundry (different endpoints, different auth)
- */
+     */
 
 import { getOauthConfig } from '../constants/oauth.js'
 import { isEnvTruthy } from './envUtils.js'

@@ -9,11 +9,11 @@ import {
   updateSettingsForSource,
 } from '../utils/settings/settings.js'
 
-/**
+/*    *
  * Migration: Move MCP server approval fields from project config to local settings
  * This migrates both enableAllProjectMcpServers and enabledMcpjsonServers to the
  * settings system for better management and consistency.
- */
+     */
 export function migrateEnableAllProjectMcpServersToSettings(): void {
   const projectConfig = getCurrentProjectConfig()
 

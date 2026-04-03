@@ -11,10 +11,10 @@ import { logForDebugging } from './debug.js'
 import { errorMessage } from './errors.js'
 import { getFsImplementation } from './fsOperations.js'
 
-/**
+/*    *
  * Read token via file descriptor, falling back to well-known file.
  * Uses global state to cache the result since file descriptors can only be read once.
- */
+     */
 function getTokenFromFileDescriptor(): string | null {
   // Check if we've already attempted to read the token
   const cachedToken = getSessionIngressToken()
@@ -85,7 +85,7 @@ function getTokenFromFileDescriptor(): string | null {
   }
 }
 
-/**
+/*    *
  * Get session ingress authentication token.
  *
  * Priority order:
@@ -97,7 +97,7 @@ function getTokenFromFileDescriptor(): string | null {
  *  3. Well-known file — CLAUDE_SESSION_INGRESS_TOKEN_FILE env var path, or
  *     /home/claude/.claude/remote/.session_ingress_token. Covers subprocesses
  *     that can't inherit the FD.
- */
+     */
 export function getSessionIngressAuthToken(): string | null {
   // 1. Check environment variable
   const envToken = process.env.CLAUDE_CODE_SESSION_ACCESS_TOKEN
@@ -109,11 +109,11 @@ export function getSessionIngressAuthToken(): string | null {
   return getTokenFromFileDescriptor()
 }
 
-/**
+/*    *
  * Build auth headers for the current session token.
  * Session keys (sk-ant-sid) use Cookie auth + X-Organization-Uuid;
  * JWTs use Bearer auth.
- */
+     */
 export function getSessionIngressAuthHeaders(): Record<string, string> {
   const token = getSessionIngressAuthToken()
   if (!token) return {}
@@ -130,11 +130,11 @@ export function getSessionIngressAuthHeaders(): Record<string, string> {
   return { Authorization: `Bearer ${token}` }
 }
 
-/**
+/*    *
  * Update the session ingress auth token in-process by setting the env var.
  * Used by the REPL bridge to inject a fresh token after reconnection
  * without restarting the process.
- */
+     */
 export function updateSessionIngressAuthToken(token: string): void {
   process.env.CLAUDE_CODE_SESSION_ACCESS_TOKEN = token
 }

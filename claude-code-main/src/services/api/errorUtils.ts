@@ -34,11 +34,11 @@ export type ConnectionErrorDetails = {
   isSSLError: boolean
 }
 
-/**
+/*    *
  * Extracts connection error details from the error cause chain.
  * The Anthropic SDK wraps underlying errors in the `cause` property.
  * This function walks the cause chain to find the root error code/message.
- */
+     */
 export function extractConnectionErrorDetails(
   error: unknown,
 ): ConnectionErrorDetails | null {
@@ -82,7 +82,7 @@ export function extractConnectionErrorDetails(
   return null
 }
 
-/**
+/*    *
  * Returns an actionable hint for SSL/TLS errors, intended for contexts outside
  * the main API client (OAuth token exchange, preflight connectivity checks)
  * where `formatAPIError` doesn't apply.
@@ -90,7 +90,7 @@ export function extractConnectionErrorDetails(
  * Motivation: enterprise users behind TLS-intercepting proxies (Zscaler et al.)
  * see OAuth complete in-browser but the CLI's token exchange silently fails
  * with a raw SSL code. Surfacing the likely fix saves a support round-trip.
- */
+     */
 export function getSSLErrorHint(error: unknown): string | null {
   const details = extractConnectionErrorDetails(error)
   if (!details?.isSSLError) {
@@ -99,11 +99,11 @@ export function getSSLErrorHint(error: unknown): string | null {
   return `SSL certificate error (${details.code}). If you are behind a corporate proxy or TLS-intercepting firewall, set NODE_EXTRA_CA_CERTS to your CA bundle path, or ask IT to allowlist *.anthropic.com. Run /doctor for details.`
 }
 
-/**
+/*    *
  * Strips HTML content (e.g., CloudFlare error pages) from a message string,
  * returning a user-friendly title or empty string if HTML is detected.
  * Returns the original message unchanged if no HTML is found.
- */
+     */
 function sanitizeMessageHTML(message: string): string {
   if (message.includes('<!DOCTYPE html') || message.includes('<html')) {
     const titleMatch = message.match(/<title>([^<]+)<\/title>/)
@@ -115,10 +115,10 @@ function sanitizeMessageHTML(message: string): string {
   return message
 }
 
-/**
+/*    *
  * Detects if an error message contains HTML content (e.g., CloudFlare error pages)
  * and returns a user-friendly message instead
- */
+     */
 export function sanitizeAPIError(apiError: APIError): string {
   const message = apiError.message
   if (!message) {
@@ -129,7 +129,7 @@ export function sanitizeAPIError(apiError: APIError): string {
   return sanitizeMessageHTML(message)
 }
 
-/**
+/*    *
  * Shapes of deserialized API errors from session JSONL.
  *
  * After JSON round-tripping, the SDK's APIError loses its `.message` property.
@@ -140,7 +140,7 @@ export function sanitizeAPIError(apiError: APIError): string {
  *   (the outer `.error` is the response body, the inner `.error` is the API error)
  *
  * See also: `getErrorMessage` in `logging.ts` which handles the same shapes.
- */
+     */
 type NestedAPIError = {
   error?: {
     message?: string
@@ -158,14 +158,14 @@ function hasNestedError(value: unknown): value is NestedAPIError {
   )
 }
 
-/**
+/*    *
  * Extract a human-readable message from a deserialized API error that lacks
  * a top-level `.message`.
  *
  * Checks two nesting levels (deeper first for specificity):
  * 1. `error.error.error.message` — standard Anthropic API shape
  * 2. `error.error.message` — Bedrock shape
- */
+     */
 function extractNestedErrorMessage(error: APIError): string | null {
   if (!hasNestedError(error)) {
     return null

@@ -2,10 +2,10 @@
 
 import { getRelativeTimeFormat, getTimeZone } from './intl.js'
 
-/**
+/*    *
  * Formats a byte count to a human-readable string (KB, MB, GB).
  * @example formatFileSize(1536) → "1.5KB"
- */
+     */
 export function formatFileSize(sizeInBytes: number): string {
   const kb = sizeInBytes / 1024
   if (kb < 1) {
@@ -22,11 +22,11 @@ export function formatFileSize(sizeInBytes: number): string {
   return `${gb.toFixed(1).replace(/\.0$/, '')}GB`
 }
 
-/**
+/*    *
  * Formats milliseconds as seconds with 1 decimal place (e.g. `1234` → `"1.2s"`).
  * Unlike formatDuration, always keeps the decimal — use for sub-minute timings
  * where the fractional second is meaningful (TTFT, hook durations, etc.).
- */
+     */
 export function formatSecondsShort(ms: number): string {
   return `${(ms / 1000).toFixed(1)}s`
 }
@@ -197,9 +197,9 @@ export function formatRelativeTimeAgo(
   return formatRelativeTime(date, { ...restOptions, numeric: 'always', now })
 }
 
-/**
+/*    *
  * Formats log metadata for display (time, size or message count, branch, tag, PR)
- */
+     */
 export function formatLogMetadata(log: {
   modified: Date
   messageCount: number

@@ -48,8 +48,7 @@ export function onChangeAppState({
   oldState: AppState
 }) {
   // toolPermissionContext.mode — single choke point for CCR/SDK mode sync.
-  //
-  // Prior to this block, mode changes were relayed to CCR by only 2 of 8+
+  // // Prior to this block, mode changes were relayed to CCR by only 2 of 8+
   // mutation paths: a bespoke setAppState wrapper in print.ts (headless/SDK
   // mode only) and a manual notify in the set_permission_mode handler.
   // Every other path — Shift+Tab cycling, ExitPlanModePermissionRequest
@@ -57,8 +56,7 @@ export function onChangeAppState({
   // onSetPermissionMode — mutated AppState without telling
   // CCR, leaving external_metadata.permission_mode stale and the web UI out
   // of sync with the CLI's actual mode.
-  //
-  // Hooking the diff here means ANY setAppState call that changes the mode
+  // // Hooking the diff here means ANY setAppState call that changes the mode
   // notifies CCR (via notifySessionMetadataChanged → ccrClient.reportMetadata)
   // and the SDK status stream (via notifyPermissionModeChanged → registered
   // in print.ts). The scattered callsites above need zero changes.

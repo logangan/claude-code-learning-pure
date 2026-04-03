@@ -9,7 +9,7 @@ import { onGrowthBookRefresh } from '../services/analytics/growthbook.js'
 import { logError } from '../utils/log.js'
 import { skillChangeDetector } from '../utils/skills/skillChangeDetector.js'
 
-/**
+/*    *
  * Keep the commands list fresh across two triggers:
  *
  * 1. Skill file changes (watcher) — full cache clear + disk re-scan, since
@@ -20,7 +20,7 @@ import { skillChangeDetector } from '../utils/skills/skillChangeDetector.js'
  *    a flag rename: getCommands() runs before GB init (main.tsx:2855 vs
  *    showSetupScreens at :3106), so the memoized list is baked with the
  *    default. Once init populates remoteEvalFeatureValues, re-filter.
- */
+     */
 export function useSkillsChange(
   cwd: string | undefined,
   onCommandsChange: (commands: Command[]) => void,

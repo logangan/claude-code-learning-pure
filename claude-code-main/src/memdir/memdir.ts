@@ -3,14 +3,14 @@ import { join } from 'path'
 import { getFsImplementation } from '../utils/fsOperations.js'
 import { getAutoMemPath, isAutoMemoryEnabled } from './paths.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const teamMemPaths = feature('TEAMMEM')
   ? (require('./teamMemPaths.js') as typeof import('./teamMemPaths.js'))
   : null
 
 import { getKairosActive, getOriginalCwd } from '../bootstrap/state.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../services/analytics/growthbook.js'
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import {
   type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
   logEvent,
@@ -46,14 +46,14 @@ export type EntrypointTruncation = {
   wasByteTruncated: boolean
 }
 
-/**
+/*    *
  * Truncate MEMORY.md content to the line AND byte caps, appending a warning
  * that names which cap fired. Line-truncates first (natural boundary), then
  * byte-truncates at the last newline before the cap so we don't cut mid-line.
  *
  * Shared by buildMemoryPrompt and claudemd getMemoryFiles (previously
  * duplicated the line-only logic).
- */
+     */
 export function truncateEntrypointContent(raw: string): EntrypointTruncation {
   const trimmed = raw.trim()
   const contentLines = trimmed.split('\n')
@@ -102,30 +102,30 @@ export function truncateEntrypointContent(raw: string): EntrypointTruncation {
   }
 }
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const teamMemPrompts = feature('TEAMMEM')
   ? (require('./teamMemPrompts.js') as typeof import('./teamMemPrompts.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
-/**
+/*    *
  * Shared guidance text appended to each memory directory prompt line.
  * Shipped because Claude was burning turns on `ls`/`mkdir -p` before writing.
  * Harness guarantees the directory exists via ensureMemoryDirExists().
- */
+     */
 export const DIR_EXISTS_GUIDANCE =
   'This directory already exists — write to it directly with the Write tool (do not run mkdir or check for its existence).'
 export const DIRS_EXIST_GUIDANCE =
   'Both directories already exist — write to them directly with the Write tool (do not run mkdir or check for their existence).'
 
-/**
+/*    *
  * Ensure a memory directory exists. Idempotent — called from loadMemoryPrompt
  * (once per session via systemPromptSection cache) so the model can always
  * write without checking existence first. FsOperations.mkdir is recursive
  * by default and already swallows EEXIST, so the full parent chain
  * (~/.claude/projects/<slug>/memory/) is created in one call with no
  * try/catch needed for the happy path.
- */
+     */
 export async function ensureMemoryDirExists(memoryDir: string): Promise<void> {
   const fs = getFsImplementation()
   try {
@@ -146,10 +146,10 @@ export async function ensureMemoryDirExists(memoryDir: string): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Log memory directory file/subdir counts asynchronously.
  * Fire-and-forget — doesn't block prompt building.
- */
+     */
 function logMemoryDirCounts(
   memoryDir: string,
   baseMetadata: Record<
@@ -184,7 +184,7 @@ function logMemoryDirCounts(
   )
 }
 
-/**
+/*    *
  * Build the typed-memory behavioral instructions (without MEMORY.md content).
  * Constrains memories to a closed four-type taxonomy (user / feedback / project /
  * reference) — content that is derivable from the current project state (code
@@ -195,7 +195,7 @@ function logMemoryDirCounts(
  *
  * Used by both buildMemoryPrompt (agent memory, includes content) and
  * loadMemoryPrompt (system prompt, content injected via user context instead).
- */
+     */
 export function buildMemoryLines(
   displayName: string,
   memoryDir: string,
@@ -265,10 +265,10 @@ export function buildMemoryLines(
   return lines
 }
 
-/**
+/*    *
  * Build the typed-memory prompt with MEMORY.md content included.
  * Used by agent memory (which has no getClaudeMds() equivalent).
- */
+     */
 export function buildMemoryPrompt(params: {
   displayName: string
   memoryDir: string
@@ -315,7 +315,7 @@ export function buildMemoryPrompt(params: {
   return lines.join('\n')
 }
 
-/**
+/*    *
  * Assistant-mode daily-log prompt. Gated behind feature('KAIROS').
  *
  * Assistant sessions are effectively perpetual, so the agent writes memories
@@ -323,7 +323,7 @@ export function buildMemoryPrompt(params: {
  * a live index. A separate nightly /dream skill distills logs into topic
  * files + MEMORY.md. MEMORY.md is still loaded into context (via claudemd.ts)
  * as the distilled index — this prompt only changes where NEW memories go.
- */
+     */
 function buildAssistantDailyLogPrompt(skipIndex = false): string {
   const memoryDir = getAutoMemPath()
   // Describe the path as a pattern rather than inlining today's literal path:
@@ -369,9 +369,9 @@ function buildAssistantDailyLogPrompt(skipIndex = false): string {
   return lines.join('\n')
 }
 
-/**
+/*    *
  * Build the "Searching past context" section if the feature gate is enabled.
- */
+     */
 export function buildSearchingPastContextSection(autoMemDir: string): string[] {
   if (!getFeatureValue_CACHED_MAY_BE_STALE('tengu_coral_fern', false)) {
     return []
@@ -406,7 +406,7 @@ export function buildSearchingPastContextSection(autoMemDir: string): string[] {
   ]
 }
 
-/**
+/*    *
  * Load the unified memory prompt for inclusion in the system prompt.
  * Dispatches based on which memory systems are enabled:
  *   - auto + team: combined prompt (both directories)
@@ -415,7 +415,7 @@ export function buildSearchingPastContextSection(autoMemDir: string): string[] {
  * there is no team-only branch.
  *
  * Returns null when auto memory is disabled.
- */
+     */
 export async function loadMemoryPrompt(): Promise<string | null> {
   const autoEnabled = isAutoMemoryEnabled()
 

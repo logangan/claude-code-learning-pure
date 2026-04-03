@@ -22,15 +22,15 @@ const O_NOFOLLOW = fsConstants.O_NOFOLLOW ?? 0
 
 const DEFAULT_MAX_READ_BYTES = 8 * 1024 * 1024 // 8MB
 
-/**
+/*    *
  * Disk cap for task output files. In file mode (bash), a watchdog polls
  * file size and kills the process. In pipe mode (hooks), DiskTaskOutput
  * drops chunks past this limit. Shared so both caps stay in sync.
- */
+     */
 export const MAX_TASK_OUTPUT_BYTES = 5 * 1024 * 1024 * 1024
 export const MAX_TASK_OUTPUT_BYTES_DISPLAY = '5GB'
 
-/**
+/*    *
  * Get the task output directory for this session.
  * Uses project temp directory so reads are auto-allowed by checkReadableInternalPath.
  *
@@ -45,7 +45,7 @@ export const MAX_TASK_OUTPUT_BYTES_DISPLAY = '5GB'
  * ensureOutputDir() to create a new-session path while existing TaskOutput
  * instances still hold old-session paths — open() would ENOENT. Background
  * bash tasks surviving /clear need their output files to stay reachable.
- */
+     */
 let _taskOutputDir: string | undefined
 export function getTaskOutputDir(): string {
   if (_taskOutputDir === undefined) {
@@ -54,21 +54,21 @@ export function getTaskOutputDir(): string {
   return _taskOutputDir
 }
 
-/** Test helper — clears the memoized dir. */
+/*    * Test helper — clears the memoized dir.     */
 export function _resetTaskOutputDirForTest(): void {
   _taskOutputDir = undefined
 }
 
-/**
+/*    *
  * Ensure the task output directory exists
- */
+     */
 async function ensureOutputDir(): Promise<void> {
   await mkdir(getTaskOutputDir(), { recursive: true })
 }
 
-/**
+/*    *
  * Get the output file path for a task
- */
+     */
 export function getTaskOutputPath(taskId: string): string {
   return join(getTaskOutputDir(), `${taskId}.output`)
 }
@@ -86,14 +86,14 @@ function track<T>(p: Promise<T>): Promise<T> {
   return p
 }
 
-/**
+/*    *
  * Encapsulates async disk writes for a single task's output.
  *
  * Uses a flat array as a write queue processed by a single drain loop,
  * so each chunk can be GC'd immediately after its write completes.
  * This avoids the memory retention problem of chained .then() closures
  * where every reaction captures its data until the whole chain resolves.
- */
+     */
 export class DiskTaskOutput {
   #path: string
   #fileHandle: FileHandle | null = null
@@ -185,7 +185,7 @@ export class DiskTaskOutput {
     )
   }
 
-  /** Keep this in a separate method so that GC doesn't keep it alive for any longer than it should. */
+  /*    * Keep this in a separate method so that GC doesn't keep it alive for any longer than it should.     */
   #queueToBuffers(): Buffer {
     // Use .splice to in-place mutate the array, informing the GC it can free it.
     const queue = this.#queue.splice(0, this.#queue.length)
@@ -232,7 +232,7 @@ export class DiskTaskOutput {
 
 const outputs = new Map<string, DiskTaskOutput>()
 
-/**
+/*    *
  * Test helper — cancel pending writes, await in-flight ops, clear the map.
  * backgroundShells.test.ts and other task tests spawn real shells that
  * write through this module without afterEach cleanup; their entries
@@ -241,7 +241,7 @@ const outputs = new Map<string, DiskTaskOutput>()
  * Awaits all tracked promises until the set stabilizes — a settling promise
  * may spawn another (initTaskOutputAsSymlink's catch → initTaskOutput).
  * Call this in afterEach BEFORE rmSync to avoid async-ENOENT-after-teardown.
- */
+     */
 export async function _clearOutputsForTest(): Promise<void> {
   for (const output of outputs.values()) {
     output.cancel()
@@ -261,18 +261,18 @@ function getOrCreateOutput(taskId: string): DiskTaskOutput {
   return output
 }
 
-/**
+/*    *
  * Append output to a task's disk file asynchronously.
  * Creates the file if it doesn't exist.
- */
+     */
 export function appendTaskOutput(taskId: string, content: string): void {
   getOrCreateOutput(taskId).append(content)
 }
 
-/**
+/*    *
  * Wait for all pending writes for a task to complete.
  * Useful before reading output to ensure all data is flushed.
- */
+     */
 export async function flushTaskOutput(taskId: string): Promise<void> {
   const output = outputs.get(taskId)
   if (output) {
@@ -280,11 +280,11 @@ export async function flushTaskOutput(taskId: string): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Evict a task's DiskTaskOutput from the in-memory map after flushing.
  * Unlike cleanupTaskOutput, this does not delete the output file on disk.
  * Call this when a task completes and its output has been consumed.
- */
+     */
 export function evictTaskOutput(taskId: string): Promise<void> {
   return track(
     (async () => {
@@ -297,10 +297,10 @@ export function evictTaskOutput(taskId: string): Promise<void> {
   )
 }
 
-/**
+/*    *
  * Get delta (new content) since last read.
  * Reads only from the byte offset, up to maxBytes — never loads the full file.
- */
+     */
 export async function getTaskOutputDelta(
   taskId: string,
   fromOffset: number,
@@ -329,10 +329,10 @@ export async function getTaskOutputDelta(
   }
 }
 
-/**
+/*    *
  * Get output for a task, reading the tail of the file.
  * Caps at maxBytes to avoid loading multi-GB files into memory.
- */
+     */
 export async function getTaskOutput(
   taskId: string,
   maxBytes: number = DEFAULT_MAX_READ_BYTES,
@@ -356,9 +356,9 @@ export async function getTaskOutput(
   }
 }
 
-/**
+/*    *
  * Get the current size (offset) of a task's output file.
- */
+     */
 export async function getTaskOutputSize(taskId: string): Promise<number> {
   try {
     return (await stat(getTaskOutputPath(taskId))).size
@@ -372,9 +372,9 @@ export async function getTaskOutputSize(taskId: string): Promise<number> {
   }
 }
 
-/**
+/*    *
  * Clean up a task's output file and write queue.
- */
+     */
 export async function cleanupTaskOutput(taskId: string): Promise<void> {
   const output = outputs.get(taskId)
   if (output) {
@@ -393,10 +393,10 @@ export async function cleanupTaskOutput(taskId: string): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Initialize output file for a new task.
  * Creates an empty file to ensure the path exists.
- */
+     */
 export function initTaskOutput(taskId: string): Promise<string> {
   return track(
     (async () => {
@@ -420,10 +420,10 @@ export function initTaskOutput(taskId: string): Promise<string> {
   )
 }
 
-/**
+/*    *
  * Initialize output file as a symlink to another file (e.g., agent transcript).
  * Tries to create the symlink first; if a file already exists, removes it and retries.
- */
+     */
 export function initTaskOutputAsSymlink(
   taskId: string,
   targetPath: string,

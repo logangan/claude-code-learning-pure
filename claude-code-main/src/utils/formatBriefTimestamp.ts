@@ -1,4 +1,4 @@
-/**
+/*    *
  * Format an ISO timestamp for the brief/chat message label line.
  *
  * Display scales with age (like a messaging app):
@@ -12,7 +12,7 @@
  * convert them to BCP 47 tags ourselves.
  *
  * `now` is injectable for tests.
- */
+     */
 export function formatBriefTimestamp(
   isoString: string,
   now: Date = new Date(),
@@ -50,11 +50,11 @@ export function formatBriefTimestamp(
   })
 }
 
-/**
+/*    *
  * Derive a BCP 47 locale tag from POSIX env vars.
  * LC_ALL > LC_TIME > LANG, falls back to undefined (system default).
  * Converts POSIX format (en_GB.UTF-8) to BCP 47 (en-GB).
- */
+     */
 function getLocale(): string | undefined {
   const raw =
     process.env.LC_ALL || process.env.LC_TIME || process.env.LANG || ''

@@ -9,9 +9,9 @@ import {
   isFilePatternTool,
 } from './toolValidationConfig.js'
 
-/**
+/*    *
  * Checks if a character at a given index is escaped (preceded by odd number of backslashes).
- */
+     */
 function isEscaped(str: string, index: number): boolean {
   let backslashCount = 0
   let j = index - 1
@@ -22,10 +22,10 @@ function isEscaped(str: string, index: number): boolean {
   return backslashCount % 2 !== 0
 }
 
-/**
+/*    *
  * Counts unescaped occurrences of a character in a string.
  * A character is considered escaped if preceded by an odd number of backslashes.
- */
+     */
 function countUnescapedChar(str: string, char: string): number {
   let count = 0
   for (let i = 0; i < str.length; i++) {
@@ -36,10 +36,10 @@ function countUnescapedChar(str: string, char: string): number {
   return count
 }
 
-/**
+/*    *
  * Checks if a string contains unescaped empty parentheses "()".
  * Returns true only if both the "(" and ")" are unescaped and adjacent.
- */
+     */
 function hasUnescapedEmptyParens(str: string): boolean {
   for (let i = 0; i < str.length - 1; i++) {
     if (str[i] === '(' && str[i + 1] === ')') {
@@ -52,9 +52,9 @@ function hasUnescapedEmptyParens(str: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Validates permission rule format and content
- */
+     */
 export function validatePermissionRule(rule: string): {
   valid: boolean
   error?: string
@@ -191,8 +191,7 @@ export function validatePermissionRule(rule: string): {
     // - "* install" matches "npm install", "yarn install", etc.
     // - "git * main" matches "git checkout main", "git push main", etc.
     // - "npm * --save" matches "npm install foo --save", etc.
-    //
-    // Legacy :* syntax continues to work for backwards compatibility:
+    // // Legacy :* syntax continues to work for backwards compatibility:
     // - "npm:*" matches "npm" or "npm <anything>" (prefix matching with word boundary)
   }
 
@@ -208,8 +207,8 @@ export function validatePermissionRule(rule: string): {
         suggestion: 'Use glob patterns like "*" or "**" for file matching',
         examples: [
           `${parsed.toolName}(*.ts) - matches .ts files`,
-          `${parsed.toolName}(src/**) - matches all files in src`,
-          `${parsed.toolName}(**/*.test.ts) - matches test files`,
+          `${parsed.toolName}(src/*    *) - matches all files in src`,
+          `${parsed.toolName}(*    */*.test.ts) - matches test files`,
         ],
       }
     }
@@ -228,7 +227,7 @@ export function validatePermissionRule(rule: string): {
         suggestion: 'Wildcards are typically used at path boundaries',
         examples: [
           `${parsed.toolName}(*.js) - all .js files`,
-          `${parsed.toolName}(src/*) - all files directly in src`,
+          `${parsed.toolName}(src/*    ) - all files directly in src`,
           `${parsed.toolName}(src/**) - all files recursively in src`,
         ],
       }
@@ -240,7 +239,7 @@ export function validatePermissionRule(rule: string): {
 
 /**
  * Custom Zod schema for permission rule arrays
- */
+     */
 export const PermissionRuleSchema = lazySchema(() =>
   z.string().superRefine((val, ctx) => {
     const result = validatePermissionRule(val)

@@ -1,11 +1,11 @@
-/**
+/*    *
  * Outputs directory scanner for file persistence
  *
  * This module provides utilities to:
  * - Detect the session type from environment variables
  * - Capture turn start timestamp
  * - Find modified files by comparing file mtimes against turn start time
- */
+     */
 
 import * as fs from 'fs/promises'
 import * as path from 'path'
@@ -13,15 +13,15 @@ import { logForDebugging } from '../debug.js'
 import type { EnvironmentKind } from '../teleport/environments.js'
 import type { TurnStartTime } from './types.js'
 
-/** Shared debug logger for file persistence modules */
+/*    * Shared debug logger for file persistence modules     */
 export function logDebug(message: string): void {
   logForDebugging(`[file-persistence] ${message}`)
 }
 
-/**
+/*    *
  * Get the environment kind from CLAUDE_CODE_ENVIRONMENT_KIND.
  * Returns null if not set or not a recognized value.
- */
+     */
 export function getEnvironmentKind(): EnvironmentKind | null {
   const kind = process.env.CLAUDE_CODE_ENVIRONMENT_KIND
   if (kind === 'byoc' || kind === 'anthropic_cloud') {
@@ -50,7 +50,7 @@ function getEntryParentPath(entry: object, fallback: string): string {
   return fallback
 }
 
-/**
+/*    *
  * Find files that have been modified since the turn started.
  * Returns paths of files with mtime >= turnStartTime.
  *
@@ -58,7 +58,7 @@ function getEntryParentPath(entry: object, fallback: string): string {
  *
  * @param turnStartTime - The timestamp when the turn started
  * @param outputsDir - The directory to scan for modified files
- */
+     */
 export async function findModifiedFiles(
   turnStartTime: TurnStartTime,
   outputsDir: string,

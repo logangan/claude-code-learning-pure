@@ -9,7 +9,7 @@ import {
   updateSettingsForSource,
 } from '../utils/settings/settings.js'
 
-/**
+/*    *
  * Migrate users with 'opus' pinned in their settings to 'opus[1m]' when they
  * are eligible for the merged Opus 1M experience (Max/Team Premium on 1P).
  *
@@ -20,7 +20,7 @@ import {
  * 3P users are skipped — their model strings are full model IDs, not aliases.
  *
  * Idempotent: only writes if userSettings.model is exactly 'opus'.
- */
+     */
 export function migrateOpusToOpus1m(): void {
   if (!isOpus1mMergeEnabled()) {
     return

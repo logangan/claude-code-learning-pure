@@ -7,7 +7,7 @@ import type { UUID } from 'crypto'
 import type { SDKMessage } from '../entrypoints/agentSdkTypes.js'
 import { detectImageFormatFromBase64 } from '../utils/imageResizer.js'
 
-/**
+/*    *
  * Process an inbound user message from the bridge, extracting content
  * and UUID for enqueueing. Supports both string content and
  * ContentBlockParam[] (e.g. messages containing images).
@@ -17,7 +17,7 @@ import { detectImageFormatFromBase64 } from '../utils/imageResizer.js'
  *
  * Returns the extracted fields, or undefined if the message should be
  * skipped (non-user type, missing/empty content).
- */
+     */
 export function extractInboundMessageFields(
   msg: SDKMessage,
 ):
@@ -39,7 +39,7 @@ export function extractInboundMessageFields(
   }
 }
 
-/**
+/*    *
  * Normalize image content blocks from bridge clients. iOS/web clients may
  * send `mediaType` (camelCase) instead of `media_type` (snake_case), or
  * omit the field entirely. Without normalization, the bad block poisons
@@ -48,7 +48,7 @@ export function extractInboundMessageFields(
  *
  * Fast-path scan returns the original array reference when no
  * normalization is needed (zero allocation on the happy path).
- */
+     */
 export function normalizeImageBlocks(
   blocks: Array<ContentBlockParam>,
 ): Array<ContentBlockParam> {

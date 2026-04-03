@@ -32,9 +32,9 @@ import { withTokenCountVCR } from './vcr.js'
 const TOKEN_COUNT_THINKING_BUDGET = 1024
 const TOKEN_COUNT_MAX_TOKENS = 2048
 
-/**
+/*    *
  * Check if messages contain thinking blocks
- */
+     */
 function hasThinkingBlocks(
   messages: Anthropic.Beta.Messages.BetaMessageParam[],
 ): boolean {
@@ -55,14 +55,14 @@ function hasThinkingBlocks(
   return false
 }
 
-/**
+/*    *
  * Strip tool search-specific fields from messages before sending for token counting.
  * This removes 'caller' from tool_use blocks and 'tool_reference' from tool_result content.
  * These fields are only valid with the tool search beta and will cause errors otherwise.
  *
  * Note: We use 'as unknown as' casts because the SDK types don't include tool search beta fields,
  * but at runtime these fields may exist from API responses when tool search was enabled.
- */
+     */
 function stripToolSearchFieldsFromMessages(
   messages: Anthropic.Beta.Messages.BetaMessageParam[],
 ): Anthropic.Beta.Messages.BetaMessageParam[] {
@@ -207,11 +207,11 @@ export function roughTokenCountEstimation(
   return Math.round(content.length / bytesPerToken)
 }
 
-/**
+/*    *
  * Returns an estimated bytes-per-token ratio for a given file extension.
  * Dense JSON has many single-character tokens (`{`, `}`, `:`, `,`, `"`)
  * which makes the real ratio closer to 2 rather than the default 4.
- */
+     */
 export function bytesPerTokenForFileType(fileExtension: string): number {
   switch (fileExtension) {
     case 'json':
@@ -223,14 +223,14 @@ export function bytesPerTokenForFileType(fileExtension: string): number {
   }
 }
 
-/**
+/*    *
  * Like {@link roughTokenCountEstimation} but uses a more accurate
  * bytes-per-token ratio when the file type is known.
  *
  * This matters when the API-based token count is unavailable (e.g. on
  * Bedrock) and we fall back to the rough estimate — an underestimate can
  * let an oversized tool result slip into the conversation.
- */
+     */
 export function roughTokenCountEstimationForFileType(
   content: string,
   fileExtension: string,
@@ -241,13 +241,13 @@ export function roughTokenCountEstimationForFileType(
   )
 }
 
-/**
+/*    *
  * Estimates token count for a Message object by extracting and analyzing its text content.
  * This provides a more reliable estimate than getTokenUsage for messages that may have been compacted.
  * Uses Haiku for token counting (Haiku 4.5 supports thinking blocks), except:
  * - Vertex global region: uses Sonnet (Haiku not available)
  * - Bedrock with thinking blocks: uses Sonnet (Haiku 3.5 doesn't support thinking)
- */
+     */
 export async function countTokensViaHaikuFallback(
   messages: Anthropic.Beta.Messages.BetaMessageParam[],
   tools: Anthropic.Beta.Messages.BetaToolUnion[],
@@ -403,8 +403,7 @@ function roughTokenCountEstimationForBlock(
     // Images are resized to max 2000x2000 (5333 tokens). Use a conservative
     // estimate that matches microCompact's IMAGE_MAX_TOKEN_SIZE to avoid
     // underestimating and triggering auto-compact too late.
-    //
-    // document: base64 PDF in source.data.  Must NOT reach the
+    // // document: base64 PDF in source.data.  Must NOT reach the
     // jsonStringify catch-all — a 1MB PDF is ~1.33M base64 chars →
     // ~325k estimated tokens, vs the ~2000 the API actually charges.
     // Same constant as microCompact's calculateToolResultTokens.

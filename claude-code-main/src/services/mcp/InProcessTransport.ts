@@ -1,13 +1,13 @@
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
 
-/**
+/*    *
  * In-process linked transport pair for running an MCP server and client
  * in the same process without spawning a subprocess.
  *
  * `send()` on one side delivers to `onmessage` on the other.
  * `close()` on either side calls `onclose` on both.
- */
+     */
 class InProcessTransport implements Transport {
   private peer: InProcessTransport | undefined
   private closed = false
@@ -16,7 +16,7 @@ class InProcessTransport implements Transport {
   onerror?: (error: Error) => void
   onmessage?: (message: JSONRPCMessage) => void
 
-  /** @internal */
+  /*    * @internal     */
   _setPeer(peer: InProcessTransport): void {
     this.peer = peer
   }
@@ -48,12 +48,12 @@ class InProcessTransport implements Transport {
   }
 }
 
-/**
+/*    *
  * Creates a pair of linked transports for in-process MCP communication.
  * Messages sent on one transport are delivered to the other's `onmessage`.
  *
  * @returns [clientTransport, serverTransport]
- */
+     */
 export function createLinkedTransportPair(): [Transport, Transport] {
   const a = new InProcessTransport()
   const b = new InProcessTransport()

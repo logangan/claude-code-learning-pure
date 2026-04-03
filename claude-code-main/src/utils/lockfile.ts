@@ -1,4 +1,4 @@
-/**
+/*    *
  * Lazy accessor for proper-lockfile.
  *
  * proper-lockfile depends on graceful-fs, which monkey-patches every fs
@@ -7,7 +7,7 @@
  *
  * Import this module instead of `proper-lockfile` directly. The underlying
  * package is only loaded the first time a lock function is actually called.
- */
+     */
 
 import type { CheckOptions, LockOptions, UnlockOptions } from 'proper-lockfile'
 

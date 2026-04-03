@@ -1,4 +1,4 @@
-/**
+/*    *
  * Built-in Plugin Registry
  *
  * Manages built-in plugins that ship with the CLI and can be enabled/disabled
@@ -11,7 +11,7 @@
  *
  * Plugin IDs use the format `{name}@builtin` to distinguish them from
  * marketplace plugins (`{name}@{marketplace}`).
- */
+     */
 
 import type { Command } from '../commands.js'
 import type { BundledSkillDefinition } from '../skills/bundledSkills.js'
@@ -22,38 +22,38 @@ const BUILTIN_PLUGINS: Map<string, BuiltinPluginDefinition> = new Map()
 
 export const BUILTIN_MARKETPLACE_NAME = 'builtin'
 
-/**
+/*    *
  * Register a built-in plugin. Call this from initBuiltinPlugins() at startup.
- */
+     */
 export function registerBuiltinPlugin(
   definition: BuiltinPluginDefinition,
 ): void {
   BUILTIN_PLUGINS.set(definition.name, definition)
 }
 
-/**
+/*    *
  * Check if a plugin ID represents a built-in plugin (ends with @builtin).
- */
+     */
 export function isBuiltinPluginId(pluginId: string): boolean {
   return pluginId.endsWith(`@${BUILTIN_MARKETPLACE_NAME}`)
 }
 
-/**
+/*    *
  * Get a specific built-in plugin definition by name.
  * Useful for the /plugin UI to show the skills/hooks/MCP list without
  * a marketplace lookup.
- */
+     */
 export function getBuiltinPluginDefinition(
   name: string,
 ): BuiltinPluginDefinition | undefined {
   return BUILTIN_PLUGINS.get(name)
 }
 
-/**
+/*    *
  * Get all registered built-in plugins as LoadedPlugin objects, split into
  * enabled/disabled based on user settings (with defaultEnabled as fallback).
  * Plugins whose isAvailable() returns false are omitted entirely.
- */
+     */
 export function getBuiltinPlugins(): {
   enabled: LoadedPlugin[]
   disabled: LoadedPlugin[]
@@ -101,10 +101,10 @@ export function getBuiltinPlugins(): {
   return { enabled, disabled }
 }
 
-/**
+/*    *
  * Get skills from enabled built-in plugins as Command objects.
  * Skills from disabled plugins are not returned.
- */
+     */
 export function getBuiltinPluginSkillCommands(): Command[] {
   const { enabled } = getBuiltinPlugins()
   const commands: Command[] = []
@@ -120,9 +120,9 @@ export function getBuiltinPluginSkillCommands(): Command[] {
   return commands
 }
 
-/**
+/*    *
  * Clear built-in plugins registry (for testing).
- */
+     */
 export function clearBuiltinPlugins(): void {
   BUILTIN_PLUGINS.clear()
 }

@@ -110,9 +110,9 @@ export const getGitStatus = memoize(async (): Promise<string | null> => {
   }
 })
 
-/**
+/*    *
  * This context is prepended to each conversation, and cached for the duration of the conversation.
- */
+     */
 export const getSystemContext = memoize(
   async (): Promise<{
     [k: string]: string
@@ -149,9 +149,9 @@ export const getSystemContext = memoize(
   },
 )
 
-/**
+/*    *
  * This context is prepended to each conversation, and cached for the duration of the conversation.
- */
+     */
 export const getUserContext = memoize(
   async (): Promise<{
     [k: string]: string

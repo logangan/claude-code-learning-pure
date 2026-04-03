@@ -19,12 +19,12 @@ export function getTokenUsage(message: Message): Usage | undefined {
   return undefined
 }
 
-/**
+/*    *
  * Get the API response id for an assistant message with real (non-synthetic) usage.
  * Used to identify split assistant records that came from the same API response —
  * when parallel tool calls are streamed, each content block becomes a separate
  * AssistantMessage record, but they all share the same message.id.
- */
+     */
 function getAssistantMessageId(message: Message): string | undefined {
   if (
     message?.type === 'assistant' &&
@@ -36,13 +36,13 @@ function getAssistantMessageId(message: Message): string | undefined {
   return undefined
 }
 
-/**
+/*    *
  * Calculate total context window tokens from an API response's usage data.
  * Includes input_tokens + cache tokens + output_tokens.
  *
  * This represents the full context size at the time of that API call.
  * Use tokenCountWithEstimation() when you need context size from messages.
- */
+     */
 export function getTokenCountFromUsage(usage: Usage): number {
   return (
     usage.input_tokens +
@@ -65,7 +65,7 @@ export function tokenCountFromLastAPIResponse(messages: Message[]): number {
   return 0
 }
 
-/**
+/*    *
  * Final context window size from the last API response's usage.iterations[-1].
  * Used for task_budget.remaining computation across compaction boundaries —
  * the server's budget countdown is context-based, so remaining decrements by
@@ -75,7 +75,7 @@ export function tokenCountFromLastAPIResponse(messages: Message[]): number {
  * Falls back to top-level input_tokens + output_tokens when iterations is
  * absent (no server-side tool loops, so top-level usage IS the final window).
  * Both paths exclude cache tokens to match #304930's formula.
- */
+     */
 export function finalContextTokensFromLastResponse(
   messages: Message[],
 ): number {
@@ -111,7 +111,7 @@ export function finalContextTokensFromLastResponse(
   return 0
 }
 
-/**
+/*    *
  * Get only the output_tokens from the last API response.
  * This excludes input context (system prompt, tools, prior messages).
  *
@@ -119,7 +119,7 @@ export function finalContextTokensFromLastResponse(
  * Use tokenCountWithEstimation() instead, which measures full context size.
  * This function is only useful for measuring how many tokens Claude generated
  * in a single response, not how full the context window is.
- */
+     */
 export function messageTokenCountFromLastAPIResponse(
   messages: Message[],
 ): number {
@@ -167,7 +167,7 @@ export function doesMostRecentAssistantMessageExceed200k(
   return usage ? getTokenCountFromUsage(usage) > THRESHOLD : false
 }
 
-/**
+/*    *
  * Calculate the character content length of an assistant message.
  * Used for spinner token estimation (characters / 4 ≈ tokens).
  * This is used when subagent streaming events are filtered out and we
@@ -179,7 +179,7 @@ export function doesMostRecentAssistantMessageExceed200k(
  * - redacted_thinking data
  * - tool_use input (input_json_delta)
  * Note: signature_delta is excluded from streaming counts (not model output).
- */
+     */
 export function getAssistantMessageContentLength(
   message: AssistantMessage,
 ): number {
@@ -198,7 +198,7 @@ export function getAssistantMessageContentLength(
   return contentLength
 }
 
-/**
+/*    *
  * Get the current context window size in tokens.
  *
  * This is the CANONICAL function for measuring context size when checking
@@ -222,7 +222,7 @@ export function getAssistantMessageContentLength(
  * be in the next API request. To avoid undercounting, after finding a usage-
  * bearing record we walk back to the FIRST sibling with the same message.id
  * so every interleaved tool_result is included in the rough estimate.
- */
+     */
 export function tokenCountWithEstimation(messages: readonly Message[]): number {
   let i = messages.length - 1
   while (i >= 0) {

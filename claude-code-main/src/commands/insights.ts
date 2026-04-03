@@ -56,7 +56,7 @@ type RemoteHostInfo = {
   sessionCount: number
 }
 
-/* eslint-disable custom-rules/no-process-env-top-level */
+/*     eslint-disable custom-rules/no-process-env-top-level     */
 const getRunningRemoteHosts: () => Promise<string[]> =
   process.env.USER_TYPE === 'ant'
     ? async () => {
@@ -219,7 +219,7 @@ const collectAllRemoteHostData: (destDir: string) => Promise<{
         return { hosts: result, totalCopied, totalSkipped }
       }
     : async () => ({ hosts: [], totalCopied: 0, totalSkipped: 0 })
-/* eslint-enable custom-rules/no-process-env-top-level */
+/*     eslint-enable custom-rules/no-process-env-top-level     */
 
 // ============================================================================
 // Types
@@ -800,7 +800,7 @@ function logToSessionMeta(log: LogOption): SessionMeta {
   }
 }
 
-/**
+/*    *
  * Deduplicate conversation branches within the same session.
  *
  * When a session file has multiple leaf messages (from retries or branching),
@@ -808,7 +808,7 @@ function logToSessionMeta(log: LogOption): SessionMeta {
  * shares the same root message, so its duration overlaps with sibling
  * branches. This keeps only the branch with the most user messages
  * (tie-break by longest duration) per session_id.
- */
+     */
 export function deduplicateSessionBranches(
   entries: Array<{ log: LogOption; meta: SessionMeta }>,
 ): Array<{ log: LogOption; meta: SessionMeta }> {
@@ -1054,11 +1054,11 @@ RESPOND WITH ONLY A VALID JSON OBJECT matching this schema:
   }
 }
 
-/**
+/*    *
  * Detects multi-clauding (using multiple Claude sessions concurrently).
  * Uses a sliding window to find the pattern: session1 -> session2 -> session1
  * within a 30-minute window.
- */
+     */
 export function detectMultiClauding(
   sessions: Array<{
     session_id: string
@@ -2486,7 +2486,7 @@ function generateHtmlReport(
 <head>
   <meta charset="utf-8">
   <title>Claude Code Insights</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https:// fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>${css}</style>
 </head>
 <body>
@@ -2649,9 +2649,9 @@ function generateHtmlReport(
 // Export Types & Functions
 // ============================================================================
 
-/**
+/*    *
  * Structured export format for claudescope consumption
- */
+     */
 export type InsightsExport = {
   metadata: {
     username: string
@@ -2672,10 +2672,10 @@ export type InsightsExport = {
   }
 }
 
-/**
+/*    *
  * Build export data from already-computed values.
  * Used by background upload to S3.
- */
+     */
 export function buildExportData(
   data: AggregatedData,
   insights: InsightResults,
@@ -2747,11 +2747,11 @@ type LiteSessionInfo = {
   size: number
 }
 
-/**
+/*    *
  * Scans all project directories using filesystem metadata only (no JSONL parsing).
  * Returns a list of session file info sorted by mtime descending.
  * Yields to the event loop between project directories to keep the UI responsive.
- */
+     */
 async function scanAllSessions(): Promise<LiteSessionInfo[]> {
   const projectsDir = getProjectsDir()
 
@@ -3069,7 +3069,7 @@ const usageReport: Command = {
       { collectRemote },
     )
 
-    let reportUrl = `file://${htmlPath}`
+    let reportUrl = `file:// ${htmlPath}`
     let uploadHint = ''
 
     if (process.env.USER_TYPE === 'ant') {
@@ -3081,8 +3081,8 @@ const usageReport: Command = {
         .slice(0, 15)
       const username = process.env.SAFEUSER || process.env.USER || 'unknown'
       const filename = `${username}_insights_${timestamp}.html`
-      const s3Path = `s3://anthropic-serve/atamkin/cc-user-reports/${filename}`
-      const s3Url = `https://s3-frontend.infra.ant.dev/anthropic-serve/atamkin/cc-user-reports/${filename}`
+      const s3Path = `s3:// anthropic-serve/atamkin/cc-user-reports/${filename}`
+      const s3Url = `https:// s3-frontend.infra.ant.dev/anthropic-serve/atamkin/cc-user-reports/${filename}`
 
       reportUrl = s3Url
       try {
@@ -3092,7 +3092,7 @@ const usageReport: Command = {
         })
       } catch {
         // Upload failed - fall back to local file and show upload command
-        reportUrl = `file://${htmlPath}`
+        reportUrl = `file:// ${htmlPath}`
         uploadHint = `\nAutomatic upload failed. Are you on the boron namespace? Try \`use-bo\` and ensure you've run \`sso\`.
 To share, run: ff cp ${htmlPath} ${s3Path}
 Then access at: ${s3Url}`

@@ -116,7 +116,7 @@ const envLessBridgeConfigSchema = lazySchema(() =>
   }),
 )
 
-/**
+/*    *
  * Fetch the env-less bridge timing config from GrowthBook. Read once per
  * initEnvLessBridgeCore call — config is fixed for the lifetime of a bridge
  * session.
@@ -126,7 +126,7 @@ const envLessBridgeConfigSchema = lazySchema(() =>
  * so there's no startup penalty, and we get the fresh in-memory remoteEval
  * value instead of the stale-on-first-read disk cache. The _DEPRECATED suffix
  * warns against startup-path usage, which this isn't.
- */
+     */
 export async function getEnvLessBridgeConfig(): Promise<EnvLessBridgeConfig> {
   const raw = await getFeatureValue_DEPRECATED<unknown>(
     'tengu_bridge_repl_v2_config',
@@ -136,14 +136,14 @@ export async function getEnvLessBridgeConfig(): Promise<EnvLessBridgeConfig> {
   return parsed.success ? parsed.data : DEFAULT_ENV_LESS_BRIDGE_CONFIG
 }
 
-/**
+/*    *
  * Returns an error message if the current CLI version is below the minimum
  * required for the env-less (v2) bridge path, or null if the version is fine.
  *
  * v2 analogue of checkBridgeMinVersion() — reads from tengu_bridge_repl_v2_config
  * instead of tengu_bridge_min_version so the two implementations can enforce
  * independent floors.
- */
+     */
 export async function checkEnvLessBridgeMinVersion(): Promise<string | null> {
   const cfg = await getEnvLessBridgeConfig()
   if (cfg.min_version && lt(MACRO.VERSION, cfg.min_version)) {
@@ -152,12 +152,12 @@ export async function checkEnvLessBridgeMinVersion(): Promise<string | null> {
   return null
 }
 
-/**
+/*    *
  * Whether to nudge users toward upgrading their claude.ai app when a
  * Remote Control session starts. True only when the v2 bridge is active
  * AND the should_show_app_upgrade_message config bit is set — lets us
  * roll the v2 bridge before the app ships the new session-list query.
- */
+     */
 export async function shouldShowAppUpgradeMessage(): Promise<boolean> {
   if (!isEnvLessBridgeEnabled()) return false
   const cfg = await getEnvLessBridgeConfig()

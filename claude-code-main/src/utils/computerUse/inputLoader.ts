@@ -5,7 +5,7 @@ import type {
 
 let cached: ComputerUseInputAPI | undefined
 
-/**
+/*    *
  * Package's js/index.js reads COMPUTER_USE_INPUT_NODE_PATH (baked by
  * build-with-plugins.ts on darwin targets, unset otherwise — falls through to
  * the node_modules prebuilds/ path).
@@ -18,7 +18,7 @@ let cached: ComputerUseInputAPI | undefined
  * Electron (CFRunLoop drains the main queue) this works; under libuv
  * (Node/bun) the main queue never drains and the promise hangs. The executor
  * calls these inside drainRunLoop().
- */
+     */
 export function requireComputerUseInput(): ComputerUseInputAPI {
   if (cached) return cached
   // eslint-disable-next-line @typescript-eslint/no-require-imports

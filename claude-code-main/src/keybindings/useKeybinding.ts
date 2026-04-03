@@ -5,13 +5,13 @@ import { useOptionalKeybindingContext } from './KeybindingContext.js'
 import type { KeybindingContextName } from './types.js'
 
 type Options = {
-  /** Which context this binding belongs to (default: 'Global') */
+  /*    * Which context this binding belongs to (default: 'Global')     */
   context?: KeybindingContextName
-  /** Only handle when active (like useInput's isActive) */
+  /*    * Only handle when active (like useInput's isActive)     */
   isActive?: boolean
 }
 
-/**
+/*    *
  * Ink-native hook for handling a keybinding.
  *
  * The handler stays in the component (React way).
@@ -29,7 +29,7 @@ type Options = {
  *   setShowTodos(prev => !prev)
  * }, { context: 'Global' })
  * ```
- */
+     */
 export function useKeybinding(
   action: string,
   handler: () => void | false | Promise<void>,
@@ -96,7 +96,7 @@ export function useKeybinding(
   useInput(handleInput, { isActive })
 }
 
-/**
+/*    *
  * Handle multiple keybindings in one hook (reduces useInput calls).
  *
  * Supports chord sequences. When a chord is started, the hook will
@@ -109,7 +109,7 @@ export function useKeybinding(
  *   'chat:cancel': () => handleCancel(),
  * }, { context: 'Chat' })
  * ```
- */
+     */
 export function useKeybindings(
   // Handler returning `false` means "not consumed" — the event propagates
   // to later useInput/useKeybindings handlers. Useful for fall-through:

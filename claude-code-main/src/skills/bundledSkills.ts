@@ -8,10 +8,10 @@ import { logForDebugging } from '../utils/debug.js'
 import { getBundledSkillsRoot } from '../utils/permissions/filesystem.js'
 import type { HooksSettings } from '../utils/settings/types.js'
 
-/**
+/*    *
  * Definition for a bundled skill that ships with the CLI.
  * These are registered programmatically at startup.
- */
+     */
 export type BundledSkillDefinition = {
   name: string
   description: string
@@ -26,13 +26,13 @@ export type BundledSkillDefinition = {
   hooks?: HooksSettings
   context?: 'inline' | 'fork'
   agent?: string
-  /**
+  /*    *
    * Additional reference files to extract to disk on first invocation.
    * Keys are relative paths (forward slashes, no `..`), values are content.
    * When set, the skill prompt is prefixed with a "Base directory for this
    * skill: <dir>" line so the model can Read/Grep these files on demand —
    * same contract as disk-based skills.
-   */
+       */
   files?: Record<string, string>
   getPromptForCommand: (
     args: string,
@@ -43,13 +43,13 @@ export type BundledSkillDefinition = {
 // Internal registry for bundled skills
 const bundledSkills: Command[] = []
 
-/**
+/*    *
  * Register a bundled skill that will be available to the model.
  * Call this at module initialization or in an init function.
  *
  * Bundled skills are compiled into the CLI binary and available to all users.
  * They follow the same pattern as registerPostSamplingHook() for internal features.
- */
+     */
 export function registerBundledSkill(definition: BundledSkillDefinition): void {
   const { files } = definition
 
@@ -99,35 +99,35 @@ export function registerBundledSkill(definition: BundledSkillDefinition): void {
   bundledSkills.push(command)
 }
 
-/**
+/*    *
  * Get all registered bundled skills.
  * Returns a copy to prevent external mutation.
- */
+     */
 export function getBundledSkills(): Command[] {
   return [...bundledSkills]
 }
 
-/**
+/*    *
  * Clear bundled skills registry (for testing).
- */
+     */
 export function clearBundledSkills(): void {
   bundledSkills.length = 0
 }
 
-/**
+/*    *
  * Deterministic extraction directory for a bundled skill's reference files.
- */
+     */
 export function getBundledSkillExtractDir(skillName: string): string {
   return join(getBundledSkillsRoot(), skillName)
 }
 
-/**
+/*    *
  * Extract a bundled skill's reference files to disk so the model can
  * Read/Grep them on demand. Called lazily on first skill invocation.
  *
  * Returns the directory written to, or null if write failed (skill
  * continues to work, just without the base-directory prefix).
- */
+     */
 async function extractBundledSkillFiles(
   skillName: string,
   files: Record<string, string>,
@@ -192,7 +192,7 @@ async function safeWriteFile(p: string, content: string): Promise<void> {
   }
 }
 
-/** Normalize and validate a skill-relative path; throws on traversal. */
+/*    * Normalize and validate a skill-relative path; throws on traversal.     */
 function resolveSkillFilePath(baseDir: string, relPath: string): string {
   const normalized = normalize(relPath)
   if (

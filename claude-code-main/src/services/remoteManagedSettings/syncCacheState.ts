@@ -1,4 +1,4 @@
-/**
+/*    *
  * Leaf state module for the remote-managed-settings sync cache.
  *
  * Split from syncCache.ts to break the settings.ts → syncCache.ts → auth.ts →
@@ -19,7 +19,7 @@
  * sees config-provided CLAUDE_CODE_USE_BEDROCK/ANTHROPIC_BASE_URL. That call
  * computes once and mirrors the result here via setEligibility(). Every
  * subsequent read hits the cached bool instead of re-running the auth chain.
- */
+     */
 
 import { join } from 'path'
 import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
@@ -77,14 +77,12 @@ export function getRemoteManagedSettingsSyncFromCache(): SettingsJson | null {
     // getSettings_DEPRECATED() result cached before this moment is missing
     // the policySettings layer (the `eligible !== true` guard above returned
     // null). Flush so the next merged read re-merges with this layer visible.
-    //
-    // Fires at most once: subsequent calls hit `if (sessionCache)` above.
+    // // Fires at most once: subsequent calls hit `if (sessionCache)` above.
     // When called from loadSettingsFromDisk() (settings.ts:546), the merged
     // cache is still null (setSessionSettingsCache runs at :732 after
     // loadSettingsFromDisk returns) — no-op. The async-fetch arm (index.ts
     // setSessionCache + notifyChange) already handles its own reset.
-    //
-    // gh-23085: isBridgeEnabled() at main.tsx Commander-definition time
+    // // gh-23085: isBridgeEnabled() at main.tsx Commander-definition time
     // (before preAction → init() → isRemoteManagedSettingsEligible()) reached
     // getSettings_DEPRECATED() at auth.ts:115. The try/catch in bridgeEnabled
     // swallowed the later getGlobalConfig() throw, but the merged settings

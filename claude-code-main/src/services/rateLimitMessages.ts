@@ -1,7 +1,7 @@
-/**
+/*    *
  * Centralized rate limit message generation
  * Single source of truth for all rate limit-related messages
- */
+     */
 
 import {
   getOauthAccountInfo,
@@ -14,10 +14,10 @@ import type { ClaudeAILimits } from './claudeAiLimits.js'
 
 const FEEDBACK_CHANNEL_ANT = '#briarpatch-cc'
 
-/**
+/*    *
  * All possible rate limit error message prefixes
  * Export this to avoid fragile string matching in UI components
- */
+     */
 export const RATE_LIMIT_ERROR_PREFIXES = [
   "You've hit your",
   "You've used",
@@ -26,9 +26,9 @@ export const RATE_LIMIT_ERROR_PREFIXES = [
   "You're out of extra usage",
 ] as const
 
-/**
+/*    *
  * Check if a message is a rate limit error
- */
+     */
 export function isRateLimitErrorMessage(text: string): boolean {
   return RATE_LIMIT_ERROR_PREFIXES.some(prefix => text.startsWith(prefix))
 }
@@ -38,10 +38,10 @@ export type RateLimitMessage = {
   severity: 'error' | 'warning'
 }
 
-/**
+/*    *
  * Get the appropriate rate limit message based on limit state
  * Returns null if no message should be shown
- */
+     */
 export function getRateLimitMessage(
   limits: ClaudeAILimits,
   model: string,
@@ -103,10 +103,10 @@ export function getRateLimitMessage(
   return null
 }
 
-/**
+/*    *
  * Get error message for API errors (used in errors.ts)
  * Returns the message string or null if no error message should be shown
- */
+     */
 export function getRateLimitErrorMessage(
   limits: ClaudeAILimits,
   model: string,
@@ -121,10 +121,10 @@ export function getRateLimitErrorMessage(
   return null
 }
 
-/**
+/*    *
  * Get warning message for UI footer
  * Returns the warning message string or null if no warning should be shown
- */
+     */
 export function getRateLimitWarning(
   limits: ClaudeAILimits,
   model: string,
@@ -253,11 +253,11 @@ function getEarlyWarningText(limits: ClaudeAILimits): string | null {
   return upsell ? `${base} · ${upsell}` : base
 }
 
-/**
+/*    *
  * Get the upsell command text for warning messages based on subscription and limit type.
  * Returns null if no upsell should be shown.
  * Only used for warnings because actual rate limit hits will see an interactive menu of options.
- */
+     */
 function getWarningUpsellText(
   rateLimitType: ClaudeAILimits['rateLimitType'],
 ): string | null {
@@ -296,10 +296,10 @@ function getWarningUpsellText(
   return null
 }
 
-/**
+/*    *
  * Get notification text for overage mode transitions
  * Used for transient notifications when entering overage mode
- */
+     */
 export function getUsingOverageText(limits: ClaudeAILimits): string {
   const resetTime = limits.resetsAt
     ? formatResetTime(limits.resetsAt, true)

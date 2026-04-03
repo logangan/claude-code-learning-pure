@@ -83,7 +83,7 @@ import {
 } from './utils/thinking.js'
 
 // Lazy: MessageSelector.tsx pulls React/ink; only needed for message filtering at query time
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const messageSelector =
   (): typeof import('src/components/MessageSelector.js') =>
     require('src/components/MessageSelector.js')
@@ -100,7 +100,7 @@ import {
   getScratchpadDir,
   isScratchpadEnabled,
 } from './utils/permissions/filesystem.js'
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import {
   handleOrphanedPermission,
   isResultSuccessful,
@@ -108,24 +108,24 @@ import {
 } from './utils/queryHelpers.js'
 
 // Dead code elimination: conditional import for coordinator mode
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const getCoordinatorUserContext: (
   mcpClients: ReadonlyArray<{ name: string }>,
   scratchpadDir?: string,
 ) => { [k: string]: string } = feature('COORDINATOR_MODE')
   ? require('./coordinator/coordinatorMode.js').getCoordinatorUserContext
   : () => ({})
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 // Dead code elimination: conditional import for snip compaction
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const snipModule = feature('HISTORY_SNIP')
   ? (require('./services/compact/snipCompact.js') as typeof import('./services/compact/snipCompact.js'))
   : null
 const snipProjection = feature('HISTORY_SNIP')
   ? (require('./services/compact/snipProjection.js') as typeof import('./services/compact/snipProjection.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 export type QueryEngineConfig = {
   cwd: string
@@ -149,13 +149,13 @@ export type QueryEngineConfig = {
   jsonSchema?: Record<string, unknown>
   verbose?: boolean
   replayUserMessages?: boolean
-  /** Handler for URL elicitations triggered by MCP tool -32042 errors. */
+  /*    * Handler for URL elicitations triggered by MCP tool -32042 errors.     */
   handleElicitation?: ToolUseContext['handleElicitation']
   includePartialMessages?: boolean
   setSDKStatus?: (status: SDKStatus) => void
   abortController?: AbortController
   orphanedPermission?: OrphanedPermission
-  /**
+  /*    *
    * Snip-boundary handler: receives each yielded system message plus the
    * current mutableMessages store. Returns undefined if the message is not a
    * snip boundary; otherwise returns the replayed snip result. Injected by
@@ -165,22 +165,20 @@ export type QueryEngineConfig = {
    * keeps full history for UI scrollback and projects on demand via
    * projectSnippedView; QueryEngine truncates here to bound memory in long
    * headless sessions (no UI to preserve).
-   */
+       */
   snipReplay?: (
     yieldedSystemMsg: Message,
     store: Message[],
   ) => { messages: Message[]; executed: boolean } | undefined
 }
 
-/**
- * QueryEngine owns the query lifecycle and session state for a conversation.
- * It extracts the core logic from ask() into a standalone class that can be
- * used by both the headless/SDK path and (in a future phase) the REPL.
+/*    *
+ * QueryEngine拥有对话的查询生命周期和会话状态。
+ * 它从ask()中提取核心逻辑到一个独立的类中，该类可被无头/SDK路径和（在未来阶段）REPL使用。
  *
- * One QueryEngine per conversation. Each submitMessage() call starts a new
- * turn within the same conversation. State (messages, file cache, usage, etc.)
- * persists across turns.
- */
+ * 每个对话一个QueryEngine。每次submitMessage()调用在同一对话中开始一个新轮次。
+ * 状态（消息、文件缓存、使用情况等）在轮次之间持久化。
+     */
 export class QueryEngine {
   private config: QueryEngineConfig
   private mutableMessages: Message[]
@@ -189,11 +187,9 @@ export class QueryEngine {
   private totalUsage: NonNullableUsage
   private hasHandledOrphanedPermission = false
   private readFileState: FileStateCache
-  // Turn-scoped skill discovery tracking (feeds was_discovered on
-  // tengu_skill_tool_invocation). Must persist across the two
-  // processUserInputContext rebuilds inside submitMessage, but is cleared
-  // at the start of each submitMessage to avoid unbounded growth across
-  // many turns in SDK mode.
+  // 回合范围内的技能发现跟踪（在tengu_skill_tool_invocation上提供was_discovered）。
+  // 必须在submitMessage内部的两次processUserInputContext重建中持久化，但在每次
+  // submitMessage开始时清除，以避免在SDK模式下跨多个回合的无限制增长。
   private discoveredSkillNames = new Set<string>()
   private loadedNestedMemoryPaths = new Set<string>()
 
@@ -307,12 +303,12 @@ export class QueryEngine {
       ),
     }
 
-    // When an SDK caller provides a custom system prompt AND has set
-    // CLAUDE_COWORK_MEMORY_PATH_OVERRIDE, inject the memory-mechanics prompt.
-    // The env var is an explicit opt-in signal — the caller has wired up
-    // a memory directory and needs Claude to know how to use it (which
-    // Write/Edit tools to call, MEMORY.md filename, loading semantics).
-    // The caller can layer their own policy text via appendSystemPrompt.
+    // 当 SDK 调用者提供自定义系统提示并设置了
+    // CLAUDE_COWORK_MEMORY_PATH_OVERRIDE 时，注入内存机制提示。
+    // 环境变量是一个明确的选择加入信号 — 调用者已经连接了
+    // 内存目录，需要 Claude 知道如何使用它（调用哪些
+    // Write/Edit 工具，MEMORY.md 文件名，加载语义）。
+    // 调用者可以通过 appendSystemPrompt 层叠自己的策略文本。
     const memoryMechanicsPrompt =
       customPrompt !== undefined && hasAutoMemPathOverride()
         ? await loadMemoryPrompt()
@@ -324,7 +320,7 @@ export class QueryEngine {
       ...(appendSystemPrompt ? [appendSystemPrompt] : []),
     ])
 
-    // Register function hook for structured output enforcement
+    // 注册结构化输出强制执行的函数钩子
     const hasStructuredOutputTool = tools.some(t =>
       toolMatchesName(t, SYNTHETIC_OUTPUT_TOOL_NAME),
     )
@@ -334,13 +330,13 @@ export class QueryEngine {
 
     let processUserInputContext: ProcessUserInputContext = {
       messages: this.mutableMessages,
-      // Slash commands that mutate the message array (e.g. /force-snip)
-      // call setMessages(fn).  In interactive mode this writes back to
-      // AppState; in print mode we write back to mutableMessages so the
-      // rest of the query loop (push at :389, snapshot at :392) sees
-      // the result.  The second processUserInputContext below (after
-      // slash-command processing) keeps the no-op — nothing else calls
-      // setMessages past that point.
+      // 会修改消息数组的斜杠命令（例如 /force-snip）
+      // 调用 setMessages(fn)。在交互模式下，这会写回
+      // AppState；在打印模式下，我们写回 mutableMessages，以便
+      // 查询循环的其余部分（在 :389 处推送，在 :392 处快照）看到
+      // 结果。下面的第二个 processUserInputContext（在
+      // 斜杠命令处理后）保持无操作 — 此后没有其他东西调用
+      // setMessages。
       setMessages: fn => {
         this.mutableMessages = fn(this.mutableMessages)
       },
@@ -394,7 +390,7 @@ export class QueryEngine {
       setSDKStatus,
     }
 
-    // Handle orphaned permission (only once per engine lifetime)
+    // 处理孤立权限（每个引擎生命周期仅一次）
     if (orphanedPermission && !this.hasHandledOrphanedPermission) {
       this.hasHandledOrphanedPermission = true
       for await (const message of handleOrphanedPermission(
@@ -442,8 +438,7 @@ export class QueryEngine {
     // null, and --resume fails with "No conversation found". Writing now makes
     // the transcript resumable from the point the user message was accepted,
     // even if no API response ever arrives.
-    //
-    // --bare / SIMPLE: fire-and-forget. Scripted calls don't --resume after
+    // // --bare / SIMPLE: fire-and-forget. Scripted calls don't --resume after
     // kill-mid-request. The await is ~4ms on SSD, ~30ms under disk contention
     // — the single largest controllable critical-path cost after module eval.
     // Transcript is still written (for post-hoc debugging); just not blocking.
@@ -1176,13 +1171,13 @@ export class QueryEngine {
   }
 }
 
-/**
- * Sends a single prompt to the Claude API and returns the response.
+/*    *
+ * 向Claude API发送单个提示并返回响应。
  * Assumes that claude is being used non-interactively -- will not
  * ask the user for permissions or further input.
  *
- * Convenience wrapper around QueryEngine for one-shot usage.
- */
+ * QueryEngine的便捷包装器，用于一次性使用。
+     */
 export async function* ask({
   commands,
   prompt,

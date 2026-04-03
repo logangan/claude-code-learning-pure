@@ -2,7 +2,7 @@ import { logForDebugging } from '../debug.js'
 import { withResolvers } from '../withResolvers.js'
 import { requireComputerUseSwift } from './swiftLoader.js'
 
-/**
+/*    *
  * Shared CFRunLoop pump. Swift's four `@MainActor` async methods
  * (captureExcluding, captureRegion, apps.listInstalled, resolvePrepareCapture)
  * and `@ant/computer-use-input`'s key()/keys() all dispatch to
@@ -12,7 +12,7 @@ import { requireComputerUseSwift } from './swiftLoader.js'
  * One refcounted setInterval calls `_drainMainRunLoop` (RunLoop.main.run)
  * every 1ms while any main-queue-dependent call is pending. Multiple
  * concurrent drainRunLoop() calls share the single pump via retain/release.
- */
+     */
 
 let pump: ReturnType<typeof setInterval> | undefined
 let pending = 0
@@ -45,19 +45,19 @@ function timeoutReject(reject: (e: Error) => void): void {
   reject(new Error(`computer-use native call exceeded ${TIMEOUT_MS}ms`))
 }
 
-/**
+/*    *
  * Hold a pump reference for the lifetime of a long-lived registration
  * (e.g. the CGEventTap Escape handler). Unlike `drainRunLoop(fn)` this has
  * no timeout — the caller is responsible for calling `releasePump()`. Same
  * refcount as drainRunLoop calls, so nesting is safe.
- */
+     */
 export const retainPump = retain
 export const releasePump = release
 
-/**
+/*    *
  * Await `fn()` with the shared drain pump running. Safe to nest — multiple
  * concurrent drainRunLoop() calls share one setInterval.
- */
+     */
 export async function drainRunLoop<T>(fn: () => Promise<T>): Promise<T> {
   retain()
   let timer: ReturnType<typeof setTimeout> | undefined

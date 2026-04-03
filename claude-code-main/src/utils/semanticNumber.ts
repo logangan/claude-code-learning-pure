@@ -1,6 +1,6 @@
 import { z } from 'zod/v4'
 
-/**
+/*    *
  * Number that also accepts numeric string literals like "30", "-5", "3.14".
  *
  * Tool inputs arrive as model-generated JSON. The model occasionally quotes
@@ -22,7 +22,7 @@ import { z } from 'zod/v4'
  *   semanticNumber()                              → number
  *   semanticNumber(z.number().optional())         → number | undefined
  *   semanticNumber(z.number().default(0))         → number
- */
+     */
 export function semanticNumber<T extends z.ZodType>(
   inner: T = z.number() as unknown as T,
 ) {

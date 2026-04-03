@@ -39,19 +39,17 @@ function logOperation(operation: QueueOperation, content?: string): void {
 
 // ============================================================================
 // Unified command queue (module-level, independent of React state)
-//
-// All commands — user input, task notifications, orphaned permissions — go
+// // All commands — user input, task notifications, orphaned permissions — go
 // through this single queue. React components subscribe via
 // useSyncExternalStore (subscribeToCommandQueue / getCommandQueueSnapshot).
 // Non-React code (print.ts streaming loop) reads directly via
 // getCommandQueue() / getCommandQueueLength().
-//
-// Priority determines dequeue order: 'now' > 'next' > 'later'.
+// // Priority determines dequeue order: 'now' > 'next' > 'later'.
 // Within the same priority, commands are processed FIFO.
 // ============================================================================
 
 const commandQueue: QueuedCommand[] = []
-/** Frozen snapshot — recreated on every mutation for useSyncExternalStore. */
+/*    * Frozen snapshot — recreated on every mutation for useSyncExternalStore.     */
 let snapshot: readonly QueuedCommand[] = Object.freeze([])
 const queueChanged = createSignal()
 
@@ -64,17 +62,17 @@ function notifySubscribers(): void {
 // useSyncExternalStore interface
 // ============================================================================
 
-/**
+/*    *
  * Subscribe to command queue changes.
  * Compatible with React's useSyncExternalStore.
- */
+     */
 export const subscribeToCommandQueue = queueChanged.subscribe
 
-/**
+/*    *
  * Get current snapshot of the command queue.
  * Compatible with React's useSyncExternalStore.
  * Returns a frozen array that only changes reference on mutation.
- */
+     */
 export function getCommandQueueSnapshot(): readonly QueuedCommand[] {
   return snapshot
 }
@@ -83,33 +81,33 @@ export function getCommandQueueSnapshot(): readonly QueuedCommand[] {
 // Read operations (for non-React code)
 // ============================================================================
 
-/**
+/*    *
  * Get a mutable copy of the current queue.
  * Use for one-off reads where you need the actual commands.
- */
+     */
 export function getCommandQueue(): QueuedCommand[] {
   return [...commandQueue]
 }
 
-/**
+/*    *
  * Get the current queue length without copying.
- */
+     */
 export function getCommandQueueLength(): number {
   return commandQueue.length
 }
 
-/**
+/*    *
  * Check if there are commands in the queue.
- */
+     */
 export function hasCommandsInQueue(): boolean {
   return commandQueue.length > 0
 }
 
-/**
+/*    *
  * Trigger a re-check by notifying subscribers.
  * Use after async processing completes to ensure remaining commands
  * are picked up by useSyncExternalStore consumers.
- */
+     */
 export function recheckCommandQueue(): void {
   if (commandQueue.length > 0) {
     notifySubscribers()
@@ -120,11 +118,11 @@ export function recheckCommandQueue(): void {
 // Write operations
 // ============================================================================
 
-/**
+/*    *
  * Add a command to the queue.
  * Used for user-initiated commands (prompt, bash, orphaned-permission).
  * Defaults priority to 'next' (processed before task notifications).
- */
+     */
 export function enqueue(command: QueuedCommand): void {
   commandQueue.push({ ...command, priority: command.priority ?? 'next' })
   notifySubscribers()
@@ -134,11 +132,11 @@ export function enqueue(command: QueuedCommand): void {
   )
 }
 
-/**
+/*    *
  * Add a task notification to the queue.
  * Convenience wrapper that defaults priority to 'later' so user input
  * is never starved by system messages.
- */
+     */
 export function enqueuePendingNotification(command: QueuedCommand): void {
   commandQueue.push({ ...command, priority: command.priority ?? 'later' })
   notifySubscribers()
@@ -154,7 +152,7 @@ const PRIORITY_ORDER: Record<QueuePriority, number> = {
   later: 2,
 }
 
-/**
+/*    *
  * Remove and return the highest-priority command, or undefined if empty.
  * Within the same priority level, commands are dequeued FIFO.
  *
@@ -163,7 +161,7 @@ const PRIORITY_ORDER: Record<QueuePriority, number> = {
  * queue untouched. This lets between-turn drains (SDK, REPL) restrict to
  * main-thread commands (`cmd.agentId === undefined`) without restructuring
  * the existing while-loop patterns.
- */
+     */
 export function dequeue(
   filter?: (cmd: QueuedCommand) => boolean,
 ): QueuedCommand | undefined {
@@ -192,10 +190,10 @@ export function dequeue(
   return dequeued
 }
 
-/**
+/*    *
  * Remove and return all commands from the queue.
  * Logs a dequeue operation for each command.
- */
+     */
 export function dequeueAll(): QueuedCommand[] {
   if (commandQueue.length === 0) {
     return []
@@ -212,10 +210,10 @@ export function dequeueAll(): QueuedCommand[] {
   return commands
 }
 
-/**
+/*    *
  * Return the highest-priority command without removing it, or undefined if empty.
  * Accepts an optional `filter` — only commands passing the predicate are considered.
- */
+     */
 export function peek(
   filter?: (cmd: QueuedCommand) => boolean,
 ): QueuedCommand | undefined {
@@ -237,10 +235,10 @@ export function peek(
   return commandQueue[bestIdx]
 }
 
-/**
+/*    *
  * Remove and return all commands matching a predicate, preserving priority order.
  * Non-matching commands stay in the queue.
- */
+     */
 export function dequeueAllMatching(
   predicate: (cmd: QueuedCommand) => boolean,
 ): QueuedCommand[] {
@@ -265,11 +263,11 @@ export function dequeueAllMatching(
   return matched
 }
 
-/**
+/*    *
  * Remove specific commands from the queue by reference identity.
  * Callers must pass the same object references that are in the queue
  * (e.g. from getCommandsByMaxPriority). Logs a 'remove' operation for each.
- */
+     */
 export function remove(commandsToRemove: QueuedCommand[]): void {
   if (commandsToRemove.length === 0) {
     return
@@ -291,10 +289,10 @@ export function remove(commandsToRemove: QueuedCommand[]): void {
   }
 }
 
-/**
+/*    *
  * Remove commands matching a predicate.
  * Returns the removed commands.
- */
+     */
 export function removeByFilter(
   predicate: (cmd: QueuedCommand) => boolean,
 ): QueuedCommand[] {
@@ -315,10 +313,10 @@ export function removeByFilter(
   return removed
 }
 
-/**
+/*    *
  * Clear all commands from the queue.
  * Used by ESC cancellation to discard queued notifications.
- */
+     */
 export function clearCommandQueue(): void {
   if (commandQueue.length === 0) {
     return
@@ -327,10 +325,10 @@ export function clearCommandQueue(): void {
   notifySubscribers()
 }
 
-/**
+/*    *
  * Clear all commands and reset snapshot.
  * Used for test cleanup.
- */
+     */
 export function resetCommandQueue(): void {
   commandQueue.length = 0
   snapshot = Object.freeze([])
@@ -350,21 +348,21 @@ export function isPromptInputModeEditable(
   return !NON_EDITABLE_MODES.has(mode)
 }
 
-/**
+/*    *
  * Whether this queued command can be pulled into the input buffer via UP/ESC.
  * System-generated commands (proactive ticks, scheduled tasks, plan
  * verification, channel messages) contain raw XML and must not leak into
  * the user's input.
- */
+     */
 export function isQueuedCommandEditable(cmd: QueuedCommand): boolean {
   return isPromptInputModeEditable(cmd.mode) && !cmd.isMeta
 }
 
-/**
+/*    *
  * Whether this queued command should render in the queue preview under the
  * prompt. Superset of editable — channel messages show (so the keyboard user
  * sees what arrived) but stay non-editable (raw XML).
- */
+     */
 export function isQueuedCommandVisible(cmd: QueuedCommand): boolean {
   if (
     (feature('KAIROS') || feature('KAIROS_CHANNELS')) &&
@@ -374,19 +372,19 @@ export function isQueuedCommandVisible(cmd: QueuedCommand): boolean {
   return isQueuedCommandEditable(cmd)
 }
 
-/**
+/*    *
  * Extract text from a queued command value.
  * For strings, returns the string.
  * For ContentBlockParam[], extracts text from text blocks.
- */
+     */
 function extractTextFromValue(value: string | ContentBlockParam[]): string {
   return typeof value === 'string' ? value : extractTextContent(value, '\n')
 }
 
-/**
+/*    *
  * Extract images from ContentBlockParam[] and convert to PastedContent format.
  * Returns empty array for string values or if no images found.
- */
+     */
 function extractImagesFromValue(
   value: string | ContentBlockParam[],
   startId: number,
@@ -418,13 +416,13 @@ export type PopAllEditableResult = {
   images: PastedContent[]
 }
 
-/**
+/*    *
  * Pop all editable commands and combine them with current input for editing.
  * Notification modes (task-notification) are left in the queue
  * to be auto-processed later.
  * Returns object with combined text, cursor offset, and images to restore.
  * Returns undefined if no editable commands in queue.
- */
+     */
 export function popAllEditable(
   currentInput: string,
   currentCursorOffset: number,
@@ -487,41 +485,41 @@ export function popAllEditable(
 // Backward-compatible aliases (deprecated — prefer new names)
 // ============================================================================
 
-/** @deprecated Use subscribeToCommandQueue */
+/*    * @deprecated Use subscribeToCommandQueue     */
 export const subscribeToPendingNotifications = subscribeToCommandQueue
 
-/** @deprecated Use getCommandQueueSnapshot */
+/*    * @deprecated Use getCommandQueueSnapshot     */
 export function getPendingNotificationsSnapshot(): readonly QueuedCommand[] {
   return snapshot
 }
 
-/** @deprecated Use hasCommandsInQueue */
+/*    * @deprecated Use hasCommandsInQueue     */
 export const hasPendingNotifications = hasCommandsInQueue
 
-/** @deprecated Use getCommandQueueLength */
+/*    * @deprecated Use getCommandQueueLength     */
 export const getPendingNotificationsCount = getCommandQueueLength
 
-/** @deprecated Use recheckCommandQueue */
+/*    * @deprecated Use recheckCommandQueue     */
 export const recheckPendingNotifications = recheckCommandQueue
 
-/** @deprecated Use dequeue */
+/*    * @deprecated Use dequeue     */
 export function dequeuePendingNotification(): QueuedCommand | undefined {
   return dequeue()
 }
 
-/** @deprecated Use resetCommandQueue */
+/*    * @deprecated Use resetCommandQueue     */
 export const resetPendingNotifications = resetCommandQueue
 
-/** @deprecated Use clearCommandQueue */
+/*    * @deprecated Use clearCommandQueue     */
 export const clearPendingNotifications = clearCommandQueue
 
-/**
+/*    *
  * Get commands at or above a given priority level without removing them.
  * Useful for mid-chain draining where only urgent items should be processed.
  *
  * Priority order: 'now' (0) > 'next' (1) > 'later' (2).
  * Passing 'now' returns only now-priority commands; 'later' returns everything.
- */
+     */
 export function getCommandsByMaxPriority(
   maxPriority: QueuePriority,
 ): QueuedCommand[] {
@@ -531,13 +529,13 @@ export function getCommandsByMaxPriority(
   )
 }
 
-/**
+/*    *
  * Returns true if the command is a slash command that should be routed through
  * processSlashCommand rather than sent to the model as text.
  *
  * Commands with `skipSlashCommands` (e.g. bridge/CCR messages) are NOT treated
  * as slash commands — their text is meant for the model.
- */
+     */
 export function isSlashCommand(cmd: QueuedCommand): boolean {
   return (
     typeof cmd.value === 'string' &&

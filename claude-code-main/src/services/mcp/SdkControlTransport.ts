@@ -1,4 +1,4 @@
-/**
+/*    *
  * SDK MCP Transport Bridge
  *
  * This file implements a transport bridge that allows MCP servers running in the SDK process
@@ -34,20 +34,20 @@
  * - The control request wrapper includes server_name to route to the correct SDK server
  * - The system supports multiple SDK MCP servers running simultaneously
  * - Message IDs are preserved through the entire flow for proper correlation
- */
+     */
 
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
 
-/**
+/*    *
  * Callback function to send an MCP message and get the response
- */
+     */
 export type SendMcpMessageCallback = (
   serverName: string,
   message: JSONRPCMessage,
 ) => Promise<JSONRPCMessage>
 
-/**
+/*    *
  * CLI-side transport for SDK MCP servers.
  *
  * This transport is used in the CLI process to bridge communication between:
@@ -56,7 +56,7 @@ export type SendMcpMessageCallback = (
  *
  * It converts MCP protocol messages into control requests that can be sent
  * through stdout/stdin to the SDK process.
- */
+     */
 export class SdkControlClientTransport implements Transport {
   private isClosed = false
 
@@ -94,7 +94,7 @@ export class SdkControlClientTransport implements Transport {
   }
 }
 
-/**
+/*    *
  * SDK-side transport for SDK MCP servers.
  *
  * This transport is used in the SDK process to bridge communication between:
@@ -105,7 +105,7 @@ export class SdkControlClientTransport implements Transport {
  * and sends responses back via a callback.
  *
  * Note: Query handles all request/response correlation and async flow.
- */
+     */
 export class SdkControlServerTransport implements Transport {
   private isClosed = false
 

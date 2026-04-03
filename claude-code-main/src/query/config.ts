@@ -9,8 +9,7 @@ import { isEnvTruthy } from '../utils/envUtils.js'
 // the per-iteration State struct and the mutable ToolUseContext makes future
 // step() extraction tractable — a pure reducer can take (state, event, config)
 // where config is plain data.
-//
-// Intentionally excludes feature() gates — those are tree-shaking boundaries
+// // Intentionally excludes feature() gates — those are tree-shaking boundaries
 // and must stay inline at the guarded blocks for dead-code elimination.
 export type QueryConfig = {
   sessionId: SessionId

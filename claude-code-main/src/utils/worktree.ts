@@ -48,7 +48,7 @@ import { isInITerm2 } from './swarm/backends/detection.js'
 const VALID_WORKTREE_SLUG_SEGMENT = /^[a-zA-Z0-9._-]+$/
 const MAX_WORKTREE_SLUG_LENGTH = 64
 
-/**
+/*    *
  * Validates a worktree slug to prevent path traversal and directory escape.
  *
  * The slug is joined into `.claude/worktrees/<slug>` via path.join, which
@@ -62,7 +62,7 @@ const MAX_WORKTREE_SLUG_LENGTH = 64
  *
  * Throws synchronously — callers rely on this running before any side effects
  * (git commands, hook execution, chdir).
- */
+     */
 export function validateWorktreeSlug(slug: string): void {
   if (slug.length > MAX_WORKTREE_SLUG_LENGTH) {
     throw new Error(
@@ -91,14 +91,14 @@ async function mkdirRecursive(dirPath: string): Promise<void> {
   await mkdir(dirPath, { recursive: true })
 }
 
-/**
+/*    *
  * Symlinks directories from the main repository to avoid duplication.
  * This prevents disk bloat from duplicating node_modules and other large directories.
  *
  * @param repoRootPath - Path to the main repository root
  * @param worktreePath - Path to the worktree directory
  * @param dirsToSymlink - Array of directory names to symlink (e.g., ['node_modules'])
- */
+     */
 async function symlinkDirectories(
   repoRootPath: string,
   worktreePath: string,
@@ -147,9 +147,9 @@ export type WorktreeSession = {
   sessionId: string
   tmuxSessionName?: string
   hookBased?: boolean
-  /** How long worktree creation took (unset when resuming an existing worktree). */
+  /*    * How long worktree creation took (unset when resuming an existing worktree).     */
   creationDurationMs?: number
-  /** True if git sparse-checkout was applied via settings.worktree.sparsePaths. */
+  /*    * True if git sparse-checkout was applied via settings.worktree.sparsePaths.     */
   usedSparsePaths?: boolean
 }
 
@@ -159,11 +159,11 @@ export function getCurrentWorktreeSession(): WorktreeSession | null {
   return currentWorktreeSession
 }
 
-/**
+/*    *
  * Restore the worktree session on --resume. The caller must have already
  * verified the directory exists (via process.chdir) and set the bootstrap
  * state (cwd, originalCwd).
- */
+     */
 export function restoreWorktreeSession(session: WorktreeSession | null): void {
   currentWorktreeSession = session
 }
@@ -207,11 +207,11 @@ function worktreesDir(repoRoot: string): string {
 
 // Flatten nested slugs (`user/feature` → `user+feature`) for both the branch
 // name and the directory path. Nesting in either location is unsafe:
-//   - git refs: `worktree-user` (file) vs `worktree-user/feature` (needs dir)
-//     is a D/F conflict that git rejects.
-//   - directory: `.claude/worktrees/user/feature/` lives inside the `user`
-//     worktree; `git worktree remove` on the parent deletes children with
-//     uncommitted work.
+// - git refs: `worktree-user` (file) vs `worktree-user/feature` (needs dir)
+// is a D/F conflict that git rejects.
+// - directory: `.claude/worktrees/user/feature/` lives inside the `user`
+// worktree; `git worktree remove` on the parent deletes children with
+// uncommitted work.
 // `+` is valid in git branch names and filesystem paths but NOT in the
 // slug-segment allowlist ([a-zA-Z0-9._-]), so the mapping is injective.
 function flattenSlug(slug: string): string {
@@ -226,12 +226,12 @@ function worktreePathFor(repoRoot: string, slug: string): string {
   return join(worktreesDir(repoRoot), flattenSlug(slug))
 }
 
-/**
+/*    *
  * Creates a new git worktree for the given slug, or resumes it if it already exists.
  * Named worktrees reuse the same path across invocations, so the existence check
  * prevents unconditionally running `git fetch` (which can hang waiting for credentials)
  * on every resume.
- */
+     */
 async function getOrCreateWorktree(
   repoRoot: string,
   slug: string,
@@ -374,7 +374,7 @@ async function getOrCreateWorktree(
   }
 }
 
-/**
+/*    *
  * Copy gitignored files specified in .worktreeinclude from base repo to worktree.
  *
  * Only copies files that are BOTH:
@@ -387,7 +387,7 @@ async function getOrCreateWorktree(
  * against .worktreeinclude patterns in-process using the `ignore` library. If a
  * .worktreeinclude pattern explicitly targets a path inside a collapsed directory,
  * that directory is expanded with a second scoped `ls-files` call.
- */
+     */
 export async function copyWorktreeIncludeFiles(
   repoRoot: string,
   worktreePath: string,
@@ -431,7 +431,7 @@ export async function copyWorktreeIncludeFiles(
   // (e.g. pattern `config/secrets/api.key` when all of `config/secrets/` is
   // gitignored with no tracked siblings). Expand only dirs where a pattern has
   // that dir as its explicit path prefix (stripping redundant leading `/`), the
-  // dir falls under an anchored glob's literal prefix (e.g. `config/**/*.key`
+  // dir falls under an anchored glob's literal prefix (e.g. `config/*        */*.key`
   // expands `config/secrets/`), or the dir itself matches a pattern. We don't
   // expand for `**/` or anchorless patterns -- those match files in tracked dirs
   // (already listed individually) and expanding every collapsed dir for them
@@ -443,7 +443,7 @@ export async function copyWorktreeIncludeFiles(
         // Literal prefix match: pattern starts with the collapsed dir path
         if (normalized.startsWith(dir)) return true
         // Anchored glob: dir falls under the pattern's literal (non-glob) prefix
-        // e.g. `config/**/*.key` has literal prefix `config/` → expand `config/secrets/`
+        // e.g. `config/*        */*.key` has literal prefix `config/` → expand `config/secrets/`
         const globIdx = normalized.search(/[*?[]/)
         if (globIdx > 0) {
           const literalPrefix = normalized.slice(0, globIdx)
@@ -503,10 +503,10 @@ export async function copyWorktreeIncludeFiles(
   return copied
 }
 
-/**
+/*    *
  * Post-creation setup for a newly created worktree.
  * Propagates settings.local.json, configures git hooks, and symlinks directories.
- */
+     */
 async function performPostCreationSetup(
   repoRoot: string,
   worktreePath: string,
@@ -595,8 +595,7 @@ async function performPostCreationSetup(
   // don't have it. Install it directly into the worktree's .husky/ —
   // husky won't delete it (husky install is additive-only), and for
   // non-husky repos this resolves to the shared .git/hooks/ (idempotent).
-  //
-  // Pass the worktree-local .husky explicitly: getHooksDir would return
+  // // Pass the worktree-local .husky explicitly: getHooksDir would return
   // the absolute core.hooksPath we just set above (main repo's .husky),
   // not the worktree's — `git rev-parse --git-path hooks` echoes the config
   // value verbatim when it's absolute.
@@ -623,13 +622,13 @@ async function performPostCreationSetup(
   }
 }
 
-/**
+/*    *
  * Parses a PR reference from a string.
- * Accepts GitHub-style PR URLs (e.g., https://github.com/owner/repo/pull/123,
- * or GHE equivalents like https://ghe.example.com/owner/repo/pull/123)
+ * Accepts GitHub-style PR URLs (e.g., https:// github.com/owner/repo/pull/123,
+ * or GHE equivalents like https:// ghe.example.com/owner/repo/pull/123)
  * or `#N` format (e.g., #123).
  * Returns the PR number or null if the string is not a recognized PR reference.
- */
+     */
 export function parsePRReference(input: string): number | null {
   // GitHub-style PR URL: https://<host>/owner/repo/pull/123 (with optional trailing slash, query, hash)
   // The /pull/N path shape is specific to GitHub — GitLab uses /-/merge_requests/N,
@@ -893,12 +892,12 @@ export async function cleanupWorktree(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Create a lightweight worktree for a subagent.
  * Reuses getOrCreateWorktree/performPostCreationSetup but does NOT touch
  * global session state (currentWorktreeSession, process.chdir, project config).
  * Falls back to hook-based creation if not in a git repository.
- */
+     */
 export async function createAgentWorktree(slug: string): Promise<{
   worktreePath: string
   worktreeBranch?: string
@@ -951,13 +950,13 @@ export async function createAgentWorktree(slug: string): Promise<{
   return { worktreePath, worktreeBranch, headCommit, gitRoot }
 }
 
-/**
+/*    *
  * Remove a worktree created by createAgentWorktree.
  * For git-based worktrees, removes the worktree directory and deletes the temporary branch.
  * For hook-based worktrees, delegates to the WorktreeRemove hook.
  * Must be called with the main repo's git root (for git worktrees), not the worktree path,
  * since the worktree directory is deleted during this operation.
- */
+     */
 export async function removeAgentWorktree(
   worktreePath: string,
   worktreeBranch?: string,
@@ -1019,14 +1018,14 @@ export async function removeAgentWorktree(
   return true
 }
 
-/**
+/*    *
  * Slug patterns for throwaway worktrees created by AgentTool (`agent-a<7hex>`,
  * from earlyAgentId.slice(0,8)), WorkflowTool (`wf_<runId>-<idx>` where runId
  * is randomUUID().slice(0,12) = 8 hex + `-` + 3 hex), and bridgeMain
  * (`bridge-<safeFilenameId>`). These leak when the parent process is killed
  * (Ctrl+C, ESC, crash) before their in-process cleanup runs. Exact-shape
  * patterns avoid sweeping user-named EnterWorktree slugs like `wf-myfeature`.
- */
+     */
 const EPHEMERAL_WORKTREE_PATTERNS = [
   /^agent-a[0-9a-f]{7}$/,
   /^wf_[0-9a-f]{8}-[0-9a-f]{3}-\d+$/,
@@ -1040,7 +1039,7 @@ const EPHEMERAL_WORKTREE_PATTERNS = [
   /^job-[a-zA-Z0-9._-]{1,55}-[0-9a-f]{8}$/,
 ]
 
-/**
+/*    *
  * Remove stale agent/workflow worktrees older than cutoffDate.
  *
  * Safety:
@@ -1054,7 +1053,7 @@ const EPHEMERAL_WORKTREE_PATTERNS = [
  * `git worktree remove --force` handles both the directory and git's internal
  * worktree tracking. If git doesn't recognize the path as a worktree (orphaned
  * dir), it's left in place — a later readdir finding it stale again is harmless.
- */
+     */
 export async function cleanupStaleAgentWorktrees(
   cutoffDate: Date,
 ): Promise<number> {
@@ -1135,12 +1134,12 @@ export async function cleanupStaleAgentWorktrees(
   return removed
 }
 
-/**
+/*    *
  * Check whether a worktree has uncommitted changes or new commits since creation.
  * Returns true if there are uncommitted changes (dirty working tree), if commits
  * were made on the worktree branch since `headCommit`, or if git commands fail
  * — callers use this to decide whether to remove a worktree, so fail-closed.
- */
+     */
 export async function hasWorktreeChanges(
   worktreePath: string,
   headCommit: string,
@@ -1172,11 +1171,11 @@ export async function hasWorktreeChanges(
   return false
 }
 
-/**
+/*    *
  * Fast-path handler for --worktree --tmux.
  * Creates the worktree and execs into tmux running Claude inside.
  * This is called early in cli.tsx before loading the full CLI.
- */
+     */
 export async function execIntoTmuxWorktree(args: string[]): Promise<{
   handled: boolean
   error?: string

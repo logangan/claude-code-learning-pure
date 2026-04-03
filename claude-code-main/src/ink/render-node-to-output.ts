@@ -185,10 +185,10 @@ function wrapWithOsc8Link(text: string, url: string): string {
   return `${OSC}8;;${url}${BEL}${text}${OSC}8;;${BEL}`
 }
 
-/**
+/*    *
  * Build a mapping from each character position in the plain text to its segment index.
  * Returns an array where charToSegment[i] is the segment index for character i.
- */
+     */
 function buildCharToSegmentMap(segments: StyledSegment[]): number[] {
   const map: number[] = []
   for (let i = 0; i < segments.length; i++) {
@@ -200,14 +200,14 @@ function buildCharToSegmentMap(segments: StyledSegment[]): number[] {
   return map
 }
 
-/**
+/*    *
  * Apply styles to wrapped text by mapping each character back to its original segment.
  * This preserves per-segment styles even when text wraps across lines.
  *
  * @param trimEnabled - Whether whitespace trimming is enabled (wrap-trim mode).
  *   When true, we skip whitespace in the original that was trimmed from the output.
  *   When false (wrap mode), all whitespace is preserved so no skipping is needed.
- */
+     */
 function applyStylesToWrappedText(
   wrappedPlain: string,
   segments: StyledSegment[],
@@ -322,7 +322,7 @@ function applyStylesToWrappedText(
   return resultLines.join('\n')
 }
 
-/**
+/*    *
  * Wrap text and record which output lines are soft-wrap continuations
  * (i.e. the `\n` before them was inserted by word-wrap, not in the
  * source). wrapAnsi already processes each input line independently, so
@@ -331,7 +331,7 @@ function applyStylesToWrappedText(
  * Truncate modes never add newlines (cli-truncate is whole-string) so
  * they fall through with softWrap undefined — no tracking, no behavior
  * change from the pre-softWrap path.
- */
+     */
 function wrapWithSoftWrap(
   plainText: string,
   maxWidth: number,
@@ -527,8 +527,7 @@ function renderNodeToOutput(
     // write to the same row; if the sibling's content is shorter, this node's
     // tail chars ghost (e.g. "false" + "true" = "truee"). The clear above
     // already handled the visible→squeezed transition.
-    //
-    // The sibling-overlap check is load-bearing: Yoga's pixel-grid rounding
+    // // The sibling-overlap check is load-bearing: Yoga's pixel-grid rounding
     // can give a box h=0 while still leaving a row for it (next sibling at
     // y+1, not y). HelpV2's third shortcuts column hits this — skipping
     // unconditionally drops "ctrl + z to suspend" from /help output.
@@ -636,8 +635,7 @@ function renderNodeToOutput(
       // clean (the op is emitted on both the dirty-render path here
       // AND on the blit fast-path at line ~235 since blitRegion copies
       // the noSelect bitmap alongside cells).
-      //
-      // 'from-left-edge' extends the exclusion from col 0 so any
+      // // 'from-left-edge' extends the exclusion from col 0 so any
       // upstream indentation (tool prefix, tree lines) is covered too
       // — a multi-row drag over a diff gutter shouldn't pick up the
       // `  ⎿  ` prefix on row 0 or the blank cells under it on row 1+.
@@ -889,15 +887,13 @@ function renderNodeToOutput(
           // that spans edge+stable still renders but stable cells are
           // clipped, preserving the blit. Avoids re-rendering every visible
           // child (expensive for long syntax-highlighted transcripts).
-          //
-          // When content.dirty (e.g. streaming text at the bottom of the
+          // // When content.dirty (e.g. streaming text at the bottom of the
           // scroll), we still use the fast path — the dirty child is almost
           // always in the edge rows (the bottom, where new content appears).
           // After edge rendering, any dirty children in stable rows are
           // re-rendered in a second pass to avoid showing stale blitted
           // content.
-          //
-          // Guard: the fast path only handles pure scroll or bottom-append.
+          // // Guard: the fast path only handles pure scroll or bottom-append.
           // Child removal/insertion changes the content height in a way that
           // doesn't match the scroll delta — fall back to the full path so
           // removed children don't leave stale cells and shifted siblings
@@ -958,19 +954,19 @@ function renderNodeToOutput(
             // Second pass: re-render children in stable rows whose screen
             // position doesn't match where the shift put their old pixels.
             // Covers TWO cases:
-            //   1. Dirty children — their content changed, blitted pixels are
-            //      stale regardless of position.
-            //   2. Clean children BELOW a middle-growth point — when a dirty
-            //      sibling above them grows, their yogaTop increases but
-            //      scrollTop increases by the same amount (sticky), so their
-            //      screenY is CONSTANT. The shift moved their old pixels to
-            //      screenY-delta (wrong); they should stay at screenY. Without
-            //      this, the spinner/tmux-monitor ghost at shifted positions
-            //      during streaming (e.g. triple spinner, pill duplication).
-            //   For bottom-append (the common case), all clean children are
-            //   ABOVE the growth point; their screenY decreased by delta and
-            //   the shift put them at the right place — skipped here, fast
-            //   path preserved.
+            // 1. Dirty children — their content changed, blitted pixels are
+            // stale regardless of position.
+            // 2. Clean children BELOW a middle-growth point — when a dirty
+            // sibling above them grows, their yogaTop increases but
+            // scrollTop increases by the same amount (sticky), so their
+            // screenY is CONSTANT. The shift moved their old pixels to
+            // screenY-delta (wrong); they should stay at screenY. Without
+            // this, the spinner/tmux-monitor ghost at shifted positions
+            // during streaming (e.g. triple spinner, pill duplication).
+            // For bottom-append (the common case), all clean children are
+            // ABOVE the growth point; their screenY decreased by delta and
+            // the shift put them at the right place — skipped here, fast
+            // path preserved.
             if (dirtyChildren) {
               const edgeTopLocal = edgeTop - contentY
               const edgeBottomLocal = edgeBottom + 1 - contentY
@@ -1105,12 +1101,10 @@ function renderNodeToOutput(
             }
           } else {
             // Full path. Two sub-cases:
-            //
-            // Scrolled without a usable hint (big jump, container moved):
+            // // Scrolled without a usable hint (big jump, container moved):
             // child positions in prevScreen are stale. Clear the viewport
             // and disable blit so children don't restore shifted content.
-            //
-            // No scroll (spinner tick, content edit): child positions in
+            // // No scroll (spinner tick, content edit): child positions in
             // prevScreen are still valid. Skip the viewport clear and pass
             // prevScreen so unchanged children blit. Dirty children already
             // self-clear via their own cached-rect clear. Without this, a
@@ -1234,17 +1228,14 @@ function renderNodeToOutput(
 // passing prevScreen only benefits its subtree.
 // For removed children we don't know their original position, so
 // conservatively disable blit for all.
-//
-// Clipped children (overflow hidden/scroll on both axes) cannot overflow
+// // Clipped children (overflow hidden/scroll on both axes) cannot overflow
 // onto later siblings — their content is confined to their layout bounds.
 // Skip the contamination guard for them so later siblings can still blit.
 // Without this, a spinner inside a ScrollBox dirties the wrapper on every
 // tick and the bottom prompt section never blits → 100% writes every frame.
-//
-// Exception: absolute-positioned clipped children may have layout bounds
+// // Exception: absolute-positioned clipped children may have layout bounds
 // that overlap arbitrary siblings, so the clipping does not help.
-//
-// Overlap contamination (seenDirtyClipped): a later ABSOLUTE sibling whose
+// // Overlap contamination (seenDirtyClipped): a later ABSOLUTE sibling whose
 // rect sits inside a dirty clipped child's bounds would blit stale cells
 // from prevScreen — the clipped child just rewrote those cells this frame.
 // The clipsBothAxes skip only protects against OVERFLOW (clipped child

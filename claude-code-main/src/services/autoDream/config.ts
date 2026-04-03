@@ -5,11 +5,11 @@
 import { getInitialSettings } from '../../utils/settings/settings.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../analytics/growthbook.js'
 
-/**
+/*    *
  * Whether background memory consolidation should run. User setting
  * (autoDreamEnabled in settings.json) overrides the GrowthBook default
  * when explicitly set; otherwise falls through to tengu_onyx_plover.
- */
+     */
 export function isAutoDreamEnabled(): boolean {
   const setting = getInitialSettings().autoDreamEnabled
   if (setting !== undefined) return setting

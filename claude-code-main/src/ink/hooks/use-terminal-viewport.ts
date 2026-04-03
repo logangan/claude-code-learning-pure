@@ -3,13 +3,13 @@ import { TerminalSizeContext } from '../components/TerminalSizeContext.js'
 import type { DOMElement } from '../dom.js'
 
 type ViewportEntry = {
-  /**
+  /*    *
    * Whether the element is currently within the terminal viewport
-   */
+       */
   isVisible: boolean
 }
 
-/**
+/*    *
  * Hook to detect if a component is within the terminal viewport.
  *
  * Returns a callback ref and a viewport entry object.
@@ -25,7 +25,7 @@ type ViewportEntry = {
  * @example
  * const [ref, entry] = useTerminalViewport()
  * return <Box ref={ref}><Animation enabled={entry.isVisible}>...</Animation></Box>
- */
+     */
 export function useTerminalViewport(): [
   ref: (element: DOMElement | null) => void,
   entry: ViewportEntry,

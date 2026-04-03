@@ -158,9 +158,9 @@ function getToolResultFromCell(cell: NotebookCellSource) {
   return [contentResult, ...(outputResults ?? [])]
 }
 
-/**
+/*    *
  * Reads and parses a Jupyter notebook file into processed cell data
- */
+     */
 export async function readNotebook(
   notebookPath: string,
   cellId?: string,
@@ -182,9 +182,9 @@ export async function readNotebook(
   )
 }
 
-/**
+/*    *
  * Maps notebook cell data to tool result block parameters with sophisticated text block merging
- */
+     */
 export function mapNotebookCellsToToolResult(
   data: NotebookCellSource[],
   toolUseID: string,

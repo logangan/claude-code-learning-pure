@@ -78,9 +78,9 @@ export const outputSchema = lazySchema(() =>
 
 export type Output = z.infer<ReturnType<typeof outputSchema>>
 
-/**
+/*    *
  * Normalizes the result of a permission prompt tool to a PermissionDecision.
- */
+     */
 export function permissionPromptToolResultToPermissionDecision(
   result: Output,
   tool: Tool,

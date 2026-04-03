@@ -5,7 +5,7 @@ import { expandPath } from '../../utils/path.js'
 
 const MAX_READ_BYTES = 64 * 1024
 
-/**
+/*    *
  * Extracts the symbol/word at a specific position in a file.
  * Used to show context in tool use messages.
  *
@@ -17,7 +17,7 @@ const MAX_READ_BYTES = 64 * 1024
  * renderToolUseMessage (a synchronous React render function). The read is
  * wrapped in try/catch so ENOENT and other errors fall back gracefully.
  * @returns The symbol at that position, or null if extraction fails
- */
+     */
 export function getSymbolAtPosition(
   filePath: string,
   line: number,

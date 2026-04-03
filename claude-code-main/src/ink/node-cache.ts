@@ -1,12 +1,12 @@
 import type { DOMElement } from './dom.js'
 import type { Rectangle } from './layout/geometry.js'
 
-/**
+/*    *
  * Cached layout bounds for each rendered node (used for blit + clearing).
  * `top` is the yoga-local getComputedTop() — stored so ScrollBox viewport
  * culling can skip yoga reads for clean children whose position hasn't
  * shifted (O(dirty) instead of O(mounted) first-pass).
- */
+     */
 export type CachedLayout = {
   x: number
   y: number
@@ -17,10 +17,10 @@ export type CachedLayout = {
 
 export const nodeCache = new WeakMap<DOMElement, CachedLayout>()
 
-/** Rects of removed children that need clearing on next render */
+/*    * Rects of removed children that need clearing on next render     */
 export const pendingClears = new WeakMap<DOMElement, Rectangle[]>()
 
-/**
+/*    *
  * Set when a pendingClear is added for an absolute-positioned node.
  * Signals renderer to disable blit for the next frame: the removed node
  * may have painted over non-siblings (e.g. an overlay over a ScrollBox
@@ -28,7 +28,7 @@ export const pendingClears = new WeakMap<DOMElement, Rectangle[]>()
  * the overlay's pixels. Normal-flow removals are already handled by
  * hasRemovedChild at the parent level; only absolute positioning paints
  * cross-subtree. Reset at the start of each render.
- */
+     */
 let absoluteNodeRemoved = false
 
 export function addPendingClear(

@@ -199,7 +199,7 @@ type _assertSDKTypesMatch = Assert<
   IsEqual<SchemaHookJSONOutput, HookJSONOutput>
 >
 
-/** Context passed to callback hooks for state access */
+/*    * Context passed to callback hooks for state access     */
 export type HookCallbackContext = {
   getAppState: () => AppState
   updateAttributionState: (
@@ -207,21 +207,21 @@ export type HookCallbackContext = {
   ) => void
 }
 
-/** Hook that is a callback. */
+/*    * Hook that is a callback.     */
 export type HookCallback = {
   type: 'callback'
   callback: (
     input: HookInput,
     toolUseID: string | null,
     abort: AbortSignal | undefined,
-    /** Hook index for SessionStart hooks to compute CLAUDE_ENV_FILE path */
+    /*    * Hook index for SessionStart hooks to compute CLAUDE_ENV_FILE path     */
     hookIndex?: number,
-    /** Optional context for accessing app state */
+    /*    * Optional context for accessing app state     */
     context?: HookCallbackContext,
   ) => Promise<HookJSONOutput>
-  /** Timeout in seconds for this hook */
+  /*    * Timeout in seconds for this hook     */
   timeout?: number
-  /** Internal hooks (e.g. session file access analytics) are excluded from tengu_run_hook metrics */
+  /*    * Internal hooks (e.g. session file access analytics) are excluded from tengu_run_hook metrics     */
   internal?: boolean
 }
 

@@ -26,11 +26,11 @@ export type PDFResult<T> =
   | { success: true; data: T }
   | { success: false; error: PDFError }
 
-/**
+/*    *
  * Read a PDF file and return it as base64-encoded data.
  * @param filePath Path to the PDF file
  * @returns Result containing PDF data or a structured error
- */
+     */
 export async function readPDF(filePath: string): Promise<
   PDFResult<{
     type: 'pdf'
@@ -112,10 +112,10 @@ export async function readPDF(filePath: string): Promise<
   }
 }
 
-/**
+/*    *
  * Get the number of pages in a PDF file using `pdfinfo` (from poppler-utils).
  * Returns `null` if pdfinfo is not available or if the page count cannot be determined.
- */
+     */
 export async function getPDFPageCount(
   filePath: string,
 ): Promise<number | null> {
@@ -146,17 +146,17 @@ export type PDFExtractPagesResult = {
 
 let pdftoppmAvailable: boolean | undefined
 
-/**
+/*    *
  * Reset the pdftoppm availability cache. Used by tests only.
- */
+     */
 export function resetPdftoppmCache(): void {
   pdftoppmAvailable = undefined
 }
 
-/**
+/*    *
  * Check whether the `pdftoppm` binary (from poppler-utils) is available.
  * The result is cached for the lifetime of the process.
- */
+     */
 export async function isPdftoppmAvailable(): Promise<boolean> {
   if (pdftoppmAvailable !== undefined) return pdftoppmAvailable
   const { code, stderr } = await execFileNoThrow('pdftoppm', ['-v'], {
@@ -168,14 +168,14 @@ export async function isPdftoppmAvailable(): Promise<boolean> {
   return pdftoppmAvailable
 }
 
-/**
+/*    *
  * Extract PDF pages as JPEG images using pdftoppm.
  * Produces page-01.jpg, page-02.jpg, etc. in an output directory.
  * This enables reading large PDFs and works with all API providers.
  *
  * @param filePath Path to the PDF file
  * @param options Optional page range (1-indexed, inclusive)
- */
+     */
 export async function extractPDFPages(
   filePath: string,
   options?: { firstPage?: number; lastPage?: number },

@@ -88,9 +88,9 @@ export const COST_HAIKU_45 = {
 
 const DEFAULT_UNKNOWN_MODEL_COST = COST_TIER_5_25
 
-/**
+/*    *
  * Get the cost tier for Opus 4.6 based on fast mode.
- */
+     */
 export function getOpus46CostTier(fastMode: boolean): ModelCosts {
   if (isFastModeEnabled() && fastMode) {
     return COST_TIER_30_150
@@ -125,9 +125,9 @@ export const MODEL_COSTS: Record<ModelShortName, ModelCosts> = {
     COST_TIER_5_25,
 }
 
-/**
+/*    *
  * Calculates the USD cost based on token usage and model cost configuration
- */
+     */
 function tokensToUSDCost(modelCosts: ModelCosts, usage: Usage): number {
   return (
     (usage.input_tokens / 1_000_000) * modelCosts.inputTokens +
@@ -179,10 +179,10 @@ export function calculateUSDCost(resolvedModel: string, usage: Usage): number {
   return tokensToUSDCost(modelCosts, usage)
 }
 
-/**
+/*    *
  * Calculate cost from raw token counts without requiring a full BetaUsage object.
  * Useful for side queries (e.g. classifier) that track token counts independently.
- */
+     */
 export function calculateCostFromTokens(
   model: string,
   tokens: {
@@ -210,19 +210,19 @@ function formatPrice(price: number): string {
   return `$${price.toFixed(2)}`
 }
 
-/**
+/*    *
  * Format model costs as a pricing string for display
  * e.g., "$3/$15 per Mtok"
- */
+     */
 export function formatModelPricing(costs: ModelCosts): string {
   return `${formatPrice(costs.inputTokens)}/${formatPrice(costs.outputTokens)} per Mtok`
 }
 
-/**
+/*    *
  * Get formatted pricing string for a model
  * Accepts either a short name or full model name
  * Returns undefined if model is not found
- */
+     */
 export function getModelPricingString(model: string): string | undefined {
   const shortName = getCanonicalName(model)
   const costs = MODEL_COSTS[shortName]

@@ -5,7 +5,7 @@ export type HorizontalScrollWindow = {
   showRightArrow: boolean
 }
 
-/**
+/*    *
  * Calculate the visible window of items that fit within available width,
  * ensuring the selected item is always visible. Uses edge-based scrolling:
  * the window only scrolls when the selected item would be outside the visible
@@ -17,7 +17,7 @@ export type HorizontalScrollWindow = {
  * @param selectedIdx - Index of selected item (must stay visible)
  * @param firstItemHasSeparator - Whether first item's width includes a separator that should be ignored
  * @returns Visible window bounds and whether to show scroll arrows
- */
+     */
 export function calculateHorizontalScrollWindow(
   itemWidths: number[],
   availableWidth: number,

@@ -30,11 +30,11 @@ type TranscriptEntry = TranscriptMessage & {
   }
 }
 
-/**
+/*    *
  * Derive a single-line title base from the first user message.
  * Collapses whitespace — multiline first messages (pasted stacks, code)
  * otherwise flow into the saved title and break the resume hint.
- */
+     */
 export function deriveFirstPrompt(
   firstUserMessage: Extract<SerializedMessage, { type: 'user' }> | undefined,
 ): string {
@@ -53,11 +53,11 @@ export function deriveFirstPrompt(
   )
 }
 
-/**
+/*    *
  * Creates a fork of the current conversation by copying from the transcript file.
  * Preserves all original metadata (timestamps, gitBranch, etc.) while updating
  * sessionId and adding forkedFrom traceability.
- */
+     */
 async function createFork(customTitle?: string): Promise<{
   sessionId: UUID
   title: string | undefined
@@ -172,10 +172,10 @@ async function createFork(customTitle?: string): Promise<{
   }
 }
 
-/**
+/*    *
  * Generates a unique fork name by checking for collisions with existing session names.
  * If "baseName (Branch)" already exists, tries "baseName (Branch 2)", "baseName (Branch 3)", etc.
- */
+     */
 async function getUniqueForkName(baseName: string): Promise<string> {
   const candidateName = `${baseName} (Branch)`
 

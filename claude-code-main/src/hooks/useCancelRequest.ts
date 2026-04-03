@@ -1,9 +1,9 @@
-/**
+/*    *
  * CancelRequestHandler component for handling cancel/escape keybinding.
  *
  * Must be rendered inside KeybindingSetup to have access to the keybinding context.
  * This component renders nothing - it just registers the cancel keybinding handler.
- */
+     */
 import { useCallback, useRef } from 'react'
 import { logEvent } from 'src/services/analytics/index.js'
 import type { AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS } from 'src/services/analytics/metadata.js'
@@ -34,7 +34,7 @@ import {
 } from '../utils/messageQueueManager.js'
 import { emitTaskTerminatedSdk } from '../utils/sdkEventQueue.js'
 
-/** Time window in ms during which a second press kills all background agents. */
+/*    * Time window in ms during which a second press kills all background agents.     */
 const KILL_AGENTS_CONFIRM_WINDOW_MS = 3000
 
 type CancelRequestHandlerProps = {
@@ -56,10 +56,10 @@ type CancelRequestHandlerProps = {
   streamMode?: SpinnerMode
 }
 
-/**
+/*    *
  * Component that handles cancel requests via keybinding.
  * Renders null but registers the 'chat:cancel' keybinding handler.
- */
+     */
 export function CancelRequestHandler(props: CancelRequestHandlerProps): null {
   const {
     setToolUseConfirmQueue,

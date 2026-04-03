@@ -30,9 +30,9 @@ import {
 } from './hookHelpers.js'
 import { clearSessionHooks } from './sessionHooks.js'
 
-/**
+/*    *
  * Execute an agent-based hook using a multi-turn LLM query
- */
+     */
 export async function execAgentHook(
   hook: AgentHook,
   hookName: string,

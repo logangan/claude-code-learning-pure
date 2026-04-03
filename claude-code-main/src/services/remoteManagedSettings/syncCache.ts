@@ -1,11 +1,11 @@
-/**
+/*    *
  * Eligibility check for remote managed settings.
  *
  * The cache state itself lives in syncCacheState.ts (a leaf, no auth import).
  * This file keeps isRemoteManagedSettingsEligible — the one function that
  * needs auth.ts — plus resetSyncCache wrapped to clear the local eligibility
  * mirror alongside the leaf's state.
- */
+     */
 
 import { CLAUDE_AI_INFERENCE_SCOPE } from '../../constants/oauth.js'
 import {
@@ -29,7 +29,7 @@ export function resetSyncCache(): void {
   resetLeafCache()
 }
 
-/**
+/*    *
  * Check if the current user is eligible for remote managed settings
  *
  * Eligibility:
@@ -45,7 +45,7 @@ export function resetSyncCache(): void {
  *
  * IMPORTANT: This function must NOT call getSettings() or any function that calls
  * getSettings() to avoid circular dependencies during settings loading.
- */
+     */
 export function isRemoteManagedSettingsEligible(): boolean {
   if (cached !== undefined) return cached
 

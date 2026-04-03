@@ -9,40 +9,40 @@ import {
   type LSPServerInstance,
 } from './LSPServerInstance.js'
 import type { ScopedLspServerConfig } from './types.js'
-/**
+/*    *
  * LSP Server Manager interface returned by createLSPServerManager.
  * Manages multiple LSP server instances and routes requests based on file extensions.
- */
+     */
 export type LSPServerManager = {
-  /** Initialize the manager by loading all configured LSP servers */
+  /*    * Initialize the manager by loading all configured LSP servers     */
   initialize(): Promise<void>
-  /** Shutdown all running servers and clear state */
+  /*    * Shutdown all running servers and clear state     */
   shutdown(): Promise<void>
-  /** Get the LSP server instance for a given file path */
+  /*    * Get the LSP server instance for a given file path     */
   getServerForFile(filePath: string): LSPServerInstance | undefined
-  /** Ensure the appropriate LSP server is started for the given file */
+  /*    * Ensure the appropriate LSP server is started for the given file     */
   ensureServerStarted(filePath: string): Promise<LSPServerInstance | undefined>
-  /** Send a request to the appropriate LSP server for the given file */
+  /*    * Send a request to the appropriate LSP server for the given file     */
   sendRequest<T>(
     filePath: string,
     method: string,
     params: unknown,
   ): Promise<T | undefined>
-  /** Get all running server instances */
+  /*    * Get all running server instances     */
   getAllServers(): Map<string, LSPServerInstance>
-  /** Synchronize file open to LSP server (sends didOpen notification) */
+  /*    * Synchronize file open to LSP server (sends didOpen notification)     */
   openFile(filePath: string, content: string): Promise<void>
-  /** Synchronize file change to LSP server (sends didChange notification) */
+  /*    * Synchronize file change to LSP server (sends didChange notification)     */
   changeFile(filePath: string, content: string): Promise<void>
-  /** Synchronize file save to LSP server (sends didSave notification) */
+  /*    * Synchronize file save to LSP server (sends didSave notification)     */
   saveFile(filePath: string): Promise<void>
-  /** Synchronize file close to LSP server (sends didClose notification) */
+  /*    * Synchronize file close to LSP server (sends didClose notification)     */
   closeFile(filePath: string): Promise<void>
-  /** Check if a file is already open on a compatible LSP server */
+  /*    * Check if a file is already open on a compatible LSP server     */
   isFileOpen(filePath: string): boolean
 }
 
-/**
+/*    *
  * Creates an LSP server manager instance.
  *
  * Manages multiple LSP server instances and routes requests based on file extensions.
@@ -55,7 +55,7 @@ export type LSPServerManager = {
  * await manager.initialize()
  * const result = await manager.sendRequest('/path/to/file.ts', 'textDocument/definition', params)
  * await manager.shutdown()
- */
+     */
 export function createLSPServerManager(): LSPServerManager {
   // Private state managed via closures
   const servers: Map<string, LSPServerInstance> = new Map()
@@ -63,11 +63,11 @@ export function createLSPServerManager(): LSPServerManager {
   // Track which files have been opened on which servers (URI -> server name)
   const openedFiles: Map<string, string> = new Map()
 
-  /**
+  /*    *
    * Initialize the manager by loading all configured LSP servers.
    *
    * @throws {Error} If configuration loading fails
-   */
+       */
   async function initialize(): Promise<void> {
     let serverConfigs: Record<string, ScopedLspServerConfig>
 
@@ -147,13 +147,13 @@ export function createLSPServerManager(): LSPServerManager {
     logForDebugging(`LSP manager initialized with ${servers.size} servers`)
   }
 
-  /**
+  /*    *
    * Shutdown all running servers and clear state.
    * Only servers in 'running' state are explicitly stopped;
    * servers in other states are cleared without shutdown.
    *
    * @throws {Error} If one or more servers fail to stop
-   */
+       */
   async function shutdown(): Promise<void> {
     const toStop = Array.from(servers.entries()).filter(
       ([, s]) => s.state === 'running' || s.state === 'error',
@@ -184,11 +184,11 @@ export function createLSPServerManager(): LSPServerManager {
     }
   }
 
-  /**
+  /*    *
    * Get the LSP server instance for a given file path.
    * If multiple servers handle the same extension, returns the first registered server.
    * Returns undefined if no server handles this file type.
-   */
+       */
   function getServerForFile(filePath: string): LSPServerInstance | undefined {
     const ext = path.extname(filePath).toLowerCase()
     const serverNames = extensionMap.get(ext)
@@ -206,12 +206,12 @@ export function createLSPServerManager(): LSPServerManager {
     return servers.get(serverName)
   }
 
-  /**
+  /*    *
    * Ensure the appropriate LSP server is started for the given file.
    * Returns undefined if no server handles this file type.
    *
    * @throws {Error} If server fails to start
-   */
+       */
   async function ensureServerStarted(
     filePath: string,
   ): Promise<LSPServerInstance | undefined> {
@@ -235,12 +235,12 @@ export function createLSPServerManager(): LSPServerManager {
     return server
   }
 
-  /**
+  /*    *
    * Send a request to the appropriate LSP server for the given file.
    * Returns undefined if no server handles this file type.
    *
    * @throws {Error} If server fails to start or request fails
-   */
+       */
   async function sendRequest<T>(
     filePath: string,
     method: string,
@@ -342,10 +342,10 @@ export function createLSPServerManager(): LSPServerManager {
     }
   }
 
-  /**
+  /*    *
    * Save a file in LSP servers (sends didSave notification)
    * Called after file is written to disk to trigger diagnostics
-   */
+       */
   async function saveFile(filePath: string): Promise<void> {
     const server = getServerForFile(filePath)
     if (!server || server.state !== 'running') return
@@ -367,13 +367,13 @@ export function createLSPServerManager(): LSPServerManager {
     }
   }
 
-  /**
+  /*    *
    * Close a file in LSP servers (sends didClose notification)
    *
    * NOTE: Currently available but not yet integrated with compact flow.
    * TODO: Integrate with compact - call closeFile() when compact removes files from context
    * This will notify LSP servers that files are no longer in active use.
-   */
+       */
   async function closeFile(filePath: string): Promise<void> {
     const server = getServerForFile(filePath)
     if (!server || server.state !== 'running') return

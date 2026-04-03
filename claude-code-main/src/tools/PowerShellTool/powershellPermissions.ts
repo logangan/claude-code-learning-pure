@@ -1,7 +1,7 @@
-/**
+/*    *
  * PowerShell-specific permission checking, adapted from bashPermissions.ts
  * for case-insensitive cmdlet matching.
- */
+     */
 
 import { resolve } from 'path'
 import type { ToolPermissionContext, ToolUseContext } from '../../Tool.js'
@@ -61,12 +61,12 @@ import { POWERSHELL_TOOL_NAME } from './toolName.js'
 // nested assignment prefixes in the parse-failed fallback path.
 const PS_ASSIGN_PREFIX_RE = /^\$[\w:]+\s*(?:[+\-*/%]|\?\?)?\s*=\s*/
 
-/**
+/*    *
  * Cmdlets that can place a file at a caller-specified path. The
  * git-internal-paths guard checks whether any arg is a git-internal path
  * (hooks/, refs/, objects/, HEAD). Non-creating writers (remove-item,
  * clear-content) are intentionally absent — they can't plant new hooks.
- */
+     */
 const GIT_SAFETY_WRITE_CMDLETS = new Set([
   'new-item',
   'set-content',
@@ -83,7 +83,7 @@ const GIT_SAFETY_WRITE_CMDLETS = new Set([
   'export-clixml',
 ])
 
-/**
+/*    *
  * External archive-extraction applications that write files to cwd with
  * archive-controlled paths. `tar -xf payload.tar; git status` defeats
  * isCurrentDirectoryBareGitRepo (TOCTOU): the check runs at
@@ -92,7 +92,7 @@ const GIT_SAFETY_WRITE_CMDLETS = new Set([
  * args for git-internal paths), archive contents are opaque — any
  * extraction preceding git must ask. Matched by name only (lowercase,
  * with and without .exe).
- */
+     */
 const GIT_SAFETY_ARCHIVE_EXTRACTORS = new Set([
   'tar',
   'tar.exe',
@@ -111,10 +111,10 @@ const GIT_SAFETY_ARCHIVE_EXTRACTORS = new Set([
   'expand-archive',
 ])
 
-/**
+/*    *
  * Extract the command name from a PowerShell command string.
  * Uses the parser to get the first command name from the AST.
- */
+     */
 async function extractCommandName(command: string): Promise<string> {
   const trimmed = command.trim()
   if (!trimmed) {
@@ -125,17 +125,17 @@ async function extractCommandName(command: string): Promise<string> {
   return names[0] ?? ''
 }
 
-/**
+/*    *
  * Parse a permission rule string into a structured rule object.
  * Delegates to shared parsePermissionRule.
- */
+     */
 export function powershellPermissionRule(
   permissionRule: string,
 ): ShellPermissionRule {
   return parsePermissionRule(permissionRule)
 }
 
-/**
+/*    *
  * Generate permission update suggestion for exact command match.
  *
  * Skip exact-command suggestion for commands that can't round-trip cleanly:
@@ -146,7 +146,7 @@ export function powershellPermissionRule(
  *   raw string with backslash intact, so `Remove-Item \* -Force` never matches
  *   the incoming `Remove-Item * -Force`. Globs are unsafe to exact-auto-allow
  *   anyway; prefix suggestion still offered. (finding #12)
- */
+     */
 function suggestionForExactCommand(command: string): PermissionUpdate[] {
   if (command.includes('\n') || command.includes('*')) {
     return []
@@ -154,19 +154,19 @@ function suggestionForExactCommand(command: string): PermissionUpdate[] {
   return sharedSuggestionForExactCommand(POWERSHELL_TOOL_NAME, command)
 }
 
-/**
+/*    *
  * PowerShell input schema type - simplified for initial implementation
- */
+     */
 type PowerShellInput = {
   command: string
   timeout?: number
 }
 
-/**
+/*    *
  * Filter rules by contents matching an input command.
  * PowerShell-specific: uses case-insensitive matching throughout.
  * Follows the same structure as BashTool's local filterRulesByContentsMatchingInput.
- */
+     */
 function filterRulesByContentsMatchingInput(
   input: PowerShellInput,
   rules: Map<string, PermissionRule>,
@@ -332,9 +332,9 @@ function filterRulesByContentsMatchingInput(
     .map(([, rule]) => rule)
 }
 
-/**
+/*    *
  * Get matching rules for input across all rule types (deny, ask, allow)
- */
+     */
 function matchingRulesForInput(
   input: PowerShellInput,
   toolPermissionContext: ToolPermissionContext,
@@ -379,9 +379,9 @@ function matchingRulesForInput(
   return { matchingDenyRules, matchingAskRules, matchingAllowRules }
 }
 
-/**
+/*    *
  * Check if the command is an exact match for a permission rule.
- */
+     */
 export function powershellToolCheckExactMatchPermission(
   input: PowerShellInput,
   toolPermissionContext: ToolPermissionContext,
@@ -429,9 +429,9 @@ export function powershellToolCheckExactMatchPermission(
   }
 }
 
-/**
+/*    *
  * Check permission for a PowerShell command including prefix matches.
- */
+     */
 export function powershellToolCheckPermission(
   input: PowerShellInput,
   toolPermissionContext: ToolPermissionContext,
@@ -513,9 +513,9 @@ export function powershellToolCheckPermission(
   }
 }
 
-/**
+/*    *
  * Information about a sub-command for permission checking.
- */
+     */
 type SubCommandInfo = {
   text: string
   element: ParsedCommandElement
@@ -523,7 +523,7 @@ type SubCommandInfo = {
   isSafeOutput: boolean
 }
 
-/**
+/*    *
  * Extract sub-commands that need independent permission checking from a parsed command.
  * Safe output cmdlets (Format-Table, Select-Object, etc.) are flagged but NOT
  * filtered out — step 4.4 still checks deny rules against them (deny always
@@ -535,7 +535,7 @@ type SubCommandInfo = {
  *
  * Returns sub-command info including both text and the parsed element for accurate
  * suggestion generation.
- */
+     */
 async function getSubCommandsForPermissionCheck(
   parsed: ParsedPowerShellCommand,
   originalCommand: string,
@@ -623,7 +623,7 @@ async function getSubCommandsForPermissionCheck(
   ]
 }
 
-/**
+/*    *
  * Main permission check function for PowerShell tool.
  *
  * This function implements the full permission flow:
@@ -635,7 +635,7 @@ async function getSubCommandsForPermissionCheck(
  * @param input - The PowerShell tool input
  * @param context - The tool use context (for abort signal and session info)
  * @returns Promise resolving to PermissionResult
- */
+     */
 export async function powershellToolHasPermission(
   input: PowerShellInput,
   context: ToolUseContext,
@@ -734,8 +734,7 @@ export async function powershellToolHasPermission(
   // the main-flow exact allow at bashPermissions.ts:1520 runs after sub-command
   // deny checks (1442-1458). Without this, an exact allow on a compound command
   // would bypass deny rules on sub-commands.
-  //
-  // SECURITY (parse-failed branch): the nameType guard in step 5 lives
+  // // SECURITY (parse-failed branch): the nameType guard in step 5 lives
   // inside the sub-command loop, which only runs when parsed.valid.
   // This is the !parsed.valid escape hatch. Input-side stripModulePrefix
   // is unconditional — `scripts\build.exe --flag` strips to `build.exe`,
@@ -775,8 +774,7 @@ export async function powershellToolHasPermission(
     // a deny-DOWNGRADE fix). Match against full fragment (not just first token)
     // so multi-word rules like `Remove-Item foo:*` still fire; the matcher's
     // canonical resolution handles aliases (`iex` → `Invoke-Expression`).
-    //
-    // SECURITY: backtick is PS escape/line-continuation, NOT a separator.
+    // // SECURITY: backtick is PS escape/line-continuation, NOT a separator.
     // Splitting on it would fragment `Invoke-Ex`pression` into non-matching
     // pieces. Instead: collapse backtick-newline (line continuation) so
     // `Invoke-Ex`<nl>pression` rejoins, strip remaining backticks (escape
@@ -804,11 +802,11 @@ export async function powershellToolHasPermission(
       // rule matching (findings #5/#22). The splitter gives us the raw fragment
       // text; matchingRulesForInput extracts the first token as the cmdlet name.
       // Without normalization:
-      //   `$x = Invoke-Expression 'p'` → first token `$x` → deny(iex:*) misses
-      //   `. Invoke-Expression 'p'`    → first token `.`  → deny(iex:*) misses
-      //   `& 'Invoke-Expression' 'p'`  → first token `&` removed by split but
-      //                                  `'Invoke-Expression'` retains quotes
-      //                                  → deny(iex:*) misses
+      // `$x = Invoke-Expression 'p'` → first token `$x` → deny(iex:*) misses
+      // `. Invoke-Expression 'p'`    → first token `.`  → deny(iex:*) misses
+      // `& 'Invoke-Expression' 'p'`  → first token `&` removed by split but
+      // `'Invoke-Expression'` retains quotes
+      // → deny(iex:*) misses
       // The parse-succeeded path handles these via AST (parser.ts:839 strips
       // quotes from rawNameUnstripped; invocation operators are separate AST
       // nodes). This fallback mirrors that normalization.
@@ -881,16 +879,13 @@ export async function powershellToolHasPermission(
   // This structurally closes the ask-before-deny bug class: an 'ask' from an
   // earlier check (security flags, provider paths, cd+git) can no longer mask
   // a 'deny' from a later check (sub-command deny, checkPathConstraints).
-  //
-  // Supersedes the firstSubCommandAskRule stash from commit 8f5ae6c56b — that
+  // // Supersedes the firstSubCommandAskRule stash from commit 8f5ae6c56b — that
   // fix only patched step 4; steps 3, 3.5, 4.42 had the same flaw. The stash
   // pattern is also fragile: the next author who writes `return ask` is back
   // where we started. Collect-then-reduce makes the bypass impossible to write.
-  //
-  // First-of-each-behavior wins (array order = step order), so single-check
+  // // First-of-each-behavior wins (array order = step order), so single-check
   // ask messages are unchanged vs. sequential-early-return.
-  //
-  // Pre-parse deny checks above (exact/prefix deny) stay sequential: they
+  // // Pre-parse deny checks above (exact/prefix deny) stay sequential: they
   // fire even when pwsh is unavailable. Pre-parse asks (prefix ask, raw UNC)
   // are now deferred here so sub-command deny (step 4) beats them.
 
@@ -1044,18 +1039,17 @@ export async function powershellToolHasPermission(
   // Each sub-command produces at most one decision (deny or ask). Deny rules
   // on LATER sub-commands still beat ask rules on EARLIER ones via the reduce.
   // No stash needed — the reduce structurally enforces deny > ask.
-  //
-  // SECURITY: Always build a canonical command string from AST-derived data
+  // // SECURITY: Always build a canonical command string from AST-derived data
   // (element.name + space-joined args) and check rules against it too. Deny
   // and allow must use the same normalized form to close asymmetries:
-  //   - Invocation operators (`& 'Remove-Item' ./x`): raw text starts with `&`,
-  //     splitting on whitespace yields the operator, not the cmdlet name.
-  //   - Non-space whitespace (`rm\t./x`): raw prefix match uses `prefix + ' '`
-  //     (literal space), but PowerShell accepts any whitespace separator.
-  //     checkPermissionMode auto-allow (using AST cmd.name) WOULD match while
-  //     deny-rule match on raw text would miss — a deny-rule bypass.
-  //   - Module prefixes (`Microsoft.PowerShell.Management\Remove-Item`):
-  //     element.name has the module prefix stripped.
+  // - Invocation operators (`& 'Remove-Item' ./x`): raw text starts with `&`,
+  // splitting on whitespace yields the operator, not the cmdlet name.
+  // - Non-space whitespace (`rm\t./x`): raw prefix match uses `prefix + ' '`
+  // (literal space), but PowerShell accepts any whitespace separator.
+  // checkPermissionMode auto-allow (using AST cmd.name) WOULD match while
+  // deny-rule match on raw text would miss — a deny-rule bypass.
+  // - Module prefixes (`Microsoft.PowerShell.Management\Remove-Item`):
+  // element.name has the module prefix stripped.
   for (const { text: subCmd, element } of allSubCommands) {
     // element.name is quote-stripped at the parser (transformCommandAst) so
     // `& 'Invoke-Expression' 'x'` yields name='Invoke-Expression', not
@@ -1112,8 +1106,7 @@ export async function powershellToolHasPermission(
   // attacks). Collect-then-reduce keeps the improvement over BashTool: in
   // bash, cd+git (B9, line 1416) runs BEFORE sub-command deny (B11), so cd+git
   // ask masks deny. Here, both are in the same decision array; deny wins.
-  //
-  // SECURITY: NO cd-to-CWD no-op exclusion. A previous iteration excluded
+  // // SECURITY: NO cd-to-CWD no-op exclusion. A previous iteration excluded
   // `Set-Location .` as a no-op, but the "first non-dash arg" heuristic used
   // to extract the target is fooled by colon-bound params:
   // `Set-Location -Path:/etc .` — real target is /etc, heuristic sees `.`,
@@ -1261,8 +1254,7 @@ export async function powershellToolHasPermission(
   // 'deny' when an Edit(...) deny rule matches an extracted path (pathValidation
   // lines ~994, 1088, 1160, 1210), 'ask' for paths outside working dirs, or
   // 'passthrough'.
-  //
-  // Thread hasCdSubCommand (BashTool compoundCommandHasCd parity): when the
+  // // Thread hasCdSubCommand (BashTool compoundCommandHasCd parity): when the
   // compound contains a cwd-changing cmdlet, checkPathConstraints forces 'ask'
   // for any statement with path operations — relative paths resolve against the
   // stale validator cwd, not PowerShell's runtime cwd. This is the architectural
@@ -1282,8 +1274,7 @@ export async function powershellToolHasPermission(
   // Matches BashTool ordering: sub-command deny → path constraints → exact
   // allow. Reduce enforces deny > ask > allow, so the exact allow only
   // surfaces when no deny or ask fired — same as sequential.
-  //
-  // SECURITY: nameType gate — mirrors the parse-failed guard at L696-700.
+  // // SECURITY: nameType gate — mirrors the parse-failed guard at L696-700.
   // Input-side stripModulePrefix is unconditional: `scripts\Get-Content`
   // strips to `Get-Content`, canonicalCommand matches exact allow. Without
   // this gate, allow enters decisions[] and reduce returns it before step 5
@@ -1296,8 +1287,7 @@ export async function powershellToolHasPermission(
   // reduce returns it before the per-subcommand gate ever runs. The
   // allSubCommands.every check ensures NO command in the statement leaks
   // (a single-command exact-allow has one element; a pipeline has several).
-  //
-  // SECURITY: nameType gate must check ALL subcommands, not just [0]
+  // // SECURITY: nameType gate must check ALL subcommands, not just [0]
   // (finding #10). canonicalCommand at L171 collapses `\n` → space, so
   // `code\n.\build.ps1` (two statements) matches exact rule
   // `PowerShell(code .\build.ps1)`. Checking only allSubCommands[0] lets the
@@ -1416,8 +1406,7 @@ export async function powershellToolHasPermission(
   // pushes statements NOT tracked here — prevents duplicate suggestions where
   // both "Get-Process" (sub-command) AND "$x = Get-Process" (full statement)
   // appear.
-  //
-  // SECURITY: track on PUSH only, not on loop entry.
+  // // SECURITY: track on PUSH only, not on loop entry.
   // If a statement's only sub-commands `continue` via user allow rules
   // (L1113), marking it seen at loop-entry would make the fail-closed gate
   // skip it — auto-allowing invisible non-CommandAst content like bare
@@ -1475,8 +1464,7 @@ export async function powershellToolHasPermission(
       // gate that protects the built-in allowlist path below — rejects
       // Variable/Other/ScriptBlock/SubExpression elementTypes and colon-bound
       // expression children. (security finding #32)
-      //
-      // SECURITY: Also skip when the compound contains a symlink-creating
+      // // SECURITY: Also skip when the compound contains a symlink-creating
       // command (finding — symlink+read gap). New-Item -ItemType SymbolicLink
       // can redirect subsequent reads to arbitrary paths. The built-in
       // allowlist path (below) and acceptEdits path both gate on
@@ -1508,13 +1496,12 @@ export async function powershellToolHasPermission(
     // (expression sources are one way a statement fails the gate) and also
     // rejects assignments, chain operators, control flow, and any future
     // AST type by construction. Examples this blocks:
-    //   'env:SECRET_API_KEY' | Get-Content  — CommandExpressionAst element
-    //   $x = Get-Process                   — AssignmentStatementAst
-    //   Get-Process && Get-Service         — PipelineChainAst
+    // 'env:SECRET_API_KEY' | Get-Content  — CommandExpressionAst element
+    // $x = Get-Process                   — AssignmentStatementAst
+    // Get-Process && Get-Service         — PipelineChainAst
     // Explicit user allow rules (above) run before this gate but apply their
     // own argLeaksValue check; both paths now gate argument elementTypes.
-    //
-    // SECURITY: Also skip when the compound contains a cwd-changing cmdlet
+    // // SECURITY: Also skip when the compound contains a cwd-changing cmdlet
     // (finding #27 — cd+read gap). isAllowlistedCommand validates Get-Content
     // in isolation, but `Set-Location ~; Get-Content ./.ssh/id_rsa` runs
     // Get-Content from ~, not from the validator's cwd. Path validation saw
@@ -1537,12 +1524,10 @@ export async function powershellToolHasPermission(
     // and the ACCEPT_EDITS_ALLOWED_CMDLETS allowlist. This keeps one source of
     // truth for what makes a statement safe in acceptEdits mode — any future
     // hardening of checkPermissionMode automatically applies here.
-    //
-    // Pass parsed.variables (not []) so splatting from any statement in the
+    // // Pass parsed.variables (not []) so splatting from any statement in the
     // compound command is visible. Conservative: if we can't tell which statement
     // a splatted variable affects, assume it affects all of them.
-    //
-    // SECURITY: Skip this auto-allow path when the compound contains a
+    // // SECURITY: Skip this auto-allow path when the compound contains a
     // cwd-changing command (Set-Location/Push-Location/Pop-Location). The
     // synthetic single-statement AST strips compound context, so
     // checkPermissionMode cannot see the cd in other statements. Without this
@@ -1582,8 +1567,7 @@ export async function powershellToolHasPermission(
   // CommandAst sub-commands (bare $env:SECRET) or whose only sub-commands
   // were filtered as safe-output ($env:X | Out-String) never enter the loop.
   // Without this, they silently auto-allow on empty subCommandsNeedingApproval.
-  //
-  // Only push statements NOT tracked above: if the loop PUSHED any
+  // // Only push statements NOT tracked above: if the loop PUSHED any
   // sub-command from a statement, the user will see a prompt. Pushing the
   // statement text too creates a duplicate suggestion where accepting the
   // sub-command rule does not prevent re-prompting.

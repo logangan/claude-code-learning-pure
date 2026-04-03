@@ -1,4 +1,4 @@
-/**
+/*    *
  * Plugin install counts data layer
  *
  * This module fetches and caches plugin install counts from the official
@@ -6,7 +6,7 @@
  * than 24 hours.
  *
  * Cache location: ~/.claude/plugins/install-counts-cache.json
- */
+     */
 
 import axios from 'axios'
 import { randomBytes } from 'crypto'
@@ -23,12 +23,12 @@ import { getPluginsDirectory } from './pluginDirectories.js'
 const INSTALL_COUNTS_CACHE_VERSION = 1
 const INSTALL_COUNTS_CACHE_FILENAME = 'install-counts-cache.json'
 const INSTALL_COUNTS_URL =
-  'https://raw.githubusercontent.com/anthropics/claude-plugins-official/refs/heads/stats/stats/plugin-installs.json'
+  'https:// raw.githubusercontent.com/anthropics/claude-plugins-official/refs/heads/stats/stats/plugin-installs.json'
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
 
-/**
+/*    *
  * Structure of the install counts cache file
- */
+     */
 type InstallCountsCache = {
   version: number
   fetchedAt: string // ISO timestamp
@@ -38,9 +38,9 @@ type InstallCountsCache = {
   }>
 }
 
-/**
+/*    *
  * Expected structure of the GitHub stats response
- */
+     */
 type GitHubStatsResponse = {
   plugins: Array<{
     plugin: string
@@ -48,17 +48,17 @@ type GitHubStatsResponse = {
   }>
 }
 
-/**
+/*    *
  * Get the path to the install counts cache file
- */
+     */
 function getInstallCountsCachePath(): string {
   return join(getPluginsDirectory(), INSTALL_COUNTS_CACHE_FILENAME)
 }
 
-/**
+/*    *
  * Load the install counts cache from disk.
  * Returns null if the file doesn't exist, is invalid, or is stale (>24h old).
- */
+     */
 async function loadInstallCountsCache(): Promise<InstallCountsCache | null> {
   const cachePath = getInstallCountsCachePath()
 
@@ -142,10 +142,10 @@ async function loadInstallCountsCache(): Promise<InstallCountsCache | null> {
   }
 }
 
-/**
+/*    *
  * Save the install counts cache to disk atomically.
  * Uses a temp file + rename pattern to prevent corruption.
- */
+     */
 async function saveInstallCountsCache(
   cache: InstallCountsCache,
 ): Promise<void> {
@@ -178,9 +178,9 @@ async function saveInstallCountsCache(
   }
 }
 
-/**
+/*    *
  * Fetch install counts from GitHub stats repository
- */
+     */
 async function fetchInstallCountsFromGitHub(): Promise<
   Array<{ plugin: string; unique_installs: number }>
 > {
@@ -215,13 +215,13 @@ async function fetchInstallCountsFromGitHub(): Promise<
   }
 }
 
-/**
+/*    *
  * Get plugin install counts as a Map.
  * Uses cached data if available and less than 24 hours old.
  * Returns null on errors so UI can hide counts rather than show misleading zeros.
  *
  * @returns Map of plugin ID (name@marketplace) to install count, or null if unavailable
- */
+     */
 export async function getInstallCounts(): Promise<Map<string, number> | null> {
   // Try to load from cache first
   const cache = await loadInstallCountsCache()
@@ -261,7 +261,7 @@ export async function getInstallCounts(): Promise<Map<string, number> | null> {
   }
 }
 
-/**
+/*    *
  * Format an install count for display.
  *
  * @param count - The raw install count
@@ -269,7 +269,7 @@ export async function getInstallCounts(): Promise<Map<string, number> | null> {
  *   - <1000: raw number (e.g., "42")
  *   - >=1000: K suffix with 1 decimal (e.g., "1.2K", "36.2K")
  *   - >=1000000: M suffix with 1 decimal (e.g., "1.2M")
- */
+     */
 export function formatInstallCount(count: number): string {
   if (count < 1000) {
     return String(count)

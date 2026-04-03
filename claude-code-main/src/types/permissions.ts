@@ -1,10 +1,10 @@
-/**
+/*    *
  * Pure permission type definitions extracted to break import cycles.
  *
  * This file contains only type definitions and constants with no runtime dependencies.
  * Implementation files remain in src/utils/permissions/ but can now import from here
  * to avoid circular dependencies.
- */
+     */
 
 import { feature } from 'bun:bundle'
 import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/messages.mjs'
@@ -47,10 +47,10 @@ export type PermissionBehavior = 'allow' | 'deny' | 'ask'
 // Permission Rules
 // ============================================================================
 
-/**
+/*    *
  * Where a permission rule originated from.
  * Includes all SettingSource values plus additional rule-specific sources.
- */
+     */
 export type PermissionRuleSource =
   | 'userSettings'
   | 'projectSettings'
@@ -61,17 +61,17 @@ export type PermissionRuleSource =
   | 'command'
   | 'session'
 
-/**
+/*    *
  * The value of a permission rule - specifies which tool and optional content
- */
+     */
 export type PermissionRuleValue = {
   toolName: string
   ruleContent?: string
 }
 
-/**
+/*    *
  * A permission rule with its source and behavior
- */
+     */
 export type PermissionRule = {
   source: PermissionRuleSource
   ruleBehavior: PermissionBehavior
@@ -82,9 +82,9 @@ export type PermissionRule = {
 // Permission Updates
 // ============================================================================
 
-/**
+/*    *
  * Where a permission update should be persisted
- */
+     */
 export type PermissionUpdateDestination =
   | 'userSettings'
   | 'projectSettings'
@@ -92,9 +92,9 @@ export type PermissionUpdateDestination =
   | 'session'
   | 'cliArg'
 
-/**
+/*    *
  * Update operations for permission configuration
- */
+     */
 export type PermissionUpdate =
   | {
       type: 'addRules'
@@ -130,16 +130,16 @@ export type PermissionUpdate =
       directories: string[]
     }
 
-/**
+/*    *
  * Source of an additional working directory permission.
  * Note: This is currently the same as PermissionRuleSource but kept as a
  * separate type for semantic clarity and potential future divergence.
- */
+     */
 export type WorkingDirectorySource = PermissionRuleSource
 
-/**
+/*    *
  * An additional directory included in permission scope
- */
+     */
 export type AdditionalWorkingDirectory = {
   path: string
   source: WorkingDirectorySource
@@ -149,11 +149,11 @@ export type AdditionalWorkingDirectory = {
 // Permission Decisions & Results
 // ============================================================================
 
-/**
+/*    *
  * Minimal command shape for permission metadata.
  * This is intentionally a subset of the full Command type to avoid import cycles.
  * Only includes properties needed by permission-related components.
- */
+     */
 export type PermissionCommandMetadata = {
   name: string
   description?: string
@@ -161,16 +161,16 @@ export type PermissionCommandMetadata = {
   [key: string]: unknown
 }
 
-/**
+/*    *
  * Metadata attached to permission decisions
- */
+     */
 export type PermissionMetadata =
   | { command: PermissionCommandMetadata }
   | undefined
 
-/**
+/*    *
  * Result when permission is granted
- */
+     */
 export type PermissionAllowDecision<
   Input extends { [key: string]: unknown } = { [key: string]: unknown },
 > = {
@@ -183,19 +183,19 @@ export type PermissionAllowDecision<
   contentBlocks?: ContentBlockParam[]
 }
 
-/**
+/*    *
  * Metadata for a pending classifier check that will run asynchronously.
  * Used to enable non-blocking allow classifier evaluation.
- */
+     */
 export type PendingClassifierCheck = {
   command: string
   cwd: string
   descriptions: string[]
 }
 
-/**
+/*    *
  * Result when user should be prompted
- */
+     */
 export type PermissionAskDecision<
   Input extends { [key: string]: unknown } = { [key: string]: unknown },
 > = {
@@ -206,28 +206,28 @@ export type PermissionAskDecision<
   suggestions?: PermissionUpdate[]
   blockedPath?: string
   metadata?: PermissionMetadata
-  /**
+  /*    *
    * If true, this ask decision was triggered by a bashCommandIsSafe_DEPRECATED security check
    * for patterns that splitCommand_DEPRECATED could misparse (e.g. line continuations, shell-quote
    * transformations). Used by bashToolHasPermission to block early before splitCommand_DEPRECATED
    * transforms the command. Not set for simple newline compound commands.
-   */
+       */
   isBashSecurityCheckForMisparsing?: boolean
-  /**
+  /*    *
    * If set, an allow classifier check should be run asynchronously.
    * The classifier may auto-approve the permission before the user responds.
-   */
+       */
   pendingClassifierCheck?: PendingClassifierCheck
-  /**
+  /*    *
    * Optional content blocks (e.g., images) to include alongside the rejection
    * message in the tool result. Used when users paste images as feedback.
-   */
+       */
   contentBlocks?: ContentBlockParam[]
 }
 
-/**
+/*    *
  * Result when permission is denied
- */
+     */
 export type PermissionDenyDecision = {
   behavior: 'deny'
   message: string
@@ -235,9 +235,9 @@ export type PermissionDenyDecision = {
   toolUseID?: string
 }
 
-/**
+/*    *
  * A permission decision - allow, ask, or deny
- */
+     */
 export type PermissionDecision<
   Input extends { [key: string]: unknown } = { [key: string]: unknown },
 > =
@@ -245,9 +245,9 @@ export type PermissionDecision<
   | PermissionAskDecision<Input>
   | PermissionDenyDecision
 
-/**
+/*    *
  * Permission result with additional passthrough option
- */
+     */
 export type PermissionResult<
   Input extends { [key: string]: unknown } = { [key: string]: unknown },
 > =
@@ -258,16 +258,16 @@ export type PermissionResult<
       decisionReason?: PermissionDecision<Input>['decisionReason']
       suggestions?: PermissionUpdate[]
       blockedPath?: string
-      /**
+      /*    *
        * If set, an allow classifier check should be run asynchronously.
        * The classifier may auto-approve the permission before the user responds.
-       */
+           */
       pendingClassifierCheck?: PendingClassifierCheck
     }
 
-/**
+/*    *
  * Explanation of why a permission decision was made
- */
+     */
 export type PermissionDecisionReason =
   | {
       type: 'rule'
@@ -348,51 +348,51 @@ export type YoloClassifierResult = {
   shouldBlock: boolean
   reason: string
   unavailable?: boolean
-  /**
+  /*    *
    * API returned "prompt is too long" — the classifier transcript exceeded
    * the context window. Deterministic (same transcript → same error), so
    * callers should fall back to normal prompting rather than retry/fail-closed.
-   */
+       */
   transcriptTooLong?: boolean
-  /** The model used for this classifier call */
+  /*    * The model used for this classifier call     */
   model: string
-  /** Token usage from the classifier API call (for overhead telemetry) */
+  /*    * Token usage from the classifier API call (for overhead telemetry)     */
   usage?: ClassifierUsage
-  /** Duration of the classifier API call in ms */
+  /*    * Duration of the classifier API call in ms     */
   durationMs?: number
-  /** Character lengths of the prompt components sent to the classifier */
+  /*    * Character lengths of the prompt components sent to the classifier     */
   promptLengths?: {
     systemPrompt: number
     toolCalls: number
     userPrompts: number
   }
-  /** Path where error prompts were dumped (only set when unavailable due to API error) */
+  /*    * Path where error prompts were dumped (only set when unavailable due to API error)     */
   errorDumpPath?: string
-  /** Which classifier stage produced the final decision (2-stage XML only) */
+  /*    * Which classifier stage produced the final decision (2-stage XML only)     */
   stage?: 'fast' | 'thinking'
-  /** Token usage from stage 1 (fast) when stage 2 was also run */
+  /*    * Token usage from stage 1 (fast) when stage 2 was also run     */
   stage1Usage?: ClassifierUsage
-  /** Duration of stage 1 in ms when stage 2 was also run */
+  /*    * Duration of stage 1 in ms when stage 2 was also run     */
   stage1DurationMs?: number
-  /**
+  /*    *
    * API request_id (req_xxx) for stage 1. Enables joining to server-side
    * api_usage logs for cache-miss / routing attribution. Also used for the
    * legacy 1-stage (tool_use) classifier — the single request goes here.
-   */
+       */
   stage1RequestId?: string
-  /**
+  /*    *
    * API message id (msg_xxx) for stage 1. Enables joining the
    * tengu_auto_mode_decision analytics event to the classifier's actual
    * prompt/completion in post-analysis.
-   */
+       */
   stage1MsgId?: string
-  /** Token usage from stage 2 (thinking) when stage 2 was run */
+  /*    * Token usage from stage 2 (thinking) when stage 2 was run     */
   stage2Usage?: ClassifierUsage
-  /** Duration of stage 2 in ms when stage 2 was run */
+  /*    * Duration of stage 2 in ms when stage 2 was run     */
   stage2DurationMs?: number
-  /** API request_id for stage 2 (set whenever stage 2 ran) */
+  /*    * API request_id for stage 2 (set whenever stage 2 ran)     */
   stage2RequestId?: string
-  /** API message id (msg_xxx) for stage 2 (set whenever stage 2 ran) */
+  /*    * API message id (msg_xxx) for stage 2 (set whenever stage 2 ran)     */
   stage2MsgId?: string
 }
 
@@ -413,17 +413,17 @@ export type PermissionExplanation = {
 // Tool Permission Context
 // ============================================================================
 
-/**
+/*    *
  * Mapping of permission rules by their source
- */
+     */
 export type ToolPermissionRulesBySource = {
   [T in PermissionRuleSource]?: string[]
 }
 
-/**
+/*    *
  * Context needed for permission checking in tools
  * Note: Uses a simplified DeepImmutable approximation for this types-only file
- */
+     */
 export type ToolPermissionContext = {
   readonly mode: PermissionMode
   readonly additionalWorkingDirectories: ReadonlyMap<

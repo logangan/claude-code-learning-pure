@@ -1,40 +1,31 @@
 // ---------------------------------------------------------------------------
 // readFileInRange — line-oriented file reader with two code paths
 // ---------------------------------------------------------------------------
-//
-// Returns lines [offset, offset + maxLines) from a file.
-//
-// Fast path (regular files < 10 MB):
-//   Opens the file, stats the fd, reads the whole file with readFile(),
-//   then splits lines in memory.  This avoids the per-chunk async overhead
-//   of createReadStream and is ~2x faster for typical source files.
-//
-// Streaming path (large files, pipes, devices, etc.):
-//   Uses createReadStream with manual indexOf('\n') scanning.  Content is
-//   only accumulated for lines inside the requested range — lines outside
-//   the range are counted (for totalLines) but discarded, so reading line
-//   1 of a 100 GB file won't balloon RSS.
-//
-//   All event handlers (streamOnOpen/Data/End) are module-level named
-//   functions with zero closures.  State lives in a StreamState object;
-//   handlers access it via `this`, bound at registration time.
-//
-//   Lifecycle: `open`, `end`, and `error` use .once() (auto-remove).
-//   `data` fires until the stream ends or is destroyed — either way the
-//   stream and state become unreachable together and are GC'd.
-//
-//   On error (including maxBytes exceeded), stream.destroy(err) emits
-//   'error' → reject (passed directly to .once('error')).
-//
-// Both paths strip UTF-8 BOM and \r (CRLF → LF).
-//
-// mtime comes from fstat/stat on the already-open fd — no extra open().
-//
-// maxBytes behavior depends on options.truncateOnByteLimit:
-//   false (default): legacy semantics — throws FileTooLargeError if the FILE
-//     size (fast path) or total streamed bytes (streaming) exceed maxBytes.
-//   true: caps SELECTED OUTPUT at maxBytes.  Stops at the last complete line
-//     that fits; sets truncatedByBytes in the result.  Never throws.
+// // Returns lines [offset, offset + maxLines) from a file.
+// // Fast path (regular files < 10 MB):
+// Opens the file, stats the fd, reads the whole file with readFile(),
+// then splits lines in memory.  This avoids the per-chunk async overhead
+// of createReadStream and is ~2x faster for typical source files.
+// // Streaming path (large files, pipes, devices, etc.):
+// Uses createReadStream with manual indexOf('\n') scanning.  Content is
+// only accumulated for lines inside the requested range — lines outside
+// the range are counted (for totalLines) but discarded, so reading line
+// 1 of a 100 GB file won't balloon RSS.
+// //   All event handlers (streamOnOpen/Data/End) are module-level named
+// functions with zero closures.  State lives in a StreamState object;
+// handlers access it via `this`, bound at registration time.
+// //   Lifecycle: `open`, `end`, and `error` use .once() (auto-remove).
+// `data` fires until the stream ends or is destroyed — either way the
+// stream and state become unreachable together and are GC'd.
+// //   On error (including maxBytes exceeded), stream.destroy(err) emits
+// 'error' → reject (passed directly to .once('error')).
+// // Both paths strip UTF-8 BOM and \r (CRLF → LF).
+// // mtime comes from fstat/stat on the already-open fd — no extra open().
+// // maxBytes behavior depends on options.truncateOnByteLimit:
+// false (default): legacy semantics — throws FileTooLargeError if the FILE
+// size (fast path) or total streamed bytes (streaming) exceed maxBytes.
+// true: caps SELECTED OUTPUT at maxBytes.  Stops at the last complete line
+// that fits; sets truncatedByBytes in the result.  Never throws.
 // ---------------------------------------------------------------------------
 
 import { createReadStream, fstat } from 'fs'
@@ -50,7 +41,7 @@ export type ReadFileRangeResult = {
   totalBytes: number
   readBytes: number
   mtimeMs: number
-  /** true when output was clipped to maxBytes under truncate mode */
+  /*    * true when output was clipped to maxBytes under truncate mode     */
   truncatedByBytes?: boolean
 }
 

@@ -13,10 +13,10 @@ type CachedParse = { ok: true; value: unknown } | { ok: false }
 
 // Memoized inner parse. Uses a discriminated-union wrapper because:
 // 1. memoizeWithLRU requires NonNullable<unknown>, but JSON.parse can return
-//    null (e.g. JSON.parse("null")).
+// null (e.g. JSON.parse("null")).
 // 2. Invalid JSON must also be cached — otherwise repeated calls with the same
-//    bad string re-parse and re-log every time (behavioral regression vs the
-//    old lodash memoize which wrapped the entire try/catch).
+// bad string re-parse and re-log every time (behavioral regression vs the
+// old lodash memoize which wrapped the entire try/catch).
 // Bounded to 50 entries to prevent unbounded memory growth — previously this
 // used lodash memoize which cached every unique JSON string forever (settings,
 // .mcp.json, notebooks, tool results), causing a significant memory leak.
@@ -57,11 +57,11 @@ export const safeParseJSON = Object.assign(
   { cache: parseJSONCached.cache },
 )
 
-/**
+/*    *
  * Safely parse JSON with comments (jsonc).
  * This is useful for VS Code configuration files like keybindings.json
  * which support comments and other jsonc features.
- */
+     */
 export function safeParseJSONC(json: string | null | undefined): unknown {
   if (!json) {
     return null
@@ -75,17 +75,17 @@ export function safeParseJSONC(json: string | null | undefined): unknown {
   }
 }
 
-/**
+/*    *
  * Modify a jsonc string by adding a new item to an array, preserving comments and formatting.
  * @param content The jsonc string to modify
  * @param newItem The new item to add to the array
  * @returns The modified jsonc string
- */
-/**
+     */
+/*    *
  * Bun.JSONL.parseChunk if available, false otherwise.
  * Supports both strings and Buffers, minimizing memory usage and copies.
  * Also handles BOM stripping internally.
- */
+     */
 type BunJSONLParseChunk = (
   data: string | Buffer,
   offset?: number,
@@ -174,11 +174,11 @@ function parseJSONLString<T>(data: string): T[] {
   return results
 }
 
-/**
+/*    *
  * Parses JSONL data from a string or Buffer, skipping malformed lines.
  * Uses Bun.JSONL.parseChunk when available for better performance,
  * falls back to indexOf-based scanning otherwise.
- */
+     */
 export function parseJSONL<T>(data: string | Buffer): T[] {
   if (bunJSONLParse) {
     return parseJSONLBun<T>(data)
@@ -191,13 +191,13 @@ export function parseJSONL<T>(data: string | Buffer): T[] {
 
 const MAX_JSONL_READ_BYTES = 100 * 1024 * 1024
 
-/**
+/*    *
  * Reads and parses a JSONL file, reading at most the last 100 MB.
  * For files larger than 100 MB, reads the tail and skips the first partial line.
  *
  * 100 MB is more than sufficient since the longest context window we support
  * is ~2M tokens, which is well under 100 MB of JSONL.
- */
+     */
 export async function readJSONLFile<T>(filePath: string): Promise<T[]> {
   const { size } = await stat(filePath)
   if (size <= MAX_JSONL_READ_BYTES) {

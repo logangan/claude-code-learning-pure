@@ -1,7 +1,7 @@
-/**
+/*    *
  * Auto mode subcommand handlers — dump default/merged classifier rules and
  * critique user-written rules. Dynamically imported when `claude auto-mode ...` runs.
- */
+     */
 
 import { errorMessage } from '../../utils/errors.js'
 import {
@@ -25,13 +25,13 @@ export function autoModeDefaultsHandler(): void {
   writeRules(getDefaultExternalAutoModeRules())
 }
 
-/**
+/*    *
  * Dump the effective auto mode config: user settings where provided, external
  * defaults otherwise. Per-section REPLACE semantics — matches how
  * buildYoloSystemPrompt resolves the external template (a non-empty user
  * section replaces that section's defaults entirely; an empty/absent section
  * falls through to defaults).
- */
+     */
 export function autoModeConfigHandler(): void {
   const config = getAutoModeConfig()
   const defaults = getDefaultExternalAutoModeRules()

@@ -1,8 +1,8 @@
-/**
+/*    *
  * Detects potentially destructive bash commands and returns a warning string
  * for display in the permission dialog. This is purely informational — it
  * doesn't affect permission logic or auto-approval.
- */
+     */
 
 type DestructivePattern = {
   pattern: RegExp
@@ -88,10 +88,10 @@ const DESTRUCTIVE_PATTERNS: DestructivePattern[] = [
   },
 ]
 
-/**
+/*    *
  * Checks if a bash command matches known destructive patterns.
  * Returns a human-readable warning string, or null if no destructive pattern is detected.
- */
+     */
 export function getDestructiveCommandWarning(command: string): string | null {
   for (const { pattern, warning } of DESTRUCTIVE_PATTERNS) {
     if (pattern.test(command)) {

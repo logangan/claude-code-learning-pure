@@ -14,13 +14,13 @@ export type DangerousSettings = {
   hooks?: unknown
 }
 
-/**
+/*    *
  * Extract dangerous settings from a settings object.
  *
  * Dangerous env vars are determined by checking against SAFE_ENV_VARS -
  * any env var NOT in SAFE_ENV_VARS is considered dangerous.
  * See managedEnv.ts for the authoritative list and threat categories.
- */
+     */
 export function extractDangerousSettings(
   settings: SettingsJson | null | undefined,
 ): DangerousSettings {
@@ -69,9 +69,9 @@ export function extractDangerousSettings(
   }
 }
 
-/**
+/*    *
  * Check if settings contain any dangerous settings
- */
+     */
 export function hasDangerousSettings(dangerous: DangerousSettings): boolean {
   return (
     Object.keys(dangerous.shellSettings).length > 0 ||
@@ -80,10 +80,10 @@ export function hasDangerousSettings(dangerous: DangerousSettings): boolean {
   )
 }
 
-/**
+/*    *
  * Compare two sets of dangerous settings to see if the new settings
  * have changed or added dangerous settings compared to the old settings
- */
+     */
 export function hasDangerousSettingsChanged(
   oldSettings: SettingsJson | null | undefined,
   newSettings: SettingsJson | null | undefined,
@@ -116,10 +116,10 @@ export function hasDangerousSettingsChanged(
   return oldJson !== newJson
 }
 
-/**
+/*    *
  * Format dangerous settings as a human-readable list for the UI
  * Only returns setting names, not values
- */
+     */
 export function formatDangerousSettingsList(
   dangerous: DangerousSettings,
 ): string[] {

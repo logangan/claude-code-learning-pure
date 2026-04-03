@@ -125,10 +125,10 @@ export type BaseAgentDefinition = {
   memory?: AgentMemoryScope // Persistent memory scope
   isolation?: 'worktree' | 'remote' // Run in an isolated git worktree, or remotely in CCR (ant-only)
   pendingSnapshotUpdate?: { snapshotTimestamp: string }
-  /** Omit CLAUDE.md hierarchy from the agent's userContext. Read-only agents
+  /*    * Omit CLAUDE.md hierarchy from the agent's userContext. Read-only agents
    * (Explore, Plan) don't need commit/PR/lint guidelines — the main agent has
    * full CLAUDE.md and interprets their output. Saves ~5-15 Gtok/week across
-   * 34M+ Explore spawns. Kill-switch: tengu_slim_subagent_claudemd. */
+   * 34M+ Explore spawns. Kill-switch: tengu_slim_subagent_claudemd.     */
   omitClaudeMd?: boolean
 }
 
@@ -220,12 +220,12 @@ export function getActiveAgentsFromList(
   return Array.from(agentMap.values())
 }
 
-/**
+/*    *
  * Checks if an agent's required MCP servers are available.
  * Returns true if no requirements or all requirements are met.
  * @param agent The agent to check
  * @param availableServers List of available MCP server names (e.g., from mcp.clients)
- */
+     */
 export function hasRequiredMcpServers(
   agent: AgentDefinition,
   availableServers: string[],
@@ -241,12 +241,12 @@ export function hasRequiredMcpServers(
   )
 }
 
-/**
+/*    *
  * Filters agents based on MCP server requirements.
  * Only returns agents whose required MCP servers are available.
  * @param agents List of agents to filter
  * @param availableServers List of available MCP server names
- */
+     */
 export function filterAgentsByMcpRequirements(
   agents: AgentDefinition[],
   availableServers: string[],
@@ -254,11 +254,11 @@ export function filterAgentsByMcpRequirements(
   return agents.filter(agent => hasRequiredMcpServers(agent, availableServers))
 }
 
-/**
+/*    *
  * Check for and initialize agent memory from project snapshots.
  * For agents with memory enabled, copies snapshot to local if no local memory exists.
  * For agents with newer snapshots, logs a debug message (user prompt TODO).
- */
+     */
 async function initializeAgentMemorySnapshots(
   agents: CustomAgentDefinition[],
 ): Promise<void> {
@@ -397,9 +397,9 @@ export function clearAgentDefinitionsCache(): void {
   clearPluginAgentCache()
 }
 
-/**
+/*    *
  * Helper to determine the specific parsing error for an agent file
- */
+     */
 function getParseError(frontmatter: Record<string, unknown>): string {
   const agentType = frontmatter['name']
   const description = frontmatter['description']
@@ -415,12 +415,12 @@ function getParseError(frontmatter: Record<string, unknown>): string {
   return 'Unknown parsing error'
 }
 
-/**
+/*    *
  * Parse hooks from frontmatter using the HooksSchema
  * @param frontmatter The frontmatter object containing potential hooks
  * @param agentType The agent type for logging purposes
  * @returns Parsed hooks settings or undefined if invalid/missing
- */
+     */
 function parseHooksFromFrontmatter(
   frontmatter: Record<string, unknown>,
   agentType: string,
@@ -439,9 +439,9 @@ function parseHooksFromFrontmatter(
   return result.data
 }
 
-/**
+/*    *
  * Parses agent definition from JSON data
- */
+     */
 export function parseAgentFromJson(
   name: string,
   definition: unknown,
@@ -515,9 +515,9 @@ export function parseAgentFromJson(
   }
 }
 
-/**
+/*    *
  * Parses multiple agents from a JSON object
- */
+     */
 export function parseAgentsFromJson(
   agentsJson: unknown,
   source: SettingSource = 'flagSettings',
@@ -535,9 +535,9 @@ export function parseAgentsFromJson(
   }
 }
 
-/**
+/*    *
  * Parses agent definition from markdown file data
- */
+     */
 export function parseAgentFromMarkdown(
   filePath: string,
   baseDir: string,

@@ -28,42 +28,42 @@ function getCacheBreakDiffPath(): string {
 type PreviousState = {
   systemHash: number
   toolsHash: number
-  /** Hash of system blocks WITH cache_control intact. Catches scope/TTL flips
-   *  (global↔org, 1h↔5m) that stripCacheControl erases from systemHash. */
+  /*    * Hash of system blocks WITH cache_control intact. Catches scope/TTL flips
+   *  (global↔org, 1h↔5m) that stripCacheControl erases from systemHash.     */
   cacheControlHash: number
   toolNames: string[]
-  /** Per-tool schema hash. Diffed to name which tool's description changed
+  /*    * Per-tool schema hash. Diffed to name which tool's description changed
    *  when toolSchemasChanged but added=removed=0 (77% of tool breaks per
-   *  BQ 2026-03-22). AgentTool/SkillTool embed dynamic agent/command lists. */
+   *  BQ 2026-03-22). AgentTool/SkillTool embed dynamic agent/command lists.     */
   perToolHashes: Record<string, number>
   systemCharCount: number
   model: string
   fastMode: boolean
-  /** 'tool_based' | 'system_prompt' | 'none' — flips when MCP tools are
-   *  discovered/removed. */
+  /*    * 'tool_based' | 'system_prompt' | 'none' — flips when MCP tools are
+   *  discovered/removed.     */
   globalCacheStrategy: string
-  /** Sorted beta header list. Diffed to show which headers were added/removed. */
+  /*    * Sorted beta header list. Diffed to show which headers were added/removed.     */
   betas: string[]
-  /** AFK_MODE_BETA_HEADER presence — should NOT break cache anymore
-   *  (sticky-on latched in claude.ts). Tracked to verify the fix. */
+  /*    * AFK_MODE_BETA_HEADER presence — should NOT break cache anymore
+   *  (sticky-on latched in claude.ts). Tracked to verify the fix.     */
   autoModeActive: boolean
-  /** Overage state flip — should NOT break cache anymore (eligibility is
-   *  latched session-stable in should1hCacheTTL). Tracked to verify the fix. */
+  /*    * Overage state flip — should NOT break cache anymore (eligibility is
+   *  latched session-stable in should1hCacheTTL). Tracked to verify the fix.     */
   isUsingOverage: boolean
-  /** Cache-editing beta header presence — should NOT break cache anymore
-   *  (sticky-on latched in claude.ts). Tracked to verify the fix. */
+  /*    * Cache-editing beta header presence — should NOT break cache anymore
+   *  (sticky-on latched in claude.ts). Tracked to verify the fix.     */
   cachedMCEnabled: boolean
-  /** Resolved effort (env → options → model default). Goes into output_config
-   *  or anthropic_internal.effort_override. */
+  /*    * Resolved effort (env → options → model default). Goes into output_config
+   *  or anthropic_internal.effort_override.     */
   effortValue: string
-  /** Hash of getExtraBodyParams() — catches CLAUDE_CODE_EXTRA_BODY and
-   *  anthropic_internal changes. */
+  /*    * Hash of getExtraBodyParams() — catches CLAUDE_CODE_EXTRA_BODY and
+   *  anthropic_internal changes.     */
   extraBodyHash: number
   callCount: number
   pendingChanges: PendingChanges | null
   prevCacheReadTokens: number | null
-  /** Set when cached microcompact sends cache_edits deletions. Cache reads
-   *  will legitimately drop — this is expected, not a break. */
+  /*    * Set when cached microcompact sends cache_edits deletions. Cache reads
+   *  will legitimately drop — this is expected, not a break.     */
   cacheDeletionsPending: boolean
   buildDiffableContent: () => string
 }
@@ -130,7 +130,7 @@ function isExcludedModel(model: string): boolean {
   return model.includes('haiku')
 }
 
-/**
+/*    *
  * Returns the tracking key for a querySource, or null if untracked.
  * Compact shares the same server-side cache as repl_main_thread
  * (same cacheSafeParams), so they share tracking state.
@@ -145,7 +145,7 @@ function isExcludedModel(model: string): boolean {
  * value — they run 1-3 turns with a fresh agentId each time, so there's
  * nothing meaningful to compare against. Their cache metrics are still
  * logged via tengu_api_success for analytics.
- */
+     */
 function getTrackingKey(
   querySource: QuerySource,
   agentId?: AgentId,
@@ -178,8 +178,8 @@ function computeHash(data: unknown): number {
   return djb2Hash(str)
 }
 
-/** MCP tool names are user-controlled (server config) and may leak filepaths.
- *  Collapse them to 'mcp'; built-in names are a fixed vocabulary. */
+/*    * MCP tool names are user-controlled (server config) and may leak filepaths.
+ *  Collapse them to 'mcp'; built-in names are a fixed vocabulary.     */
 function sanitizeToolName(name: string): string {
   return name.startsWith('mcp__') ? 'mcp' : name
 }
@@ -221,9 +221,9 @@ function buildDiffableContent(
   return `Model: ${model}\n\n=== System Prompt ===\n\n${systemText}\n\n=== Tools (${tools.length}) ===\n\n${toolDetails}\n`
 }
 
-/** Extended tracking snapshot — everything that could affect the server-side
+/*    * Extended tracking snapshot — everything that could affect the server-side
  *  cache key that we can observe from the client. All fields are optional so
- *  the call site can add incrementally; undefined fields compare as stable. */
+ *  the call site can add incrementally; undefined fields compare as stable.     */
 export type PromptStateSnapshot = {
   system: TextBlockParam[]
   toolSchemas: BetaToolUnion[]
@@ -240,10 +240,10 @@ export type PromptStateSnapshot = {
   extraBodyParams?: unknown
 }
 
-/**
+/*    *
  * Phase 1 (pre-call): Record the current prompt/tool state and detect what changed.
  * Does NOT fire events — just stores pending changes for phase 2 to use.
- */
+     */
 export function recordPromptState(snapshot: PromptStateSnapshot): void {
   try {
     const {
@@ -429,11 +429,11 @@ export function recordPromptState(snapshot: PromptStateSnapshot): void {
   }
 }
 
-/**
+/*    *
  * Phase 2 (post-call): Check the API response's cache tokens to determine
  * if a cache break actually occurred. If it did, use the pending changes
  * from phase 1 to explain why.
- */
+     */
 export async function checkResponseForCacheBreak(
   querySource: QuerySource,
   cacheReadTokens: number,
@@ -665,11 +665,11 @@ export async function checkResponseForCacheBreak(
   }
 }
 
-/**
+/*    *
  * Call when cached microcompact sends cache_edits deletions.
  * The next API response will have lower cache read tokens — that's
  * expected, not a cache break.
- */
+     */
 export function notifyCacheDeletion(
   querySource: QuerySource,
   agentId?: AgentId,
@@ -681,11 +681,11 @@ export function notifyCacheDeletion(
   }
 }
 
-/**
+/*    *
  * Call after compaction to reset the cache read baseline.
  * Compaction legitimately reduces message count, so cache read tokens
  * will naturally drop on the next call — that's not a break.
- */
+     */
 export function notifyCompaction(
   querySource: QuerySource,
   agentId?: AgentId,

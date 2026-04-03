@@ -23,7 +23,7 @@ import { quote } from './shellQuote.js'
 const LITERAL_BACKSLASH = '\\'
 const SNAPSHOT_CREATION_TIMEOUT = 10000 // 10 seconds
 
-/**
+/*    *
  * Creates a shell function that invokes `binaryPath` with a specific argv[0].
  * This uses the bun-internal ARGV0 dispatch trick: the bun binary checks its
  * argv[0] and runs the embedded tool (rg, bfs, ugrep) that matches.
@@ -31,7 +31,7 @@ const SNAPSHOT_CREATION_TIMEOUT = 10000 // 10 seconds
  * @param prependArgs - Arguments to inject before the user's args (e.g.,
  *   default flags). Injected literally; each element must be a valid shell
  *   word (no spaces/special chars).
- */
+     */
 function createArgv0ShellFunction(
   funcName: string,
   argv0: string,
@@ -58,10 +58,10 @@ function createArgv0ShellFunction(
   ].join('\n')
 }
 
-/**
+/*    *
  * Creates ripgrep shell integration (alias or function)
  * @returns Object with type and the shell snippet to use
- */
+     */
 export function createRipgrepShellIntegration(): {
   type: 'alias' | 'function'
   snippet: string
@@ -91,10 +91,10 @@ export function createRipgrepShellIntegration(): {
   return { type: 'alias', snippet: aliasTarget }
 }
 
-/**
+/*    *
  * VCS directories to exclude from grep searches. Matches the list in
  * GrepTool (see GrepTool.ts: VCS_DIRECTORIES_TO_EXCLUDE).
- */
+     */
 const VCS_DIRECTORIES_TO_EXCLUDE = [
   '.git',
   '.svn',
@@ -104,7 +104,7 @@ const VCS_DIRECTORIES_TO_EXCLUDE = [
   '.sl',
 ] as const
 
-/**
+/*    *
  * Creates shell integration for `find` and `grep`, backed by bfs and ugrep
  * embedded in the bun binary (ant-native only). Unlike the rg integration,
  * this always shadows the system find/grep since bfs/ugrep are drop-in
@@ -149,7 +149,7 @@ const VCS_DIRECTORIES_TO_EXCLUDE = [
  *   which isn't available at shell-snapshot creation time.
  *
  * Returns null if embedded search tools are not available in this build.
- */
+     */
 export function createFindGrepShellIntegration(): string | null {
   if (!hasEmbeddedSearchTools()) {
     return null
@@ -190,10 +190,10 @@ function getConfigFile(shellPath: string): string {
   return configPath
 }
 
-/**
+/*    *
  * Generates user-specific snapshot content (functions, options, aliases)
  * This content is derived from the user's shell configuration file
- */
+     */
 function getUserSnapshotContent(configFile: string): string {
   const isZsh = configFile.endsWith('.zshrc')
 
@@ -253,19 +253,19 @@ function getUserSnapshotContent(configFile: string): string {
       # Git Bash automatically creates aliases like "alias node='winpty node.exe'" for
       # programs that need Win32 Console in mintty, but winpty fails when there's no TTY
       if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
-        alias | grep -v "='winpty " | sed 's/^alias //g' | sed 's/^/alias -- /' | head -n 1000 >> "$SNAPSHOT_FILE"
+        alias | grep -v "='winpty " | sed 's/^alias // g' | sed 's/^/alias -- /' | head -n 1000 >> "$SNAPSHOT_FILE"
       else
-        alias | sed 's/^alias //g' | sed 's/^/alias -- /' | head -n 1000 >> "$SNAPSHOT_FILE"
+        alias | sed 's/^alias // g' | sed 's/^/alias -- /' | head -n 1000 >> "$SNAPSHOT_FILE"
       fi
   `
 
   return content
 }
 
-/**
+/*    *
  * Generates Claude Code specific snapshot content
  * This content is always included regardless of user configuration
- */
+     */
 async function getClaudeCodeSnapshotContent(): Promise<string> {
   // Get the appropriate PATH based on platform
   let pathValue = process.env.PATH
@@ -339,9 +339,9 @@ FIND_GREP_FUNC_END
   return content
 }
 
-/**
+/*    *
  * Creates the appropriate shell script for capturing environment
- */
+     */
 async function getSnapshotScript(
   shellPath: string,
   snapshotFilePath: string,
@@ -385,7 +385,7 @@ async function getSnapshotScript(
   return script
 }
 
-/**
+/*    *
  * Creates and saves the shell environment snapshot by loading the user's shell configuration
  *
  * This function is a critical part of Claude CLI's shell integration strategy. It:
@@ -409,7 +409,7 @@ async function getSnapshotScript(
  * and functions the user relies on.
  *
  * @returns Promise that resolves to the snapshot file path or undefined if creation failed
- */
+     */
 export const createAndSaveSnapshot = async (
   binShell: string,
 ): Promise<string | undefined> => {

@@ -3,7 +3,7 @@ import { FocusEvent } from './events/focus-event.js'
 
 const MAX_FOCUS_STACK = 32
 
-/**
+/*    *
  * DOM-like focus manager for the Ink terminal UI.
  *
  * Pure state — tracks activeElement and a focus stack. Has no reference
@@ -11,7 +11,7 @@ const MAX_FOCUS_STACK = 32
  *
  * Stored on the root DOMElement so any node can reach it by walking
  * parentNode (like browser's `node.ownerDocument`).
- */
+     */
 export class FocusManager {
   activeElement: DOMElement | null = null
   private dispatchFocusEvent: (target: DOMElement, event: FocusEvent) => boolean
@@ -49,11 +49,11 @@ export class FocusManager {
     this.dispatchFocusEvent(previous, new FocusEvent('blur', null))
   }
 
-  /**
+  /*    *
    * Called by the reconciler when a node is removed from the tree.
    * Handles both the exact node and any focused descendant within
    * the removed subtree. Dispatches blur and restores focus from stack.
-   */
+       */
   handleNodeRemoved(node: DOMElement, root: DOMElement): void {
     // Remove the node and any descendants from the stack
     this.focusStack = this.focusStack.filter(
@@ -159,10 +159,10 @@ function isInTree(node: DOMElement, root: DOMElement): boolean {
   return false
 }
 
-/**
+/*    *
  * Walk up to root and return it. The root is the node that holds
  * the FocusManager — like browser's `node.getRootNode()`.
- */
+     */
 export function getRootNode(node: DOMElement): DOMElement {
   let current: DOMElement | undefined = node
   while (current) {
@@ -172,10 +172,10 @@ export function getRootNode(node: DOMElement): DOMElement {
   throw new Error('Node is not in a tree with a FocusManager')
 }
 
-/**
+/*    *
  * Walk up to root and return its FocusManager.
  * Like browser's `node.ownerDocument` — focus belongs to the root.
- */
+     */
 export function getFocusManager(node: DOMElement): FocusManager {
   return getRootNode(node).focusManager!
 }

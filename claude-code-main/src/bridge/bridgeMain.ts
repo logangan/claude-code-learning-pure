@@ -63,9 +63,9 @@ export type BackoffConfig = {
   generalInitialMs: number
   generalCapMs: number
   generalGiveUpMs: number
-  /** SIGTERM→SIGKILL grace period on shutdown. Default 30s. */
+  /*    * SIGTERM→SIGKILL grace period on shutdown. Default 30s.     */
   shutdownGraceMs?: number
-  /** stopWorkWithRetry base delay (1s/2s/4s backoff). Default 1000ms. */
+  /*    * stopWorkWithRetry base delay (1s/2s/4s backoff). Default 1000ms.     */
   stopWorkBaseDelayMs?: number
 }
 
@@ -78,11 +78,11 @@ const DEFAULT_BACKOFF: BackoffConfig = {
   generalGiveUpMs: 600_000, // 10 minutes
 }
 
-/** Status update interval for the live display (ms). */
+/*    * Status update interval for the live display (ms).     */
 const STATUS_UPDATE_INTERVAL_MS = 1_000
 const SPAWN_SESSIONS_DEFAULT = 32
 
-/**
+/*    *
  * GrowthBook gate for multi-session spawn modes (--spawn / --capacity / --create-session-in-dir).
  * Sibling of tengu_ccr_bridge_multi_environment (multiple envs per host:dir) —
  * this one enables multiple sessions per environment.
@@ -92,30 +92,30 @@ const SPAWN_SESSIONS_DEFAULT = 32
  * deny access. The fast path (cache has true) is still instant; only the
  * cold-start path awaits the server fetch, and that fetch also seeds the
  * disk cache for next time.
- */
+     */
 async function isMultiSessionSpawnEnabled(): Promise<boolean> {
   return checkGate_CACHED_OR_BLOCKING('tengu_ccr_bridge_multi_session')
 }
 
-/**
+/*    *
  * Returns the threshold for detecting system sleep/wake in the poll loop.
  * Must exceed the max backoff cap — otherwise normal backoff delays trigger
  * false sleep detection (resetting the error budget indefinitely). Using
  * 2× the connection backoff cap, matching the pattern in WebSocketTransport
  * and replBridge.
- */
+     */
 function pollSleepDetectionThresholdMs(backoff: BackoffConfig): number {
   return backoff.connCapMs * 2
 }
 
-/**
+/*    *
  * Returns the args that must precede CLI flags when spawning a child claude
  * process. In compiled binaries, process.execPath is the claude binary itself
  * and args go directly to it. In npm installs (node running cli.js),
  * process.execPath is the node runtime — the child spawn must pass the script
  * path as the first arg, otherwise node interprets --sdk-url as a node option
  * and exits with "bad option: --sdk-url". See anthropics/claude-code#28334.
- */
+     */
 function spawnScriptArgs(): string[] {
   if (isInBundledMode() || !process.argv[1]) {
     return []
@@ -123,7 +123,7 @@ function spawnScriptArgs(): string[] {
   return [process.argv[1]]
 }
 
-/** Attempt to spawn a session; returns error string if spawn throws. */
+/*    * Attempt to spawn a session; returns error string if spawn throws.     */
 function safeSpawn(
   spawner: SessionSpawner,
   opts: SessionSpawnOpts,
@@ -193,12 +193,12 @@ export async function runBridgeLoop(
   // so the bridge can immediately accept new work.
   const capacityWake = createCapacityWake(loopSignal)
 
-  /**
+  /*    *
    * Heartbeat all active work items.
    * Returns 'ok' if at least one heartbeat succeeded, 'auth_failed' if any
    * got a 401/403 (JWT expired — re-queued via reconnectSession so the next
    * poll delivers fresh work), or 'failed' if all failed for other reasons.
-   */
+       */
   async function heartbeatActiveWorkItems(): Promise<
     'ok' | 'auth_failed' | 'fatal' | 'failed'
   > {
@@ -368,7 +368,7 @@ export async function runBridgeLoop(
     logger.setAttached(initialSessionId)
   }
 
-  /** Refresh the inline status display. Shows idle or active depending on state. */
+  /*    * Refresh the inline status display. Shows idle or active depending on state.     */
   function updateStatusDisplay(): void {
     // Push the session count (no-op when maxSessions === 1) so the
     // next renderStatusLine tick shows the current count.
@@ -419,7 +419,7 @@ export async function runBridgeLoop(
     logger.updateSessionStatus(sessionId, elapsed, activity, trail)
   }
 
-  /** Start the status display update ticker. */
+  /*    * Start the status display update ticker.     */
   function startStatusUpdates(): void {
     stopStatusUpdates()
     // Call immediately so the first transition (e.g. Connecting → Ready)
@@ -431,7 +431,7 @@ export async function runBridgeLoop(
     )
   }
 
-  /** Stop the status display update ticker. */
+  /*    * Stop the status display update ticker.     */
   function stopStatusUpdates(): void {
     if (statusUpdateTimer) {
       clearInterval(statusUpdateTimer)
@@ -643,10 +643,10 @@ export async function runBridgeLoop(
           // enabled (atCapMs > 0), the loop tracks a deadline and breaks out
           // to poll at that interval — heartbeat and poll compose instead of
           // one suppressing the other. We break out to poll when:
-          //   - Poll deadline reached (atCapMs > 0 only)
-          //   - Auth fails (JWT expired → poll refreshes tokens)
-          //   - Capacity wake fires (session ended → poll for new work)
-          //   - Loop aborted (shutdown)
+          // - Poll deadline reached (atCapMs > 0 only)
+          // - Auth fails (JWT expired → poll refreshes tokens)
+          // - Capacity wake fires (session ended → poll for new work)
+          // - Loop aborted (shutdown)
           if (pollConfig.non_exclusive_heartbeat_interval_ms > 0) {
             logEvent('tengu_bridge_heartbeat_mode_entered', {
               active_sessions: activeSessions.size,
@@ -902,8 +902,7 @@ export async function runBridgeLoop(
           // epoch, and point the child at /v1/code/sessions/{id}. The child
           // already has the full v2 client (SSETransport + CCRClient) — same
           // code path environment-manager launches in containers.
-          //
-          // v1 path: Session-Ingress WebSocket. Uses config.sessionIngressUrl
+          // // v1 path: Session-Ingress WebSocket. Uses config.sessionIngressUrl
           // (not secret.api_base_url, which may point to a remote proxy tunnel
           // that doesn't know about locally-created sessions).
           let sdkUrl: string
@@ -1600,7 +1599,7 @@ export function isConnectionError(err: unknown): boolean {
   return false
 }
 
-/** Detect HTTP 5xx errors from axios (code: 'ERR_BAD_RESPONSE'). */
+/*    * Detect HTTP 5xx errors from axios (code: 'ERR_BAD_RESPONSE').     */
 export function isServerError(err: unknown): boolean {
   return (
     !!err &&
@@ -1611,7 +1610,7 @@ export function isServerError(err: unknown): boolean {
   )
 }
 
-/** Add ±25% jitter to a delay value. */
+/*    * Add ±25% jitter to a delay value.     */
 function addJitter(ms: number): number {
   return Math.max(0, ms + ms * 0.25 * (2 * Math.random() - 1))
 }
@@ -1620,10 +1619,10 @@ function formatDelay(ms: number): string {
   return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${Math.round(ms)}ms`
 }
 
-/**
+/*    *
  * Retry stopWork with exponential backoff (3 attempts, 1s/2s/4s).
  * Ensures the server learns the work item ended, preventing server-side zombies.
- */
+     */
 async function stopWorkWithRetry(
   api: BridgeApiClient,
   environmentId: string,
@@ -1703,15 +1702,15 @@ export type ParsedArgs = {
   sessionTimeoutMs?: number
   permissionMode?: string
   name?: string
-  /** Value passed to --spawn (if any); undefined if no --spawn flag was given. */
+  /*    * Value passed to --spawn (if any); undefined if no --spawn flag was given.     */
   spawnMode: SpawnMode | undefined
-  /** Value passed to --capacity (if any); undefined if no --capacity flag was given. */
+  /*    * Value passed to --capacity (if any); undefined if no --capacity flag was given.     */
   capacity: number | undefined
-  /** --[no-]create-session-in-dir override; undefined = use default (on). */
+  /*    * --[no-]create-session-in-dir override; undefined = use default (on).     */
   createSessionInDir: boolean | undefined
-  /** Resume an existing session instead of creating a new one. */
+  /*    * Resume an existing session instead of creating a new one.     */
   sessionId?: string
-  /** Resume the last session in this directory (reads bridge-pointer.json). */
+  /*    * Resume the last session in this directory (reads bridge-pointer.json).     */
   continueSession: boolean
   help: boolean
   error?: string
@@ -1939,7 +1938,7 @@ ${
 ${serverOptions}
 DESCRIPTION
   Remote Control allows you to control sessions on your local device from
-  claude.ai/code (https://claude.ai/code). Run this command in the
+  claude.ai/code (https:// claude.ai/code). Run this command in the
   directory you want to work in, then connect from the Claude app or web.
 ${serverDescription}
 NOTES
@@ -1952,14 +1951,14 @@ ${serverNote}`
 
 const TITLE_MAX_LEN = 80
 
-/** Derive a session title from a user message: first line, truncated. */
+/*    * Derive a session title from a user message: first line, truncated.     */
 function deriveSessionTitle(text: string): string {
   // Collapse whitespace — newlines/tabs would break the single-line status display.
   const flat = text.replace(/\s+/g, ' ').trim()
   return truncateToWidth(flat, TITLE_MAX_LEN)
 }
 
-/**
+/*    *
  * One-shot fetch of a session's title via GET /v1/sessions/{id}.
  *
  * Uses `getBridgeSession` from createSession.ts (ccr-byoc headers + org UUID)
@@ -1967,7 +1966,7 @@ function deriveSessionTitle(text: string): string {
  * Sessions API return 404. Returns undefined if the session has no title yet
  * or the fetch fails — the caller falls back to deriving a title from the
  * first user message.
- */
+     */
 async function fetchSessionTitle(
   compatSessionId: string,
   baseUrl: string,
@@ -2180,7 +2179,7 @@ export async function bridgeMain(args: string[]): Promise<void> {
 
   // For non-localhost targets, require HTTPS to protect credentials.
   if (
-    baseUrl.startsWith('http://') &&
+    baseUrl.startsWith('http:// ') &&
     !baseUrl.includes('localhost') &&
     !baseUrl.includes('127.0.0.1')
   ) {
@@ -2193,7 +2192,7 @@ export async function bridgeMain(args: string[]): Promise<void> {
   }
 
   // Session ingress URL for WebSocket connections. In production this is the
-  // same as baseUrl (Envoy routes /v1/session_ingress/* to session-ingress).
+  // same as baseUrl (Envoy routes /v1/session_ingress/*     to session-ingress).
   // Locally, session-ingress runs on a different port (9413) than the
   // contain-provide-api (8211), so CLAUDE_BRIDGE_SESSION_INGRESS_URL must be
   // set explicitly. Ant-only, matching CLAUDE_BRIDGE_BASE_URL.
@@ -2252,7 +2251,7 @@ export async function bridgeMain(args: string[]): Promise<void> {
     })
     // biome-ignore lint/suspicious/noConsole: intentional dialog output
     console.log(
-      `\nClaude Remote Control is launching in spawn mode which lets you create new sessions in this project from Claude Code on Web or your Mobile app. Learn more here: https://code.claude.com/docs/en/remote-control\n\n` +
+      `\nClaude Remote Control is launching in spawn mode which lets you create new sessions in this project from Claude Code on Web or your Mobile app. Learn more here: https:// code.claude.com/docs/en/remote-control\n\n` +
         `Spawn mode for this project:\n` +
         `  [1] same-dir \u2014 sessions share the current directory (default)\n` +
         `  [2] worktree \u2014 each session gets an isolated git worktree\n\n` +
@@ -2278,7 +2277,7 @@ export async function bridgeMain(args: string[]): Promise<void> {
   // Determine effective spawn mode.
   // Precedence: resume > explicit --spawn > saved project pref > gate default
   // - resuming via --continue / --session-id: always single-session (resume
-  //   targets one specific session in its original directory)
+  // targets one specific session in its original directory)
   // - explicit --spawn flag: use that value directly (does not persist)
   // - saved ProjectConfig.remoteControlSpawnMode: set by first-run dialog or `w`
   // - default with gate on: same-dir (persistent multi-session, shared cwd)
@@ -2491,8 +2490,7 @@ export async function bridgeMain(args: string[]): Promise<void> {
       // Force-stop any stale worker instances for this session and re-queue
       // it so our poll loop picks it up. Must happen after registration so
       // the backend knows a live worker exists for the environment.
-      //
-      // The pointer stores a session_* ID but /bridge/reconnect looks
+      // // The pointer stores a session_* ID but /bridge/reconnect looks
       // sessions up by their infra tag (cse_*) when ccr_v2_compat_enabled
       // is on. Try both; the conversion is a no-op if already cse_*.
       const infraResumeId = toInfraSessionId(resumeSessionId)
@@ -2614,11 +2612,11 @@ export async function bridgeMain(args: string[]): Promise<void> {
       process.emit('SIGINT')
       return
     }
-    if (data[0] === 0x20 /* space */) {
+    if (data[0] === 0x20 /* space     */) {
       logger.toggleQr()
       return
     }
-    if (data[0] === 0x77 /* 'w' */) {
+    if (data[0] === 0x77 /*     'w'     */) {
       if (!toggleAvailable) return
       const newMode: 'same-dir' | 'worktree' =
         config.spawnMode === 'same-dir' ? 'worktree' : 'same-dir'
@@ -2769,12 +2767,12 @@ export async function bridgeMain(args: string[]): Promise<void> {
 
 // ─── Headless bridge (daemon worker) ────────────────────────────────────────
 
-/**
+/*    *
  * Thrown by runBridgeHeadless for configuration issues the supervisor should
  * NOT retry (trust not accepted, worktree unavailable, http-not-https). The
  * daemon worker catches this and exits with EXIT_CODE_PERMANENT so the
  * supervisor parks the worker instead of respawning it on backoff.
- */
+     */
 export class BridgeHeadlessPermanentError extends Error {
   constructor(message: string) {
     super(message)
@@ -2796,7 +2794,7 @@ export type HeadlessBridgeOpts = {
   log: (s: string) => void
 }
 
-/**
+/*    *
  * Non-interactive bridge entrypoint for the `remoteControl` daemon worker.
  *
  * Linear subset of bridgeMain(): no readline dialogs, no stdin key handlers,
@@ -2806,7 +2804,7 @@ export type HeadlessBridgeOpts = {
  * transient to the right exit code.
  *
  * Resolves cleanly when `signal` aborts and the poll loop tears down.
- */
+     */
 export async function runBridgeHeadless(
   opts: HeadlessBridgeOpts,
   signal: AbortSignal,
@@ -2842,7 +2840,7 @@ export async function runBridgeHeadless(
   const { getBridgeBaseUrl } = await import('./bridgeConfig.js')
   const baseUrl = getBridgeBaseUrl()
   if (
-    baseUrl.startsWith('http://') &&
+    baseUrl.startsWith('http:// ') &&
     !baseUrl.includes('localhost') &&
     !baseUrl.includes('127.0.0.1')
   ) {
@@ -2964,7 +2962,7 @@ export async function runBridgeHeadless(
   )
 }
 
-/** BridgeLogger adapter that routes everything to a single line-log fn. */
+/*    * BridgeLogger adapter that routes everything to a single line-log fn.     */
 function createHeadlessBridgeLogger(log: (s: string) => void): BridgeLogger {
   const noop = (): void => {}
   return {

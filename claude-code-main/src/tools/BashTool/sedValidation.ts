@@ -3,13 +3,13 @@ import { splitCommand_DEPRECATED } from '../../utils/bash/commands.js'
 import { tryParseShellCommand } from '../../utils/bash/shellQuote.js'
 import type { PermissionResult } from '../../utils/permissions/PermissionResult.js'
 
-/**
+/*    *
  * Helper: Validate flags against an allowlist
  * Handles both single flags and combined flags (e.g., -nE)
  * @param flags Array of flags to validate
  * @param allowedFlags Array of allowed single-character and long flags
  * @returns true if all flags are valid, false otherwise
- */
+     */
 function validateFlagsAgainstAllowlist(
   flags: string[],
   allowedFlags: string[],
@@ -34,13 +34,13 @@ function validateFlagsAgainstAllowlist(
   return true
 }
 
-/**
+/*    *
  * Pattern 1: Check if this is a line printing command with -n flag
  * Allows: sed -n 'N' | sed -n 'N,M' with optional -E, -r, -z flags
  * Allows semicolon-separated print commands like: sed -n '1p;2p;3p'
  * File arguments are ALLOWED for this pattern
  * @internal Exported for testing
- */
+     */
 export function isLinePrintingCommand(
   command: string,
   expressions: string[],
@@ -116,7 +116,7 @@ export function isLinePrintingCommand(
   return true
 }
 
-/**
+/*    *
  * Helper: Check if a single command is a valid print command
  * STRICT ALLOWLIST - only these exact forms are allowed:
  * - p (print all)
@@ -124,7 +124,7 @@ export function isLinePrintingCommand(
  * - N,Mp (print lines N through M)
  * Anything else (including w, W, e, E commands) is rejected.
  * @internal Exported for testing
- */
+     */
 export function isPrintCommand(cmd: string): boolean {
   if (!cmd) return false
   // Single strict regex that only matches allowed print commands
@@ -132,13 +132,13 @@ export function isPrintCommand(cmd: string): boolean {
   return /^(?:\d+|\d+,\d+)?p$/.test(cmd)
 }
 
-/**
+/*    *
  * Pattern 2: Check if this is a substitution command
  * Allows: sed 's/pattern/replacement/flags' where flags are only: g, p, i, I, m, M, 1-9
  * When allowFileWrites is true, allows -i flag and file arguments for in-place editing
  * When allowFileWrites is false (default), requires stdout-only (no file arguments, no -i flag)
  * @internal Exported for testing
- */
+     */
 function isSubstitutionCommand(
   command: string,
   expressions: string[],
@@ -237,13 +237,13 @@ function isSubstitutionCommand(
   return true
 }
 
-/**
+/*    *
  * Checks if a sed command is allowed by the allowlist.
  * The allowlist patterns themselves are strict enough to reject dangerous operations.
  * @param command The sed command to check
  * @param options.allowFileWrites When true, allows -i flag and file arguments for substitution commands
  * @returns true if the command is allowed (matches allowlist and passes denylist check), false otherwise
- */
+     */
 export function sedCommandIsAllowedByAllowlist(
   command: string,
   options?: { allowFileWrites?: boolean },
@@ -300,10 +300,10 @@ export function sedCommandIsAllowedByAllowlist(
   return true
 }
 
-/**
+/*    *
  * Check if a sed command has file arguments (not just stdin)
  * @internal Exported for testing
- */
+     */
 export function hasFileArgs(command: string): boolean {
   const sedMatch = command.match(/^\s*sed\s+/)
   if (!sedMatch) return false
@@ -378,13 +378,13 @@ export function hasFileArgs(command: string): boolean {
   }
 }
 
-/**
+/*    *
  * Extract sed expressions from command, ignoring flags and filenames
  * @param command Full sed command
  * @returns Array of sed expressions to check for dangerous operations
  * @throws Error if parsing fails
  * @internal Exported for testing
- */
+     */
 export function extractSedExpressions(command: string): string[] {
   const expressions: string[] = []
 
@@ -465,11 +465,11 @@ export function extractSedExpressions(command: string): string[] {
   return expressions
 }
 
-/**
+/*    *
  * Check if a sed expression contains dangerous operations (denylist)
  * @param expression Single sed expression (without quotes)
  * @returns true if dangerous, false if safe
- */
+     */
 function containsDangerousOperations(expression: string): boolean {
   const cmd = expression.trim()
   if (!cmd) return false
@@ -547,7 +547,7 @@ function containsDangerousOperations(expression: string): boolean {
 
   // Reject malformed substitution commands that don't follow normal pattern
   // Examples: s/foobareoutput.txt (missing delimiters), s/foo/bar//w (extra delimiter)
-  if (/^s\//.test(cmd) && !/^s\/[^/]*\/[^/]*\/[^/]*$/.test(cmd)) {
+  if (/^s\// .test(cmd) && !/^s\/[^/]*\/[^/]*\/[^/]*$/.test(cmd)) {
     return true
   }
 
@@ -628,7 +628,7 @@ function containsDangerousOperations(expression: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Cross-cutting validation step for sed commands.
  *
  * This is a constraint check that blocks dangerous sed operations regardless of mode.
@@ -640,7 +640,7 @@ function containsDangerousOperations(expression: string): boolean {
  * @returns
  * - 'ask' if any sed command contains dangerous operations
  * - 'passthrough' if no sed commands or all are safe
- */
+     */
 export function checkSedConstraints(
   input: { command: string },
   toolPermissionContext: ToolPermissionContext,

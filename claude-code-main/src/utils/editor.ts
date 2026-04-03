@@ -36,7 +36,7 @@ const PLUS_N_EDITORS = /\b(vi|vim|nvim|nano|emacs|pico|micro|helix|hx)\b/
 // VS Code and forks use -g file:line. subl uses bare file:line (no -g).
 const VSCODE_FAMILY = new Set(['code', 'cursor', 'windsurf', 'codium'])
 
-/**
+/*    *
  * Classify the editor as GUI or not. Returns the matched GUI family name
  * for goto-line argv selection, or undefined for terminal editors.
  * Note: this is classification only — spawn the user's actual binary, not
@@ -45,16 +45,16 @@ const VSCODE_FAMILY = new Set(['code', 'cursor', 'windsurf', 'codium'])
  * Uses basename so /home/alice/code/bin/nvim doesn't match 'code' via the
  * directory component. code-insiders → still matches 'code', /usr/bin/code →
  * 'code' → matches.
- */
+     */
 export function classifyGuiEditor(editor: string): string | undefined {
   const base = basename(editor.split(' ')[0] ?? '')
   return GUI_EDITORS.find(g => base.includes(g))
 }
 
-/**
+/*    *
  * Build goto-line argv for a GUI editor. VS Code family uses -g file:line;
  * subl uses bare file:line; others don't support goto-line.
- */
+     */
 function guiGotoArgv(
   guiFamily: string,
   filePath: string,
@@ -66,7 +66,7 @@ function guiGotoArgv(
   return [filePath]
 }
 
-/**
+/*    *
  * Launch a file in the user's external editor.
  *
  * For GUI editors (code, subl, etc.): spawns detached — the editor opens
@@ -77,7 +77,7 @@ function guiGotoArgv(
  * in promptEditor.ts, minus the read-back.
  *
  * Returns true if the editor was launched, false if no editor is available.
- */
+     */
 export function openFileInExternalEditor(
   filePath: string,
   line?: number,

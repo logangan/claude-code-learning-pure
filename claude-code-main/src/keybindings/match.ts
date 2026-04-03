@@ -1,17 +1,17 @@
 import type { Key } from '../ink.js'
 import type { ParsedBinding, ParsedKeystroke } from './types.js'
 
-/**
+/*    *
  * Modifier keys from Ink's Key type that we care about for matching.
  * Note: `fn` from Key is intentionally excluded as it's rarely used and
  * not commonly configurable in terminal applications.
- */
+     */
 type InkModifiers = Pick<Key, 'ctrl' | 'shift' | 'meta' | 'super'>
 
-/**
+/*    *
  * Extract modifiers from an Ink Key object.
  * This function ensures we're explicitly extracting the modifiers we care about.
- */
+     */
 function getInkModifiers(key: Key): InkModifiers {
   return {
     ctrl: key.ctrl,
@@ -21,11 +21,11 @@ function getInkModifiers(key: Key): InkModifiers {
   }
 }
 
-/**
+/*    *
  * Extract the normalized key name from Ink's Key + input.
  * Maps Ink's boolean flags (key.escape, key.return, etc.) to string names
  * that match our ParsedKeystroke.key format.
- */
+     */
 export function getKeyName(input: string, key: Key): string | null {
   if (key.escape) return 'escape'
   if (key.return) return 'enter'
@@ -46,7 +46,7 @@ export function getKeyName(input: string, key: Key): string | null {
   return null
 }
 
-/**
+/*    *
  * Check if all modifiers match between Ink Key and ParsedKeystroke.
  *
  * Alt and Meta: Ink historically set `key.meta` for Alt/Option. A `meta`
@@ -56,7 +56,7 @@ export function getKeyName(input: string, key: Key): string | null {
  * Super (Cmd/Win): distinct from alt/meta. Only arrives via the kitty
  * keyboard protocol on supporting terminals. A `cmd`/`super` binding will
  * simply never fire on terminals that don't send it.
- */
+     */
 function modifiersMatch(
   inkMods: InkModifiers,
   target: ParsedKeystroke,
@@ -78,11 +78,11 @@ function modifiersMatch(
   return true
 }
 
-/**
+/*    *
  * Check if a ParsedKeystroke matches the given Ink input + Key.
  *
  * The display text will show platform-appropriate names (opt on macOS, alt elsewhere).
- */
+     */
 export function matchesKeystroke(
   input: string,
   key: Key,
@@ -104,10 +104,10 @@ export function matchesKeystroke(
   return modifiersMatch(inkMods, target)
 }
 
-/**
+/*    *
  * Check if Ink's Key + input matches a parsed binding's first keystroke.
  * For single-keystroke bindings only (Phase 1).
- */
+     */
 export function matchesBinding(
   input: string,
   key: Key,

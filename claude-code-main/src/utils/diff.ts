@@ -9,11 +9,11 @@ import { convertLeadingTabsToSpaces } from './file.js'
 export const CONTEXT_LINES = 3
 export const DIFF_TIMEOUT_MS = 5_000
 
-/**
+/*    *
  * Shifts hunk line numbers by offset. Use when getPatchForDisplay received
  * a slice of the file (e.g. readEditContext) rather than the whole file —
  * callers pass `ctx.lineOffset - 1` to convert slice-relative to file-relative.
- */
+     */
 export function adjustHunkLineNumbers(
   hunks: StructuredPatchHunk[],
   offset: number,
@@ -40,12 +40,12 @@ function unescapeFromDiff(s: string): string {
   return s.replaceAll(AMPERSAND_TOKEN, '&').replaceAll(DOLLAR_TOKEN, '$')
 }
 
-/**
+/*    *
  * Count lines added and removed in a patch and update the total
  * For new files, pass the content string as the second parameter
  * @param patch Array of diff hunks
  * @param newFileContent Optional content string for new files
- */
+     */
 export function countLinesChanged(
   patch: StructuredPatchHunk[],
   newFileContent?: string,
@@ -113,7 +113,7 @@ export function getPatchFromContents({
   }))
 }
 
-/**
+/*    *
  * Get a patch for display with edits applied
  * @param filePath The path to the file
  * @param fileContents The contents of the file
@@ -123,7 +123,7 @@ export function getPatchFromContents({
  *
  * NOTE: This function will return the diff with all leading tabs
  * rendered as spaces for display
- */
+     */
 
 export function getPatchForDisplay({
   filePath,

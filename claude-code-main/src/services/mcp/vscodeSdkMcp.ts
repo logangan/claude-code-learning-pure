@@ -32,10 +32,10 @@ export const LogEventNotificationSchema = lazySchema(() =>
 // Store the VSCode MCP client reference for sending notifications
 let vscodeMcpClient: ConnectedMCPServer | null = null
 
-/**
+/*    *
  * Sends a file_updated notification to the VSCode MCP server. This is used to
  * notify VSCode when files are edited or written by Claude.
- */
+     */
 export function notifyVscodeFileUpdated(
   filePath: string,
   oldContent: string | null,
@@ -58,9 +58,9 @@ export function notifyVscodeFileUpdated(
     })
 }
 
-/**
+/*    *
  * Sets up the speicial internal VSCode MCP for bidirectional communication using notifications.
- */
+     */
 export function setupVscodeSdkMcp(sdkClients: MCPServerConnection[]): void {
   const client = sdkClients.find(client => client.name === 'claude-vscode')
 

@@ -48,19 +48,19 @@ import {
   renderToolUseRejectedMessage,
 } from './UI.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const autoModeStateModule = feature('TRANSCRIPT_CLASSIFIER')
   ? (require('../../utils/permissions/autoModeState.js') as typeof import('../../utils/permissions/autoModeState.js'))
   : null
 const permissionSetupModule = feature('TRANSCRIPT_CLASSIFIER')
   ? (require('../../utils/permissions/permissionSetup.js') as typeof import('../../utils/permissions/permissionSetup.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
-/**
+/*    *
  * Schema for prompt-based permission requests.
  * Used by Claude to request semantic permissions when exiting plan mode.
- */
+     */
 const allowedPromptSchema = lazySchema(() =>
   z.object({
     tool: z.enum(['Bash']).describe('The tool this prompt applies to'),
@@ -89,11 +89,11 @@ const inputSchema = lazySchema(() =>
 )
 type InputSchema = ReturnType<typeof inputSchema>
 
-/**
+/*    *
  * SDK-facing input schema - includes fields injected by normalizeToolInput.
  * The internal inputSchema doesn't have these fields because plan is read from disk,
  * but the SDK/hooks see the normalized version with plan and file path included.
- */
+     */
 export const _sdkInputSchema = lazySchema(() =>
   inputSchema().extend({
     plan: z

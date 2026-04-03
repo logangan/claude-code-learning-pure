@@ -10,7 +10,7 @@ const OPEN_TO_CLOSE: Record<string, string> = {
   "'": "'",
 }
 
-/**
+/*    *
  * Find keyword positions, skipping occurrences that are clearly not a
  * launch directive:
  *
@@ -42,7 +42,7 @@ const OPEN_TO_CLOSE: Record<string, string> = {
  *
  * Shape matches findThinkingTriggerPositions (thinking.ts) so
  * PromptInput treats both trigger types uniformly.
- */
+     */
 function findKeywordTriggerPositions(
   text: string,
   keyword: string,
@@ -112,11 +112,11 @@ export function hasUltrareviewKeyword(text: string): boolean {
   return findUltrareviewTriggerPositions(text).length > 0
 }
 
-/**
+/*    *
  * Replace the first triggerable "ultraplan" with "plan" so the forwarded
  * prompt stays grammatical ("please ultraplan this" → "please plan this").
  * Preserves the user's casing of the "plan" suffix.
- */
+     */
 export function replaceUltraplanKeyword(text: string): string {
   const [trigger] = findUltraplanTriggerPositions(text)
   if (!trigger) return text

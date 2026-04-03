@@ -5,14 +5,14 @@ import { SSETransport } from './SSETransport.js'
 import type { Transport } from './Transport.js'
 import { WebSocketTransport } from './WebSocketTransport.js'
 
-/**
+/*    *
  * Helper function to get the appropriate transport for a URL.
  *
  * Transport selection priority:
  * 1. SSETransport (SSE reads + POST writes) when CLAUDE_CODE_USE_CCR_V2 is set
  * 2. HybridTransport (WS reads + POST writes) when CLAUDE_CODE_POST_FOR_SESSION_INGRESS_V2 is set
  * 3. WebSocketTransport (WS reads + WS writes) — default
- */
+     */
 export function getTransportForUrl(
   url: URL,
   headers: Record<string, string> = {},

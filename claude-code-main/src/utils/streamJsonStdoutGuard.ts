@@ -1,10 +1,10 @@
 import { registerCleanup } from './cleanupRegistry.js'
 import { logForDebugging } from './debug.js'
 
-/**
+/*    *
  * Sentinel written to stderr ahead of any diverted non-JSON line, so that
  * log scrapers and tests can grep for guard activity.
- */
+     */
 export const STDOUT_GUARD_MARKER = '[stdout-guard]'
 
 let installed = false
@@ -25,7 +25,7 @@ function isJsonLine(line: string): boolean {
   }
 }
 
-/**
+/*    *
  * Install a runtime guard on process.stdout.write for --output-format=stream-json.
  *
  * SDK clients consuming stream-json parse stdout line-by-line as NDJSON. Any
@@ -45,7 +45,7 @@ function isJsonLine(line: string): boolean {
  * through. Only out-of-band writes are diverted.
  *
  * Installing twice is a no-op. Call before any stream-json output is emitted.
- */
+     */
 export function installStreamJsonStdoutGuard(): void {
   if (installed) {
     return
@@ -109,10 +109,10 @@ export function installStreamJsonStdoutGuard(): void {
   })
 }
 
-/**
+/*    *
  * Testing-only reset. Restores the real stdout.write and clears the line
  * buffer so subsequent tests start from a clean slate.
- */
+     */
 export function _resetStreamJsonStdoutGuardForTesting(): void {
   if (originalWrite) {
     process.stdout.write = originalWrite

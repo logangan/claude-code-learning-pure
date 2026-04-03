@@ -14,11 +14,11 @@ export type OutputStyleConfig = {
   prompt: string
   source: SettingSource | 'built-in' | 'plugin'
   keepCodingInstructions?: boolean
-  /**
+  /*    *
    * If true, this output style will be automatically applied when the plugin is enabled.
    * Only applicable to plugin output styles.
    * When multiple plugins have forced output styles, only one is chosen (logged via debug).
-   */
+       */
   forceForPlugin?: boolean
 }
 

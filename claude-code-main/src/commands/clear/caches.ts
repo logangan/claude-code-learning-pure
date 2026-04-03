@@ -1,7 +1,7 @@
-/**
+/*    *
  * Session cache clearing utilities.
  * This module is imported at startup by main.tsx, so keep imports minimal.
- */
+     */
 import { feature } from 'bun:bundle'
 import {
   clearInvokedSkills,
@@ -32,7 +32,7 @@ import { clearResolveGitDirCache } from '../../utils/git/gitFilesystem.js'
 import { clearStoredImagePaths } from '../../utils/imageStore.js'
 import { clearSessionEnvVars } from '../../utils/sessionEnvVars.js'
 
-/**
+/*    *
  * Clear all session-related caches.
  * Call this when resuming a session to ensure fresh file/skill discovery.
  * This is a subset of what clearConversation does - it only clears caches
@@ -43,7 +43,7 @@ import { clearSessionEnvVars } from '../../utils/sessionEnvVars.js'
  *   agentId-keyed state (invoked skills) is selectively cleared and requestId-keyed
  *   state (pending permission callbacks, dump state, cache-break tracking) is left
  *   intact since it cannot be safely scoped to the main session.
- */
+     */
 export function clearSessionCaches(
   preservedAgentIds: ReadonlySet<string> = new Set(),
 ): void {

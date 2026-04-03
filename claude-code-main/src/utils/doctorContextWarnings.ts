@@ -67,9 +67,9 @@ async function checkClaudeMdFiles(): Promise<ContextWarning | null> {
   }
 }
 
-/**
+/*    *
  * Check agent descriptions token count
- */
+     */
 async function checkAgentDescriptions(
   agentInfo: AgentDefinitionsResult | null,
 ): Promise<ContextWarning | null> {
@@ -113,9 +113,9 @@ async function checkAgentDescriptions(
   }
 }
 
-/**
+/*    *
  * Check MCP tools token count
- */
+     */
 async function checkMcpTools(
   tools: Tool[],
   getToolPermissionContext: () => Promise<ToolPermissionContext>,
@@ -206,9 +206,9 @@ async function checkMcpTools(
   }
 }
 
-/**
+/*    *
  * Check for unreachable permission rules (e.g., specific allow rules shadowed by tool-wide ask rules)
- */
+     */
 async function checkUnreachableRules(
   getToolPermissionContext: () => Promise<ToolPermissionContext>,
 ): Promise<ContextWarning | null> {
@@ -240,9 +240,9 @@ async function checkUnreachableRules(
   }
 }
 
-/**
+/*    *
  * Check all context warnings for the doctor command
- */
+     */
 export async function checkContextWarnings(
   tools: Tool[],
   agentInfo: AgentDefinitionsResult | null,

@@ -14,9 +14,9 @@ import {
 import { jsonStringify } from '../../utils/slowOperations.js'
 import { registerBundledSkill } from '../bundledSkills.js'
 
-/**
+/*    *
  * Build a markdown table of all contexts.
- */
+     */
 function generateContextsTable(): string {
   return markdownTable(
     ['Context', 'Description'],
@@ -27,9 +27,9 @@ function generateContextsTable(): string {
   )
 }
 
-/**
+/*    *
  * Build a markdown table of all actions with their default bindings and context.
- */
+     */
 function generateActionsTable(): string {
   // Build a lookup: action -> { keys, context }
   const actionInfo: Record<string, { keys: string[]; context: string }> = {}
@@ -55,9 +55,9 @@ function generateActionsTable(): string {
   )
 }
 
-/**
+/*    *
  * Infer context from action prefix when not in DEFAULT_BINDINGS.
- */
+     */
 function inferContextFromAction(action: string): string {
   const prefix = action.split(':')[0]
   const prefixToContext: Record<string, string> = {
@@ -83,9 +83,9 @@ function inferContextFromAction(action: string): string {
   return prefixToContext[prefix ?? ''] ?? 'Unknown'
 }
 
-/**
+/*    *
  * Build a list of reserved shortcuts.
- */
+     */
 function generateReservedShortcuts(): string {
   const lines: string[] = []
 
@@ -112,8 +112,8 @@ function generateReservedShortcuts(): string {
 }
 
 const FILE_FORMAT_EXAMPLE: KeybindingsSchemaType = {
-  $schema: 'https://www.schemastore.org/claude-code-keybindings.json',
-  $docs: 'https://code.claude.com/docs/en/keybindings',
+  $schema: 'https:// www.schemastore.org/claude-code-keybindings.json',
+  $docs: 'https:// code.claude.com/docs/en/keybindings',
   bindings: [
     {
       context: 'Chat',
@@ -326,9 +326,9 @@ export function registerKeybindingsSkill(): void {
   })
 }
 
-/**
+/*    *
  * Build a markdown table from headers and rows.
- */
+     */
 function markdownTable(headers: string[], rows: string[][]): string {
   const separator = headers.map(() => '---')
   return [

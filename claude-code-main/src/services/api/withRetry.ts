@@ -132,12 +132,12 @@ interface RetryOptions {
   fastMode?: boolean
   signal?: AbortSignal
   querySource?: QuerySource
-  /**
+  /*    *
    * Pre-seed the consecutive 529 counter. Used when this retry loop is a
    * non-streaming fallback after a streaming 529 — the streaming 529 should
    * count toward MAX_529_RETRIES so total 529s-before-fallback is consistent
    * regardless of which request mode hit the overload.
-   */
+       */
   initialConsecutive529Errors?: number
 }
 
@@ -643,10 +643,10 @@ function isBedrockAuthError(error: unknown): boolean {
   return false
 }
 
-/**
+/*    *
  * Clear AWS auth caches if appropriate.
  * @returns true if action was taken.
- */
+     */
 function handleAwsCredentialError(error: unknown): boolean {
   if (isBedrockAuthError(error)) {
     clearAwsCredentialsCache()
@@ -681,10 +681,10 @@ function isVertexAuthError(error: unknown): boolean {
   return false
 }
 
-/**
+/*    *
  * Clear GCP auth caches if appropriate.
  * @returns true if action was taken.
- */
+     */
 function handleGcpCredentialError(error: unknown): boolean {
   if (isVertexAuthError(error)) {
     clearGcpCredentialsCache()

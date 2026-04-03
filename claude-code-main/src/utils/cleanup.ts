@@ -193,7 +193,7 @@ export async function cleanupOldSessionFiles(): Promise<CleanupResult> {
           result.errors++
         }
       } else if (entry.isDirectory()) {
-        // Session directory — clean up tool-results/<toolDir>/* beneath it
+        // Session directory — clean up tool-results/<toolDir>/*     beneath it
         const sessionDir = join(projectDir, entry.name)
         const toolResultsDir = join(sessionDir, TOOL_RESULTS_SUBDIR)
         let toolDirs
@@ -262,7 +262,7 @@ export async function cleanupOldSessionFiles(): Promise<CleanupResult> {
  * @param dirPath Path to the directory to clean
  * @param extension File extension to filter (e.g., '.md', '.jsonl')
  * @param removeEmptyDir Whether to remove the directory if empty after cleanup
- */
+     */
 async function cleanupSingleDirectory(
   dirPath: string,
   extension: string,
@@ -387,12 +387,12 @@ export async function cleanupOldSessionEnvDirs(): Promise<CleanupResult> {
   return result
 }
 
-/**
+/*    *
  * Cleans up old debug log files from ~/.claude/debug/
  * Preserves the 'latest' symlink which points to the current session's log.
  * Debug logs can grow very large (especially with the infinite logging loop bug)
  * and accumulate indefinitely without this cleanup.
- */
+     */
 export async function cleanupOldDebugLogs(): Promise<CleanupResult> {
   const cutoffDate = getCutoffDate()
   const result: CleanupResult = { messages: 0, errors: 0 }
@@ -430,11 +430,11 @@ export async function cleanupOldDebugLogs(): Promise<CleanupResult> {
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000
 
-/**
+/*    *
  * Clean up old npm cache entries for Anthropic packages.
  * This helps reduce disk usage since we publish many dev versions per day.
  * Only runs once per day for Ant users.
- */
+     */
 export async function cleanupNpmCacheForAnthropicPackages(): Promise<void> {
   const markerPath = join(getClaudeConfigHomeDir(), '.npm-cache-cleanup')
 
@@ -534,12 +534,12 @@ export async function cleanupNpmCacheForAnthropicPackages(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Throttled wrapper around cleanupOldVersions for recurring cleanup in long-running sessions.
  * Uses a marker file and lock to ensure it runs at most once per 24 hours,
  * and does not block if another process is already running cleanup.
  * The regular cleanupOldVersions() should still be used for installer flows.
- */
+     */
 export async function cleanupOldVersionsThrottled(): Promise<void> {
   const markerPath = join(getClaudeConfigHomeDir(), '.version-cleanup')
 

@@ -1,10 +1,10 @@
 // biome-ignore-all lint/suspicious/noConsole: file uses console intentionally
-/**
+/*    *
  * Chrome Native Host - Pure TypeScript Implementation
  *
  * This module provides the Chrome native messaging host functionality,
  * previously implemented as a Rust NAPI binding but now in pure TypeScript.
- */
+     */
 
 import {
   appendFile,
@@ -44,9 +44,9 @@ function log(message: string, ...args: unknown[]): void {
   }
   console.error(`[Claude Chrome Native Host] ${message}`, ...args)
 }
-/**
+/*    *
  * Send a message to stdout (Chrome native messaging protocol)
- */
+     */
 export function sendChromeMessage(message: string): void {
   const jsonBytes = Buffer.from(message, 'utf-8')
   const lengthBuffer = Buffer.alloc(4)
@@ -433,10 +433,10 @@ class ChromeNativeHost {
   }
 }
 
-/**
+/*    *
  * Chrome message reader using async stdin. Synchronous reads can crash Bun, so we use
  * async reads with a buffer.
- */
+     */
 class ChromeMessageReader {
   private buffer = Buffer.alloc(0)
   private pendingResolve: ((value: string | null) => void) | null = null

@@ -9,14 +9,14 @@ type TruncatedMessage = {
   placeholderContent: string
 }
 
-/**
+/*    *
  * Determines whether the input text should be truncated. If so, it adds a
  * truncated text placeholder and neturns
  *
  * @param text The input text
  * @param nextPasteId The reference id to use
  * @returns The new text to display and separate placeholder content if applicable.
- */
+     */
 export function maybeTruncateMessageForInput(
   text: string,
   nextPasteId: number,

@@ -108,9 +108,9 @@ async function fetchBootstrapAPI(): Promise<BootstrapResponse | null> {
   }
 }
 
-/**
+/*    *
  * Fetch bootstrap data from the API and persist to disk cache.
- */
+     */
 export async function fetchBootstrapData(): Promise<void> {
   try {
     const response = await fetchBootstrapAPI()

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Terminal Launcher
  *
  * Detects the user's preferred terminal emulator and launches Claude Code
@@ -9,7 +9,7 @@
  *   macOS  — Terminal.app, iTerm2, Ghostty, Kitty, Alacritty, WezTerm
  *   Linux  — $TERMINAL, x-terminal-emulator, gnome-terminal, konsole, etc.
  *   Windows — Windows Terminal (wt.exe), PowerShell, cmd.exe
- */
+     */
 
 import { spawn } from 'child_process'
 import { basename } from 'path'
@@ -56,11 +56,11 @@ const LINUX_TERMINALS = [
   'xterm',
 ]
 
-/**
+/*    *
  * Detect the user's preferred terminal on macOS.
  * Checks running processes first (most likely to be what the user prefers),
  * then falls back to checking installed .app bundles.
- */
+     */
 async function detectMacosTerminal(): Promise<TerminalInfo> {
   // Stored preference from a previous interactive session. This is the only
   // signal that survives into the headless LaunchServices context — the env
@@ -120,10 +120,10 @@ async function detectMacosTerminal(): Promise<TerminalInfo> {
   return { name: 'Terminal.app', command: 'Terminal' }
 }
 
-/**
+/*    *
  * Detect the user's preferred terminal on Linux.
  * Checks $TERMINAL, then x-terminal-emulator, then walks a priority list.
- */
+     */
 async function detectLinuxTerminal(): Promise<TerminalInfo | null> {
   // Check $TERMINAL env var
   const termEnv = process.env.TERMINAL
@@ -151,9 +151,9 @@ async function detectLinuxTerminal(): Promise<TerminalInfo | null> {
   return null
 }
 
-/**
+/*    *
  * Detect the user's preferred terminal on Windows.
- */
+     */
 async function detectWindowsTerminal(): Promise<TerminalInfo> {
   // Check for Windows Terminal first
   const wt = await which('wt.exe')
@@ -177,9 +177,9 @@ async function detectWindowsTerminal(): Promise<TerminalInfo> {
   return { name: 'Command Prompt', command: 'cmd.exe' }
 }
 
-/**
+/*    *
  * Detect the user's preferred terminal emulator.
- */
+     */
 export async function detectTerminal(): Promise<TerminalInfo | null> {
   switch (process.platform) {
     case 'darwin':
@@ -193,7 +193,7 @@ export async function detectTerminal(): Promise<TerminalInfo | null> {
   }
 }
 
-/**
+/*    *
  * Launch Claude Code in the detected terminal emulator.
  *
  * Pure argv paths (no shell, user input never touches an interpreter):
@@ -210,7 +210,7 @@ export async function detectTerminal(): Promise<TerminalInfo | null> {
  * argv elements end-to-end. No sh -c. No shellQuote(). The terminal does
  * chdir(cwd) and execvp(claude, argv). Spaces/quotes/metacharacters in
  * query or cwd are preserved by argv boundaries with zero interpretation.
- */
+     */
 export async function launchInTerminal(
   claudePath: string,
   action: {
@@ -468,11 +468,11 @@ async function launchWindowsTerminal(
   })
 }
 
-/**
+/*    *
  * Spawn a terminal detached so the handler process can exit without
  * waiting for the terminal to close. Resolves false on spawn failure
  * (ENOENT, EACCES) rather than crashing.
- */
+     */
 function spawnDetached(
   command: string,
   args: string[],
@@ -498,10 +498,10 @@ function spawnDetached(
   })
 }
 
-/**
+/*    *
  * Build a single-quoted POSIX shell command string. ONLY used by the
  * AppleScript paths (iTerm, Terminal.app) which have no argv interface.
- */
+     */
 function buildShellCommand(
   claudePath: string,
   claudeArgs: string[],
@@ -511,33 +511,33 @@ function buildShellCommand(
   return `${cdPrefix}${[claudePath, ...claudeArgs].map(shellQuote).join(' ')}`
 }
 
-/**
+/*    *
  * POSIX single-quote escaping. Single-quoted strings have zero
  * interpretation except for the closing single quote itself.
  * Only used by buildShellCommand() for the AppleScript paths.
- */
+     */
 function shellQuote(s: string): string {
   return `'${s.replace(/'/g, "'\\''")}'`
 }
 
-/**
+/*    *
  * AppleScript string literal escaping (backslash then double-quote).
- */
+     */
 function appleScriptQuote(s: string): string {
   return `"${s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`
 }
 
-/**
+/*    *
  * PowerShell single-quoted string. The ONLY special sequence is '' for a
  * literal single quote — no backtick escapes, no variable expansion, no
  * subexpressions. This is the safe PowerShell quoting; double-quoted
  * strings interpret `n `t `" etc. and can be escaped out of.
- */
+     */
 function psQuote(s: string): string {
   return `'${s.replace(/'/g, "''")}'`
 }
 
-/**
+/*    *
  * cmd.exe argument quoting. cmd.exe does NOT use CommandLineToArgvW-style
  * backslash escaping — it toggles its quoting state on every raw "
  * character, so an embedded " breaks out of the quoted region and exposes
@@ -549,7 +549,7 @@ function psQuote(s: string): string {
  * double quotes. Trailing backslashes are still doubled because the
  * *child process* (claude.exe) uses CommandLineToArgvW, where a trailing
  * \ before our closing " would eat the close-quote.
- */
+     */
 function cmdQuote(arg: string): string {
   const stripped = arg.replace(/"/g, '').replace(/%/g, '%%')
   const escaped = stripped.replace(/(\\+)$/, '$1$1')

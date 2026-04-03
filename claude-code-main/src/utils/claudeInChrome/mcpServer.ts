@@ -21,9 +21,9 @@ import { isEnvTruthy } from '../envUtils.js'
 import { sideQuery } from '../sideQuery.js'
 import { getAllSocketPaths, getSecureSocketPath } from './common.js'
 
-const EXTENSION_DOWNLOAD_URL = 'https://claude.ai/chrome'
+const EXTENSION_DOWNLOAD_URL = 'https:// claude.ai/chrome'
 const BUG_REPORT_URL =
-  'https://github.com/anthropics/claude-code/issues/new?labels=bug,claude-in-chrome'
+  'https:// github.com/anthropics/claude-code/issues/new?labels=bug,claude-in-chrome'
 
 // String metadata keys safe to forward to analytics. Keys like error_message
 // are excluded because they could contain page content or user data.
@@ -43,11 +43,11 @@ function isPermissionMode(raw: string): raw is PermissionMode {
   return PERMISSION_MODES.some(m => m === raw)
 }
 
-/**
+/*    *
  * Resolves the Chrome bridge URL based on environment and feature flag.
  * Bridge is used when the feature flag is enabled; ant users always get
  * bridge. API key / 3P users fall back to native messaging.
- */
+     */
 function getChromeBridgeUrl(): string | undefined {
   const bridgeEnabled =
     process.env.USER_TYPE === 'ant' ||
@@ -61,14 +61,14 @@ function getChromeBridgeUrl(): string | undefined {
     isEnvTruthy(process.env.USE_LOCAL_OAUTH) ||
     isEnvTruthy(process.env.LOCAL_BRIDGE)
   ) {
-    return 'ws://localhost:8765'
+    return 'ws:// localhost:8765'
   }
 
   if (isEnvTruthy(process.env.USE_STAGING_OAUTH)) {
-    return 'wss://bridge-staging.claudeusercontent.com'
+    return 'wss:// bridge-staging.claudeusercontent.com'
   }
 
-  return 'wss://bridge.claudeusercontent.com'
+  return 'wss:// bridge.claudeusercontent.com'
 }
 
 function isLocalBridge(): boolean {
@@ -78,10 +78,10 @@ function isLocalBridge(): boolean {
   )
 }
 
-/**
+/*    *
  * Build the ClaudeForChromeContext used by both the subprocess MCP server
  * and the in-process path in the MCP client.
- */
+     */
 export function createChromeContext(
   env?: Record<string, string>,
 ): ClaudeForChromeContext {
@@ -152,15 +152,13 @@ export function createChromeContext(
     // Wire inference for the browser_task tool — the chrome-mcp server runs
     // a lightning-mode agent loop in Node and calls the extension's
     // lightning_turn tool once per iteration for execution.
-    //
-    // Ant-only: the extension's lightning_turn is build-time-gated via
+    // // Ant-only: the extension's lightning_turn is build-time-gated via
     // import.meta.env.ANT_ONLY_BUILD — the whole lightning/ module graph is
     // tree-shaken from the public extension build (build:prod greps for a
     // marker to verify). Without this injection, the Node MCP server's
     // ListTools also filters browser_task + lightning_turn out, so external
     // users never see the tools advertised. Three independent gates.
-    //
-    // Types inlined: AnthropicMessagesRequest/Response live in
+    // // Types inlined: AnthropicMessagesRequest/Response live in
     // @ant/claude-for-chrome-mcp@0.4.0 which isn't published yet. CI installs
     // 0.3.0. The callAnthropicMessages field is also 0.4.0-only, but spreading
     // an extra property into ClaudeForChromeContext is fine against either

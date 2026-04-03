@@ -10,7 +10,7 @@ import {
 } from '../utils/markdownConfigLoader.js'
 import { clearPluginOutputStyleCache } from '../utils/plugins/loadPluginOutputStyles.js'
 
-/**
+/*    *
  * Loads markdown files from .claude/output-styles directories throughout the project
  * and from ~/.claude/output-styles directory and converts them to output styles.
  *
@@ -22,7 +22,7 @@ import { clearPluginOutputStyleCache } from '../utils/plugins/loadPluginOutputSt
  * - User ~/.claude/output-styles/*.md -> user styles (overridden by project styles)
  *
  * @param cwd Current working directory for project directory traversal
- */
+     */
 export const getOutputStyleDirStyles = memoize(
   async (cwd: string): Promise<OutputStyleConfig[]> => {
     try {

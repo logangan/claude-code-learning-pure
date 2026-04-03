@@ -37,7 +37,7 @@ export type AdminRequest = {
     }
 )
 
-/**
+/*    *
  * Create an admin request (limit increase or seat upgrade).
  *
  * For Team/Enterprise users who don't have billing/admin permissions,
@@ -45,7 +45,7 @@ export type AdminRequest = {
  *
  * If a pending request of the same type already exists for this user,
  * returns the existing request instead of creating a new one.
- */
+     */
 export async function createAdminRequest(
   params: AdminRequestCreateParams,
 ): Promise<AdminRequest> {
@@ -63,11 +63,11 @@ export async function createAdminRequest(
   return response.data
 }
 
-/**
+/*    *
  * Get pending admin request of a specific type for the current user.
  *
  * Returns the pending request if one exists, otherwise null.
- */
+     */
 export async function getMyAdminRequests(
   requestType: AdminRequestType,
   statuses: AdminRequestStatus[],
@@ -96,9 +96,9 @@ type AdminRequestEligibilityResponse = {
   is_allowed: boolean
 }
 
-/**
+/*    *
  * Check if a specific admin request type is allowed for this org.
- */
+     */
 export async function checkAdminRequestEligibility(
   requestType: AdminRequestType,
 ): Promise<AdminRequestEligibilityResponse | null> {

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Shared transport-layer helpers for bridge message handling.
  *
  * Extracted from replBridge.ts so both the env-based core (initBridgeCore)
@@ -8,7 +8,7 @@
  * Everything here is pure — no closure over bridge-specific state. All
  * collaborators (transport, sessionId, UUID sets, callbacks) are passed
  * as params.
- */
+     */
 
 import { randomUUID } from 'crypto'
 import type { SDKMessage } from '../entrypoints/agentSdkTypes.js'
@@ -30,9 +30,9 @@ import type { ReplBridgeTransport } from './replBridgeTransport.js'
 
 // ─── Type guards ─────────────────────────────────────────────────────────────
 
-/** Type predicate for parsed WebSocket messages. SDKMessage is a
+/*    * Type predicate for parsed WebSocket messages. SDKMessage is a
  *  discriminated union on `type` — validating the discriminant is
- *  sufficient for the predicate; callers narrow further via the union. */
+ *  sufficient for the predicate; callers narrow further via the union.     */
 export function isSDKMessage(value: unknown): value is SDKMessage {
   return (
     value !== null &&
@@ -42,7 +42,7 @@ export function isSDKMessage(value: unknown): value is SDKMessage {
   )
 }
 
-/** Type predicate for control_response messages from the server. */
+/*    * Type predicate for control_response messages from the server.     */
 export function isSDKControlResponse(
   value: unknown,
 ): value is SDKControlResponse {
@@ -55,7 +55,7 @@ export function isSDKControlResponse(
   )
 }
 
-/** Type predicate for control_request messages from the server. */
+/*    * Type predicate for control_request messages from the server.     */
 export function isSDKControlRequest(
   value: unknown,
 ): value is SDKControlRequest {
@@ -69,11 +69,11 @@ export function isSDKControlRequest(
   )
 }
 
-/**
+/*    *
  * True for message types that should be forwarded to the bridge transport.
  * The server only wants user/assistant turns and slash-command system events;
  * everything else (tool_result, progress, etc.) is internal REPL chatter.
- */
+     */
 export function isEligibleBridgeMessage(m: Message): boolean {
   // Virtual messages (REPL inner calls) are display-only — bridge/SDK
   // consumers see the REPL tool_use/result which summarizes the work.
@@ -87,7 +87,7 @@ export function isEligibleBridgeMessage(m: Message): boolean {
   )
 }
 
-/**
+/*    *
  * Extract title-worthy text from a Message for onUserMessage. Returns
  * undefined for messages that shouldn't title the session: non-user, meta
  * (nudges), tool results, compact summaries, non-human origins (task
@@ -99,7 +99,7 @@ export function isEligibleBridgeMessage(m: Message): boolean {
  * registry). The initialMessages path in initReplBridge checks it; the
  * writeMessages path reaching an interrupt as the *first* message is
  * implausible (an interrupt implies a prior prompt already flowed through).
- */
+     */
 export function extractTitleText(m: Message): string | undefined {
   if (m.type !== 'user' || m.isMeta || m.toolUseResult || m.isCompactSummary)
     return undefined
@@ -123,12 +123,12 @@ export function extractTitleText(m: Message): string | undefined {
 
 // ─── Ingress routing ─────────────────────────────────────────────────────────
 
-/**
+/*    *
  * Parse an ingress WebSocket message and route it to the appropriate handler.
  * Ignores messages whose UUID is in recentPostedUUIDs (echoes of what we sent)
  * or in recentInboundUUIDs (re-deliveries we've already forwarded — e.g.
  * server replayed history after a transport swap lost the seq-num cursor).
- */
+     */
 export function handleIngressMessage(
   data: string,
   recentPostedUUIDs: BoundedUUIDSet,
@@ -212,13 +212,13 @@ export function handleIngressMessage(
 export type ServerControlRequestHandlers = {
   transport: ReplBridgeTransport | null
   sessionId: string
-  /**
+  /*    *
    * When true, all mutable requests (interrupt, set_model, set_permission_mode,
    * set_max_thinking_tokens) reply with an error instead of false-success.
    * initialize still replies success — the server kills the connection otherwise.
    * Used by the outbound-only bridge mode and the SDK's /bridge subpath so claude.ai sees a
    * proper error instead of "action succeeded but nothing happened locally".
-   */
+       */
   outboundOnly?: boolean
   onInterrupt?: () => void
   onSetModel?: (model: string | undefined) => void
@@ -231,7 +231,7 @@ export type ServerControlRequestHandlers = {
 const OUTBOUND_ONLY_ERROR =
   'This session is outbound-only. Enable Remote Control locally to allow inbound control.'
 
-/**
+/*    *
  * Respond to inbound control_request messages from the server. The server
  * sends these for session lifecycle events (initialize, set_model) and
  * for turn-level coordination (interrupt, set_max_thinking_tokens). If we
@@ -239,7 +239,7 @@ const OUTBOUND_ONLY_ERROR =
  *
  * Previously a closure inside initBridgeCore's onWorkReceived; now takes
  * collaborators as params so both cores can use it.
- */
+     */
 export function handleServerControlRequest(
   request: SDKControlRequest,
   handlers: ServerControlRequestHandlers,
@@ -392,10 +392,10 @@ export function handleServerControlRequest(
 
 // ─── Result message (for session archival on teardown) ───────────────────────
 
-/**
+/*    *
  * Build a minimal `SDKResultSuccess` message for session archival.
  * The server needs this event before a WS close to trigger archival.
- */
+     */
 export function makeResultMessage(sessionId: string): SDKResultSuccess {
   return {
     type: 'result',
@@ -417,7 +417,7 @@ export function makeResultMessage(sessionId: string): SDKResultSuccess {
 
 // ─── BoundedUUIDSet (echo-dedup ring buffer) ─────────────────────────────────
 
-/**
+/*    *
  * FIFO-bounded set backed by a circular buffer. Evicts the oldest entry
  * when capacity is reached, keeping memory usage constant at O(capacity).
  *
@@ -425,7 +425,7 @@ export function makeResultMessage(sessionId: string): SDKResultSuccess {
  * the oldest. The caller relies on external ordering (the hook's
  * lastWrittenIndexRef) as the primary dedup — this set is a secondary
  * safety net for echo filtering and race-condition dedup.
- */
+     */
 export class BoundedUUIDSet {
   private readonly capacity: number
   private readonly ring: (string | undefined)[]

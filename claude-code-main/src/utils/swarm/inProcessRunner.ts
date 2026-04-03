@@ -1,4 +1,4 @@
-/**
+/*    *
  * In-process teammate runner
  *
  * Wraps runAgent() for in-process teammates, providing:
@@ -7,7 +7,7 @@
  * - Idle notification to leader when complete
  * - Plan mode approval flow support
  * - Cleanup on completion or abort
- */
+     */
 
 import { feature } from 'bun:bundle'
 import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/messages.mjs'
@@ -113,7 +113,7 @@ type SetAppStateFn = (updater: (prev: AppState) => AppState) => void
 
 const PERMISSION_POLL_INTERVAL_MS = 500
 
-/**
+/*    *
  * Creates a canUseTool function for in-process teammates that properly resolves
  * 'ask' permissions via the UI rather than treating them as denials.
  *
@@ -124,7 +124,7 @@ const PERMISSION_POLL_INTERVAL_MS = 500
  * Falls back to the mailbox system when the bridge is unavailable:
  * sends a permission request to the leader's inbox, waits for the response
  * in the teammate's own mailbox.
- */
+     */
 function createInProcessCanUseTool(
   identity: TeammateIdentity,
   abortController: AbortController,
@@ -450,10 +450,10 @@ function createInProcessCanUseTool(
   }
 }
 
-/**
+/*    *
  * Formats a message as <teammate-message> XML for injection into the conversation.
  * This ensures the model sees messages in the same format as tmux teammates.
- */
+     */
 function formatAsTeammateMessage(
   from: string,
   content: string,
@@ -465,57 +465,57 @@ function formatAsTeammateMessage(
   return `<${TEAMMATE_MESSAGE_TAG} teammate_id="${from}"${colorAttr}${summaryAttr}>\n${content}\n</${TEAMMATE_MESSAGE_TAG}>`
 }
 
-/**
+/*    *
  * Configuration for running an in-process teammate.
- */
+     */
 export type InProcessRunnerConfig = {
-  /** Teammate identity for context */
+  /*    * Teammate identity for context     */
   identity: TeammateIdentity
-  /** Task ID in AppState */
+  /*    * Task ID in AppState     */
   taskId: string
-  /** Initial prompt for the teammate */
+  /*    * Initial prompt for the teammate     */
   prompt: string
-  /** Optional agent definition (for specialized agents) */
+  /*    * Optional agent definition (for specialized agents)     */
   agentDefinition?: CustomAgentDefinition
-  /** Teammate context for AsyncLocalStorage */
+  /*    * Teammate context for AsyncLocalStorage     */
   teammateContext: TeammateContext
-  /** Parent's tool use context */
+  /*    * Parent's tool use context     */
   toolUseContext: ToolUseContext
-  /** Abort controller linked to parent */
+  /*    * Abort controller linked to parent     */
   abortController: AbortController
-  /** Optional model override for this teammate */
+  /*    * Optional model override for this teammate     */
   model?: string
-  /** Optional system prompt override for this teammate */
+  /*    * Optional system prompt override for this teammate     */
   systemPrompt?: string
-  /** How to apply the system prompt: 'replace' or 'append' to default */
+  /*    * How to apply the system prompt: 'replace' or 'append' to default     */
   systemPromptMode?: 'default' | 'replace' | 'append'
-  /** Tool permissions to auto-allow for this teammate */
+  /*    * Tool permissions to auto-allow for this teammate     */
   allowedTools?: string[]
-  /** Whether this teammate can show permission prompts for unlisted tools.
-   * When false (default), unlisted tools are auto-denied. */
+  /*    * Whether this teammate can show permission prompts for unlisted tools.
+   * When false (default), unlisted tools are auto-denied.     */
   allowPermissionPrompts?: boolean
-  /** Short description of the task (used as summary for the initial prompt header) */
+  /*    * Short description of the task (used as summary for the initial prompt header)     */
   description?: string
-  /** request_id of the API call that spawned this teammate, for lineage
-   *  tracing on tengu_api_* events. */
+  /*    * request_id of the API call that spawned this teammate, for lineage
+   *  tracing on tengu_api_* events.     */
   invokingRequestId?: string
 }
 
-/**
+/*    *
  * Result from running an in-process teammate.
- */
+     */
 export type InProcessRunnerResult = {
-  /** Whether the run completed successfully */
+  /*    * Whether the run completed successfully     */
   success: boolean
-  /** Error message if failed */
+  /*    * Error message if failed     */
   error?: string
-  /** Messages produced by the agent */
+  /*    * Messages produced by the agent     */
   messages: Message[]
 }
 
-/**
+/*    *
  * Updates task state in AppState.
- */
+     */
 function updateTaskState(
   taskId: string,
   updater: (task: InProcessTeammateTaskState) => InProcessTeammateTaskState,
@@ -540,10 +540,10 @@ function updateTaskState(
   })
 }
 
-/**
+/*    *
  * Sends a message to the leader's file-based mailbox.
  * Uses the same mailbox system as tmux teammates for consistency.
- */
+     */
 async function sendMessageToLeader(
   from: string,
   text: string,
@@ -562,10 +562,10 @@ async function sendMessageToLeader(
   )
 }
 
-/**
+/*    *
  * Sends idle notification to the leader via file-based mailbox.
  * Uses agentName (not agentId) for consistency with process-based teammates.
- */
+     */
 async function sendIdleNotification(
   agentName: string,
   agentColor: string | undefined,
@@ -588,10 +588,10 @@ async function sendIdleNotification(
   )
 }
 
-/**
+/*    *
  * Find an available task from the team's task list.
  * A task is available if it's pending, has no owner, and is not blocked.
- */
+     */
 function findAvailableTask(tasks: Task[]): Task | undefined {
   const unresolvedTaskIds = new Set(
     tasks.filter(t => t.status !== 'completed').map(t => t.id),
@@ -604,9 +604,9 @@ function findAvailableTask(tasks: Task[]): Task | undefined {
   })
 }
 
-/**
+/*    *
  * Format a task as a prompt for the teammate to work on.
- */
+     */
 function formatTaskAsPrompt(task: Task): string {
   let prompt = `Complete all open tasks. Start with task #${task.id}: \n\n ${task.subject}`
 
@@ -617,10 +617,10 @@ function formatTaskAsPrompt(task: Task): string {
   return prompt
 }
 
-/**
+/*    *
  * Try to claim an available task from the team's task list.
  * Returns the formatted prompt if a task was claimed, or undefined if none available.
- */
+     */
 async function tryClaimNextTask(
   taskListId: string,
   agentName: string,
@@ -656,9 +656,9 @@ async function tryClaimNextTask(
   }
 }
 
-/**
+/*    *
  * Result of waiting for messages.
- */
+     */
 type WaitResult =
   | {
       type: 'shutdown_request'
@@ -676,7 +676,7 @@ type WaitResult =
       type: 'aborted'
     }
 
-/**
+/*    *
  * Waits for new prompts or shutdown request.
  * Polls the teammate's mailbox every 500ms, checking for:
  * - Shutdown request from leader (returned to caller for model decision)
@@ -685,7 +685,7 @@ type WaitResult =
  *
  * This keeps the teammate alive in 'idle' state instead of terminating.
  * Does NOT auto-approve shutdown - the model should make that decision.
- */
+     */
 async function waitForNextPromptOrShutdown(
   identity: TeammateIdentity,
   abortController: AbortController,
@@ -867,7 +867,7 @@ async function waitForNextPromptOrShutdown(
   return { type: 'aborted' }
 }
 
-/**
+/*    *
  * Runs an in-process teammate with a continuous prompt loop.
  *
  * Executes runAgent() within the teammate's AsyncLocalStorage context,
@@ -879,7 +879,7 @@ async function waitForNextPromptOrShutdown(
  *
  * @param config - Runner configuration
  * @returns Result with messages and success status
- */
+     */
 export async function runInProcessTeammate(
   config: InProcessRunnerConfig,
 ): Promise<InProcessRunnerResult> {
@@ -1533,14 +1533,14 @@ export async function runInProcessTeammate(
   }
 }
 
-/**
+/*    *
  * Starts an in-process teammate in the background.
  *
  * This is the main entry point called after spawn. It starts the agent
  * execution loop in a fire-and-forget manner.
  *
  * @param config - Runner configuration
- */
+     */
 export function startInProcessTeammate(config: InProcessRunnerConfig): void {
   // Extract agentId before the closure so the catch handler doesn't retain
   // the full config object (including toolUseContext) while the promise is

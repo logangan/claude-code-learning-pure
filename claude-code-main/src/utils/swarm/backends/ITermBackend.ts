@@ -14,10 +14,10 @@ let firstPaneUsed = false
 // Lock mechanism to prevent race conditions when spawning teammates in parallel
 let paneCreationLock: Promise<void> = Promise.resolve()
 
-/**
+/*    *
  * Acquires a lock for pane creation, ensuring sequential execution.
  * Returns a release function that must be called when done.
- */
+     */
 function acquirePaneCreationLock(): Promise<() => void> {
   let release: () => void
   const newLock = new Promise<void>(resolve => {
@@ -30,23 +30,23 @@ function acquirePaneCreationLock(): Promise<() => void> {
   return previousLock.then(() => release!)
 }
 
-/**
+/*    *
  * Runs an it2 CLI command and returns the result.
- */
+     */
 function runIt2(
   args: string[],
 ): Promise<{ stdout: string; stderr: string; code: number }> {
   return execFileNoThrow(IT2_COMMAND, args)
 }
 
-/**
+/*    *
  * Parses the session ID from `it2 session split` output.
  * Format: "Created new pane: <session-id>"
  *
  * NOTE: This UUID is only valid when splitting from a specific session
  * using the -s flag. When splitting from the "active" session, the UUID
  * may not be accessible if the split happened in a different window.
- */
+     */
 function parseSplitOutput(output: string): string {
   const match = output.match(/Created new pane:\s*(.+)/)
   if (match && match[1]) {
@@ -55,11 +55,11 @@ function parseSplitOutput(output: string): string {
   return ''
 }
 
-/**
+/*    *
  * Gets the leader's session ID from ITERM_SESSION_ID env var.
  * Format: "wXtYpZ:UUID" - we extract the UUID part after the colon.
  * Returns null if not in iTerm2 or env var not set.
- */
+     */
 function getLeaderSessionId(): string | null {
   const itermSessionId = process.env.ITERM_SESSION_ID
   if (!itermSessionId) {
@@ -72,18 +72,18 @@ function getLeaderSessionId(): string | null {
   return itermSessionId.slice(colonIndex + 1)
 }
 
-/**
+/*    *
  * ITermBackend implements pane management using iTerm2's native split panes
  * via the it2 CLI tool.
- */
+     */
 export class ITermBackend implements PaneBackend {
   readonly type = 'iterm2' as const
   readonly displayName = 'iTerm2'
   readonly supportsHideShow = false
 
-  /**
+  /*    *
    * Checks if iTerm2 backend is available (in iTerm2 with it2 CLI installed).
-   */
+       */
   async isAvailable(): Promise<boolean> {
     const inITerm2 = isInITerm2()
     logForDebugging(`[ITermBackend] isAvailable check: inITerm2=${inITerm2}`)
@@ -98,19 +98,19 @@ export class ITermBackend implements PaneBackend {
     return it2Available
   }
 
-  /**
+  /*    *
    * Checks if we're currently running inside iTerm2.
-   */
+       */
   async isRunningInside(): Promise<boolean> {
     const result = isInITerm2()
     logForDebugging(`[ITermBackend] isRunningInside: ${result}`)
     return result
   }
 
-  /**
+  /*    *
    * Creates a new teammate pane in the swarm view.
    * Uses a lock to prevent race conditions when multiple teammates are spawned in parallel.
-   */
+       */
   async createTeammatePaneInSwarmView(
     name: string,
     color: AgentColorName,
@@ -124,11 +124,9 @@ export class ITermBackend implements PaneBackend {
       // Layout: Leader on left, teammates stacked vertically on the right
       // - First teammate: vertical split (-v) from leader's session
       // - Subsequent teammates: horizontal split from last teammate's session
-      //
-      // We explicitly target the session to split from using -s flag to ensure
+      // // We explicitly target the session to split from using -s flag to ensure
       // correct layout even if user clicks on different panes.
-      //
-      // At-fault recovery: If a targeted teammate session is dead (user closed
+      // // At-fault recovery: If a targeted teammate session is dead (user closed
       // the pane via Cmd+W / X, or process crashed), prune it and retry with
       // the next-to-last. Cheaper than a proactive 'it2 session list' on every spawn.
       // Bounded at O(N+1) iterations: each continue shrinks teammateSessionIds by 1;
@@ -239,9 +237,9 @@ export class ITermBackend implements PaneBackend {
     }
   }
 
-  /**
+  /*    *
    * Sends a command to a specific pane.
-   */
+       */
   async sendCommandToPane(
     paneId: PaneId,
     command: string,
@@ -263,10 +261,10 @@ export class ITermBackend implements PaneBackend {
     }
   }
 
-  /**
+  /*    *
    * No-op for iTerm2 - tab colors would require escape sequences but we skip
    * them for performance (each it2 call is slow).
-   */
+       */
   async setPaneBorderColor(
     _paneId: PaneId,
     _color: AgentColorName,
@@ -275,10 +273,10 @@ export class ITermBackend implements PaneBackend {
     // Skip for performance - each it2 call spawns a Python process
   }
 
-  /**
+  /*    *
    * No-op for iTerm2 - titles would require escape sequences but we skip
    * them for performance (each it2 call is slow).
-   */
+       */
   async setPaneTitle(
     _paneId: PaneId,
     _name: string,
@@ -288,9 +286,9 @@ export class ITermBackend implements PaneBackend {
     // Skip for performance - each it2 call spawns a Python process
   }
 
-  /**
+  /*    *
    * No-op for iTerm2 - pane titles are shown in tabs automatically.
-   */
+       */
   async enablePaneBorderStatus(
     _windowTarget?: string,
     _useExternalSession?: boolean,
@@ -299,9 +297,9 @@ export class ITermBackend implements PaneBackend {
     // Titles are shown in tabs automatically
   }
 
-  /**
+  /*    *
    * No-op for iTerm2 - pane balancing is handled automatically.
-   */
+       */
   async rebalancePanes(
     _windowTarget: string,
     _hasLeader: boolean,
@@ -312,11 +310,11 @@ export class ITermBackend implements PaneBackend {
     )
   }
 
-  /**
+  /*    *
    * Kills/closes a specific pane using the it2 CLI.
    * Also removes the pane from tracked session IDs so subsequent spawns
    * don't try to split from a dead session.
-   */
+       */
   async killPane(
     paneId: PaneId,
     _useExternalSession?: boolean,
@@ -338,10 +336,10 @@ export class ITermBackend implements PaneBackend {
     return result.code === 0
   }
 
-  /**
+  /*    *
    * Stub for hiding a pane - not supported in iTerm2 backend.
    * iTerm2 doesn't have a direct equivalent to tmux's break-pane.
-   */
+       */
   async hidePane(
     _paneId: PaneId,
     _useExternalSession?: boolean,
@@ -350,10 +348,10 @@ export class ITermBackend implements PaneBackend {
     return false
   }
 
-  /**
+  /*    *
    * Stub for showing a hidden pane - not supported in iTerm2 backend.
    * iTerm2 doesn't have a direct equivalent to tmux's join-pane.
-   */
+       */
   async showPane(
     _paneId: PaneId,
     _targetWindowOrPane: string,

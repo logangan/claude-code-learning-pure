@@ -1,9 +1,9 @@
-/**
+/*    *
  * Shared attachment validation + resolution for SendUserMessage and
  * SendUserFile. Lives in BriefTool/ so the dynamic `./upload.js` import
  * inside the feature('BRIDGE_MODE') guard stays relative and upload.ts
  * (axios, crypto, auth utils) remains tree-shakeable from non-bridge builds.
- */
+     */
 
 import { feature } from 'bun:bundle'
 import { stat } from 'fs/promises'

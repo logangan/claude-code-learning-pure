@@ -130,7 +130,7 @@ function isBlockedDevicePath(filePath: string): boolean {
 // Narrow no-break space (U+202F) used by some macOS versions in screenshot filenames
 const THIN_SPACE = String.fromCharCode(8239)
 
-/**
+/*    *
  * Resolves macOS screenshot paths that may have different space characters.
  * macOS uses either regular space or thin space (U+202F) before AM/PM in screenshot
  * filenames depending on the macOS version. This function tries the alternate space
@@ -138,12 +138,12 @@ const THIN_SPACE = String.fromCharCode(8239)
  *
  * @param filePath - The normalized file path to resolve
  * @returns The path to the actual file on disk (may differ in space character)
- */
-/**
+     */
+/*    *
  * For macOS screenshot paths with AM/PM, the space before AM/PM may be a
  * regular space or a thin space depending on the macOS version.  Returns
  * the alternate path to try if the original doesn't exist, or undefined.
- */
+     */
 function getAlternateScreenshotPath(filePath: string): string | undefined {
   const filename = path.basename(filePath)
   const amPmPattern = /^(.+)([ \u202F])(AM|PM)(\.png)$/
@@ -187,11 +187,11 @@ export class MaxFileReadTokenExceededError extends Error {
 // Common image extensions
 const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp'])
 
-/**
+/*    *
  * Detects if a file path is a session-related file for analytics logging.
  * Only matches files within the Claude config directory (e.g., ~/.claude).
  * Returns the type of session file or null if not a session file.
- */
+     */
 function detectSessionFileType(
   filePath: string,
 ): 'session_memory' | 'session_transcript' | null {
@@ -205,7 +205,7 @@ function detectSessionFileType(
   // Normalize path to use forward slashes for consistent matching across platforms
   const normalizedPath = filePath.split(win32.sep).join(posix.sep)
 
-  // Session memory files: ~/.claude/session-memory/*.md (including summary.md)
+  // Session memory files: ~/.claude/session-memory/*    .md (including summary.md)
   if (
     normalizedPath.includes('/session-memory/') &&
     normalizedPath.endsWith('.md')
@@ -213,7 +213,7 @@ function detectSessionFileType(
     return 'session_memory'
   }
 
-  // Session JSONL transcript files: ~/.claude/projects/*/*.jsonl
+  // Session JSONL transcript files: ~/.claude/projects/    */*.jsonl
   if (
     normalizedPath.includes('/projects/') &&
     normalizedPath.endsWith('.jsonl')
@@ -461,7 +461,7 @@ export const FileReadTool = buildTool({
     // SECURITY: UNC path check (no I/O) — defer filesystem operations
     // until after user grants permission to prevent NTLM credential leaks
     const isUncPath =
-      fullFilePath.startsWith('\\\\') || fullFilePath.startsWith('//')
+      fullFilePath.startsWith('\\\\') || fullFilePath.startsWith('// ')
     if (isUncPath) {
       return { result: true }
     }
@@ -527,8 +527,7 @@ export const FileReadTool = buildTool({
     // ~18% of Read calls are same-file collisions (up to 2.64% of fleet
     // cache_creation). Only applies to text/notebook reads — images/PDFs
     // aren't cached in readFileState so won't match here.
-    //
-    // Ant soak: 1,734 dedup hits in 2h, no Read error regression.
+    // // Ant soak: 1,734 dedup hits in 2h, no Read error regression.
     // Killswitch pattern: GB can disable if the stub message confuses
     // the model externally.
     // 3P default: killswitch off = dedup enabled. Client-side only — no
@@ -721,7 +720,7 @@ function pickLineFormatInstruction(): string {
   return LINE_FORMAT_INSTRUCTION
 }
 
-/** Format file content with line numbers. */
+/*    * Format file content with line numbers.     */
 function formatFileLines(file: { content: string; startLine: number }): string {
   return addLineNumbers(file)
 }
@@ -737,13 +736,13 @@ function shouldIncludeFileReadMitigation(): boolean {
   return !MITIGATION_EXEMPT_MODELS.has(shortName)
 }
 
-/**
+/*    *
  * Side-channel from call() to mapToolResultToToolResultBlockParam: mtime
  * of auto-memory files, keyed by the `data` object identity. Avoids
  * adding a presentation-only field to the output schema (which flows
  * into SDK types) and avoids sync fs in the mapper. WeakMap auto-GCs
  * when the data object becomes unreachable after rendering.
- */
+     */
 const memoryFileMtimes = new WeakMap<object, number>()
 
 function memoryFileFreshnessPrefix(data: object): string {
@@ -798,9 +797,9 @@ function createImageResponse(
   }
 }
 
-/**
+/*    *
  * Inner implementation of call, separated to allow ENOENT handling in the outer call.
- */
+     */
 async function callInner(
   file_path: string,
   fullFilePath: string,
@@ -1085,7 +1084,7 @@ async function callInner(
   return { data }
 }
 
-/**
+/*    *
  * Reads an image file and applies token-based compression if needed.
  * Reads the file ONCE, then applies standard resize. If the result exceeds
  * the token limit, applies aggressive compression from the same buffer.
@@ -1093,7 +1092,7 @@ async function callInner(
  * @param filePath - Path to the image file
  * @param maxTokens - Maximum token budget for the image
  * @returns Image data with appropriate compression applied
- */
+     */
 export async function readImageWithTokenBudget(
   filePath: string,
   maxTokens: number = getDefaultFileReadingLimits().maxTokens,

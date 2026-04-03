@@ -62,11 +62,11 @@ export type PathCommand =
   | 'sha1sum'
   | 'md5sum'
 
-/**
+/*    *
  * Checks if an rm/rmdir command targets dangerous paths that should always
  * require explicit user approval, even if allowlist rules exist.
  * This prevents catastrophic data loss from commands like `rm -rf /`.
- */
+     */
 function checkDangerousRemovalPaths(
   command: 'rm' | 'rmdir',
   args: string[],
@@ -107,7 +107,7 @@ function checkDangerousRemovalPaths(
   }
 }
 
-/**
+/*    *
  * SECURITY: Extract positional (non-flag) arguments, correctly handling the
  * POSIX `--` end-of-options delimiter.
  *
@@ -122,7 +122,7 @@ function checkDangerousRemovalPaths(
  * drops it, validation sees zero paths, returns passthrough, and the file is
  * deleted without a prompt. With `--` handling, the path IS extracted and
  * validated (blocked by isClaudeConfigFilePath / pathInAllowedWorkingPath).
- */
+     */
 function filterOutFlags(args: string[]): string[] {
   const result: string[] = []
   let afterDoubleDash = false
@@ -183,10 +183,10 @@ function parsePatternCommand(
   return paths.length > 0 ? paths : defaults
 }
 
-/**
+/*    *
  * Extracts paths from command arguments for different path commands.
  * Each command has specific logic for how it handles paths and flags.
- */
+     */
 export const PATH_EXTRACTORS: Record<
   PathCommand,
   (args: string[]) => string[]
@@ -588,11 +588,11 @@ export const COMMAND_OPERATION_TYPE: Record<PathCommand, FileOperationType> = {
   md5sum: 'read',
 }
 
-/**
+/*    *
  * Command-specific validators that run before path validation.
  * Returns true if the command is valid, false if it should be rejected.
  * Used to block commands with flags that could bypass path validation.
- */
+     */
 const COMMAND_VALIDATOR: Partial<
   Record<PathCommand, (args: string[]) => boolean>
 > = {
@@ -632,8 +632,7 @@ function validateCommandPaths(
   // Example attack: cd .claude/ && mv test.txt settings.json
   // This would bypass the check for .claude/settings.json because paths are resolved
   // relative to the original CWD, not accounting for the cd's effect.
-  //
-  // ALTERNATIVE APPROACH: Instead of blocking all writes with cd, we could track the
+  // // ALTERNATIVE APPROACH: Instead of blocking all writes with cd, we could track the
   // effective CWD through the command chain (e.g., after "cd .claude/", subsequent
   // commands would be validated with CWD=".claude/"). This would be more permissive
   // but requires careful handling of:
@@ -783,11 +782,11 @@ export function createPathChecker(
   }
 }
 
-/**
+/*    *
  * Parses command arguments using shell-quote, converting glob objects to strings.
  * This is necessary because shell-quote parses patterns like *.txt as glob objects,
  * but we need them as strings for path validation.
- */
+     */
 function parseCommandArguments(cmd: string): string[] {
   const parseResult = tryParseShellCommand(cmd, env => `$${env}`)
   if (!parseResult.success) {
@@ -816,7 +815,7 @@ function parseCommandArguments(cmd: string): string[] {
   return extractedArgs
 }
 
-/**
+/*    *
  * Validates a single command for path constraints and shell safety.
  *
  * This function:
@@ -830,7 +829,7 @@ function parseCommandArguments(cmd: string): string[] {
  * @param toolPermissionContext - Context containing allowed directories
  * @param compoundCommandHasCd - Whether the full compound command contains a cd
  * @returns PermissionResult - 'passthrough' if not a path command, otherwise validation result
- */
+     */
 function validateSinglePathCommand(
   cmd: string,
   cwd: string,
@@ -879,12 +878,12 @@ function validateSinglePathCommand(
   return pathChecker(args, cwd, toolPermissionContext, compoundCommandHasCd)
 }
 
-/**
+/*    *
  * Like validateSinglePathCommand but operates on AST-derived argv directly
  * instead of re-parsing the command string with shell-quote. Avoids the
  * shell-quote single-quote backslash bug that causes parseCommandArguments
  * to silently return [] and skip path validation.
- */
+     */
 function validateSinglePathCommandArgv(
   cmd: SimpleCommand,
   cwd: string,
@@ -1002,14 +1001,14 @@ function validateOutputRedirections(
   }
 }
 
-/**
+/*    *
  * Checks path constraints for commands that access the filesystem (cd, ls, find).
  * Also validates output redirections to ensure they're within allowed directories.
  *
  * @returns
  * - 'ask' if any path command or redirection tries to access outside allowed directories
  * - 'passthrough' if no path commands were found or if all are within allowed directories
- */
+     */
 export function checkPathConstraints(
   input: z.infer<typeof BashTool.inputSchema>,
   cwd: string,
@@ -1020,7 +1019,7 @@ export function checkPathConstraints(
 ): PermissionResult {
   // SECURITY: Process substitution >(cmd) can execute commands that write to files
   // without those files appearing as redirect targets. For example:
-  //   echo secret > >(tee .git/config)
+  // echo secret > >(tee .git/config)
   // The tee command writes to .git/config but it's not detected as a redirect.
   // Require explicit approval for any command containing process substitution.
   // Skip on AST path — process_substitution is in DANGEROUS_TYPES and
@@ -1108,11 +1107,11 @@ export function checkPathConstraints(
   }
 }
 
-/**
+/*    *
  * Convert AST-derived Redirect[] to the format expected by
  * validateOutputRedirections. Filters to output-only redirects (excluding
  * fd duplications like 2>&1) and maps operators to '>' | '>>'.
- */
+     */
 function astRedirectsToOutputRedirections(redirects: Redirect[]): {
   redirections: Array<{ target: string; operator: '>' | '>>' }>
   hasDangerousRedirection: boolean
@@ -1151,8 +1150,7 @@ function astRedirectsToOutputRedirections(redirects: Redirect[]): {
 
 // ───────────────────────────────────────────────────────────────────────────
 // Argv-level safe-wrapper stripping (timeout, nice, stdbuf, env, time, nohup)
-//
-// This is the CANONICAL stripWrappersFromArgv. bashPermissions.ts still
+// // This is the CANONICAL stripWrappersFromArgv. bashPermissions.ts still
 // exports an older narrower copy (timeout/nice-n-N only) that is DEAD CODE
 // — no prod consumer — but CANNOT be removed: bashPermissions.ts is right
 // at Bun's feature() DCE complexity threshold, and deleting ~80 lines from
@@ -1161,10 +1159,9 @@ function astRedirectsToOutputRedirections(redirects: Redirect[]): {
 // baseline classifier tests 30/30 pass, after deletion 22/30 fail. See
 // team memory: bun-feature-dce-cliff.md. Hit 3× in PR #21075 + twice in
 // #21503. The expanded version lives here (the only prod consumer) instead.
-//
-// KEEP IN SYNC with:
-//   - SAFE_WRAPPER_PATTERNS in bashPermissions.ts (text-based stripSafeWrappers)
-//   - the wrapper-stripping loop in checkSemantics (src/utils/bash/ast.ts ~1860)
+// // KEEP IN SYNC with:
+// - SAFE_WRAPPER_PATTERNS in bashPermissions.ts (text-based stripSafeWrappers)
+// - the wrapper-stripping loop in checkSemantics (src/utils/bash/ast.ts ~1860)
 // If you add a wrapper in either, add it here too. Asymmetry means
 // checkSemantics exposes the wrapped command to semantic checks but path
 // validation sees the wrapper name → passthrough → wrapped paths never
@@ -1176,10 +1173,10 @@ function astRedirectsToOutputRedirections(redirects: Redirect[]): {
 // previously matched via [^ \t]+ — `timeout -k$(id) 10 ls` must NOT strip.
 const TIMEOUT_FLAG_VALUE_RE = /^[A-Za-z0-9_.+-]+$/
 
-/**
+/*    *
  * Parse timeout's GNU flags (long + short, fused + space-separated) and
  * return the argv index of the DURATION token, or -1 if flags are unparseable.
- */
+     */
 function skipTimeoutFlags(a: readonly string[]): number {
   let i = 1
   while (i < a.length) {
@@ -1217,11 +1214,11 @@ function skipTimeoutFlags(a: readonly string[]): number {
   return i
 }
 
-/**
+/*    *
  * Parse stdbuf's flags (-i/-o/-e in fused/space-separated/long-= forms).
  * Returns argv index of wrapped COMMAND, or -1 if unparseable or no flags
  * consumed (stdbuf without flags is inert). Mirrors checkSemantics (ast.ts).
- */
+     */
 function skipStdbufFlags(a: readonly string[]): number {
   let i = 1
   while (i < a.length) {
@@ -1236,11 +1233,11 @@ function skipStdbufFlags(a: readonly string[]): number {
   return i > 1 && i < a.length ? i : -1
 }
 
-/**
+/*    *
  * Parse env's VAR=val and safe flags (-i/-0/-v/-u NAME). Returns argv index
  * of wrapped COMMAND, or -1 if unparseable/no wrapped cmd. Rejects -S (argv
  * splitter), -C/-P (altwd/altpath). Mirrors checkSemantics (ast.ts).
- */
+     */
 function skipEnvFlags(a: readonly string[]): number {
   let i = 1
   while (i < a.length) {
@@ -1255,11 +1252,11 @@ function skipEnvFlags(a: readonly string[]): number {
   return i < a.length ? i : -1
 }
 
-/**
+/*    *
  * Argv-level counterpart to stripSafeWrappers (bashPermissions.ts). Strips
  * wrapper commands from AST-derived argv. Env vars are already separated
  * into SimpleCommand.envVars so no env-var stripping here.
- */
+     */
 export function stripWrappersFromArgv(argv: string[]): string[] {
   let a = argv
   for (;;) {

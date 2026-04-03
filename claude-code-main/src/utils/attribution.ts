@@ -41,14 +41,14 @@ export type AttributionTexts = {
   pr: string
 }
 
-/**
+/*    *
  * Returns attribution text for commits and PRs based on user settings.
  * Handles:
  * - Dynamic model name via getPublicModelName()
  * - Custom attribution settings (settings.attribution.commit/pr)
  * - Backward compatibility with deprecated includeCoAuthoredBy setting
  * - Remote mode: returns session URL for attribution
- */
+     */
 export function getAttributionTexts(): AttributionTexts {
   if (process.env.USER_TYPE === 'ant' && isUndercover()) {
     return { commit: '', pr: '' }
@@ -97,10 +97,10 @@ export function getAttributionTexts(): AttributionTexts {
   return { commit: defaultCommit, pr: defaultAttribution }
 }
 
-/**
+/*    *
  * Check if a message content string is terminal output rather than a user prompt.
  * Terminal output includes bash input/output tags and caveat messages about local commands.
- */
+     */
 function isTerminalOutput(content: string): boolean {
   for (const tag of TERMINAL_OUTPUT_TAGS) {
     if (content.includes(`<${tag}>`)) {
@@ -110,12 +110,12 @@ function isTerminalOutput(content: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Count user messages with visible text content in a list of non-sidechain messages.
  * Excludes tool_result blocks, terminal output, and empty messages.
  *
  * Callers should pass messages already filtered to exclude sidechain messages.
- */
+     */
 export function countUserPromptsInMessages(
   messages: ReadonlyArray<{ type: string; message?: { content?: unknown } }>,
 ): number {
@@ -161,13 +161,13 @@ export function countUserPromptsInMessages(
   return count
 }
 
-/**
+/*    *
  * Count non-sidechain user messages in transcript entries.
  * Used to calculate the number of "steers" (user prompts - 1).
  *
  * Counts user messages that contain actual user-typed text,
  * excluding tool_result blocks, sidechain messages, and terminal output.
- */
+     */
 function countUserPromptsFromEntries(entries: ReadonlyArray<Entry>): number {
   const nonSidechain = entries.filter(
     entry =>
@@ -176,12 +176,12 @@ function countUserPromptsFromEntries(entries: ReadonlyArray<Entry>): number {
   return countUserPromptsInMessages(nonSidechain)
 }
 
-/**
+/*    *
  * Get full attribution data from the provided AppState's attribution state.
  * Uses ALL tracked files from the attribution state (not just staged files)
  * because for PR attribution, files may not be staged yet.
  * Returns null if no attribution data is available.
- */
+     */
 async function getPRAttributionData(
   appState: AppState,
 ): Promise<AttributionData | null> {
@@ -218,10 +218,10 @@ const MEMORY_ACCESS_TOOL_NAMES = new Set([
   FILE_WRITE_TOOL_NAME,
 ])
 
-/**
+/*    *
  * Count memory file accesses in transcript entries.
  * Uses the same detection conditions as the PostToolUse session file access hooks.
- */
+     */
 function countMemoryFileAccessFromEntries(
   entries: ReadonlyArray<Entry>,
 ): number {
@@ -242,12 +242,12 @@ function countMemoryFileAccessFromEntries(
   return count
 }
 
-/**
+/*    *
  * Read session transcript entries and compute prompt count and memory access
  * count. Pre-compact entries are skipped — the N-shot count and memory-access
  * count should reflect only the current conversation arc, not accumulated
  * prompts from before a compaction boundary.
- */
+     */
 async function getTranscriptStats(): Promise<{
   promptCount: number
   memoryAccessCount: number
@@ -281,7 +281,7 @@ async function getTranscriptStats(): Promise<{
   }
 }
 
-/**
+/*    *
  * Get enhanced PR attribution text with Claude contribution stats.
  *
  * Format: "🤖 Generated with Claude Code (93% 3-shotted by claude-opus-4-5)"
@@ -293,7 +293,7 @@ async function getTranscriptStats(): Promise<{
  * - Returns default attribution if stats can't be computed
  *
  * @param getAppState Function to get the current AppState (from command context)
- */
+     */
 export async function getEnhancedPRAttribution(
   getAppState: () => AppState,
 ): Promise<string> {

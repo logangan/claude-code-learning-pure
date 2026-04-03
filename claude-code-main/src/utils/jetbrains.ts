@@ -179,11 +179,11 @@ export async function isJetBrainsPluginInstalledCached(
   return isJetBrainsPluginInstalledMemoized(ideType, forceRefresh)
 }
 
-/**
+/*    *
  * Returns the cached result of isJetBrainsPluginInstalled synchronously.
  * Returns false if the result hasn't been resolved yet.
  * Use this only in sync contexts (e.g., status notice isActive checks).
- */
+     */
 export function isJetBrainsPluginInstalledCachedSync(
   ideType: IdeType,
 ): boolean {

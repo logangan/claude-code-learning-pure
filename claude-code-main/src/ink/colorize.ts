@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import type { Color, TextStyles } from './styles.js'
 
-/**
+/*    *
  * xterm.js (VS Code, Cursor, code-server, Coder) has supported truecolor
  * since 2017, but code-server/Coder containers often don't set
  * COLORTERM=truecolor. chalk's supports-color doesn't recognize
@@ -16,7 +16,7 @@ import type { Color, TextStyles } from './styles.js'
  *
  * Must run BEFORE the tmux clamp — if tmux is running inside a VS Code
  * terminal, tmux's passthrough limitation wins and we want level 2.
- */
+     */
 function boostChalkLevelForXtermJs(): boolean {
   if (process.env.TERM_PROGRAM === 'vscode' && chalk.level === 2) {
     chalk.level = 3
@@ -25,7 +25,7 @@ function boostChalkLevelForXtermJs(): boolean {
   return false
 }
 
-/**
+/*    *
  * tmux parses truecolor SGR (\e[48;2;r;g;bm) into its cell buffer correctly,
  * but its client-side emitter only re-emits truecolor to the outer terminal if
  * the outer terminal advertises Tc/RGB capability (via terminal-overrides).
@@ -43,7 +43,7 @@ function boostChalkLevelForXtermJs(): boolean {
  * $TMUX is a pty-lifecycle env var set by tmux itself; it never comes from
  * globalSettings.env, so reading it here is correct. chalk is a singleton, so
  * this clamps ALL truecolor output (fg+bg+hex) across the entire app.
- */
+     */
 function clampChalkLevelForTmux(): boolean {
   // bg.ts sets terminal-overrides :Tc before attach, so truecolor passes
   // through — skip the clamp. General escape hatch for anyone who's
@@ -168,18 +168,18 @@ export const colorize = (
   return str
 }
 
-/**
+/*    *
  * Apply TextStyles to a string using chalk.
  * This is the inverse of parsing ANSI codes - we generate them from structured styles.
  * Theme resolution happens at component layer, not here.
- */
+     */
 export function applyTextStyles(text: string, styles: TextStyles): string {
   let result = text
 
   // Apply styles in reverse order of desired nesting.
   // chalk wraps text so later calls become outer wrappers.
   // Desired order (outermost to innermost):
-  //   background > foreground > text modifiers
+  // background > foreground > text modifiers
   // So we apply: text modifiers first, then foreground, then background last.
 
   if (styles.inverse) {
@@ -219,10 +219,10 @@ export function applyTextStyles(text: string, styles: TextStyles): string {
   return result
 }
 
-/**
+/*    *
  * Apply a raw color value to text.
  * Theme resolution should happen at component layer, not here.
- */
+     */
 export function applyColor(text: string, color: Color | undefined): string {
   if (!color) {
     return text

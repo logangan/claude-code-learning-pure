@@ -27,9 +27,9 @@ export interface IndividualHookConfig {
   pluginName?: string
 }
 
-/**
+/*    *
  * Check if two hooks are equal (comparing only command/prompt content, not timeout)
- */
+     */
 export function isHookEqual(
   a: HookCommand | { type: 'function'; timeout?: number },
   b: HookCommand | { type: 'function'; timeout?: number },
@@ -64,7 +64,7 @@ export function isHookEqual(
   }
 }
 
-/** Get the display text for a hook */
+/*    * Get the display text for a hook     */
 export function getHookDisplayText(
   hook: HookCommand | { type: 'callback' | 'function'; statusMessage?: string },
 ): string {

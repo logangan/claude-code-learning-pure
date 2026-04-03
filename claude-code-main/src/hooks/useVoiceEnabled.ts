@@ -5,7 +5,7 @@ import {
   isVoiceGrowthBookEnabled,
 } from '../voice/voiceModeEnabled.js'
 
-/**
+/*    *
  * Combines user intent (settings.voiceEnabled) with auth + GB kill-switch.
  * Only the auth half is memoized on authVersion — it's the expensive one
  * (cold getClaudeAIOAuthTokens memoize → sync `security` spawn, ~60ms/call,
@@ -15,7 +15,7 @@ import {
  *
  * authVersion bumps on /login only. Background token refresh leaves it alone
  * (user is still authed), so the auth memo stays correct without re-eval.
- */
+     */
 export function useVoiceEnabled(): boolean {
   const userIntent = useAppState(s => s.settings.voiceEnabled === true)
   const authVersion = useAppState(s => s.authVersion)

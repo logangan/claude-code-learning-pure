@@ -74,10 +74,10 @@ import {
   renderToolUseRejectedMessage,
 } from './UI.js'
 
-/**
+/*    *
  * Gets all commands including MCP skills/prompts from AppState.
  * SkillTool needs this because getCommands() only returns local/bundled skills.
- */
+     */
 async function getAllCommands(context: ToolUseContext): Promise<Command[]> {
   // Only include MCP skills (loadedFrom === 'mcp'), not plain MCP prompts.
   // Before this filter, the model could invoke MCP prompts via SkillTool
@@ -104,7 +104,7 @@ import type { SkillToolProgress as Progress } from '../../types/tools.js'
 // side-effecting initializers. All usages are inside
 // feature('EXPERIMENTAL_SKILL_SEARCH') guards, so remoteSkillModules is
 // non-null at every call site.
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const remoteSkillModules = feature('EXPERIMENTAL_SKILL_SEARCH')
   ? {
       ...(require('../../services/skillSearch/remoteSkillState.js') as typeof import('../../services/skillSearch/remoteSkillState.js')),
@@ -113,12 +113,12 @@ const remoteSkillModules = feature('EXPERIMENTAL_SKILL_SEARCH')
       ...(require('../../services/skillSearch/featureCheck.js') as typeof import('../../services/skillSearch/featureCheck.js')),
     }
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
-/**
+/*    *
  * Executes a skill in a forked sub-agent context.
  * This runs the skill prompt in an isolated agent with its own token budget.
- */
+     */
 async function executeForkedSkill(
   command: Command & { type: 'prompt' },
   commandName: string,
@@ -941,20 +941,20 @@ function isOfficialMarketplaceSkill(command: PromptCommand): boolean {
   )
 }
 
-/**
+/*    *
  * Extract URL scheme for telemetry. Defaults to 'gs' for unrecognized schemes
  * since the AKI backend is the only production path and the loader throws on
  * unknown schemes before we reach telemetry anyway.
- */
+     */
 function extractUrlScheme(url: string): 'gs' | 'http' | 'https' | 's3' {
-  if (url.startsWith('gs://')) return 'gs'
-  if (url.startsWith('https://')) return 'https'
-  if (url.startsWith('http://')) return 'http'
-  if (url.startsWith('s3://')) return 's3'
+  if (url.startsWith('gs:// ')) return 'gs'
+  if (url.startsWith('https:// ')) return 'https'
+  if (url.startsWith('http:// ')) return 'http'
+  if (url.startsWith('s3:// ')) return 's3'
   return 'gs'
 }
 
-/**
+/*    *
  * Load a remote canonical skill and inject its SKILL.md content into the
  * conversation. Unlike local skills (which go through processPromptSlashCommand
  * for !command / $ARGUMENTS expansion), remote skills are declarative markdown
@@ -965,7 +965,7 @@ function extractUrlScheme(url: string): 'gs' | 'http' | 'https' | 's3' {
  *
  * Only called from within a feature('EXPERIMENTAL_SKILL_SEARCH') guard in
  * call() — remoteSkillModules is non-null here.
- */
+     */
 async function executeRemoteSkill(
   slug: string,
   commandName: string,

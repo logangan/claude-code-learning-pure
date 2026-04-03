@@ -1,11 +1,11 @@
-/**
+/*    *
  * SDK Core Schemas - Zod schemas for serializable SDK data types.
  *
  * These schemas are the single source of truth for SDK data types.
  * TypeScript types are generated from these schemas and committed for IDE support.
  *
  * @see scripts/generate-sdk-types.ts for type generation
- */
+     */
 
 import { z } from 'zod/v4'
 import { lazySchema } from '../../utils/lazySchema.js'
@@ -1229,24 +1229,23 @@ export const RewindFilesResultSchema = lazySchema(() =>
 // ============================================================================
 // External Type Placeholders
 // ============================================================================
-//
-// These schemas use z.unknown() as placeholders for external types.
+// // These schemas use z.unknown() as placeholders for external types.
 // The generation script uses TypeOverrideMap to output the correct TS type references.
 // This allows us to define SDK message types in Zod while maintaining proper typing.
 
-/** Placeholder for APIUserMessage from @anthropic-ai/sdk */
+/*    * Placeholder for APIUserMessage from @anthropic-ai/sdk     */
 export const APIUserMessagePlaceholder = lazySchema(() => z.unknown())
 
-/** Placeholder for APIAssistantMessage from @anthropic-ai/sdk */
+/*    * Placeholder for APIAssistantMessage from @anthropic-ai/sdk     */
 export const APIAssistantMessagePlaceholder = lazySchema(() => z.unknown())
 
-/** Placeholder for RawMessageStreamEvent from @anthropic-ai/sdk */
+/*    * Placeholder for RawMessageStreamEvent from @anthropic-ai/sdk     */
 export const RawMessageStreamEventPlaceholder = lazySchema(() => z.unknown())
 
-/** Placeholder for UUID from crypto */
+/*    * Placeholder for UUID from crypto     */
 export const UUIDPlaceholder = lazySchema(() => z.string())
 
-/** Placeholder for NonNullableUsage (mapped type over Usage) */
+/*    * Placeholder for NonNullableUsage (mapped type over Usage)     */
 export const NonNullableUsagePlaceholder = lazySchema(() => z.unknown())
 
 // ============================================================================
@@ -1791,7 +1790,7 @@ export const SDKElicitationCompleteMessageSchema = lazySchema(() =>
     ),
 )
 
-/** @internal */
+/*    * @internal     */
 export const SDKPromptSuggestionMessageSchema = lazySchema(() =>
   z
     .object({

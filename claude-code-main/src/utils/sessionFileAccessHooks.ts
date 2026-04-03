@@ -1,8 +1,8 @@
-/**
+/*    *
  * Session file access analytics hooks.
  * Tracks access to session memory and transcript files via Read, Grep, Glob tools.
  * Also tracks memdir file access via Read, Grep, Glob, Edit, and Write tools.
- */
+     */
 import { feature } from 'bun:bundle'
 import { registerHookCallbacks } from '../bootstrap/state.js'
 import type { HookInput, HookJSONOutput } from '../entrypoints/agentSdkTypes.js'
@@ -28,7 +28,7 @@ import {
   memoryScopeForPath,
 } from './memoryFileDetection.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const teamMemPaths = feature('TEAMMEM')
   ? (require('../memdir/teamMemPaths.js') as typeof import('../memdir/teamMemPaths.js'))
   : null
@@ -39,13 +39,13 @@ const memoryShapeTelemetry = feature('MEMORY_SHAPE_TELEMETRY')
   ? (require('../memdir/memoryShapeTelemetry.js') as typeof import('../memdir/memoryShapeTelemetry.js'))
   : null
 
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import { getSubagentLogName } from './agentContext.js'
 
-/**
+/*    *
  * Extract the file path from a tool input for memdir detection.
  * Covers Read (file_path), Edit (file_path), and Write (file_path).
- */
+     */
 function getFilePathFromInput(
   toolName: string,
   toolInput: unknown,
@@ -68,10 +68,10 @@ function getFilePathFromInput(
   }
 }
 
-/**
+/*    *
  * Extract file type from tool input.
  * Returns the detected session file type or null.
- */
+     */
 function getSessionFileTypeFromInput(
   toolName: string,
   toolInput: unknown,
@@ -115,11 +115,11 @@ function getSessionFileTypeFromInput(
   }
 }
 
-/**
+/*    *
  * Check if a tool use constitutes a memory file access.
  * Detects session memory (via Read/Grep/Glob) and memdir access (via Read/Edit/Write).
  * Uses the same conditions as the PostToolUse session file access hooks.
- */
+     */
 export function isMemoryFileAccess(
   toolName: string,
   toolInput: unknown,
@@ -140,9 +140,9 @@ export function isMemoryFileAccess(
   return false
 }
 
-/**
+/*    *
  * PostToolUse callback to log session file access events.
- */
+     */
 async function handleSessionFileAccess(
   input: HookInput,
   _toolUseID: string | null,
@@ -226,10 +226,10 @@ async function handleSessionFileAccess(
   return {}
 }
 
-/**
+/*    *
  * Register session file access tracking hooks.
  * Called during CLI initialization.
- */
+     */
 export function registerSessionFileAccessHooks(): void {
   const hook: HookCallback = {
     type: 'callback',

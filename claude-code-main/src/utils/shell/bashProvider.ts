@@ -24,7 +24,7 @@ import {
 import { windowsPathToPosixPath } from '../windowsPaths.js'
 import type { ShellProvider } from './shellProvider.js'
 
-/**
+/*    *
  * Returns a shell command to disable extended glob patterns for security.
  * Extended globs (bash extglob, zsh EXTENDED_GLOB) can be exploited via
  * malicious filenames that expand after our security validation.
@@ -35,7 +35,7 @@ import type { ShellProvider } from './shellProvider.js'
  * to /dev/null because zsh's command_not_found_handler writes to STDOUT.
  *
  * When no shell prefix is set, we use the appropriate command for the detected shell.
- */
+     */
 function getDisableExtglobCommand(shellPath: string): string | null {
   // When CLAUDE_CODE_SHELL_PREFIX is set, the wrapper may use a different shell
   // than shellPath, so we include both bash and zsh commands
@@ -212,11 +212,9 @@ export async function createBashShellProvider(
       // We initialize Claude's tmux socket ONLY AFTER the Tmux tool has been used
       // at least once, OR if the current command appears to use tmux.
       // This defers the startup cost until tmux is actually needed.
-      //
-      // Once the Tmux tool is used (or a tmux command runs), all subsequent Bash
+      // // Once the Tmux tool is used (or a tmux command runs), all subsequent Bash
       // commands will use Claude's isolated socket via the TMUX env var override.
-      //
-      // See tmuxSocket.ts for the full isolation architecture documentation.
+      // // See tmuxSocket.ts for the full isolation architecture documentation.
       const commandUsesTmux = command.includes('tmux')
       if (
         process.env.USER_TYPE === 'ant' &&

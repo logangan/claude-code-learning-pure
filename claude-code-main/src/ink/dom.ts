@@ -357,8 +357,7 @@ const measureTextNode = function (
   // For text with embedded newlines (pre-wrapped content), avoid re-wrapping
   // at measurement width when layout is asking for intrinsic size (Undefined mode).
   // This prevents height inflation during min/max size checks.
-  //
-  // However, when layout provides an actual constraint (Exactly or AtMost mode),
+  // // However, when layout provides an actual constraint (Exactly or AtMost mode),
   // we must respect it and measure at that width. Otherwise, if the actual
   // rendering width is smaller than the natural width, the text will wrap to
   // more lines than layout expects, causing content to be truncated.
@@ -386,10 +385,10 @@ const measureRawAnsiNode = function (node: DOMElement): {
   }
 }
 
-/**
+/*    *
  * Mark a node and all its ancestors as dirty for re-rendering.
  * Also marks yoga dirty for text remeasurement if this is a text node.
- */
+     */
 export const markDirty = (node?: DOMNode): void => {
   let current: DOMNode | undefined = node
   let markedYoga = false
@@ -452,7 +451,7 @@ export const clearYogaNodeReferences = (node: DOMElement | TextNode): void => {
   node.yogaNode = undefined
 }
 
-/**
+/*    *
  * Find the React component stack responsible for content at screen row `y`.
  *
  * DFS the DOM tree accumulating yoga offsets. Returns the debugOwnerChain of
@@ -461,7 +460,7 @@ export const clearYogaNodeReferences = (node: DOMElement | TextNode): void => {
  *
  * Only useful when CLAUDE_CODE_DEBUG_REPAINTS is set (otherwise chains are
  * undefined and this returns []).
- */
+     */
 export function findOwnerChainAtRow(root: DOMElement, y: number): string[] {
   let best: string[] = []
   walk(root, 0)

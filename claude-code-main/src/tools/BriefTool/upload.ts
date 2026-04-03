@@ -1,4 +1,4 @@
-/**
+/*    *
  * Upload BriefTool attachments to private_api so web viewers can preview them.
  *
  * When the repl bridge is active, attachment paths are meaningless to a web
@@ -10,7 +10,7 @@
  * Best-effort: any failure (no token, bridge off, network error, 4xx) logs
  * debug and returns undefined. The attachment still carries {path, size,
  * isImage}, so local-terminal and same-machine-desktop render unaffected.
- */
+     */
 
 import { feature } from 'bun:bundle'
 import axios from 'axios'
@@ -33,7 +33,7 @@ const MAX_UPLOAD_BYTES = 30 * 1024 * 1024
 
 const UPLOAD_TIMEOUT_MS = 30_000
 
-// Backend dispatches on mime: image/* → upload_image_wrapped (writes
+// Backend dispatches on mime: image/*     → upload_image_wrapped (writes
 // PREVIEW/THUMBNAIL, no ORIGINAL), everything else → upload_generic_file
 // (ORIGINAL only, no preview). Only whitelist raster formats the
 // transcoder reliably handles — svg/bmp/ico risk a 400, and pdf routes
@@ -65,7 +65,7 @@ function debug(msg: string): void {
  * returns staging when USE_STAGING_OAUTH is set, which such hosts don't
  * set. Without this a staging token hits api.anthropic.com → 401 → silent
  * skip → web viewer sees inert cards with no file_uuid.
- */
+     */
 function getBridgeBaseUrl(): string {
   return (
     getBridgeBaseUrlOverride() ??
@@ -85,10 +85,10 @@ export type BriefUploadContext = {
   signal?: AbortSignal
 }
 
-/**
+/*    *
  * Upload a single attachment. Returns file_uuid on success, undefined otherwise.
  * Every early-return is intentional graceful degradation.
- */
+     */
 export async function uploadBriefAttachment(
   fullPath: string,
   size: number,

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Main entrypoint for Claude Code Agent SDK types.
  *
  * This file re-exports the public SDK API from:
@@ -7,7 +7,7 @@
  *
  * SDK builders who need control protocol types should import from
  * sdk/controlTypes.ts directly.
- */
+     */
 
 import type {
   CallToolResult,
@@ -15,7 +15,7 @@ import type {
 } from '@modelcontextprotocol/sdk/types.js'
 
 // Control protocol types for SDK builders (bridge subpath consumers)
-/** @alpha */
+/*    * @alpha     */
 export type {
   SDKControlRequest,
   SDKControlResponse,
@@ -94,12 +94,12 @@ type CreateSdkMcpServerOptions = {
   tools?: Array<SdkMcpToolDefinition<any>>
 }
 
-/**
+/*    *
  * Creates an MCP server instance that can be used with the SDK transport.
  * This allows SDK users to define custom tools that run in the same process.
  *
  * If your SDK MCP calls will run longer than 60s, override CLAUDE_CODE_STREAM_CLOSE_TIMEOUT
- */
+     */
 export function createSdkMcpServer(
   _options: CreateSdkMcpServerOptions,
 ): McpSdkServerConfigWithInstance {
@@ -108,7 +108,7 @@ export function createSdkMcpServer(
 
 export class AbortError extends Error {}
 
-/** @internal */
+/*    * @internal     */
 export function query(_params: {
   prompt: string | AsyncIterable<SDKUserMessage>
   options?: InternalOptions
@@ -121,22 +121,22 @@ export function query(): Query {
   throw new Error('query is not implemented in the SDK')
 }
 
-/**
+/*    *
  * V2 API - UNSTABLE
  * Create a persistent session for multi-turn conversations.
  * @alpha
- */
+     */
 export function unstable_v2_createSession(
   _options: SDKSessionOptions,
 ): SDKSession {
   throw new Error('unstable_v2_createSession is not implemented in the SDK')
 }
 
-/**
+/*    *
  * V2 API - UNSTABLE
  * Resume an existing session by ID.
  * @alpha
- */
+     */
 export function unstable_v2_resumeSession(
   _sessionId: string,
   _options: SDKSessionOptions,
@@ -145,7 +145,7 @@ export function unstable_v2_resumeSession(
 }
 
 // @[MODEL LAUNCH]: Update the example model ID in this docstring.
-/**
+/*    *
  * V2 API - UNSTABLE
  * One-shot convenience function for single prompts.
  * @alpha
@@ -156,7 +156,7 @@ export function unstable_v2_resumeSession(
  *   model: 'claude-sonnet-4-6'
  * })
  * ```
- */
+     */
 export async function unstable_v2_prompt(
   _message: string,
   _options: SDKSessionOptions,
@@ -164,7 +164,7 @@ export async function unstable_v2_prompt(
   throw new Error('unstable_v2_prompt is not implemented in the SDK')
 }
 
-/**
+/*    *
  * Reads a session's conversation messages from its JSONL transcript file.
  *
  * Parses the transcript, builds the conversation chain via parentUuid links,
@@ -174,7 +174,7 @@ export async function unstable_v2_prompt(
  * @param sessionId - UUID of the session to read
  * @param options - Optional dir, limit, offset, and includeSystemMessages
  * @returns Array of messages, or empty array if session not found
- */
+     */
 export async function getSessionMessages(
   _sessionId: string,
   _options?: GetSessionMessagesOptions,
@@ -182,7 +182,7 @@ export async function getSessionMessages(
   throw new Error('getSessionMessages is not implemented in the SDK')
 }
 
-/**
+/*    *
  * List sessions with metadata.
  *
  * When `dir` is provided, returns sessions for that project directory
@@ -200,14 +200,14 @@ export async function getSessionMessages(
  * const page1 = await listSessions({ limit: 50 })
  * const page2 = await listSessions({ limit: 50, offset: 50 })
  * ```
- */
+     */
 export async function listSessions(
   _options?: ListSessionsOptions,
 ): Promise<SDKSessionInfo[]> {
   throw new Error('listSessions is not implemented in the SDK')
 }
 
-/**
+/*    *
  * Reads metadata for a single session by ID. Unlike `listSessions`, this only
  * reads the single session file rather than every session in the project.
  * Returns undefined if the session file is not found, is a sidechain session,
@@ -215,7 +215,7 @@ export async function listSessions(
  *
  * @param sessionId - UUID of the session
  * @param options - `{ dir?: string }` project path; omit to search all project directories
- */
+     */
 export async function getSessionInfo(
   _sessionId: string,
   _options?: GetSessionInfoOptions,
@@ -223,12 +223,12 @@ export async function getSessionInfo(
   throw new Error('getSessionInfo is not implemented in the SDK')
 }
 
-/**
+/*    *
  * Rename a session. Appends a custom-title entry to the session's JSONL file.
  * @param sessionId - UUID of the session
  * @param title - New title
  * @param options - `{ dir?: string }` project path; omit to search all projects
- */
+     */
 export async function renameSession(
   _sessionId: string,
   _title: string,
@@ -237,12 +237,12 @@ export async function renameSession(
   throw new Error('renameSession is not implemented in the SDK')
 }
 
-/**
+/*    *
  * Tag a session. Pass null to clear the tag.
  * @param sessionId - UUID of the session
  * @param tag - Tag string, or null to clear
  * @param options - `{ dir?: string }` project path; omit to search all projects
- */
+     */
 export async function tagSession(
   _sessionId: string,
   _tag: string | null,
@@ -251,7 +251,7 @@ export async function tagSession(
   throw new Error('tagSession is not implemented in the SDK')
 }
 
-/**
+/*    *
  * Fork a session into a new branch with fresh UUIDs.
  *
  * Copies transcript messages from the source session into a new session file,
@@ -264,7 +264,7 @@ export async function tagSession(
  * @param sessionId - UUID of the source session
  * @param options - `{ dir?, upToMessageId?, title? }`
  * @returns `{ sessionId }` — UUID of the new forked session
- */
+     */
 export async function forkSession(
   _sessionId: string,
   _options?: ForkSessionOptions,
@@ -276,10 +276,10 @@ export async function forkSession(
 // Assistant daemon primitives (internal)
 // ============================================================================
 
-/**
+/*    *
  * A scheduled task from `<dir>/.claude/scheduled_tasks.json`.
  * @internal
- */
+     */
 export type CronTask = {
   id: string
   cron: string
@@ -288,13 +288,13 @@ export type CronTask = {
   recurring?: boolean
 }
 
-/**
+/*    *
  * Cron scheduler tuning knobs (jitter + expiry). Sourced at runtime from the
  * `tengu_kairos_cron_config` GrowthBook config in CLI sessions; daemon hosts
  * pass this through `watchScheduledTasks({ getJitterConfig })` to get the
  * same tuning.
  * @internal
- */
+     */
 export type CronJitterConfig = {
   recurringFrac: number
   recurringCapMs: number
@@ -304,30 +304,30 @@ export type CronJitterConfig = {
   recurringMaxAgeMs: number
 }
 
-/**
+/*    *
  * Event yielded by `watchScheduledTasks()`.
  * @internal
- */
+     */
 export type ScheduledTaskEvent =
   | { type: 'fire'; task: CronTask }
   | { type: 'missed'; tasks: CronTask[] }
 
-/**
+/*    *
  * Handle returned by `watchScheduledTasks()`.
  * @internal
- */
+     */
 export type ScheduledTasksHandle = {
-  /** Async stream of fire/missed events. Drain with `for await`. */
+  /*    * Async stream of fire/missed events. Drain with `for await`.     */
   events(): AsyncGenerator<ScheduledTaskEvent>
-  /**
+  /*    *
    * Epoch ms of the soonest scheduled fire across all loaded tasks, or null
    * if nothing is scheduled. Useful for deciding whether to tear down an
    * idle agent subprocess or keep it warm for an imminent fire.
-   */
+       */
   getNextFireTime(): number | null
 }
 
-/**
+/*    *
  * Watch `<dir>/.claude/scheduled_tasks.json` and yield events as tasks fire.
  *
  * Acquires the per-directory scheduler lock (PID-based liveness) so a REPL
@@ -346,7 +346,7 @@ export type ScheduledTasksHandle = {
  * run its own scheduler.
  *
  * @internal
- */
+     */
 export function watchScheduledTasks(_opts: {
   dir: string
   signal: AbortSignal
@@ -355,28 +355,28 @@ export function watchScheduledTasks(_opts: {
   throw new Error('not implemented')
 }
 
-/**
+/*    *
  * Format missed one-shot tasks into a prompt that asks the model to confirm
  * with the user (via AskUserQuestion) before executing.
  * @internal
- */
+     */
 export function buildMissedTaskNotification(_missed: CronTask[]): string {
   throw new Error('not implemented')
 }
 
-/**
+/*    *
  * A user message typed on claude.ai, extracted from the bridge WS.
  * @internal
- */
+     */
 export type InboundPrompt = {
   content: string | unknown[]
   uuid?: string
 }
 
-/**
+/*    *
  * Options for connectRemoteControl.
  * @internal
- */
+     */
 export type ConnectRemoteControlOptions = {
   dir: string
   name?: string
@@ -389,12 +389,12 @@ export type ConnectRemoteControlOptions = {
   model: string
 }
 
-/**
+/*    *
  * Handle returned by connectRemoteControl. Write query() yields in,
  * read inbound prompts out. See src/assistant/daemonBridge.ts for full
  * field documentation.
  * @internal
- */
+     */
 export type RemoteControlHandle = {
   sessionUrl: string
   environmentId: string
@@ -416,7 +416,7 @@ export type RemoteControlHandle = {
   teardown(): Promise<void>
 }
 
-/**
+/*    *
  * Hold a claude.ai remote-control bridge connection from a daemon process.
  *
  * The daemon owns the WebSocket in the PARENT process — if the agent
@@ -435,7 +435,7 @@ export type RemoteControlHandle = {
  * Returns null on no-OAuth or registration failure.
  *
  * @internal
- */
+     */
 export async function connectRemoteControl(
   _opts: ConnectRemoteControlOptions,
 ): Promise<RemoteControlHandle | null> {

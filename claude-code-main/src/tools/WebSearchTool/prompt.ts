@@ -20,8 +20,8 @@ CRITICAL REQUIREMENT - You MUST follow this:
     [Your answer here]
 
     Sources:
-    - [Source Title 1](https://example.com/1)
-    - [Source Title 2](https://example.com/2)
+    - [Source Title 1](https:// example.com/1)
+    - [Source Title 2](https:// example.com/2)
 
 Usage notes:
   - Domain filtering is supported to include or block specific websites

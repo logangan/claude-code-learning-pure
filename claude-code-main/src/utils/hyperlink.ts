@@ -11,7 +11,7 @@ type HyperlinkOptions = {
   supportsHyperlinks?: boolean
 }
 
-/**
+/*    *
  * Create a clickable hyperlink using OSC 8 escape sequences.
  * Falls back to plain text if the terminal doesn't support hyperlinks.
  *
@@ -20,7 +20,7 @@ type HyperlinkOptions = {
  *                  If provided and hyperlinks are supported, this text is shown as a clickable link.
  *                  If hyperlinks are not supported, content is ignored and only the URL is shown.
  * @param options - Optional overrides for testing (supportsHyperlinks)
- */
+     */
 export function createHyperlink(
   url: string,
   content?: string,

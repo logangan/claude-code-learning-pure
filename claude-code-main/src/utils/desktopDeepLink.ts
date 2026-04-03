@@ -27,26 +27,26 @@ function isDevMode(): boolean {
   return pathsToCheck.some(p => buildDirs.some(dir => p.includes(dir)))
 }
 
-/**
+/*    *
  * Builds a deep link URL for Claude Desktop to resume a CLI session.
- * Format: claude://resume?session={sessionId}&cwd={cwd}
- * In dev mode: claude-dev://resume?session={sessionId}&cwd={cwd}
- */
+ * Format: claude:// resume?session={sessionId}&cwd={cwd}
+ * In dev mode: claude-dev:// resume?session={sessionId}&cwd={cwd}
+     */
 function buildDesktopDeepLink(sessionId: string): string {
   const protocol = isDevMode() ? 'claude-dev' : 'claude'
-  const url = new URL(`${protocol}://resume`)
+  const url = new URL(`${protocol}:// resume`)
   url.searchParams.set('session', sessionId)
   url.searchParams.set('cwd', getCwd())
   return url.toString()
 }
 
-/**
+/*    *
  * Check if Claude Desktop app is installed.
  * On macOS, checks for /Applications/Claude.app.
  * On Linux, checks if xdg-open can handle claude:// protocol.
  * On Windows, checks if the protocol handler exists.
  * In dev mode, always returns true (assumes dev Desktop is running).
- */
+     */
 async function isDesktopInstalled(): Promise<boolean> {
   // In dev mode, assume the dev Desktop app is running
   if (isDevMode()) {
@@ -80,12 +80,12 @@ async function isDesktopInstalled(): Promise<boolean> {
   return false
 }
 
-/**
+/*    *
  * Detect the installed Claude Desktop version.
  * On macOS, reads CFBundleShortVersionString from the app plist.
  * On Windows, finds the highest app-X.Y.Z directory in the Squirrel install.
  * Returns null if version cannot be determined.
- */
+     */
 async function getDesktopVersion(): Promise<string | null> {
   const platform = process.platform
 
@@ -131,9 +131,9 @@ export type DesktopInstallStatus =
   | { status: 'version-too-old'; version: string }
   | { status: 'ready'; version: string }
 
-/**
+/*    *
  * Check Desktop install status including version compatibility.
- */
+     */
 export async function getDesktopInstallStatus(): Promise<DesktopInstallStatus> {
   const installed = await isDesktopInstalled()
   if (!installed) {
@@ -161,10 +161,10 @@ export async function getDesktopInstallStatus(): Promise<DesktopInstallStatus> {
   return { status: 'ready', version }
 }
 
-/**
+/*    *
  * Opens a deep link URL using the platform-specific mechanism.
  * Returns true if the command succeeded, false otherwise.
- */
+     */
 async function openDeepLink(deepLinkUrl: string): Promise<boolean> {
   const platform = process.platform
   logForDebugging(`Opening deep link: ${deepLinkUrl}`)
@@ -199,10 +199,10 @@ async function openDeepLink(deepLinkUrl: string): Promise<boolean> {
   return false
 }
 
-/**
+/*    *
  * Build and open a deep link to resume the current session in Claude Desktop.
  * Returns an object with success status and any error message.
- */
+     */
 export async function openCurrentSessionInDesktop(): Promise<{
   success: boolean
   error?: string
@@ -216,7 +216,7 @@ export async function openCurrentSessionInDesktop(): Promise<{
     return {
       success: false,
       error:
-        'Claude Desktop is not installed. Install it from https://claude.ai/download',
+        'Claude Desktop is not installed. Install it from https:// claude.ai/download',
     }
   }
 

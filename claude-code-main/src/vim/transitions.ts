@@ -1,9 +1,9 @@
-/**
+/*    *
  * Vim State Transition Table
  *
  * This is the scannable source of truth for state transitions.
  * To understand what happens in any state, look up that state's transition function.
- */
+     */
 
 import { resolveMotion } from './motions.js'
 import {
@@ -37,25 +37,25 @@ import {
   type TextObjScope,
 } from './types.js'
 
-/**
+/*    *
  * Context passed to transition functions.
- */
+     */
 export type TransitionContext = OperatorContext & {
   onUndo?: () => void
   onDotRepeat?: () => void
 }
 
-/**
+/*    *
  * Result of a transition.
- */
+     */
 export type TransitionResult = {
   next?: CommandState
   execute?: () => void
 }
 
-/**
+/*    *
  * Main transition function. Dispatches based on current state type.
- */
+     */
 export function transition(
   state: CommandState,
   input: string,
@@ -91,10 +91,10 @@ export function transition(
 // Shared Input Handling
 // ============================================================================
 
-/**
+/*    *
  * Handle input that's valid in both idle and count states.
  * Returns null if input is not recognized.
- */
+     */
 function handleNormalInput(
   input: string,
   count: number,
@@ -199,10 +199,10 @@ function handleNormalInput(
   return null
 }
 
-/**
+/*    *
  * Handle operator input (motion, find, text object scope).
  * Returns null if input is not recognized.
- */
+     */
 function handleOperatorInput(
   op: Operator,
   count: number,

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Turn-scoped workload tag via AsyncLocalStorage.
  *
  * WHY a separate module from bootstrap/state.ts:
@@ -14,14 +14,14 @@
  * is deterministically clobbered. ALS captures context at invocation time
  * and survives every await in that chain, isolated from the parent. Same
  * pattern as agentContext.ts.
- */
+     */
 
 import { AsyncLocalStorage } from 'async_hooks'
 
-/**
+/*    *
  * Server-side sanitizer (_sanitize_entrypoint in claude_code.py) accepts
  * only lowercase [a-z0-9_-]{0,32}. Uppercase stops parsing at char 0.
- */
+     */
 export type Workload = 'cron'
 export const WORKLOAD_CRON: Workload = 'cron'
 
@@ -33,7 +33,7 @@ export function getWorkload(): string | undefined {
   return workloadStorage.getStore()?.workload
 }
 
-/**
+/*    *
  * Wrap `fn` in a workload ALS context. ALWAYS establishes a new context
  * boundary, even when `workload` is undefined.
  *
@@ -48,7 +48,7 @@ export function getWorkload(): string | undefined {
  *
  * Always calling `.run()` guarantees `getWorkload()` inside `fn` returns
  * exactly what the caller passed — including `undefined`.
- */
+     */
 export function runWithWorkload<T>(
   workload: string | undefined,
   fn: () => T,

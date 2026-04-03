@@ -1,9 +1,9 @@
 import type { SecureStorage, SecureStorageData } from './types.js'
 
-/**
+/*    *
  * Creates a fallback storage that tries to use the primary storage first,
  * and if that fails, falls back to the secondary storage
- */
+     */
 export function createFallbackStorage(
   primary: SecureStorage,
   secondary: SecureStorage,

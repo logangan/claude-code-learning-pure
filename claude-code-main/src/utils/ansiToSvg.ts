@@ -1,7 +1,7 @@
-/**
+/*    *
  * Converts ANSI-escaped terminal text to SVG format
  * Supports basic ANSI color codes (foreground colors)
- */
+     */
 
 import { escapeXml } from './xml.js'
 
@@ -43,13 +43,13 @@ export type TextSpan = {
 
 export type ParsedLine = TextSpan[]
 
-/**
+/*    *
  * Parse ANSI escape sequences from text
  * Supports:
  * - Basic colors (30-37, 90-97)
  * - 256-color mode (38;5;n)
  * - 24-bit true color (38;2;r;g;b)
- */
+     */
 export function parseAnsi(text: string): ParsedLine[] {
   const lines: ParsedLine[] = []
   const rawLines = text.split('\n')
@@ -144,9 +144,9 @@ export function parseAnsi(text: string): ParsedLine[] {
   return lines
 }
 
-/**
+/*    *
  * Get color from 256-color palette
- */
+     */
 function get256Color(index: number): AnsiColor {
   // Standard colors (0-15)
   if (index < 16) {
@@ -199,11 +199,11 @@ export type AnsiToSvgOptions = {
   borderRadius?: number
 }
 
-/**
+/*    *
  * Convert ANSI text to SVG
  * Uses <tspan> elements within a single <text> per line so the renderer
  * handles character spacing natively (no manual charWidth calculation)
- */
+     */
 export function ansiToSvg(
   ansiText: string,
   options: AnsiToSvgOptions = {},
@@ -238,7 +238,7 @@ export function ansiToSvg(
   const height = lines.length * lineHeight + paddingY * 2
 
   // Build SVG - use tspan elements so renderer handles character positioning
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">\n`
+  let svg = `<svg xmlns="http:// www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">\n`
   svg += `  <rect width="100%" height="100%" fill="${backgroundColor}" rx="${borderRadius}" ry="${borderRadius}"/>\n`
   svg += `  <style>\n`
   svg += `    text { font-family: ${fontFamily}; font-size: ${fontSize}px; white-space: pre; }\n`

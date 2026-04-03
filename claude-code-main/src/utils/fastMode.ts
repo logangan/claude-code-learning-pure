@@ -90,7 +90,7 @@ export function getFastModeUnavailableReason(): string | null {
     !isInBundledMode() &&
     getFeatureValue_CACHED_MAY_BE_STALE('tengu_marble_sandcastle', false)
   ) {
-    return 'Fast mode requires the native binary · Install from: https://claude.com/product/claude-code'
+    return 'Fast mode requires the native binary · Install from: https:// claude.com/product/claude-code'
   }
 
   // Not available in the SDK unless explicitly opted in via --settings.
@@ -236,11 +236,11 @@ export function clearFastModeCooldown(): void {
   runtimeState = { status: 'active' }
 }
 
-/**
+/*    *
  * Called when the API rejects a fast mode request (e.g., 400 "Fast mode is
  * not enabled for your organization"). Permanently disables fast mode using
  * the same flow as when the prefetch discovers the org has it disabled.
- */
+     */
 export function handleFastModeRejectedByAPI(): void {
   if (orgStatus.status === 'disabled') {
     return
@@ -287,11 +287,11 @@ function isOutOfCreditsReason(reason: string | null): boolean {
   return reason === 'org_level_disabled_until' || reason === 'out_of_credits'
 }
 
-/**
+/*    *
  * Called when a 429 indicates fast mode was rejected because extra usage
  * is not available. Permanently disables fast mode (unless the user has
  * ran out of credits) and notifies with a reason-specific message.
- */
+     */
 export function handleFastModeOverageRejection(reason: string | null): void {
   const message = getOverageDisabledMessage(reason)
   logForDebugging(
@@ -384,11 +384,11 @@ const PREFETCH_MIN_INTERVAL_MS = 30_000
 let lastPrefetchAt = 0
 let inflightPrefetch: Promise<void> | null = null
 
-/**
+/*    *
  * Resolve orgStatus from the persisted cache without making any API calls.
  * Used when startup prefetches are throttled to avoid hitting the network
  * while still making fast mode availability checks work.
- */
+     */
 export function resolveFastModeStatusFromCache(): void {
   if (!isFastModeEnabled()) {
     return

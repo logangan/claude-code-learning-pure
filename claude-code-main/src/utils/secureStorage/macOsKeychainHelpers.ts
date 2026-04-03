@@ -1,4 +1,4 @@
-/**
+/*    *
  * Lightweight helpers shared between keychainPrefetch.ts and
  * macOsKeychainStorage.ts.
  *
@@ -12,7 +12,7 @@
  * The imports below (envUtils, oauth constants, crypto, os) are already
  * evaluated by startupProfiler.ts at main.tsx:5, so they add no module-init
  * cost when keychainPrefetch.ts pulls this file in.
- */
+     */
 
 import { createHash } from 'crypto'
 import { userInfo } from 'os'
@@ -54,15 +54,13 @@ export function getUsername(): string {
 // TTL bounds staleness for cross-process scenarios (another CC instance
 // refreshing/invalidating tokens) without forcing a blocking spawnSync on
 // every read. In-process writes invalidate via clearKeychainCache() directly.
-//
-// The sync read() path takes ~500ms per `security` spawn. With 50+ claude.ai
+// // The sync read() path takes ~500ms per `security` spawn. With 50+ claude.ai
 // MCP connectors authenticating at startup, a short TTL expires mid-storm and
 // triggers repeat sync reads — observed as a 5.5s event-loop stall
 // (go/ccshare/adamj-20260326-212235). 30s of cross-process staleness is fine:
 // OAuth tokens expire in hours, and the only cross-process writer is another
 // CC instance's /login or refresh.
-//
-// Lives here (not in macOsKeychainStorage.ts) so keychainPrefetch.ts can
+// // Lives here (not in macOsKeychainStorage.ts) so keychainPrefetch.ts can
 // prime it without pulling in execa. Wrapped in an object because ES module
 // `let` bindings aren't writable across module boundaries — both this file
 // and macOsKeychainStorage.ts need to mutate all three fields.
@@ -90,11 +88,11 @@ export function clearKeychainCache(): void {
   keychainCacheState.readInFlight = null
 }
 
-/**
+/*    *
  * Prime the keychain cache from a prefetch result (keychainPrefetch.ts).
  * Only writes if the cache hasn't been touched yet — if sync read() or
  * update() already ran, their result is authoritative and we discard this.
- */
+     */
 export function primeKeychainCacheFromPrefetch(stdout: string | null): void {
   if (keychainCacheState.cache.cachedAt !== 0) return
   let data: SecureStorageData | null = null

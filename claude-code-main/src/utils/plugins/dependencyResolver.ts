@@ -1,4 +1,4 @@
-/**
+/*    *
  * Plugin dependency resolution — pure functions, no I/O.
  *
  * Semantics are `apt`-style: a dependency is a *presence guarantee*, not a
@@ -9,7 +9,7 @@
  *  - `resolveDependencyClosure` — install-time DFS walk, cycle detection
  *  - `verifyAndDemote` — load-time fixed-point check, demotes plugins with
  *    unsatisfied deps (session-local, does NOT write settings)
- */
+     */
 
 import type { LoadedPlugin, PluginError } from '../../types/plugin.js'
 import type { EditableSettingSource } from '../settings/constants.js'
@@ -17,14 +17,14 @@ import { getSettingsForSource } from '../settings/settings.js'
 import { parsePluginIdentifier } from './pluginIdentifier.js'
 import type { PluginId } from './schemas.js'
 
-/**
+/*    *
  * Synthetic marketplace sentinel for `--plugin-dir` plugins (pluginLoader.ts
  * sets `source = "{name}@inline"`). Not a real marketplace — bare deps from
  * these plugins cannot meaningfully inherit it.
- */
+     */
 const INLINE_MARKETPLACE = 'inline'
 
-/**
+/*    *
  * Normalize a dependency reference to fully-qualified "name@marketplace" form.
  * Bare names (no @) inherit the marketplace of the plugin declaring them —
  * cross-marketplace deps are blocked anyway, so the @-suffix is boilerplate
@@ -34,7 +34,7 @@ const INLINE_MARKETPLACE = 'inline'
  * bare deps are returned unchanged. `inline` is a synthetic sentinel, not a
  * real marketplace — fabricating "dep@inline" would never match anything.
  * verifyAndDemote handles bare deps via name-only matching.
- */
+     */
 export function qualifyDependency(
   dep: string,
   declaringPluginId: string,
@@ -45,11 +45,11 @@ export function qualifyDependency(
   return `${dep}@${mkt}`
 }
 
-/**
+/*    *
  * Minimal shape the resolver needs from a marketplace lookup. Keeping this
  * narrow means the resolver stays testable without constructing full
  * PluginMarketplaceEntry objects.
- */
+     */
 export type DependencyLookupResult = {
   // Entries may be bare names; qualifyDependency normalizes them.
   dependencies?: string[]
@@ -66,7 +66,7 @@ export type ResolutionResult =
       requiredBy: PluginId
     }
 
-/**
+/*    *
  * Walk the transitive dependency closure of `rootId` via DFS.
  *
  * The returned `closure` ALWAYS contains `rootId`, plus every transitive
@@ -91,7 +91,7 @@ export type ResolutionResult =
  * @param allowedCrossMarketplaces Marketplace names the root trusts for
  *   auto-install (from the root marketplace's manifest)
  * @returns Closure to install, or a cycle/not-found/cross-marketplace error
- */
+     */
 export async function resolveDependencyClosure(
   rootId: PluginId,
   lookup: (id: PluginId) => Promise<DependencyLookupResult | null>,
@@ -158,7 +158,7 @@ export async function resolveDependencyClosure(
   return { ok: true, closure }
 }
 
-/**
+/*    *
  * Load-time safety net: for each enabled plugin, verify all manifest
  * dependencies are also in the enabled set. Demote any that fail.
  *
@@ -173,7 +173,7 @@ export async function resolveDependencyClosure(
  *
  * @param plugins All loaded plugins (enabled + disabled)
  * @returns Set of pluginIds to demote, plus errors for `/doctor`
- */
+     */
 export function verifyAndDemote(plugins: readonly LoadedPlugin[]): {
   demoted: Set<string>
   errors: PluginError[]
@@ -233,14 +233,14 @@ export function verifyAndDemote(plugins: readonly LoadedPlugin[]): {
   return { demoted, errors }
 }
 
-/**
+/*    *
  * Find all enabled plugins that declare `pluginId` as a dependency.
  * Used to warn on uninstall/disable ("required by: X, Y").
  *
  * @param pluginId The plugin being removed/disabled
  * @param plugins All loaded plugins (only enabled ones are checked)
  * @returns Names of plugins that will break if `pluginId` goes away
- */
+     */
 export function findReverseDependents(
   pluginId: PluginId,
   plugins: readonly LoadedPlugin[],
@@ -262,7 +262,7 @@ export function findReverseDependents(
     .map(p => p.name)
 }
 
-/**
+/*    *
  * Build the set of plugin IDs currently enabled at a given settings scope.
  * Used by install-time resolution to skip already-enabled deps and avoid
  * surprise settings writes.
@@ -271,7 +271,7 @@ export function findReverseDependents(
  * settings/types.ts:455-463 — a plugin at `"foo@bar": ["^1.0.0"]` IS enabled).
  * Without the array check, a version-pinned dep would be re-added to the
  * closure and the settings write would clobber the constraint with `true`.
- */
+     */
 export function getEnabledPluginIdsForScope(
   settingSource: EditableSettingSource,
 ): Set<PluginId> {
@@ -282,21 +282,21 @@ export function getEnabledPluginIdsForScope(
   )
 }
 
-/**
+/*    *
  * Format the "(+ N dependencies)" suffix for install success messages.
  * Returns empty string when `installedDeps` is empty.
- */
+     */
 export function formatDependencyCountSuffix(installedDeps: string[]): string {
   if (installedDeps.length === 0) return ''
   const n = installedDeps.length
   return ` (+ ${n} ${n === 1 ? 'dependency' : 'dependencies'})`
 }
 
-/**
+/*    *
  * Format the "warning: required by X, Y" suffix for uninstall/disable
  * results. Em-dash style for CLI result messages (not the middot style
  * used in the notification UI). Returns empty string when no dependents.
- */
+     */
 export function formatReverseDependentsSuffix(
   rdeps: string[] | undefined,
 ): string {

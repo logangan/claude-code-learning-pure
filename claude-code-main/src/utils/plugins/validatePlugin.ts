@@ -13,14 +13,14 @@ import {
   PluginMarketplaceSchema,
 } from './schemas.js'
 
-/**
+/*    *
  * Fields that belong in marketplace.json entries (PluginMarketplaceEntrySchema)
  * but not plugin.json (PluginManifestSchema). Plugin authors reasonably copy
  * one into the other. Surfaced as warnings by `claude plugin validate` since
  * they're a known confusion point — the load path silently strips all unknown
  * keys via zod's default behavior, so they're harmless at runtime but worth
  * flagging to authors.
- */
+     */
 const MARKETPLACE_ONLY_MANIFEST_FIELDS = new Set([
   'category',
   'source',
@@ -48,9 +48,9 @@ export type ValidationWarning = {
   message: string
 }
 
-/**
+/*    *
  * Detect whether a file is a plugin manifest or marketplace manifest
- */
+     */
 function detectManifestType(
   filePath: string,
 ): 'plugin' | 'marketplace' | 'unknown' {
@@ -69,9 +69,9 @@ function detectManifestType(
   return 'unknown'
 }
 
-/**
+/*    *
  * Format Zod validation errors into a readable format
- */
+     */
 function formatZodErrors(zodError: z.ZodError): ValidationError[] {
   return zodError.issues.map(error => ({
     path: error.path.join('.') || 'root',
@@ -80,7 +80,7 @@ function formatZodErrors(zodError: z.ZodError): ValidationError[] {
   }))
 }
 
-/**
+/*    *
  * Check for parent-directory segments ('..') in a path string.
  *
  * For plugin.json component paths this is a security concern (escaping the plugin dir).
@@ -88,7 +88,7 @@ function formatZodErrors(zodError: z.ZodError): ValidationError[] {
  * paths resolve from the marketplace repo root, not from marketplace.json itself, so the
  * '..' a user added to "climb out of .claude-plugin/" is unnecessary. Callers pass `hint`
  * to attach the right explanation.
- */
+     */
 function checkPathTraversal(
   p: string,
   field: string,
@@ -123,9 +123,9 @@ function marketplaceSourceHint(p: string): string {
   )
 }
 
-/**
+/*    *
  * Validate a plugin manifest file (plugin.json)
- */
+     */
 export async function validatePluginManifest(
   filePath: string,
 ): Promise<ValidationResult> {
@@ -304,9 +304,9 @@ export async function validatePluginManifest(
   }
 }
 
-/**
+/*    *
  * Validate a marketplace manifest file (marketplace.json)
- */
+     */
 export async function validateMarketplaceManifest(
   filePath: string,
 ): Promise<ValidationResult> {
@@ -505,7 +505,7 @@ export async function validateMarketplaceManifest(
     fileType: 'marketplace',
   }
 }
-/**
+/*    *
  * Validate the YAML frontmatter in a plugin component markdown file.
  *
  * The runtime loader (parseFrontmatter) silently drops unparseable YAML to a
@@ -513,7 +513,7 @@ export async function validateMarketplaceManifest(
  * for the load path, but authors running `claude plugin validate` want a hard
  * signal. This re-parses the frontmatter block and surfaces what the loader
  * would silently swallow.
- */
+     */
 function validateComponentFile(
   filePath: string,
   content: string,
@@ -638,11 +638,11 @@ function validateComponentFile(
   return { success: errors.length === 0, errors, warnings, filePath, fileType }
 }
 
-/**
+/*    *
  * Validate a plugin's hooks.json file. Unlike frontmatter, this one HARD-ERRORS
  * at runtime (pluginLoader uses .parse() not .safeParse()) — a bad hooks.json
  * breaks the whole plugin. Surfacing it here is essential.
- */
+     */
 async function validateHooksJson(filePath: string): Promise<ValidationResult> {
   let content: string
   try {
@@ -710,11 +710,11 @@ async function validateHooksJson(filePath: string): Promise<ValidationResult> {
   }
 }
 
-/**
+/*    *
  * Recursively collect .md files under a directory. Uses withFileTypes to
  * avoid a stat per entry. Returns absolute paths so error messages stay
  * readable.
- */
+     */
 async function collectMarkdown(
   dir: string,
   isSkillsDir: boolean,
@@ -751,7 +751,7 @@ async function collectMarkdown(
   return out
 }
 
-/**
+/*    *
  * Validate the content files inside a plugin directory — skills, agents,
  * commands, and hooks.json. Scans the default component directories (the
  * manifest can declare custom paths but the default layout covers the vast
@@ -759,7 +759,7 @@ async function collectMarkdown(
  *
  * Returns one ValidationResult per file that has errors or warnings. A clean
  * plugin returns an empty array.
- */
+     */
 export async function validatePluginContents(
   pluginDir: string,
 ): Promise<ValidationResult[]> {
@@ -808,9 +808,9 @@ export async function validatePluginContents(
   return results
 }
 
-/**
+/*    *
  * Validate a manifest file or directory (auto-detects type)
- */
+     */
 export async function validateManifest(
   filePath: string,
 ): Promise<ValidationResult> {

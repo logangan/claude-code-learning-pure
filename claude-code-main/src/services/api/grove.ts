@@ -34,21 +34,21 @@ export type GroveConfig = {
   notice_reminder_frequency: number | null
 }
 
-/**
+/*    *
  * Result type that distinguishes between API failure and success.
  * - success: true means API call succeeded (data may still contain null fields)
  * - success: false means API call failed after retry
- */
+     */
 export type ApiResult<T> = { success: true; data: T } | { success: false }
 
-/**
+/*    *
  * Get the current Grove settings for the user account.
  * Returns ApiResult to distinguish between API failure and success.
  * Uses existing OAuth 401 retry, then returns failure if that doesn't help.
  *
  * Memoized for the session to avoid redundant per-render requests.
  * Cache is invalidated in updateGroveSettings() so post-toggle reads are fresh.
- */
+     */
 export const getGroveSettings = memoize(
   async (): Promise<ApiResult<AccountSettings>> => {
     // Grove is a notification feature; during an outage, skipping it is correct.
@@ -84,9 +84,9 @@ export const getGroveSettings = memoize(
   },
 )
 
-/**
+/*    *
  * Mark that the Grove notice has been viewed by the user
- */
+     */
 export async function markGroveNoticeViewed(): Promise<void> {
   try {
     await withOAuth401Retry(() => {
@@ -114,9 +114,9 @@ export async function markGroveNoticeViewed(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Update Grove settings for the user account
- */
+     */
 export async function updateGroveSettings(
   groveEnabled: boolean,
 ): Promise<void> {
@@ -147,13 +147,13 @@ export async function updateGroveSettings(
   }
 }
 
-/**
+/*    *
  * Check if user is qualified for Grove (non-blocking, cache-first).
  *
  * This function never blocks on network - it returns cached data immediately
  * and fetches in the background if needed. On cold start (no cache), it returns
  * false and the Grove dialog won't show until the next session.
- */
+     */
 export async function isQualifiedForGrove(): Promise<boolean> {
   if (!isConsumerSubscriber()) {
     return false
@@ -192,9 +192,9 @@ export async function isQualifiedForGrove(): Promise<boolean> {
   return cachedEntry.grove_enabled
 }
 
-/**
+/*    *
  * Fetch Grove config from API and store in cache
- */
+     */
 async function fetchAndStoreGroveConfig(accountId: string): Promise<void> {
   try {
     const result = await getGroveNoticeConfig()
@@ -224,11 +224,11 @@ async function fetchAndStoreGroveConfig(accountId: string): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Get Grove Statsig configuration from the API.
  * Returns ApiResult to distinguish between API failure and success.
  * Uses existing OAuth 401 retry, then returns failure if that doesn't help.
- */
+     */
 export const getGroveNoticeConfig = memoize(
   async (): Promise<ApiResult<GroveConfig>> => {
     // Grove is a notification feature; during an outage, skipping it is correct.
@@ -277,10 +277,10 @@ export const getGroveNoticeConfig = memoize(
   },
 )
 
-/**
+/*    *
  * Determines whether the Grove dialog should be shown.
  * Returns false if either API call failed (after retry) - we hide the dialog on API failure.
- */
+     */
 export function calculateShouldShowGrove(
   settingsResult: ApiResult<AccountSettings>,
   configResult: ApiResult<GroveConfig>,

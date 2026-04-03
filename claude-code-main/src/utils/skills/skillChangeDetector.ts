@@ -21,34 +21,34 @@ import { getFsImplementation } from '../fsOperations.js'
 import { executeConfigChangeHooks, hasBlockingResult } from '../hooks.js'
 import { createSignal } from '../signal.js'
 
-/**
+/*    *
  * Time in milliseconds to wait for file writes to stabilize before processing.
- */
+     */
 const FILE_STABILITY_THRESHOLD_MS = 1000
 
-/**
+/*    *
  * Polling interval in milliseconds for checking file stability.
- */
+     */
 const FILE_STABILITY_POLL_INTERVAL_MS = 500
 
-/**
+/*    *
  * Time in milliseconds to debounce rapid skill change events into a single
  * reload. Prevents cascading reloads when many skill files change at once
  * (e.g. during auto-update or when another session modifies skill directories).
  * Without this, each file change triggers a full clearSkillCaches() +
  * clearCommandsCache() + listener notification cycle, which can deadlock the
  * event loop when dozens of events fire in rapid succession.
- */
+     */
 const RELOAD_DEBOUNCE_MS = 300
 
-/**
+/*    *
  * Polling interval for chokidar when usePolling is enabled.
  * Skill files change rarely (manual edits, git operations), so a 2s interval
  * trades negligible latency for far fewer stat() calls than the default 100ms.
- */
+     */
 const POLLING_INTERVAL_MS = 2000
 
-/**
+/*    *
  * Bun's native fs.watch() has a PathWatcherManager deadlock (oven-sh/bun#27469,
  * #26385): closing a watcher on the main thread while the File Watcher thread
  * is delivering events can hang both threads in __ulock_wait2 forever. Chokidar
@@ -58,7 +58,7 @@ const POLLING_INTERVAL_MS = 2000
  *
  * Workaround: use stat() polling under Bun. No FSWatcher = no deadlock.
  * The fix is pending upstream; remove this once the Bun PR lands.
- */
+     */
 const USE_POLLING = typeof Bun !== 'undefined'
 
 let watcher: FSWatcher | null = null
@@ -75,13 +75,13 @@ let testOverrides: {
   stabilityThreshold?: number
   pollInterval?: number
   reloadDebounce?: number
-  /** Chokidar fs.stat polling interval when USE_POLLING is active. */
+  /*    * Chokidar fs.stat polling interval when USE_POLLING is active.     */
   chokidarInterval?: number
 } | null = null
 
-/**
+/*    *
  * Initialize file watching for skill directories
- */
+     */
 export async function initialize(): Promise<void> {
   if (initialized || disposed) return
   initialized = true
@@ -140,9 +140,9 @@ export async function initialize(): Promise<void> {
   })
 }
 
-/**
+/*    *
  * Clean up file watcher
- */
+     */
 export function dispose(): Promise<void> {
   disposed = true
   if (unregisterCleanup) {
@@ -163,9 +163,9 @@ export function dispose(): Promise<void> {
   return closePromise
 }
 
-/**
+/*    *
  * Subscribe to skill changes
- */
+     */
 export const subscribe = skillsChanged.subscribe
 
 async function getWatchablePaths(): Promise<string[]> {
@@ -244,14 +244,14 @@ function handleChange(path: string): void {
   scheduleReload(path)
 }
 
-/**
+/*    *
  * Debounce rapid skill changes into a single reload. When many skill files
  * change at once (e.g. auto-update installs a new binary and a new session
  * touches skill directories), each file fires its own chokidar event. Without
  * debouncing, each event triggers clearSkillCaches() + clearCommandsCache() +
  * listener notification — 30 events means 30 full reload cycles, which can
  * deadlock the Bun event loop via rapid FSWatcher watch/unwatch churn.
- */
+     */
 function scheduleReload(changedPath: string): void {
   pendingChangedPaths.add(changedPath)
   if (reloadTimer) clearTimeout(reloadTimer)
@@ -278,9 +278,9 @@ function scheduleReload(changedPath: string): void {
   }, testOverrides?.reloadDebounce ?? RELOAD_DEBOUNCE_MS)
 }
 
-/**
+/*    *
  * Reset internal state for testing purposes only.
- */
+     */
 export async function resetForTesting(overrides?: {
   stabilityThreshold?: number
   pollInterval?: number

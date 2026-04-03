@@ -1,7 +1,7 @@
-/**
+/*    *
  * A fixed-size circular buffer that automatically evicts the oldest items
  * when the buffer is full. Useful for maintaining a rolling window of data.
- */
+     */
 export class CircularBuffer<T> {
   private buffer: T[]
   private head = 0
@@ -11,10 +11,10 @@ export class CircularBuffer<T> {
     this.buffer = new Array(capacity)
   }
 
-  /**
+  /*    *
    * Add an item to the buffer. If the buffer is full,
    * the oldest item will be evicted.
-   */
+       */
   add(item: T): void {
     this.buffer[this.head] = item
     this.head = (this.head + 1) % this.capacity
@@ -23,19 +23,19 @@ export class CircularBuffer<T> {
     }
   }
 
-  /**
+  /*    *
    * Add multiple items to the buffer at once.
-   */
+       */
   addAll(items: T[]): void {
     for (const item of items) {
       this.add(item)
     }
   }
 
-  /**
+  /*    *
    * Get the most recent N items from the buffer.
    * Returns fewer items if the buffer contains less than N items.
-   */
+       */
   getRecent(count: number): T[] {
     const result: T[] = []
     const start = this.size < this.capacity ? 0 : this.head
@@ -49,9 +49,9 @@ export class CircularBuffer<T> {
     return result
   }
 
-  /**
+  /*    *
    * Get all items currently in the buffer, in order from oldest to newest.
-   */
+       */
   toArray(): T[] {
     if (this.size === 0) return []
 
@@ -66,18 +66,18 @@ export class CircularBuffer<T> {
     return result
   }
 
-  /**
+  /*    *
    * Clear all items from the buffer.
-   */
+       */
   clear(): void {
     this.buffer.length = 0
     this.head = 0
     this.size = 0
   }
 
-  /**
+  /*    *
    * Get the current number of items in the buffer.
-   */
+       */
   length(): number {
     return this.size
   }

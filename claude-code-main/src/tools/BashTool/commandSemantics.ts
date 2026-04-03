@@ -1,9 +1,9 @@
-/**
+/*    *
  * Command semantics configuration for interpreting exit codes in different contexts.
  *
  * Many commands use exit codes to convey information other than just success/failure.
  * For example, grep returns 1 when no matches are found, which is not an error condition.
- */
+     */
 
 import { splitCommand_DEPRECATED } from '../../utils/bash/commands.js'
 
@@ -16,18 +16,18 @@ export type CommandSemantic = (
   message?: string
 }
 
-/**
+/*    *
  * Default semantic: treat only 0 as success, everything else as error
- */
+     */
 const DEFAULT_SEMANTIC: CommandSemantic = (exitCode, _stdout, _stderr) => ({
   isError: exitCode !== 0,
   message:
     exitCode !== 0 ? `Command failed with exit code ${exitCode}` : undefined,
 })
 
-/**
+/*    *
  * Command-specific semantics
- */
+     */
 const COMMAND_SEMANTICS: Map<string, CommandSemantic> = new Map([
   // grep: 0=matches found, 1=no matches, 2+=error
   [
@@ -88,9 +88,9 @@ const COMMAND_SEMANTICS: Map<string, CommandSemantic> = new Map([
   // so we use default semantics
 ])
 
-/**
+/*    *
  * Get the semantic interpretation for a command
- */
+     */
 function getCommandSemantic(command: string): CommandSemantic {
   // Extract the base command (first word, handling pipes)
   const baseCommand = heuristicallyExtractBaseCommand(command)
@@ -98,17 +98,17 @@ function getCommandSemantic(command: string): CommandSemantic {
   return semantic !== undefined ? semantic : DEFAULT_SEMANTIC
 }
 
-/**
+/*    *
  * Extract just the command name (first word) from a single command string.
- */
+     */
 function extractBaseCommand(command: string): string {
   return command.trim().split(/\s+/)[0] || ''
 }
 
-/**
+/*    *
  * Extract the primary command from a complex command line;
  * May get it super wrong - don't depend on this for security
- */
+     */
 function heuristicallyExtractBaseCommand(command: string): string {
   const segments = splitCommand_DEPRECATED(command)
 
@@ -118,9 +118,9 @@ function heuristicallyExtractBaseCommand(command: string): string {
   return extractBaseCommand(lastCommand)
 }
 
-/**
+/*    *
  * Interpret command result based on semantic rules
- */
+     */
 export function interpretCommandResult(
   command: string,
   exitCode: number,

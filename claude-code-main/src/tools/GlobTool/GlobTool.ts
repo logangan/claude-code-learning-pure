@@ -98,7 +98,7 @@ export const GlobTool = buildTool({
       const absolutePath = expandPath(path)
 
       // SECURITY: Skip filesystem operations for UNC paths to prevent NTLM credential leaks.
-      if (absolutePath.startsWith('\\\\') || absolutePath.startsWith('//')) {
+      if (absolutePath.startsWith('\\\\') || absolutePath.startsWith('// ')) {
         return { result: true }
       }
 

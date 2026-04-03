@@ -71,20 +71,19 @@ import {
   processSandboxPermissionResponse,
 } from './useSwarmPermissionPoller.js'
 
-/**
+/*    *
  * Get the agent name to poll for messages.
  * - In-process teammates return undefined (they use waitForNextPromptOrShutdown instead)
  * - Process-based teammates use their CLAUDE_CODE_AGENT_NAME
  * - Team leads use their name from teamContext.teammates
  * - Standalone sessions return undefined
- */
+     */
 function getAgentNameToPoll(appState: AppState): string | undefined {
   // In-process teammates should NOT use useInboxPoller - they have their own
   // polling mechanism via waitForNextPromptOrShutdown() in inProcessRunner.ts.
   // Using useInboxPoller would cause message routing issues since in-process
   // teammates share the same React context and AppState with the leader.
-  //
-  // Note: This can be called when the leader's REPL re-renders while an
+  // // Note: This can be called when the leader's REPL re-renders while an
   // in-process teammate's AsyncLocalStorage context is active (due to shared
   // setAppState). We return undefined to gracefully skip polling rather than
   // throwing, since this is a normal occurrence during concurrent execution.
@@ -115,14 +114,14 @@ type Props = {
   onSubmitMessage: (formatted: string) => boolean
 }
 
-/**
+/*    *
  * Polls the teammate inbox for new messages and submits them as turns.
  *
  * This hook:
  * 1. Polls every 1s for unread messages (teammates or team leads)
  * 2. When idle: submits messages immediately as a new turn
  * 3. When busy: queues messages in AppState.inbox for UI display, delivers when turn ends
- */
+     */
 export function useInboxPoller({
   enabled,
   isLoading,

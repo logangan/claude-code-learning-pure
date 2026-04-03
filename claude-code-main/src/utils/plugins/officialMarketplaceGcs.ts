@@ -1,4 +1,4 @@
-/**
+/*    *
  * inc-5046: fetch the official marketplace from a GCS mirror instead of
  * git-cloning GitHub on every startup.
  *
@@ -6,7 +6,7 @@
  * titanium squashfs, keyed by base repo SHA. This module fetches the `latest`
  * pointer, compares against a local sentinel, and downloads+extracts the zip
  * when there's a new SHA. Callers decide fallback behavior on failure.
- */
+     */
 
 import axios from 'axios'
 import { chmod, mkdir, readFile, rename, rm, writeFile } from 'fs/promises'
@@ -26,14 +26,14 @@ type SafeString = AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
 // `latest` has Cache-Control: max-age=300 so CDN staleness is bounded.
 // Backend (anthropic#317037) populates this prefix.
 const GCS_BASE =
-  'https://downloads.claude.ai/claude-code-releases/plugins/claude-plugins-official'
+  'https:// downloads.claude.ai/claude-code-releases/plugins/claude-plugins-official'
 
 // Zip arc paths are seed-dir-relative (marketplaces/claude-plugins-official/…)
 // so the titanium seed machinery can use the same zip. Strip this prefix when
 // extracting for a laptop install.
 const ARC_PREFIX = 'marketplaces/claude-plugins-official/'
 
-/**
+/*    *
  * Fetch the official marketplace from GCS and extract to installLocation.
  * Idempotent — checks a `.gcs-sha` sentinel before downloading the ~3.5MB zip.
  *
@@ -43,7 +43,7 @@ const ARC_PREFIX = 'marketplaces/claude-plugins-official/'
  *   circular-dep edge through marketplaceManager
  * @returns the fetched SHA on success (including no-op), null on any failure
  *   (network, 404, zip parse). Caller decides whether to fall through to git.
- */
+     */
 export async function fetchOfficialMarketplaceFromGcs(
   installLocation: string,
   marketplacesCacheDir: string,
@@ -77,7 +77,7 @@ export async function fetchOfficialMarketplaceFromGcs(
 
   try {
     // 1. Latest pointer — ~40 bytes, backend sets Cache-Control: no-cache,
-    //    max-age=300. Cheap enough to hit every startup.
+    // max-age=300. Cheap enough to hit every startup.
     const latest = await axios.get(`${GCS_BASE}/latest`, {
       responseType: 'text',
       timeout: 10_000,
@@ -90,7 +90,7 @@ export async function fetchOfficialMarketplaceFromGcs(
     }
 
     // 2. Sentinel check — `.gcs-sha` at the install root holds the last
-    //    extracted SHA. Matching means we already have this content.
+    // extracted SHA. Matching means we already have this content.
     const sentinelPath = join(installLocation, '.gcs-sha')
     const currentSha = await readFile(sentinelPath, 'utf8').then(
       s => s.trim(),
@@ -102,8 +102,8 @@ export async function fetchOfficialMarketplaceFromGcs(
     }
 
     // 3. Download zip and extract to a staging dir, then atomic-swap into
-    //    place. Crash mid-extract leaves a .staging dir (next run rm's it)
-    //    rather than a half-written installLocation.
+    // place. Crash mid-extract leaves a .staging dir (next run rm's it)
+    // rather than a half-written installLocation.
     const zipResp = await axios.get(`${GCS_BASE}/${sha}.zip`, {
       responseType: 'arraybuffer',
       timeout: 60_000,
@@ -184,7 +184,7 @@ const KNOWN_FS_CODES = new Set([
   'ENAMETOOLONG',
 ])
 
-/**
+/*    *
  * Classify a GCS fetch error into a stable telemetry bucket.
  *
  * Telemetry from v2.1.83+ showed 50% of failures landing in 'other' — and
@@ -192,7 +192,7 @@ const KNOWN_FS_CODES = new Set([
  * extraction/fs failed. This splits that bucket so we can see whether the
  * failures are fixable (wrong staging dir, cross-device rename) or inherent
  * (disk full, permission denied) before flipping the git-fallback kill switch.
- */
+     */
 export function classifyGcsError(e: unknown): string {
   if (axios.isAxiosError(e)) {
     if (e.code === 'ECONNABORTED') return 'timeout'

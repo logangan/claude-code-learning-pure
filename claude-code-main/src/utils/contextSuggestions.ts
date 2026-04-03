@@ -14,7 +14,7 @@ export type ContextSuggestion = {
   severity: SuggestionSeverity
   title: string
   detail: string
-  /** Estimated tokens that could be saved */
+  /*    * Estimated tokens that could be saved     */
   savingsTokens?: number
 }
 

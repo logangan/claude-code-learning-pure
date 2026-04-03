@@ -1,4 +1,4 @@
-/**
+/*    *
  * Startup profiling utility for measuring and reporting time spent in various
  * initialization phases.
  *
@@ -7,7 +7,7 @@
  * 2. Detailed profiling: CLAUDE_CODE_PROFILE_STARTUP=1 - full report with memory snapshots
  *
  * Uses Node.js built-in performance hooks API for standard timing measurement.
- */
+     */
 
 import { dirname, join } from 'path'
 import { getSessionId } from 'src/bootstrap/state.js'
@@ -59,9 +59,9 @@ if (SHOULD_PROFILE) {
   profileCheckpoint('profiler_initialized')
 }
 
-/**
+/*    *
  * Record a checkpoint with the given name
- */
+     */
 export function profileCheckpoint(name: string): void {
   if (!SHOULD_PROFILE) return
 
@@ -74,10 +74,10 @@ export function profileCheckpoint(name: string): void {
   }
 }
 
-/**
+/*    *
  * Get a formatted report of all checkpoints
  * Only available when DETAILED_PROFILING is enabled
- */
+     */
 function getReport(): string {
   if (!DETAILED_PROFILING) {
     return 'Startup profiling not enabled'
@@ -152,10 +152,10 @@ export function getStartupPerfLogPath(): string {
   return join(getClaudeConfigHomeDir(), 'startup-perf', `${getSessionId()}.txt`)
 }
 
-/**
+/*    *
  * Log startup performance phases to Statsig.
  * Only logs if this session was sampled at startup.
- */
+     */
 export function logStartupPerf(): void {
   // Only log if we were sampled (decision made at module load)
   if (!STATSIG_LOGGING_SAMPLED) return

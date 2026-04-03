@@ -16,11 +16,11 @@ import { logForDebugging } from '../../utils/debug.js'
 import { errorMessage } from '../../utils/errors.js'
 import { plural } from '../../utils/stringUtils.js'
 
-/**
+/*    *
  * Formats a URI by converting it to a relative path if possible.
  * Handles URI decoding and gracefully falls back to un-decoded path if malformed.
  * Only uses relative paths when shorter and not starting with ../../
- */
+     */
 function formatUri(uri: string | undefined, cwd?: string): string {
   // Handle undefined/null URIs - this indicates malformed LSP data
   if (!uri) {
@@ -36,7 +36,7 @@ function formatUri(uri: string | undefined, cwd?: string): string {
   // Remove file:// protocol if present
   // On Windows, file:///C:/path becomes /C:/path after replacing file://
   // We need to strip the leading slash for Windows drive-letter paths
-  let filePath = uri.replace(/^file:\/\//, '')
+  let filePath = uri.replace(/^file:\/\// , '')
   if (/^\/[A-Za-z]:/.test(filePath)) {
     filePath = filePath.slice(1)
   }
@@ -71,10 +71,10 @@ function formatUri(uri: string | undefined, cwd?: string): string {
   return filePath.replaceAll('\\', '/')
 }
 
-/**
+/*    *
  * Groups items by their file URI.
  * Generic helper that works with both Location[] and SymbolInformation[]
- */
+     */
 function groupByFile<T extends { uri: string } | { location: { uri: string } }>(
   items: T[],
   cwd?: string,
@@ -93,9 +93,9 @@ function groupByFile<T extends { uri: string } | { location: { uri: string } }>(
   return byFile
 }
 
-/**
+/*    *
  * Formats a Location with file path and line/character position
- */
+     */
 function formatLocation(location: Location, cwd?: string): string {
   const filePath = formatUri(location.uri, cwd)
   const line = location.range.start.line + 1 // Convert to 1-based
@@ -103,9 +103,9 @@ function formatLocation(location: Location, cwd?: string): string {
   return `${filePath}:${line}:${character}`
 }
 
-/**
+/*    *
  * Converts LocationLink to Location format for consistent handling
- */
+     */
 function locationLinkToLocation(link: LocationLink): Location {
   return {
     uri: link.targetUri,
@@ -113,17 +113,17 @@ function locationLinkToLocation(link: LocationLink): Location {
   }
 }
 
-/**
+/*    *
  * Checks if an object is a LocationLink (has targetUri) vs Location (has uri)
- */
+     */
 function isLocationLink(item: Location | LocationLink): item is LocationLink {
   return 'targetUri' in item
 }
 
-/**
+/*    *
  * Formats goToDefinition result
  * Can return Location, LocationLink, or arrays of either
- */
+     */
 export function formatGoToDefinitionResult(
   result: Location | Location[] | LocationLink | LocationLink[] | null,
   cwd?: string,
@@ -168,9 +168,9 @@ export function formatGoToDefinitionResult(
   return `Defined in ${formatLocation(location, cwd)}`
 }
 
-/**
+/*    *
  * Formats findReferences result
- */
+     */
 export function formatFindReferencesResult(
   result: Location[] | null,
   cwd?: string,
@@ -217,9 +217,9 @@ export function formatFindReferencesResult(
   return lines.join('\n')
 }
 
-/**
+/*    *
  * Extracts text content from MarkupContent or MarkedString
- */
+     */
 function extractMarkupText(
   contents: MarkupContent | MarkedString | MarkedString[],
 ): string {
@@ -247,9 +247,9 @@ function extractMarkupText(
   return contents.value
 }
 
-/**
+/*    *
  * Formats hover result
- */
+     */
 export function formatHoverResult(result: Hover | null, _cwd?: string): string {
   if (!result) {
     return 'No hover information available. This may occur if the cursor is not on a symbol, or if the LSP server has not fully indexed the file.'
@@ -266,9 +266,9 @@ export function formatHoverResult(result: Hover | null, _cwd?: string): string {
   return content
 }
 
-/**
+/*    *
  * Maps SymbolKind enum to readable string
- */
+     */
 function symbolKindToString(kind: SymbolKind): string {
   const kinds: Record<SymbolKind, string> = {
     [1]: 'File',
@@ -301,9 +301,9 @@ function symbolKindToString(kind: SymbolKind): string {
   return kinds[kind] || 'Unknown'
 }
 
-/**
+/*    *
  * Formats a single DocumentSymbol with indentation
- */
+     */
 function formatDocumentSymbolNode(
   symbol: DocumentSymbol,
   indent: number = 0,
@@ -332,11 +332,11 @@ function formatDocumentSymbolNode(
   return lines
 }
 
-/**
+/*    *
  * Formats documentSymbol result (hierarchical outline)
  * Handles both DocumentSymbol[] (hierarchical, with range) and SymbolInformation[] (flat, with location.range)
  * per LSP spec which allows textDocument/documentSymbol to return either format
- */
+     */
 export function formatDocumentSymbolResult(
   result: DocumentSymbol[] | SymbolInformation[] | null,
   cwd?: string,
@@ -365,9 +365,9 @@ export function formatDocumentSymbolResult(
   return lines.join('\n')
 }
 
-/**
+/*    *
  * Formats workspaceSymbol result (flat list of symbols)
- */
+     */
 export function formatWorkspaceSymbolResult(
   result: SymbolInformation[] | null,
   cwd?: string,
@@ -421,10 +421,10 @@ export function formatWorkspaceSymbolResult(
   return lines.join('\n')
 }
 
-/**
+/*    *
  * Formats a CallHierarchyItem with its location
  * Validates URI before formatting to handle malformed LSP data
- */
+     */
 function formatCallHierarchyItem(
   item: CallHierarchyItem,
   cwd?: string,
@@ -448,10 +448,10 @@ function formatCallHierarchyItem(
   return result
 }
 
-/**
+/*    *
  * Formats prepareCallHierarchy result
  * Returns the call hierarchy item(s) at the given position
- */
+     */
 export function formatPrepareCallHierarchyResult(
   result: CallHierarchyItem[] | null,
   cwd?: string,
@@ -471,10 +471,10 @@ export function formatPrepareCallHierarchyResult(
   return lines.join('\n')
 }
 
-/**
+/*    *
  * Formats incomingCalls result
  * Shows all functions/methods that call the target
- */
+     */
 export function formatIncomingCallsResult(
   result: CallHierarchyIncomingCall[] | null,
   cwd?: string,
@@ -531,10 +531,10 @@ export function formatIncomingCallsResult(
   return lines.join('\n')
 }
 
-/**
+/*    *
  * Formats outgoingCalls result
  * Shows all functions/methods called by the target
- */
+     */
 export function formatOutgoingCallsResult(
   result: CallHierarchyOutgoingCall[] | null,
   cwd?: string,

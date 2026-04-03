@@ -1,11 +1,11 @@
-/**
+/*    *
  * Thin HTTP wrappers for the CCR v2 code-session API.
  *
  * Separate file from remoteBridgeCore.ts so the SDK /bridge subpath can
  * export createCodeSession + fetchRemoteCredentials without bundling the
  * heavy CLI tree (analytics, transport, etc.). Callers supply explicit
  * accessToken + baseUrl — no implicit auth or config reads.
- */
+     */
 
 import axios from 'axios'
 import { logForDebugging } from '../utils/debug.js'
@@ -79,10 +79,10 @@ export async function createCodeSession(
   return data.session.id
 }
 
-/**
+/*    *
  * Credentials from POST /bridge. JWT is opaque — do not decode.
  * Each /bridge call bumps worker_epoch server-side (it IS the register).
- */
+     */
 export type RemoteCredentials = {
   worker_jwt: string
   api_base_url: string

@@ -3,7 +3,7 @@ import stripAnsi from 'strip-ansi'
 import { OSC, osc } from '../termio/osc.js'
 import { TerminalWriteContext } from '../useTerminalNotification.js'
 
-/**
+/*    *
  * Declaratively set the terminal tab/window title.
  *
  * Pass a string to set the title. ANSI escape sequences are stripped
@@ -13,7 +13,7 @@ import { TerminalWriteContext } from '../useTerminalNotification.js'
  *
  * On Windows, uses `process.title` (classic conhost doesn't support OSC).
  * Elsewhere, writes OSC 0 (set title+icon) via Ink's stdout.
- */
+     */
 export function useTerminalTitle(title: string | null): void {
   const writeRaw = useContext(TerminalWriteContext)
 

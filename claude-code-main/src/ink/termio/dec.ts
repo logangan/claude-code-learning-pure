@@ -1,15 +1,15 @@
-/**
+/*    *
  * DEC (Digital Equipment Corporation) Private Mode Sequences
  *
  * DEC private modes use CSI ? N h (set) and CSI ? N l (reset) format.
  * These are terminal-specific extensions to the ANSI standard.
- */
+     */
 
 import { csi } from './csi.js'
 
-/**
+/*    *
  * DEC private mode numbers
- */
+     */
 export const DEC = {
   CURSOR_VISIBLE: 25,
   ALT_SCREEN: 47,
@@ -23,12 +23,12 @@ export const DEC = {
   SYNCHRONIZED_UPDATE: 2026,
 } as const
 
-/** Generate CSI ? N h sequence (set mode) */
+/*    * Generate CSI ? N h sequence (set mode)     */
 export function decset(mode: number): string {
   return csi(`?${mode}h`)
 }
 
-/** Generate CSI ? N l sequence (reset mode) */
+/*    * Generate CSI ? N l sequence (reset mode)     */
 export function decreset(mode: number): string {
   return csi(`?${mode}l`)
 }

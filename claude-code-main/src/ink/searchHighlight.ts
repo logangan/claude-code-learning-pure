@@ -6,7 +6,7 @@ import {
   setCellStyleId,
 } from './screen.js'
 
-/**
+/*    *
  * Highlight all visible occurrences of `query` in the screen buffer by
  * inverting cell styles (SGR 7). Post-render, same damage-tracking machinery
  * as applySelectionOverlay — the diff picks up highlighted cells as ordinary
@@ -23,7 +23,7 @@ import {
  *
  * Returns true if any match was highlighted (damage gate — caller forces
  * full-frame damage when true).
- */
+     */
 export function applySearchHighlight(
   screen: Screen,
   query: string,
@@ -42,11 +42,11 @@ export function applySearchHighlight(
     // Build row text (already lowercased) + code-unit→cell-index map.
     // Three skip conditions, all aligned with setCellStyleId /
     // extractRowText (selection.ts):
-    //   - SpacerTail: 2nd cell of a wide char, no char of its own
-    //   - SpacerHead: end-of-line padding when a wide char wraps
-    //   - noSelect: gutters (⎿, line numbers) — same exclusion as
-    //     applySelectionOverlay. "Highlight what you see" still holds for
-    //     content; gutters aren't search targets.
+    // - SpacerTail: 2nd cell of a wide char, no char of its own
+    // - SpacerHead: end-of-line padding when a wide char wraps
+    // - noSelect: gutters (⎿, line numbers) — same exclusion as
+    // applySelectionOverlay. "Highlight what you see" still holds for
+    // content; gutters aren't search targets.
     // Lowercasing per-char (not on the joined string at the end) means
     // codeUnitToCell maps positions in the LOWERCASED text — U+0130
     // (Turkish İ) lowercases to 2 code units, so lowering the joined

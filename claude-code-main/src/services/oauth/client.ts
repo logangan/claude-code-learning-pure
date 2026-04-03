@@ -31,10 +31,10 @@ import type {
   UserRolesResponse,
 } from './types.js'
 
-/**
+/*    *
  * Check if the user has Claude.ai authentication scope
  * @private Only call this if you're OAuth / auth related code!
- */
+     */
 export function shouldUseClaudeAIAuth(scopes: string[] | undefined): boolean {
   return Boolean(scopes?.includes(CLAUDE_AI_INFERENCE_SCOPE))
 }
@@ -76,7 +76,7 @@ export function buildAuthUrl({
     'redirect_uri',
     isManual
       ? getOauthConfig().MANUAL_REDIRECT_URL
-      : `http://localhost:${port}/callback`,
+      : `http:// localhost:${port}/callback`,
   )
   const scopesToUse = inferenceOnly
     ? [CLAUDE_AI_INFERENCE_SCOPE] // Long-lived inference-only tokens
@@ -117,7 +117,7 @@ export async function exchangeCodeForTokens(
     code: authorizationCode,
     redirect_uri: useManualRedirect
       ? getOauthConfig().MANUAL_REDIRECT_URL
-      : `http://localhost:${port}/callback`,
+      : `http:// localhost:${port}/callback`,
     client_id: getOauthConfig().CLIENT_ID,
     code_verifier: codeVerifier,
     state,
@@ -187,8 +187,7 @@ export async function refreshOAuthToken(
     // Skip the extra /api/oauth/profile round-trip when we already have both
     // the global-config profile fields AND the secure-storage subscription data.
     // Routine refreshes satisfy both, so we cut ~7M req/day fleet-wide.
-    //
-    // Checking secure storage (not just config) matters for the
+    // // Checking secure storage (not just config) matters for the
     // CLAUDE_CODE_OAUTH_REFRESH_TOKEN re-login path: installOAuthTokens runs
     // performLogout() AFTER we return, wiping secure storage. If we returned
     // null for subscriptionType here, saveOAuthTokensIfNeeded would persist
@@ -419,10 +418,10 @@ export async function fetchProfileInfo(accessToken: string): Promise<{
   return { ...result, rawProfile: profile }
 }
 
-/**
+/*    *
  * Gets the organization UUID from the OAuth access token
  * @returns The organization UUID or null if not authenticated
- */
+     */
 export async function getOrganizationUUID(): Promise<string | null> {
   // Check global config first to avoid unnecessary API call
   const globalConfig = getGlobalConfig()
@@ -444,10 +443,10 @@ export async function getOrganizationUUID(): Promise<string | null> {
   return profileOrgUUID
 }
 
-/**
+/*    *
  * Populate the OAuth account info if it has not already been cached in config.
  * @returns Whether or not the oauth account info was populated.
- */
+     */
 export async function populateOAuthAccountInfoIfNeeded(): Promise<boolean> {
   // Check env vars first (synchronous, no network call needed).
   // SDK callers like Cowork can provide account info directly, which also

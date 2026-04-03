@@ -1,4 +1,4 @@
-/**
+/*    *
  * Early Input Capture
  *
  * This module captures terminal input that is typed before the REPL is fully
@@ -9,7 +9,7 @@
  * 1. Call startCapturingEarlyInput() as early as possible in cli.tsx
  * 2. When REPL is ready, call consumeEarlyInput() to get any buffered text
  * 3. stopCapturingEarlyInput() is called automatically when input is consumed
- */
+     */
 
 import { lastGrapheme } from './intl.js'
 
@@ -20,12 +20,12 @@ let isCapturing = false
 // Reference to the readable handler so we can remove it later
 let readableHandler: (() => void) | null = null
 
-/**
+/*    *
  * Start capturing stdin data early, before the REPL is initialized.
  * Should be called as early as possible in the startup sequence.
  *
  * Only captures if stdin is a TTY (interactive terminal).
- */
+     */
 export function startCapturingEarlyInput(): void {
   // Only capture in interactive mode: stdin must be a TTY, and we must not
   // be in print mode. Raw mode disables ISIG (terminal Ctrl+C → SIGINT),
@@ -66,9 +66,9 @@ export function startCapturingEarlyInput(): void {
   }
 }
 
-/**
+/*    *
  * Process a chunk of input data
- */
+     */
 function processChunk(str: string): void {
   let i = 0
   while (i < str.length) {
@@ -135,10 +135,10 @@ function processChunk(str: string): void {
   }
 }
 
-/**
+/*    *
  * Stop capturing early input.
  * Called automatically when input is consumed, or can be called manually.
- */
+     */
 export function stopCapturingEarlyInput(): void {
   if (!isCapturing) {
     return
@@ -156,11 +156,11 @@ export function stopCapturingEarlyInput(): void {
   // own stdin setup which happens around the same time.
 }
 
-/**
+/*    *
  * Consume any early input that was captured.
  * Returns the captured input and clears the buffer.
  * Automatically stops capturing when called.
- */
+     */
 export function consumeEarlyInput(): string {
   stopCapturingEarlyInput()
   const input = earlyInputBuffer.trim()
@@ -168,24 +168,24 @@ export function consumeEarlyInput(): string {
   return input
 }
 
-/**
+/*    *
  * Check if there is any early input available without consuming it.
- */
+     */
 export function hasEarlyInput(): boolean {
   return earlyInputBuffer.trim().length > 0
 }
 
-/**
+/*    *
  * Seed the early input buffer with text that will appear pre-filled
  * in the prompt input when the REPL renders. Does not auto-submit.
- */
+     */
 export function seedEarlyInput(text: string): void {
   earlyInputBuffer = text
 }
 
-/**
+/*    *
  * Check if early input capture is currently active.
- */
+     */
 export function isCapturingEarlyInput(): boolean {
   return isCapturing
 }

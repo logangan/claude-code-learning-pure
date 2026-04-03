@@ -62,7 +62,7 @@ import { isUndercover } from '../utils/undercover.js'
 import { isMcpInstructionsDeltaEnabled } from '../utils/mcpInstructionsDelta.js'
 
 // Dead code elimination: conditional imports for feature-gated modules
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const getCachedMCConfigForFRC = feature('CACHED_MICROCOMPACT')
   ? (
       require('../services/compact/cachedMCConfig.js') as typeof import('../services/compact/cachedMCConfig.js')
@@ -95,14 +95,14 @@ const DISCOVER_SKILLS_TOOL_NAME: string | null = feature(
 const skillSearchFeatureCheck = feature('EXPERIMENTAL_SKILL_SEARCH')
   ? (require('../services/skillSearch/featureCheck.js') as typeof import('../services/skillSearch/featureCheck.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 import type { OutputStyleConfig } from './outputStyles.js'
 import { CYBER_RISK_INSTRUCTION } from './cyberRiskInstruction.js'
 
 export const CLAUDE_CODE_DOCS_MAP_URL =
-  'https://code.claude.com/docs/en/claude_code_docs_map.md'
+  'https:// code.claude.com/docs/en/claude_code_docs_map.md'
 
-/**
+/*    *
  * Boundary marker separating static (cross-org cacheable) content from dynamic content.
  * Everything BEFORE this marker in the system prompt array can use scope: 'global'.
  * Everything AFTER contains user/session-specific content and should not be cached.
@@ -110,7 +110,7 @@ export const CLAUDE_CODE_DOCS_MAP_URL =
  * WARNING: Do not remove or reorder this marker without updating cache logic in:
  * - src/utils/api.ts (splitSysPromptPrefix)
  * - src/services/api/claude.ts (buildSystemPromptBlocks)
- */
+     */
 export const SYSTEM_PROMPT_DYNAMIC_BOUNDARY =
   '__SYSTEM_PROMPT_DYNAMIC_BOUNDARY__'
 
@@ -319,7 +319,7 @@ function getAgentToolSection(): string {
     : `Use the ${AGENT_TOOL_NAME} tool with specialized agents when the task at hand matches the agent's description. Subagents are valuable for parallelizing independent queries or for protecting the main context window from excessive results, but they should not be used excessively when not needed. Importantly, avoid duplicating work that subagents are already doing - if you delegate research to a subagent, do not also perform the same searches yourself.`
 }
 
-/**
+/*    *
  * Guidance for the skill_discovery attachment ("Skills relevant to your
  * task:") and the DiscoverSkills tool. Shared between the main-session
  * getUsingYourToolsSection bullet and the subagent path in
@@ -329,7 +329,7 @@ function getAgentToolSection(): string {
  *
  * feature() guard is internal — external builds DCE the string literal
  * along with the DISCOVER_SKILLS_TOOL_NAME interpolation.
- */
+     */
 function getDiscoverSkillsGuidance(): string | null {
   if (
     feature('EXPERIMENTAL_SKILL_SEARCH') &&
@@ -340,7 +340,7 @@ function getDiscoverSkillsGuidance(): string | null {
   return null
 }
 
-/**
+/*    *
  * Session-variant guidance that would fragment the cacheScope:'global'
  * prefix if placed before SYSTEM_PROMPT_DYNAMIC_BOUNDARY. Each conditional
  * here is a runtime bit that would otherwise multiply the Blake2b prefix
@@ -348,7 +348,7 @@ function getDiscoverSkillsGuidance(): string | null {
  *
  * outputStyleConfig intentionally NOT moved here — identity framing lives
  * in the static intro pending eval.
- */
+     */
 function getSessionSpecificGuidanceSection(
   enabledTools: Set<string>,
   skillToolCommands: Command[],
@@ -613,8 +613,7 @@ export async function computeEnvInfo(
   // internal can leak into public commits/PRs. This includes the public
   // FRONTIER_MODEL_* constants — if those ever point at an unannounced model,
   // we don't want them in context. Go fully dark.
-  //
-  // DCE: `process.env.USER_TYPE === 'ant'` is build-time --define. It MUST be
+  // // DCE: `process.env.USER_TYPE === 'ant'` is build-time --define. It MUST be
   // inlined at each callsite (not hoisted to a const) so the bundler can
   // constant-fold it to `false` in external builds and eliminate the branch.
   let modelDescription = ''
@@ -790,10 +789,10 @@ export async function enhanceSystemPromptWithEnvDetails(
   ]
 }
 
-/**
+/*    *
  * Returns instructions for using the scratchpad directory if enabled.
  * The scratchpad is a per-session directory where Claude can write temporary files.
- */
+     */
 export function getScratchpadInstructions(): string | null {
   if (!isScratchpadEnabled()) {
     return null

@@ -9,11 +9,11 @@ import { getPlatform } from './platform.js'
 import { getGlobExclusionsForPluginCache } from './plugins/orphanedPluginFilter.js'
 import { ripGrep } from './ripgrep.js'
 
-/**
+/*    *
  * Extracts the static base directory from a glob pattern.
  * The base directory is everything before the first glob special character (* ? [ {).
  * Returns the directory portion and the remaining relative pattern.
- */
+     */
 export function extractGlobBaseDirectory(pattern: string): {
   baseDir: string
   relativePattern: string

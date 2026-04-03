@@ -1,4 +1,4 @@
-/**
+/*    *
  * PowerShell Common Parameters (available on all cmdlets via [CmdletBinding()]).
  * Source: about_CommonParameters (PowerShell docs) + Get-Command output.
  *
@@ -7,7 +7,7 @@
  * what would otherwise be an import cycle between those two files.
  *
  * Stored lowercase with leading dash — callers `.toLowerCase()` their input.
- */
+     */
 
 export const COMMON_SWITCHES = ['-verbose', '-debug']
 

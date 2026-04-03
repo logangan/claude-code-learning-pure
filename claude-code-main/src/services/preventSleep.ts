@@ -1,4 +1,4 @@
-/**
+/*    *
  * Prevents macOS from sleeping while Claude is working.
  *
  * Uses the built-in `caffeinate` command to create a power assertion that
@@ -11,7 +11,7 @@
  * automatically exit after the timeout expires.
  *
  * Only runs on macOS - no-op on other platforms.
- */
+     */
 import { type ChildProcess, spawn } from 'child_process'
 import { registerCleanup } from '../utils/cleanupRegistry.js'
 import { logForDebugging } from '../utils/debug.js'
@@ -29,10 +29,10 @@ let restartInterval: ReturnType<typeof setInterval> | null = null
 let refCount = 0
 let cleanupRegistered = false
 
-/**
+/*    *
  * Increment the reference count and start preventing sleep if needed.
  * Call this when starting work that should keep the Mac awake.
- */
+     */
 export function startPreventSleep(): void {
   refCount++
 
@@ -42,10 +42,10 @@ export function startPreventSleep(): void {
   }
 }
 
-/**
+/*    *
  * Decrement the reference count and allow sleep if no more work is pending.
  * Call this when work completes.
- */
+     */
 export function stopPreventSleep(): void {
   if (refCount > 0) {
     refCount--
@@ -57,10 +57,10 @@ export function stopPreventSleep(): void {
   }
 }
 
-/**
+/*    *
  * Force stop preventing sleep, regardless of reference count.
  * Use this for cleanup on exit.
- */
+     */
 export function forceStopPreventSleep(): void {
   refCount = 0
   stopRestartInterval()
@@ -119,9 +119,9 @@ function spawnCaffeinate(): void {
 
   try {
     // -i: Create an assertion to prevent idle sleep
-    //     This is the least aggressive option - display can still sleep
+    // This is the least aggressive option - display can still sleep
     // -t: Timeout in seconds - caffeinate exits automatically after this
-    //     This provides self-healing if Node is killed with SIGKILL
+    // This provides self-healing if Node is killed with SIGKILL
     caffeinateProcess = spawn(
       'caffeinate',
       ['-i', '-t', String(CAFFEINATE_TIMEOUT_SECONDS)],

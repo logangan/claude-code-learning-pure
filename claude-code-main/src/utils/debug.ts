@@ -25,12 +25,12 @@ const LEVEL_ORDER: Record<DebugLogLevel, number> = {
   error: 4,
 }
 
-/**
+/*    *
  * Minimum log level to include in debug output. Defaults to 'debug', which
  * filters out 'verbose' messages. Set CLAUDE_CODE_DEBUG_LOG_LEVEL=verbose to
  * include high-volume diagnostics (e.g. full statusLine command, shell, cwd,
  * stdout/stderr) that would otherwise drown out useful debug output.
- */
+     */
 export const getMinDebugLogLevel = memoize((): DebugLogLevel => {
   const raw = process.env.CLAUDE_CODE_DEBUG_LOG_LEVEL?.toLowerCase().trim()
   if (raw && Object.hasOwn(LEVEL_ORDER, raw)) {
@@ -56,11 +56,11 @@ export const isDebugMode = memoize((): boolean => {
   )
 })
 
-/**
+/*    *
  * Enables debug logging mid-session (e.g. via /debug). Non-ants don't write
  * debug logs by default, so this lets them start capturing without restarting
  * with --debug. Returns true if logging was already active.
- */
+     */
 export function enableDebugLogging(): boolean {
   const wasActive = isDebugMode() || process.env.USER_TYPE === 'ant'
   runtimeDebugEnabled = true
@@ -235,10 +235,10 @@ export function getDebugLogPath(): string {
   )
 }
 
-/**
+/*    *
  * Updates the latest debug log symlink to point to the current debug log file.
  * Creates or updates a symlink at ~/.claude/debug/latest
- */
+     */
 const updateLatestDebugLogSymlink = memoize(async (): Promise<void> => {
   try {
     const debugLogPath = getDebugLogPath()
@@ -252,9 +252,9 @@ const updateLatestDebugLogSymlink = memoize(async (): Promise<void> => {
   }
 })
 
-/**
+/*    *
  * Logs errors for Ants only, always visible in production.
- */
+     */
 export function logAntError(context: string, error: unknown): void {
   if (process.env.USER_TYPE !== 'ant') {
     return

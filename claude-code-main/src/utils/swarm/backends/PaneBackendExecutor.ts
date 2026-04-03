@@ -22,7 +22,7 @@ import type {
   TeammateSpawnResult,
 } from './types.js'
 
-/**
+/*    *
  * PaneBackendExecutor adapts a PaneBackend to the TeammateExecutor interface.
  *
  * This allows pane-based backends (tmux, iTerm2) to be used through the same
@@ -35,17 +35,17 @@ import type {
  * - terminate(): Sends a shutdown request via mailbox
  * - kill(): Kills the pane via the backend
  * - isActive(): Checks if the pane is still running
- */
+     */
 export class PaneBackendExecutor implements TeammateExecutor {
   readonly type: BackendType
 
   private backend: PaneBackend
   private context: ToolUseContext | null = null
 
-  /**
+  /*    *
    * Track spawned teammates by agentId -> paneId mapping.
    * This allows us to find the pane for operations like kill/terminate.
-   */
+       */
   private spawnedTeammates: Map<string, { paneId: string; insideTmux: boolean }>
   private cleanupRegistered = false
 
@@ -55,27 +55,27 @@ export class PaneBackendExecutor implements TeammateExecutor {
     this.spawnedTeammates = new Map()
   }
 
-  /**
+  /*    *
    * Sets the ToolUseContext for this executor.
    * Must be called before spawn() to provide access to AppState and permissions.
-   */
+       */
   setContext(context: ToolUseContext): void {
     this.context = context
   }
 
-  /**
+  /*    *
    * Checks if the underlying pane backend is available.
-   */
+       */
   async isAvailable(): Promise<boolean> {
     return this.backend.isAvailable()
   }
 
-  /**
+  /*    *
    * Spawns a teammate in a new pane.
    *
    * Creates a pane via the backend, builds the CLI command with teammate
    * identity flags, and sends it to the pane.
-   */
+       */
   async spawn(config: TeammateSpawnConfig): Promise<TeammateSpawnResult> {
     const agentId = formatAgentId(config.name, config.teamName)
 
@@ -208,11 +208,11 @@ export class PaneBackendExecutor implements TeammateExecutor {
     }
   }
 
-  /**
+  /*    *
    * Sends a message to a pane-based teammate via file-based mailbox.
    *
    * All teammates (pane and in-process) use the same mailbox mechanism.
-   */
+       */
   async sendMessage(agentId: string, message: TeammateMessage): Promise<void> {
     logForDebugging(
       `[PaneBackendExecutor] sendMessage() to ${agentId}: ${message.text.substring(0, 50)}...`,
@@ -243,12 +243,12 @@ export class PaneBackendExecutor implements TeammateExecutor {
     )
   }
 
-  /**
+  /*    *
    * Gracefully terminates a pane-based teammate.
    *
    * For pane-based teammates, we send a shutdown request via mailbox and
    * let the teammate process handle exit gracefully.
-   */
+       */
   async terminate(agentId: string, reason?: string): Promise<boolean> {
     logForDebugging(
       `[PaneBackendExecutor] terminate() called for ${agentId}: ${reason}`,
@@ -289,9 +289,9 @@ export class PaneBackendExecutor implements TeammateExecutor {
     return true
   }
 
-  /**
+  /*    *
    * Force kills a pane-based teammate by killing its pane.
-   */
+       */
   async kill(agentId: string): Promise<boolean> {
     logForDebugging(`[PaneBackendExecutor] kill() called for ${agentId}`)
 
@@ -319,13 +319,13 @@ export class PaneBackendExecutor implements TeammateExecutor {
     return killed
   }
 
-  /**
+  /*    *
    * Checks if a pane-based teammate is still active.
    *
    * For pane-based teammates, we check if the pane still exists.
    * This is a best-effort check - the pane may exist but the process inside
    * may have exited.
-   */
+       */
   async isActive(agentId: string): Promise<boolean> {
     logForDebugging(`[PaneBackendExecutor] isActive() called for ${agentId}`)
 
@@ -344,9 +344,9 @@ export class PaneBackendExecutor implements TeammateExecutor {
   }
 }
 
-/**
+/*    *
  * Creates a PaneBackendExecutor wrapping the given PaneBackend.
- */
+     */
 export function createPaneBackendExecutor(
   backend: PaneBackend,
 ): PaneBackendExecutor {

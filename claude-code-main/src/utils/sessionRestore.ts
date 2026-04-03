@@ -69,11 +69,11 @@ type ResumeResult = {
   contextCollapseSnapshot?: ContextCollapseSnapshotEntry
 }
 
-/**
+/*    *
  * Scan the transcript for the last TodoWrite tool_use block and return its todos.
  * Used to hydrate AppState.todos on SDK --resume so the model's todo list
  * survives session restarts without file persistence.
- */
+     */
 function extractTodosFromTranscript(messages: Message[]): TodoList {
   for (let i = messages.length - 1; i >= 0; i--) {
     const msg = messages[i]
@@ -92,10 +92,10 @@ function extractTodosFromTranscript(messages: Message[]): TodoList {
   return []
 }
 
-/**
+/*    *
  * Restore session state (file history, attribution, todos) from log on resume.
  * Used by both SDK (print.ts) and interactive (REPL.tsx, main.tsx) resume paths.
- */
+     */
 export function restoreSessionStateFromLog(
   result: ResumeResult,
   setAppState: (f: (prev: AppState) => AppState) => void,
@@ -125,14 +125,14 @@ export function restoreSessionStateFromLog(
   // first — without that, an in-session /resume into a session with no
   // commits would leave the prior session's stale commit log intact.
   if (feature('CONTEXT_COLLAPSE')) {
-    /* eslint-disable @typescript-eslint/no-require-imports */
+    /*     eslint-disable @typescript-eslint/no-require-imports     */
     ;(
       require('../services/contextCollapse/persist.js') as typeof import('../services/contextCollapse/persist.js')
     ).restoreFromEntries(
       result.contextCollapseCommits ?? [],
       result.contextCollapseSnapshot,
     )
-    /* eslint-enable @typescript-eslint/no-require-imports */
+    /*     eslint-enable @typescript-eslint/no-require-imports     */
   }
 
   // Restore TodoWrite state from transcript (SDK/non-interactive only).
@@ -149,11 +149,11 @@ export function restoreSessionStateFromLog(
   }
 }
 
-/**
+/*    *
  * Compute restored attribution state from log snapshots.
  * Used for computing initial state before render (e.g., main.tsx --continue).
  * Returns undefined if attribution feature is disabled or no snapshots exist.
- */
+     */
 export function computeRestoredAttributionState(
   result: ResumeResult,
 ): AttributionState | undefined {
@@ -167,11 +167,11 @@ export function computeRestoredAttributionState(
   return undefined
 }
 
-/**
+/*    *
  * Compute standalone agent context (name/color) for session resume.
  * Used for computing initial state before render (per CLAUDE.md guidelines).
  * Returns undefined if no name/color is set on the session.
- */
+     */
 export function computeStandaloneAgentContext(
   agentName: string | undefined,
   agentColor: string | undefined,
@@ -187,7 +187,7 @@ export function computeStandaloneAgentContext(
   }
 }
 
-/**
+/*    *
  * Restore agent setting from a resumed session.
  *
  * When resuming a conversation that used a custom agent, this re-applies the
@@ -196,7 +196,7 @@ export function computeStandaloneAgentContext(
  *
  * Returns the restored agent definition and its agentType string, or undefined
  * if no agent was restored.
- */
+     */
 export function restoreAgentFromSession(
   agentSetting: string | undefined,
   currentAgentDefinition: AgentDefinition | undefined,
@@ -241,13 +241,13 @@ export function restoreAgentFromSession(
   return { agentDefinition: resumedAgent, agentType: resumedAgent.agentType }
 }
 
-/**
+/*    *
  * Refresh agent definitions after a coordinator/normal mode switch.
  *
  * When resuming a session that was in a different mode (coordinator vs normal),
  * the built-in agents need to be re-derived to match the new mode. CLI-provided
  * agents (from --agents flag) are merged back in.
- */
+     */
 export async function refreshAgentDefinitionsForModeSwitch(
   modeWasSwitched: boolean,
   currentCwd: string,
@@ -270,9 +270,9 @@ export async function refreshAgentDefinitionsForModeSwitch(
   }
 }
 
-/**
+/*    *
  * Result of processing a resumed/continued conversation for rendering.
- */
+     */
 export type ProcessedResume = {
   messages: Message[]
   fileHistorySnapshots?: FileHistorySnapshot[]
@@ -283,17 +283,17 @@ export type ProcessedResume = {
   initialState: AppState
 }
 
-/**
+/*    *
  * Subset of the coordinator mode module API needed for session resume.
- */
+     */
 type CoordinatorModeApi = {
   matchSessionMode(mode?: string): string | undefined
   isCoordinatorMode(): boolean
 }
 
-/**
+/*    *
  * The loaded conversation data (return type of loadConversationForResume).
- */
+     */
 type ResumeLoadResult = {
   messages: Message[]
   fileHistorySnapshots?: FileHistorySnapshot[]
@@ -314,7 +314,7 @@ type ResumeLoadResult = {
   prRepository?: string
 }
 
-/**
+/*    *
  * Restore the worktree working directory on resume. The transcript records
  * the last worktree enter/exit; if the session crashed while inside a
  * worktree (last entry = session object, not null), cd back into it.
@@ -328,7 +328,7 @@ type ResumeLoadResult = {
  * project.currentSessionWorktree with the stale transcript value, so
  * re-assert the fresh worktree here before adoptResumedSessionFile writes
  * it back to disk.
- */
+     */
 export function restoreWorktreeForResume(
   worktreeSession: PersistedWorktreeSession | null | undefined,
 ): void {
@@ -365,7 +365,7 @@ export function restoreWorktreeForResume(
   getPlansDirectory.cache.clear?.()
 }
 
-/**
+/*    *
  * Undo restoreWorktreeForResume before a mid-session /resume switches to
  * another session. Without this, /resume from a worktree session to a
  * non-worktree session leaves the user in the old worktree directory with
@@ -376,7 +376,7 @@ export function restoreWorktreeForResume(
  * Not needed by CLI --resume/--continue: those run once at startup where
  * getCurrentWorktreeSession() is only truthy if --worktree was used (fresh
  * worktree that should take precedence, handled by the re-assert above).
- */
+     */
 export function exitRestoredWorktree(): void {
   const current = getCurrentWorktreeSession()
   if (!current) return
@@ -399,13 +399,13 @@ export function exitRestoredWorktree(): void {
   setOriginalCwd(getCwd())
 }
 
-/**
+/*    *
  * Process a loaded conversation for resume/continue.
  *
  * Handles coordinator mode matching, session ID setup, agent restoration,
  * mode persistence, and initial state computation. Called by both --continue
  * and --resume paths in main.tsx.
- */
+     */
 export async function processResumedConversation(
   result: ResumeLoadResult,
   opts: {
@@ -492,14 +492,14 @@ export async function processResumedConversation(
   // --continue/--resume goes through here instead. Called unconditionally
   // — see the restoreSessionStateFromLog callsite above for why.
   if (feature('CONTEXT_COLLAPSE')) {
-    /* eslint-disable @typescript-eslint/no-require-imports */
+    /*     eslint-disable @typescript-eslint/no-require-imports     */
     ;(
       require('../services/contextCollapse/persist.js') as typeof import('../services/contextCollapse/persist.js')
     ).restoreFromEntries(
       result.contextCollapseCommits ?? [],
       result.contextCollapseSnapshot,
     )
-    /* eslint-enable @typescript-eslint/no-require-imports */
+    /*     eslint-enable @typescript-eslint/no-require-imports     */
   }
 
   // Restore agent setting from resumed session

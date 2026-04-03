@@ -14,7 +14,7 @@ import { unregisterEscHotkey } from './escHotkey.js'
 // background regardless; we just stop blocking on it.
 const UNHIDE_TIMEOUT_MS = 5000
 
-/**
+/*    *
  * Turn-end cleanup for the chicago MCP surface: auto-unhide apps that
  * `prepareForAction` hid, then release the file-based lock.
  *
@@ -26,7 +26,7 @@ const UNHIDE_TIMEOUT_MS = 5000
  * modules just to no-op.
  *
  * No-ops cheaply on non-CU turns: both gate checks are zero-syscall.
- */
+     */
 export async function cleanupComputerUseAfterTurn(
   ctx: Pick<
     ToolUseContext,

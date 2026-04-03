@@ -1,9 +1,9 @@
 import { quote } from './shellQuote.js'
 
-/**
+/*    *
  * Detects if a command contains a heredoc pattern
  * Matches patterns like: <<EOF, <<'EOF', <<"EOF", <<-EOF, <<-'EOF', <<\EOF, etc.
- */
+     */
 function containsHeredoc(command: string): boolean {
   // Match heredoc patterns: << followed by optional -, then optional quotes or backslash, then word
   // Matches: <<EOF, <<'EOF', <<"EOF", <<-EOF, <<-'EOF', <<\EOF
@@ -21,9 +21,9 @@ function containsHeredoc(command: string): boolean {
   return heredocRegex.test(command)
 }
 
-/**
+/*    *
  * Detects if a command contains multiline strings in quotes
- */
+     */
 function containsMultilineString(command: string): boolean {
   // Check for strings with actual newlines in them
   // Handle escaped quotes by using a more sophisticated pattern
@@ -37,12 +37,12 @@ function containsMultilineString(command: string): boolean {
   )
 }
 
-/**
+/*    *
  * Quotes a shell command appropriately, preserving heredocs and multiline strings
  * @param command The command to quote
  * @param addStdinRedirect Whether to add < /dev/null
  * @returns The properly quoted command
- */
+     */
 export function quoteShellCommand(
   command: string,
   addStdinRedirect: boolean = true,
@@ -73,11 +73,11 @@ export function quoteShellCommand(
   return quote([command])
 }
 
-/**
+/*    *
  * Detects if a command already has a stdin redirect
  * Match patterns like: < file, </path/to/file, < /dev/null, etc.
  * But not <<EOF (heredoc), << (bit shift), or <(process substitution)
- */
+     */
 export function hasStdinRedirect(command: string): boolean {
   // Look for < followed by whitespace and a filename/path
   // Negative lookahead to exclude: <<, <(
@@ -85,11 +85,11 @@ export function hasStdinRedirect(command: string): boolean {
   return /(?:^|[\s;&|])<(?![<(])\s*\S+/.test(command)
 }
 
-/**
+/*    *
  * Checks if stdin redirect should be added to a command
  * @param command The command to check
  * @returns true if stdin redirect can be safely added
- */
+     */
 export function shouldAddStdinRedirect(command: string): boolean {
   // Don't add stdin redirect for heredocs as it interferes with the heredoc terminator
   if (containsHeredoc(command)) {
@@ -105,7 +105,7 @@ export function shouldAddStdinRedirect(command: string): boolean {
   return true
 }
 
-/**
+/*    *
  * Rewrites Windows CMD-style `>nul` redirects to POSIX `/dev/null`.
  *
  * The model occasionally hallucinates Windows CMD syntax (e.g., `ls 2>nul`)
@@ -120,7 +120,7 @@ export function shouldAddStdinRedirect(command: string): boolean {
  * Limitation: this regex does not parse shell quoting, so `echo ">nul"`
  * will also be rewritten. This is acceptable collateral — it's extremely
  * rare and rewriting to `/dev/null` inside a string is harmless.
- */
+     */
 const NUL_REDIRECT_REGEX = /(\d?&?>+\s*)[Nn][Uu][Ll](?=\s|$|[|&;)\n])/g
 
 export function rewriteWindowsNullRedirect(command: string): string {

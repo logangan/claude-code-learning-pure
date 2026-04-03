@@ -1,11 +1,11 @@
-/**
+/*    *
  * CLI command wrappers for plugin operations
  *
  * This module provides thin wrappers around the core plugin operations
  * that handle CLI-specific concerns like console output and process exit.
  *
  * For the core operations (without CLI side effects), see pluginOperations.ts
- */
+     */
 import figures from 'figures'
 import { errorMessage } from '../../utils/errors.js'
 import { gracefulShutdown } from '../../utils/gracefulShutdown.js'
@@ -45,11 +45,11 @@ type PluginCliCommand =
   | 'disable-all'
   | 'update'
 
-/**
+/*    *
  * Generic error handler for plugin CLI commands. Emits
  * tengu_plugin_command_failed before exit so dashboards can compute a
  * success rate against the corresponding success events.
- */
+     */
 function handlePluginCommandError(
   error: unknown,
   command: PluginCliCommand,
@@ -95,11 +95,11 @@ function handlePluginCommandError(
   process.exit(1)
 }
 
-/**
+/*    *
  * CLI command: Install a plugin non-interactively
  * @param plugin Plugin identifier (name or plugin@marketplace)
  * @param scope Installation scope: user, project, or local (defaults to 'user')
- */
+     */
 export async function installPlugin(
   plugin: string,
   scope: InstallableScope = 'user',
@@ -145,11 +145,11 @@ export async function installPlugin(
   }
 }
 
-/**
+/*    *
  * CLI command: Uninstall a plugin non-interactively
  * @param plugin Plugin name or plugin@marketplace identifier
  * @param scope Uninstall from scope: user, project, or local (defaults to 'user')
- */
+     */
 export async function uninstallPlugin(
   plugin: string,
   scope: InstallableScope = 'user',
@@ -187,11 +187,11 @@ export async function uninstallPlugin(
   }
 }
 
-/**
+/*    *
  * CLI command: Enable a plugin non-interactively
  * @param plugin Plugin name or plugin@marketplace identifier
  * @param scope Optional scope. If not provided, finds the most specific scope for the current project.
- */
+     */
 export async function enablePlugin(
   plugin: string,
   scope?: InstallableScope,
@@ -228,11 +228,11 @@ export async function enablePlugin(
   }
 }
 
-/**
+/*    *
  * CLI command: Disable a plugin non-interactively
  * @param plugin Plugin name or plugin@marketplace identifier
  * @param scope Optional scope. If not provided, finds the most specific scope for the current project.
- */
+     */
 export async function disablePlugin(
   plugin: string,
   scope?: InstallableScope,
@@ -269,9 +269,9 @@ export async function disablePlugin(
   }
 }
 
-/**
+/*    *
  * CLI command: Disable all enabled plugins non-interactively
- */
+     */
 export async function disableAllPlugins(): Promise<void> {
   try {
     const result = await disableAllPluginsOp()
@@ -292,11 +292,11 @@ export async function disableAllPlugins(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * CLI command: Update a plugin non-interactively
  * @param plugin Plugin name or plugin@marketplace identifier
  * @param scope Scope to update
- */
+     */
 export async function updatePluginCli(
   plugin: string,
   scope: PluginScope,

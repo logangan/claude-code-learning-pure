@@ -90,9 +90,9 @@ export type ImageWithDimensions = {
   dimensions?: ImageDimensions
 }
 
-/**
+/*    *
  * Check if clipboard contains an image without retrieving it.
- */
+     */
 export async function hasImageInClipboard(): Promise<boolean> {
   if (process.platform !== 'darwin') {
     return false
@@ -260,20 +260,20 @@ export async function getImagePathFromClipboard(): Promise<string | null> {
   }
 }
 
-/**
+/*    *
  * Regex pattern to match supported image file extensions. Kept in sync with
  * MIME_BY_EXT in BriefTool/upload.ts — attachments.ts uses this to set isImage
  * on the wire, and remote viewers fetch /preview iff isImage is true. An ext
  * here but not in MIME_BY_EXT (e.g. bmp) uploads as octet-stream and has no
  * /preview variant → broken thumbnail.
- */
+     */
 export const IMAGE_EXTENSION_REGEX = /\.(png|jpe?g|gif|webp)$/i
 
-/**
+/*    *
  * Remove outer single or double quotes from a string
  * @param text Text to clean
  * @returns Text without outer quotes
- */
+     */
 function removeOuterQuotes(text: string): string {
   if (
     (text.startsWith('"') && text.endsWith('"')) ||
@@ -284,12 +284,12 @@ function removeOuterQuotes(text: string): string {
   return text
 }
 
-/**
+/*    *
  * Remove shell escape backslashes from a path (for macOS/Linux/WSL)
  * On Windows systems, this function returns the path unchanged
  * @param path Path that might contain shell-escaped characters
  * @returns Path with escape backslashes removed (on macOS/Linux/WSL only)
- */
+     */
 function stripBackslashEscapes(path: string): string {
   const platform = process.platform as SupportedPlatform
 
@@ -316,22 +316,22 @@ function stripBackslashEscapes(path: string): string {
   return withoutEscapes.replace(new RegExp(placeholder, 'g'), '\\')
 }
 
-/**
+/*    *
  * Check if a given text represents an image file path
  * @param text Text to check
  * @returns Boolean indicating if text is an image path
- */
+     */
 export function isImageFilePath(text: string): boolean {
   const cleaned = removeOuterQuotes(text.trim())
   const unescaped = stripBackslashEscapes(cleaned)
   return IMAGE_EXTENSION_REGEX.test(unescaped)
 }
 
-/**
+/*    *
  * Clean and normalize a text string that might be an image file path
  * @param text Text to process
  * @returns Cleaned text with quotes removed, whitespace trimmed, and shell escapes removed, or null if not an image path
- */
+     */
 export function asImageFilePath(text: string): string | null {
   const cleaned = removeOuterQuotes(text.trim())
   const unescaped = stripBackslashEscapes(cleaned)
@@ -343,11 +343,11 @@ export function asImageFilePath(text: string): string | null {
   return null
 }
 
-/**
+/*    *
  * Try to find and read an image file, falling back to clipboard search
  * @param text Pasted text that might be an image filename or path
  * @returns Object containing the image path and base64 data, or null if not found
- */
+     */
 export async function tryReadImageFromPath(
   text: string,
 ): Promise<(ImageWithDimensions & { path: string }) | null> {

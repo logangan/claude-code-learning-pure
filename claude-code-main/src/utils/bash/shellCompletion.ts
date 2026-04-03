@@ -20,9 +20,9 @@ type InputContext = {
   completionType: ShellCompletionType
 }
 
-/**
+/*    *
  * Check if a parsed token is a command operator (|, ||, &&, ;)
- */
+     */
 function isCommandOperator(token: ParseEntry): boolean {
   return (
     typeof token === 'object' &&
@@ -32,9 +32,9 @@ function isCommandOperator(token: ParseEntry): boolean {
   )
 }
 
-/**
+/*    *
  * Determine completion type based solely on prefix characteristics
- */
+     */
 function getCompletionTypeFromPrefix(prefix: string): ShellCompletionType {
   if (prefix.startsWith('$')) {
     return 'variable'
@@ -49,9 +49,9 @@ function getCompletionTypeFromPrefix(prefix: string): ShellCompletionType {
   return 'command'
 }
 
-/**
+/*    *
  * Find the last string token and its index in parsed tokens
- */
+     */
 function findLastStringToken(
   tokens: ParseEntry[],
 ): { token: string; index: number } | null {
@@ -59,10 +59,10 @@ function findLastStringToken(
   return i !== -1 ? { token: tokens[i] as string, index: i } : null
 }
 
-/**
+/*    *
  * Check if we're in a context that expects a new command
  * (at start of input or after a command operator)
- */
+     */
 function isNewCommandContext(
   tokens: ParseEntry[],
   currentTokenIndex: number,
@@ -74,9 +74,9 @@ function isNewCommandContext(
   return prevToken !== undefined && isCommandOperator(prevToken)
 }
 
-/**
+/*    *
  * Parse input to extract completion context
- */
+     */
 function parseInputContext(input: string, cursorOffset: number): InputContext {
   const beforeCursor = input.slice(0, cursorOffset)
 
@@ -136,9 +136,9 @@ function parseInputContext(input: string, cursorOffset: number): InputContext {
   return { prefix: lastToken.token, completionType }
 }
 
-/**
+/*    *
  * Generate bash completion command using compgen
- */
+     */
 function getBashCompletionCommand(
   prefix: string,
   completionType: ShellCompletionType,
@@ -157,9 +157,9 @@ function getBashCompletionCommand(
   }
 }
 
-/**
+/*    *
  * Generate zsh completion command using native zsh commands
- */
+     */
 function getZshCompletionCommand(
   prefix: string,
   completionType: ShellCompletionType,
@@ -178,9 +178,9 @@ function getZshCompletionCommand(
   }
 }
 
-/**
+/*    *
  * Get completions for the given shell type
- */
+     */
 async function getCompletionsForShell(
   shellType: 'bash' | 'zsh',
   prefix: string,
@@ -214,10 +214,10 @@ async function getCompletionsForShell(
     }))
 }
 
-/**
+/*    *
  * Get shell completions for the given input
  * Supports bash and zsh shells (matches Shell.ts execution support)
- */
+     */
 export async function getShellCompletions(
   input: string,
   cursorOffset: number,

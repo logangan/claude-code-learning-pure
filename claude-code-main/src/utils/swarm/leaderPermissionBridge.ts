@@ -1,4 +1,4 @@
-/**
+/*    *
  * Leader Permission Bridge
  *
  * Module-level bridge that allows the REPL to register its setToolUseConfirmQueue
@@ -8,7 +8,7 @@
  * ToolUseConfirm dialog rather than the worker permission badge. This bridge
  * makes the REPL's queue setter and permission context setter accessible
  * from non-React code in the in-process runner.
- */
+     */
 
 import type { ToolUseConfirm } from '../../components/permissions/PermissionRequest.js'
 import type { ToolPermissionContext } from '../../Tool.js'

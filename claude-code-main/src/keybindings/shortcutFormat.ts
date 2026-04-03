@@ -18,7 +18,7 @@ import type { KeybindingContextName } from './types.js'
 // to avoid duplicate events from repeated calls in non-React contexts.
 const LOGGED_FALLBACKS = new Set<string>()
 
-/**
+/*    *
  * Get the display text for a configured shortcut without React hooks.
  * Use this in non-React contexts (commands, services, etc.).
  *
@@ -34,7 +34,7 @@ const LOGGED_FALLBACKS = new Set<string>()
  * @example
  * const expandShortcut = getShortcutDisplay('app:toggleTranscript', 'Global', 'ctrl+o')
  * // Returns the user's configured binding, or 'ctrl+o' as default
- */
+     */
 export function getShortcutDisplay(
   action: string,
   context: KeybindingContextName,

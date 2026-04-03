@@ -19,7 +19,7 @@ export type ChordResolveResult =
   | { type: 'chord_started'; pending: ParsedKeystroke[] }
   | { type: 'chord_cancelled' }
 
-/**
+/*    *
  * Resolve a key input to an action.
  * Pure function - no state, no side effects, just matching logic.
  *
@@ -28,7 +28,7 @@ export type ChordResolveResult =
  * @param activeContexts - Array of currently active contexts (e.g., ['Chat', 'Global'])
  * @param bindings - All parsed bindings to search through
  * @returns The resolution result
- */
+     */
 export function resolveKey(
   input: string,
   key: Key,
@@ -60,10 +60,10 @@ export function resolveKey(
   return { type: 'match', action: match.action }
 }
 
-/**
+/*    *
  * Get display text for an action from bindings (e.g., "ctrl+t" for "app:toggleTodos").
  * Searches in reverse order so user overrides take precedence.
- */
+     */
 export function getBindingDisplayText(
   action: string,
   context: KeybindingContextName,
@@ -76,9 +76,9 @@ export function getBindingDisplayText(
   return binding ? chordToString(binding.chord) : undefined
 }
 
-/**
+/*    *
  * Build a ParsedKeystroke from Ink's input/key.
- */
+     */
 function buildKeystroke(input: string, key: Key): ParsedKeystroke | null {
   const keyName = getKeyName(input, key)
   if (!keyName) return null
@@ -98,12 +98,12 @@ function buildKeystroke(input: string, key: Key): ParsedKeystroke | null {
   }
 }
 
-/**
+/*    *
  * Compare two ParsedKeystrokes for equality. Collapses alt/meta into
  * one logical modifier — legacy terminals can't distinguish them (see
  * match.ts modifiersMatch), so "alt+k" and "meta+k" are the same key.
  * Super (cmd/win) is distinct — only arrives via kitty keyboard protocol.
- */
+     */
 export function keystrokesEqual(
   a: ParsedKeystroke,
   b: ParsedKeystroke,
@@ -117,9 +117,9 @@ export function keystrokesEqual(
   )
 }
 
-/**
+/*    *
  * Check if a chord prefix matches the beginning of a binding's chord.
- */
+     */
 function chordPrefixMatches(
   prefix: ParsedKeystroke[],
   binding: ParsedBinding,
@@ -134,9 +134,9 @@ function chordPrefixMatches(
   return true
 }
 
-/**
+/*    *
  * Check if a full chord matches a binding's chord.
- */
+     */
 function chordExactlyMatches(
   chord: ParsedKeystroke[],
   binding: ParsedBinding,
@@ -151,7 +151,7 @@ function chordExactlyMatches(
   return true
 }
 
-/**
+/*    *
  * Resolve a key with chord state support.
  *
  * This function handles multi-keystroke chord bindings like "ctrl+k ctrl+s".
@@ -162,7 +162,7 @@ function chordExactlyMatches(
  * @param bindings - All parsed bindings
  * @param pending - Current chord state (null if not in a chord)
  * @returns Resolution result with chord state
- */
+     */
 export function resolveKeyWithChordState(
   input: string,
   key: Key,

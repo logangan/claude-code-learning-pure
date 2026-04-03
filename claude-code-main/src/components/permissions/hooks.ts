@@ -94,10 +94,10 @@ function decisionReasonToString(
   }
 }
 
-/**
+/*    *
  * Logs permission request events using analytics and unary logging.
  * Handles both the analytics event and the unary event logging.
- */
+     */
 export function usePermissionRequestLogging(
   toolUseConfirm: ToolUseConfirm,
   unaryEvent: UnaryEvent,

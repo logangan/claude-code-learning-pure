@@ -1,11 +1,11 @@
-/**
+/*    *
  * Swarm Initialization Hook
  *
  * Initializes swarm features: teammate hooks and context.
  * Handles both fresh spawns and resumed teammate sessions.
  *
  * This hook is conditionally loaded to allow dead code elimination when swarms are disabled.
- */
+     */
 
 import { useEffect } from 'react'
 import { getSessionId } from '../bootstrap/state.js'
@@ -19,14 +19,14 @@ import { getDynamicTeamContext } from '../utils/teammate.js'
 
 type SetAppState = (f: (prevState: AppState) => AppState) => void
 
-/**
+/*    *
  * Hook that initializes swarm features when ENABLE_AGENT_SWARMS is true.
  *
  * Handles both:
  * - Resumed teammate sessions (from --resume or /resume) where teamName/agentName
  *   are stored in transcript messages
  * - Fresh spawns where context is read from environment variables
- */
+     */
 export function useSwarmInitialization(
   setAppState: SetAppState,
   initialMessages: Message[] | undefined,

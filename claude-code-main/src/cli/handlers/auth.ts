@@ -1,4 +1,4 @@
-/* eslint-disable custom-rules/no-process-exit -- CLI subcommand handler intentionally exits */
+/*     eslint-disable custom-rules/no-process-exit -- CLI subcommand handler intentionally exits     */
 
 import {
   clearAuthRelatedCaches,
@@ -43,10 +43,10 @@ import {
   buildAPIProviderProperties,
 } from '../../utils/status.js'
 
-/**
+/*    *
  * Shared post-token-acquisition logic. Saves tokens, fetches profile/roles,
  * and sets up the local auth state.
- */
+     */
 export async function installOAuthTokens(tokens: OAuthTokens): Promise<void> {
   // Clear old state before saving new credentials
   await performLogout({ clearOnboarding: false })

@@ -91,10 +91,10 @@ function makeOutputFromSearchResponse(
   // The result is a sequence of these blocks:
   // - text to start -- always?
   // [
-  //    - server_tool_use
-  //    - web_search_tool_result
-  //    - text and citation blocks intermingled
-  //  ]+  (this block repeated for each search)
+  // - server_tool_use
+  // - web_search_tool_result
+  // - text and citation blocks intermingled
+  // ]+  (this block repeated for each search)
 
   const results: (SearchResult | string)[] = []
   let textAcc = ''

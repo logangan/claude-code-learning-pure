@@ -1,13 +1,11 @@
 // biome-ignore-all assist/source/organizeImports: ANT-ONLY import markers must not be reordered
 // Background memory consolidation. Fires the /dream prompt as a forked
 // subagent when time-gate passes AND enough sessions have accumulated.
-//
-// Gate order (cheapest first):
-//   1. Time: hours since lastConsolidatedAt >= minHours (one stat)
-//   2. Sessions: transcript count with mtime > lastConsolidatedAt >= minSessions
-//   3. Lock: no other process mid-consolidation
-//
-// State is closure-scoped inside initAutoDream() rather than module-level
+// // Gate order (cheapest first):
+// 1. Time: hours since lastConsolidatedAt >= minHours (one stat)
+// 2. Sessions: transcript count with mtime > lastConsolidatedAt >= minSessions
+// 3. Lock: no other process mid-consolidation
+// // State is closure-scoped inside initAutoDream() rather than module-level
 // (tests call initAutoDream() in beforeEach for a fresh closure).
 
 import type { REPLHookContext } from '../../utils/hooks/postSamplingHooks.js'
@@ -65,11 +63,11 @@ const DEFAULTS: AutoDreamConfig = {
   minSessions: 5,
 }
 
-/**
+/*    *
  * Thresholds from tengu_onyx_plover. The enabled gate lives in config.ts
  * (isAutoDreamEnabled); this returns only the scheduling knobs. Defensive
  * per-field validation since GB cache can return stale wrong-type values.
- */
+     */
 function getConfig(): AutoDreamConfig {
   const raw =
     getFeatureValue_CACHED_MAY_BE_STALE<Partial<AutoDreamConfig> | null>(
@@ -115,10 +113,10 @@ let runner:
     ) => Promise<void>)
   | null = null
 
-/**
+/*    *
  * Call once at startup (from backgroundHousekeeping alongside
  * initExtractMemories), or per-test in beforeEach for a fresh closure.
- */
+     */
 export function initAutoDream(): void {
   let lastSessionScanAt = 0
 
@@ -272,12 +270,12 @@ ${sessionIds.map(id => `- ${id}`).join('\n')}`
   }
 }
 
-/**
+/*    *
  * Watch the forked agent's messages. For each assistant turn, extracts any
  * text blocks (the agent's reasoning/summary — what the user wants to see)
  * and collapses tool_use blocks to a count. Edit/Write file_paths are
  * collected for phase-flip + the inline completion message.
- */
+     */
 function makeDreamProgressWatcher(
   taskId: string,
   setAppState: import('../../Task.js').SetAppState,
@@ -312,10 +310,10 @@ function makeDreamProgressWatcher(
   }
 }
 
-/**
+/*    *
  * Entry point from stopHooks. No-op until initAutoDream() has been called.
  * Per-turn cost when enabled: one GB cache read + one stat.
- */
+     */
 export async function executeAutoDream(
   context: REPLHookContext,
   appendSystemMessage?: AppendSystemMessageFn,

@@ -11,13 +11,13 @@ import { ssrfGuardedLookup } from './ssrfGuard.js'
 
 const DEFAULT_HTTP_HOOK_TIMEOUT_MS = 10 * 60 * 1000 // 10 minutes (matches TOOL_HOOK_EXECUTION_TIMEOUT_MS)
 
-/**
+/*    *
  * Get the sandbox proxy config for routing HTTP hook requests through the
  * sandbox network proxy when sandboxing is enabled.
  *
  * Uses dynamic import to avoid a static import cycle
  * (sandbox-adapter -> settings -> ... -> hooks -> execHttpHook).
- */
+     */
 async function getSandboxProxyConfig(): Promise<
   { host: string; port: number; protocol: string } | undefined
 > {
@@ -40,12 +40,12 @@ async function getSandboxProxyConfig(): Promise<
   return { host: '127.0.0.1', port: proxyPort, protocol: 'http' }
 }
 
-/**
+/*    *
  * Read HTTP hook allowlist restrictions from merged settings (all sources).
  * Follows the allowedMcpServers precedent: arrays concatenate across sources.
  * When allowManagedHooksOnly is set in managed settings, only admin-defined
  * hooks run anyway, so no separate lock-down boolean is needed here.
- */
+     */
 function getHttpHookPolicy(): {
   allowedUrls: string[] | undefined
   allowedEnvVars: string[] | undefined
@@ -57,35 +57,35 @@ function getHttpHookPolicy(): {
   }
 }
 
-/**
+/*    *
  * Match a URL against a pattern with * as a wildcard (any characters).
  * Same semantics as the MCP server allowlist patterns.
- */
+     */
 function urlMatchesPattern(url: string, pattern: string): boolean {
   const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&')
   const regexStr = escaped.replace(/\*/g, '.*')
   return new RegExp(`^${regexStr}$`).test(url)
 }
 
-/**
+/*    *
  * Strip CR, LF, and NUL bytes from a header value to prevent HTTP header
  * injection (CRLF injection) via env var values or hook-configured header
  * templates. A malicious env var like "token\r\nX-Evil: 1" would otherwise
  * inject a second header into the request.
- */
+     */
 function sanitizeHeaderValue(value: string): string {
   // eslint-disable-next-line no-control-regex
   return value.replace(/[\r\n\x00]/g, '')
 }
 
-/**
+/*    *
  * Interpolate $VAR_NAME and ${VAR_NAME} patterns in a string using process.env,
  * but only for variable names present in the allowlist. References to variables
  * not in the allowlist are replaced with empty strings to prevent exfiltration
  * of secrets via project-configured HTTP hooks.
  *
  * The result is sanitized to strip CR/LF/NUL bytes to prevent header injection.
- */
+     */
 function interpolateEnvVars(
   value: string,
   allowedEnvVars: ReadonlySet<string>,
@@ -107,7 +107,7 @@ function interpolateEnvVars(
   return sanitizeHeaderValue(interpolated)
 }
 
-/**
+/*    *
  * Execute an HTTP hook by POSTing the hook input JSON to the configured URL.
  * Returns the raw response for the caller to interpret.
  *
@@ -119,7 +119,7 @@ function interpolateEnvVars(
  * secrets (e.g. "Authorization: Bearer $MY_TOKEN") are not stored in settings.json.
  * Only env vars explicitly listed in the hook's `allowedEnvVars` array are resolved;
  * all other references are replaced with empty strings.
- */
+     */
 export async function execHttpHook(
   hook: HttpHook,
   _hookEvent: HookEvent,

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Error log sink implementation
  *
  * This module contains the heavy implementation for error logging and should be
@@ -8,7 +8,7 @@
  *
  * DESIGN: This module is separate from log.ts to avoid import cycles.
  * log.ts has NO heavy dependencies - events are queued until this sink is attached.
- */
+     */
 
 import axios from 'axios'
 import { dirname, join } from 'path'
@@ -23,16 +23,16 @@ import { jsonStringify } from './slowOperations.js'
 
 const DATE = dateToFilename(new Date())
 
-/**
+/*    *
  * Gets the path to the errors log file.
- */
+     */
 export function getErrorsPath(): string {
   return join(CACHE_PATHS.errors(), DATE + '.jsonl')
 }
 
-/**
+/*    *
  * Gets the path to MCP logs for a server.
- */
+     */
 export function getMCPLogsPath(serverName: string): string {
   return join(CACHE_PATHS.mcpLogs(serverName), DATE + '.jsonl')
 }
@@ -61,20 +61,20 @@ function createJsonlWriter(options: {
 // Buffered writers for JSONL log files, keyed by path
 const logWriters = new Map<string, JsonlWriter>()
 
-/**
+/*    *
  * Flush all buffered log writers. Used for testing.
  * @internal
- */
+     */
 export function _flushLogWritersForTesting(): void {
   for (const writer of logWriters.values()) {
     writer.flush()
   }
 }
 
-/**
+/*    *
  * Clear all buffered log writers. Used for testing.
  * @internal
- */
+     */
 export function _clearLogWritersForTesting(): void {
   for (const writer of logWriters.values()) {
     writer.dispose()
@@ -146,9 +146,9 @@ function extractServerMessage(data: unknown): string | undefined {
   return undefined
 }
 
-/**
+/*    *
  * Implementation for logError - writes error to debug log and file.
- */
+     */
 function logErrorImpl(error: Error): void {
   const errorStr = error.stack || error.message
 
@@ -173,9 +173,9 @@ function logErrorImpl(error: Error): void {
   })
 }
 
-/**
+/*    *
  * Implementation for logMCPError - writes MCP error to debug log and file.
- */
+     */
 function logMCPErrorImpl(serverName: string, error: unknown): void {
   // Not themed, to avoid having to pipe theme all the way down
   logForDebugging(`MCP server "${serverName}" ${error}`, { level: 'error' })
@@ -194,9 +194,9 @@ function logMCPErrorImpl(serverName: string, error: unknown): void {
   getLogWriter(logFile).write(errorInfo)
 }
 
-/**
+/*    *
  * Implementation for logMCPDebug - writes MCP debug message to log file.
- */
+     */
 function logMCPDebugImpl(serverName: string, message: string): void {
   logForDebugging(`MCP server "${serverName}": ${message}`)
 
@@ -212,7 +212,7 @@ function logMCPDebugImpl(serverName: string, message: string): void {
   getLogWriter(logFile).write(debugInfo)
 }
 
-/**
+/*    *
  * Initialize the error log sink.
  *
  * Call this during app startup to attach the error logging backend.
@@ -221,7 +221,7 @@ function logMCPDebugImpl(serverName: string, message: string): void {
  * Should be called BEFORE initializeAnalyticsSink() in the startup sequence.
  *
  * Idempotent: safe to call multiple times (subsequent calls are no-ops).
- */
+     */
 export function initializeErrorLogSink(): void {
   attachErrorLogSink({
     logError: logErrorImpl,

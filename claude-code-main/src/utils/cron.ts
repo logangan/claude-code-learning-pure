@@ -1,9 +1,7 @@
 // Minimal cron expression parsing and next-run calculation.
-//
-// Supports the standard 5-field cron subset:
-//   minute hour day-of-month month day-of-week
-//
-// Field syntax: wildcard, N, step (star-slash-N), range (N-M), list (N,M,...).
+// // Supports the standard 5-field cron subset:
+// minute hour day-of-month month day-of-week
+// // Field syntax: wildcard, N, step (star-slash-N), range (N-M), list (N,M,...).
 // No L, W, ?, or name aliases. All times are interpreted in the process's
 // local timezone — "0 9 * * *" means 9am wherever the CLI is running.
 
@@ -76,10 +74,10 @@ function expandField(field: string, range: FieldRange): number[] | null {
   return Array.from(out).sort((a, b) => a - b)
 }
 
-/**
+/*    *
  * Parse a 5-field cron expression into expanded number arrays.
  * Returns null if invalid or unsupported syntax.
- */
+     */
 export function parseCronExpression(expr: string): CronFields | null {
   const parts = expr.trim().split(/\s+/)
   if (parts.length !== 5) return null
@@ -100,7 +98,7 @@ export function parseCronExpression(expr: string): CronFields | null {
   }
 }
 
-/**
+/*    *
  * Compute the next Date strictly after `from` that matches the cron fields,
  * using the process's local timezone. Walks forward minute-by-minute. Bounded
  * at 366 days; returns null if no match (impossible for valid cron, but
@@ -115,7 +113,7 @@ export function parseCronExpression(expr: string): CronFields | null {
  * Wildcard-hour crons (`30 * * * *`) fire at the first valid minute after
  * the gap. Fall-back repeats fire once (the step-forward logic jumps past
  * the second occurrence). This matches vixie-cron behavior.
- */
+     */
 export function computeNextCronRun(
   fields: CronFields,
   from: Date,

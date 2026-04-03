@@ -43,12 +43,12 @@ if (process.platform === 'linux') {
   )
 }
 
-/**
+/*    *
  * Checks if the system is using MUSL libc instead of glibc.
  * In native linux builds, this is statically known at compile time via IS_LIBC_MUSL/IS_LIBC_GLIBC flags.
  * In node (unbundled), both flags are false and we fall back to a runtime async stat check
  * whose result is cached at module load. If the cache isn't populated yet, returns false.
- */
+     */
 function isMuslEnvironment(): boolean {
   if (feature('IS_LIBC_MUSL')) return true
   if (feature('IS_LIBC_GLIBC')) return false
@@ -128,11 +128,11 @@ export function getTerminalWithJetBrainsDetection(): string | null {
   return env.terminal
 }
 
-/**
+/*    *
  * Initialize JetBrains IDE detection asynchronously.
  * Call this early in app initialization to populate the cache.
  * After this resolves, getTerminalWithJetBrainsDetection() will return accurate results.
- */
+     */
 export async function initJetBrainsDetection(): Promise<void> {
   if (process.env.TERMINAL_EMULATOR === 'JetBrains-JediTerm') {
     await detectJetBrainsIDEFromParentProcessAsync()

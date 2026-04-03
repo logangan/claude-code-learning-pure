@@ -8,9 +8,9 @@ import {
 
 export const DESCRIPTION = 'Get or set Claude Code configuration settings.'
 
-/**
+/*    *
  * Generate the prompt documentation from the registry
- */
+     */
 export function generatePrompt(): string {
   const globalSettings: string[] = []
   const projectSettings: string[] = []

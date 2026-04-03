@@ -17,17 +17,17 @@ import { getTeammateContext } from './teammateContext.js'
 // Listeners for task list updates (used for immediate UI refresh in same process)
 const tasksUpdated = createSignal()
 
-/**
+/*    *
  * Team name set by the leader when creating a team.
  * Used by getTaskListId() so the leader's tasks are stored under the team name
  * (matching where tmux/iTerm2 teammates look), not under the session ID.
- */
+     */
 let leaderTeamName: string | undefined
 
-/**
+/*    *
  * Sets the leader's team name for task list resolution.
  * Called by TeamCreateTool when a team is created.
- */
+     */
 export function setLeaderTeamName(teamName: string): void {
   if (leaderTeamName === teamName) return
   leaderTeamName = teamName
@@ -36,28 +36,28 @@ export function setLeaderTeamName(teamName: string): void {
   notifyTasksUpdated()
 }
 
-/**
+/*    *
  * Clears the leader's team name.
  * Called when a team is deleted.
- */
+     */
 export function clearLeaderTeamName(): void {
   if (leaderTeamName === undefined) return
   leaderTeamName = undefined
   notifyTasksUpdated()
 }
 
-/**
+/*    *
  * Register a listener to be called when tasks are updated in this process.
  * Returns an unsubscribe function.
- */
+     */
 export const onTasksUpdated = tasksUpdated.subscribe
 
-/**
+/*    *
  * Notify listeners that tasks have been updated.
  * Called internally after createTask, updateTask, etc.
  * Wraps emit in try/catch so listener failures never propagate to callers
  * (task mutations must succeed from the caller's perspective).
- */
+     */
 export function notifyTasksUpdated(): void {
   try {
     tasksUpdated.emit()
@@ -95,8 +95,7 @@ const HIGH_WATER_MARK_FILE = '.highwatermark'
 // in a swarm) wait for the lock instead of failing immediately. The sync
 // lockSync API blocked the event loop; the async API needs explicit retries
 // to achieve the same serialization semantics.
-//
-// Budget sized for ~10+ concurrent swarm agents: each critical section does
+// // Budget sized for ~10+ concurrent swarm agents: each critical section does
 // readdir + N×readFile + writeFile (~50-100ms on slow disks), so the last
 // caller in a 10-way race needs ~900ms. retries=30 gives ~2.6s total wait.
 const LOCK_OPTIONS = {
@@ -138,12 +137,12 @@ export function isTodoV2Enabled(): boolean {
   return !getIsNonInteractiveSession()
 }
 
-/**
+/*    *
  * Resets the task list for a new swarm - clears any existing tasks.
  * Writes a high water mark file to prevent ID reuse after reset.
  * Should be called when a new swarm is created to ensure task numbering starts at 1.
  * Uses file locking to prevent race conditions when multiple Claudes run in parallel.
- */
+     */
 export async function resetTaskList(taskListId: string): Promise<void> {
   const dir = getTasksDir(taskListId)
   const lockPath = await ensureTaskListLockFile(taskListId)
@@ -187,7 +186,7 @@ export async function resetTaskList(taskListId: string): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Gets the task list ID based on the current context.
  * Priority:
  * 1. CLAUDE_CODE_TASK_LIST_ID - explicit task list ID
@@ -195,7 +194,7 @@ export async function resetTaskList(taskListId: string): Promise<void> {
  * 3. CLAUDE_CODE_TEAM_NAME - set when running as a process-based teammate
  * 4. Leader team name - set when the leader creates a team via TeamCreate
  * 5. Session ID - fallback for standalone sessions
- */
+     */
 export function getTaskListId(): string {
   if (process.env.CLAUDE_CODE_TASK_LIST_ID) {
     return process.env.CLAUDE_CODE_TASK_LIST_ID
@@ -209,11 +208,11 @@ export function getTaskListId(): string {
   return getTeamName() || leaderTeamName || getSessionId()
 }
 
-/**
+/*    *
  * Sanitizes a string for safe use in file paths.
  * Removes path traversal characters and other potentially dangerous characters.
  * Only allows alphanumeric characters, hyphens, and underscores.
- */
+     */
 export function sanitizePathComponent(input: string): string {
   return input.replace(/[^a-zA-Z0-9_-]/g, '-')
 }
@@ -240,9 +239,9 @@ export async function ensureTasksDir(taskListId: string): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Finds the highest task ID from existing task files (not including high water mark).
- */
+     */
 async function findHighestTaskIdFromFiles(taskListId: string): Promise<number> {
   const dir = getTasksDir(taskListId)
   let files: string[]
@@ -264,10 +263,10 @@ async function findHighestTaskIdFromFiles(taskListId: string): Promise<number> {
   return highest
 }
 
-/**
+/*    *
  * Finds the highest task ID ever assigned, considering both existing files
  * and the high water mark (for deleted/reset tasks).
- */
+     */
 async function findHighestTaskId(taskListId: string): Promise<number> {
   const [fromFiles, fromMark] = await Promise.all([
     findHighestTaskIdFromFiles(taskListId),
@@ -276,11 +275,11 @@ async function findHighestTaskId(taskListId: string): Promise<number> {
   return Math.max(fromFiles, fromMark)
 }
 
-/**
+/*    *
  * Creates a new task with a unique ID.
  * Uses file locking to prevent race conditions when multiple processes
  * create tasks concurrently.
- */
+     */
 export async function createTask(
   taskListId: string,
   taskData: Omit<Task, 'id'>,
@@ -498,16 +497,16 @@ export type ClaimTaskResult = {
   blockedByTasks?: string[] // task IDs blocking this task (when reason is 'blocked')
 }
 
-/**
+/*    *
  * Gets the lock file path for a task list (used for list-level locking)
- */
+     */
 function getTaskListLockPath(taskListId: string): string {
   return join(getTasksDir(taskListId), '.lock')
 }
 
-/**
+/*    *
  * Ensures the lock file exists for a task list
- */
+     */
 async function ensureTaskListLockFile(taskListId: string): Promise<string> {
   await ensureTasksDir(taskListId)
   const lockPath = getTaskListLockPath(taskListId)
@@ -523,21 +522,21 @@ async function ensureTaskListLockFile(taskListId: string): Promise<string> {
 }
 
 export type ClaimTaskOptions = {
-  /**
+  /*    *
    * If true, checks whether the agent is already busy (owns other open tasks)
    * before allowing the claim. This check is performed atomically with the claim
    * using a task-list-level lock to prevent TOCTOU race conditions.
-   */
+       */
   checkAgentBusy?: boolean
 }
 
-/**
+/*    *
  * Attempts to claim a task for an agent with file locking to prevent race conditions.
  * Returns success if the task was claimed, or a reason if it wasn't.
  *
  * When checkAgentBusy is true, uses a task-list-level lock to atomically check
  * if the agent owns any other open tasks before claiming.
- */
+     */
 export async function claimTask(
   taskListId: string,
   taskId: string,
@@ -611,10 +610,10 @@ export async function claimTask(
   }
 }
 
-/**
+/*    *
  * Claims a task with an atomic check for agent busy status.
  * Uses a task-list-level lock to ensure the busy check and claim are atomic.
- */
+     */
 async function claimTaskWithBusyCheck(
   taskListId: string,
   taskId: string,
@@ -691,18 +690,18 @@ async function claimTaskWithBusyCheck(
   }
 }
 
-/**
+/*    *
  * Team member info (subset of TeamFile member structure)
- */
+     */
 export type TeamMember = {
   agentId: string
   name: string
   agentType?: string
 }
 
-/**
+/*    *
  * Agent status based on task ownership
- */
+     */
 export type AgentStatus = {
   agentId: string
   name: string
@@ -711,16 +710,16 @@ export type AgentStatus = {
   currentTasks: string[] // task IDs the agent owns
 }
 
-/**
+/*    *
  * Sanitizes a name for use in file paths
- */
+     */
 function sanitizeName(name: string): string {
   return name.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()
 }
 
-/**
+/*    *
  * Reads team members from the team file
- */
+     */
 async function readTeamMembers(
   teamName: string,
 ): Promise<{ leadAgentId: string; members: TeamMember[] } | null> {
@@ -752,14 +751,14 @@ async function readTeamMembers(
   }
 }
 
-/**
+/*    *
  * Gets the status of all agents in a team based on task ownership.
  * An agent is considered "idle" if they don't own any open tasks.
  * An agent is considered "busy" if they own at least one open task.
  *
  * @param teamName - The name of the team (also used as taskListId)
  * @returns Array of agent statuses, or null if team not found
- */
+     */
 export async function getAgentStatuses(
   teamName: string,
 ): Promise<AgentStatus[] | null> {
@@ -797,15 +796,15 @@ export async function getAgentStatuses(
   })
 }
 
-/**
+/*    *
  * Result of unassigning tasks from a teammate
- */
+     */
 export type UnassignTasksResult = {
   unassignedTasks: Array<{ id: string; subject: string }>
   notificationMessage: string
 }
 
-/**
+/*    *
  * Unassigns all open tasks from a teammate and builds a notification message.
  * Used when a teammate is killed or gracefully shuts down.
  *
@@ -814,7 +813,7 @@ export type UnassignTasksResult = {
  * @param teammateName - The teammate's display name
  * @param reason - How the teammate exited ('terminated' | 'shutdown')
  * @returns The unassigned tasks and a formatted notification message
- */
+     */
 export async function unassignTeammateTasks(
   teamName: string,
   teammateId: string,

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Approved channel plugins allowlist. --channels plugin:name@marketplace
  * entries only register if {marketplace, plugin} is on this list. server:
  * entries always fail (schema is plugin-only). The
@@ -13,7 +13,7 @@
  * The allowlist check is a pure {marketplace, plugin} comparison against
  * the user's typed tag. The gate's separate 'marketplace' step verifies
  * the tag matches what's actually installed before this check runs.
- */
+     */
 
 import { z } from 'zod/v4'
 import { lazySchema } from '../../utils/lazySchema.js'
@@ -43,16 +43,16 @@ export function getChannelAllowlist(): ChannelAllowlistEntry[] {
   return parsed.success ? parsed.data : []
 }
 
-/**
+/*    *
  * Overall channels on/off. Checked before any per-server gating —
  * when false, --channels is a no-op and no handlers register.
  * Default false; GrowthBook 5-min refresh.
- */
+     */
 export function isChannelsEnabled(): boolean {
   return getFeatureValue_CACHED_MAY_BE_STALE('tengu_harbor', false)
 }
 
-/**
+/*    *
  * Pure allowlist check keyed off the connection's pluginSource — for UI
  * pre-filtering so the IDE only shows "Enable channel?" for servers that will
  * actually pass the gate. Not a security boundary: channel_enable still runs
@@ -63,7 +63,7 @@ export function isChannelsEnabled(): boolean {
  * Returns false for undefined pluginSource (non-plugin server — can never
  * match the {marketplace, plugin}-keyed ledger) and for @-less sources
  * (builtin/inline — same reason).
- */
+     */
 export function isChannelAllowlisted(
   pluginSource: string | undefined,
 ): boolean {

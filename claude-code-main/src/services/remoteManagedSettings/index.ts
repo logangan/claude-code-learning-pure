@@ -1,4 +1,4 @@
-/**
+/*    *
  * Remote Managed Settings Service
  *
  * Manages fetching, caching, and validation of remote-managed settings
@@ -10,7 +10,7 @@
  * - OAuth users (Claude.ai): Only Enterprise/C4E and Team subscribers are eligible
  * - API fails open (non-blocking) - if fetch fails, continues without remote settings
  * - API returns empty settings for users without managed settings
- */
+     */
 
 import axios from 'axios'
 import { createHash } from 'crypto'
@@ -65,7 +65,7 @@ let loadingCompleteResolve: (() => void) | null = null
 // (e.g., in Agent SDK tests that don't go through main.tsx)
 const LOADING_PROMISE_TIMEOUT_MS = 30000 // 30 seconds
 
-/**
+/*    *
  * Initialize the loading promise for remote managed settings
  * This should be called early (e.g., in init.ts) to allow other systems
  * to await remote settings loading even if loadRemoteManagedSettings()
@@ -73,7 +73,7 @@ const LOADING_PROMISE_TIMEOUT_MS = 30000 // 30 seconds
  *
  * Only creates the promise if the user is eligible for remote settings.
  * Includes a timeout to prevent deadlocks if loadRemoteManagedSettings() is never called.
- */
+     */
 export function initializeRemoteManagedSettingsLoadingPromise(): void {
   if (loadingCompletePromise) {
     return
@@ -98,17 +98,17 @@ export function initializeRemoteManagedSettingsLoadingPromise(): void {
   }
 }
 
-/**
+/*    *
  * Get the remote settings API endpoint
  * Uses the OAuth config base API URL
- */
+     */
 function getRemoteManagedSettingsEndpoint() {
   return `${getOauthConfig().BASE_API_URL}/api/claude_code/settings`
 }
 
-/**
+/*    *
  * Recursively sort all keys in an object to match Python's json.dumps(sort_keys=True)
- */
+     */
 function sortKeysDeep(obj: unknown): unknown {
   if (Array.isArray(obj)) {
     return obj.map(sortKeysDeep)
@@ -123,11 +123,11 @@ function sortKeysDeep(obj: unknown): unknown {
   return obj
 }
 
-/**
+/*    *
  * Compute checksum from settings content for HTTP caching
  * Must match server's Python: json.dumps(settings, sort_keys=True, separators=(",", ":"))
  * Exported for testing to verify compatibility with server-side implementation
- */
+     */
 export function computeChecksumFromSettings(settings: SettingsJson): string {
   const sorted = sortKeysDeep(settings)
   // No spaces after separators to match Python's separators=(",", ":")
@@ -136,33 +136,33 @@ export function computeChecksumFromSettings(settings: SettingsJson): string {
   return `sha256:${hash}`
 }
 
-/**
+/*    *
  * Check if the current user is eligible for remote managed settings
  * This is the public API for other systems to check eligibility
  * Used to determine if they should wait for remote settings to load
- */
+     */
 export function isEligibleForRemoteManagedSettings(): boolean {
   return isRemoteManagedSettingsEligible()
 }
 
-/**
+/*    *
  * Wait for the initial remote settings loading to complete
  * Returns immediately if:
  * - User is not eligible for remote settings
  * - Loading has already completed
  * - Loading was never started
- */
+     */
 export async function waitForRemoteManagedSettingsToLoad(): Promise<void> {
   if (loadingCompletePromise) {
     await loadingCompletePromise
   }
 }
 
-/**
+/*    *
  * Get auth headers for remote settings without calling getSettings()
  * This avoids circular dependencies during settings loading
  * Supports both API key and OAuth authentication
- */
+     */
 function getRemoteSettingsAuthHeaders(): {
   headers: Record<string, string>
   error?: string
@@ -202,10 +202,10 @@ function getRemoteSettingsAuthHeaders(): {
   }
 }
 
-/**
+/*    *
  * Fetch remote settings with retry logic and exponential backoff
  * Uses existing codebase retry utilities for consistency
- */
+     */
 async function fetchWithRetry(
   cachedChecksum?: string,
 ): Promise<RemoteManagedSettingsFetchResult> {
@@ -241,10 +241,10 @@ async function fetchWithRetry(
   return lastResult!
 }
 
-/**
+/*    *
  * Fetch the full remote settings (single attempt, no retries)
  * Optionally pass a cached checksum for ETag-based caching
- */
+     */
 async function fetchRemoteManagedSettings(
   cachedChecksum?: string,
 ): Promise<RemoteManagedSettingsFetchResult> {
@@ -360,10 +360,10 @@ async function fetchRemoteManagedSettings(
   }
 }
 
-/**
+/*    *
  * Save remote settings to file
  * Stores raw settings JSON (checksum is computed on-demand when needed)
- */
+     */
 async function saveSettings(settings: SettingsJson): Promise<void> {
   try {
     const path = getSettingsPath()
@@ -385,9 +385,9 @@ async function saveSettings(settings: SettingsJson): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Clear all remote settings (session, persistent, and stop polling)
- */
+     */
 export async function clearRemoteManagedSettingsCache(): Promise<void> {
   // Stop background polling
   stopBackgroundPolling()
@@ -407,11 +407,11 @@ export async function clearRemoteManagedSettingsCache(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Fetch and load remote settings with file caching
  * Internal function that handles the full load/fetch logic
  * Fails open - returns null if fetch fails and no cache exists
- */
+     */
 async function fetchAndLoadRemoteManagedSettings(): Promise<SettingsJson | null> {
   if (!isRemoteManagedSettingsEligible()) {
     return null
@@ -502,7 +502,7 @@ async function fetchAndLoadRemoteManagedSettings(): Promise<SettingsJson | null>
   }
 }
 
-/**
+/*    *
  * Load remote settings during CLI initialization
  * Fails open - if fetch fails, continues without remote settings
  * Also starts background polling to pick up settings changes mid-session
@@ -510,7 +510,7 @@ async function fetchAndLoadRemoteManagedSettings(): Promise<SettingsJson | null>
  * This function sets up a promise that other systems can await via
  * waitForRemoteManagedSettingsToLoad() to ensure they don't initialize
  * until remote settings have been fetched.
- */
+     */
 export async function loadRemoteManagedSettings(): Promise<void> {
   // Set up the promise for other systems to wait on
   // Only if the user is eligible for remote settings AND promise not already set up
@@ -554,11 +554,11 @@ export async function loadRemoteManagedSettings(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Refresh remote settings asynchronously (for auth state changes)
  * This is used when login/logout occurs
  * Fails open - if fetch fails, continues without remote settings
- */
+     */
 export async function refreshRemoteManagedSettings(): Promise<void> {
   // Clear caches first
   await clearRemoteManagedSettingsCache()
@@ -578,9 +578,9 @@ export async function refreshRemoteManagedSettings(): Promise<void> {
   settingsChangeDetector.notifyChange('policySettings')
 }
 
-/**
+/*    *
  * Background polling callback - fetches settings and triggers hot-reload if changed
- */
+     */
 async function pollRemoteSettings(): Promise<void> {
   if (!isRemoteManagedSettingsEligible()) {
     return
@@ -605,10 +605,10 @@ async function pollRemoteSettings(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Start background polling for remote settings
  * Polls every hour to pick up settings changes mid-session
- */
+     */
 export function startBackgroundPolling(): void {
   if (pollingIntervalId !== null) {
     return
@@ -627,9 +627,9 @@ export function startBackgroundPolling(): void {
   registerCleanup(async () => stopBackgroundPolling())
 }
 
-/**
+/*    *
  * Stop background polling for remote settings
- */
+     */
 export function stopBackgroundPolling(): void {
   if (pollingIntervalId !== null) {
     clearInterval(pollingIntervalId)

@@ -5,11 +5,11 @@ import type {
   ParsedKeystroke,
 } from './types.js'
 
-/**
+/*    *
  * Parse a keystroke string like "ctrl+shift+k" into a ParsedKeystroke.
  * Supports various modifier aliases (ctrl/control, alt/opt/option/meta,
  * cmd/command/super/win).
- */
+     */
 export function parseKeystroke(input: string): ParsedKeystroke {
   const parts = input.split('+')
   const keystroke: ParsedKeystroke = {
@@ -74,18 +74,18 @@ export function parseKeystroke(input: string): ParsedKeystroke {
   return keystroke
 }
 
-/**
+/*    *
  * Parse a chord string like "ctrl+k ctrl+s" into an array of ParsedKeystrokes.
- */
+     */
 export function parseChord(input: string): Chord {
   // A lone space character IS the space key binding, not a separator
   if (input === ' ') return [parseKeystroke('space')]
   return input.trim().split(/\s+/).map(parseKeystroke)
 }
 
-/**
+/*    *
  * Convert a ParsedKeystroke to its canonical string representation for display.
- */
+     */
 export function keystrokeToString(ks: ParsedKeystroke): string {
   const parts: string[] = []
   if (ks.ctrl) parts.push('ctrl')
@@ -99,9 +99,9 @@ export function keystrokeToString(ks: ParsedKeystroke): string {
   return parts.join('+')
 }
 
-/**
+/*    *
  * Map internal key names to human-readable display names.
- */
+     */
 function keyToDisplayName(key: string): string {
   switch (key) {
     case 'escape':
@@ -137,23 +137,23 @@ function keyToDisplayName(key: string): string {
   }
 }
 
-/**
+/*    *
  * Convert a Chord to its canonical string representation for display.
- */
+     */
 export function chordToString(chord: Chord): string {
   return chord.map(keystrokeToString).join(' ')
 }
 
-/**
+/*    *
  * Display platform type - a subset of Platform that we care about for display.
  * WSL and unknown are treated as linux for display purposes.
- */
+     */
 type DisplayPlatform = 'macos' | 'windows' | 'linux' | 'wsl' | 'unknown'
 
-/**
+/*    *
  * Convert a ParsedKeystroke to a platform-appropriate display string.
  * Uses "opt" for alt on macOS, "alt" elsewhere.
- */
+     */
 export function keystrokeToDisplayString(
   ks: ParsedKeystroke,
   platform: DisplayPlatform = 'linux',
@@ -175,9 +175,9 @@ export function keystrokeToDisplayString(
   return parts.join('+')
 }
 
-/**
+/*    *
  * Convert a Chord to a platform-appropriate display string.
- */
+     */
 export function chordToDisplayString(
   chord: Chord,
   platform: DisplayPlatform = 'linux',
@@ -185,9 +185,9 @@ export function chordToDisplayString(
   return chord.map(ks => keystrokeToDisplayString(ks, platform)).join(' ')
 }
 
-/**
+/*    *
  * Parse keybinding blocks (from JSON config) into a flat list of ParsedBindings.
- */
+     */
 export function parseBindings(blocks: KeybindingBlock[]): ParsedBinding[] {
   const bindings: ParsedBinding[] = []
   for (const block of blocks) {

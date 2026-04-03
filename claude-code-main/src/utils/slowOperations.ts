@@ -19,13 +19,13 @@ type WriteFileOptionsWithFlush =
 
 // --- Slow operation logging infrastructure ---
 
-/**
+/*    *
  * Threshold in milliseconds for logging slow JSON/clone operations.
  * Operations taking longer than this will be logged for debugging.
  * - Override: set CLAUDE_CODE_SLOW_OPERATION_THRESHOLD_MS to a number
  * - Dev builds: 20ms (lower threshold for development)
  * - Ants: 300ms (enabled for all internal users)
- */
+     */
 const SLOW_OPERATION_THRESHOLD_MS = (() => {
   const envValue = process.env.CLAUDE_CODE_SLOW_OPERATION_THRESHOLD_MS
   if (envValue !== undefined) {
@@ -51,11 +51,11 @@ export { SLOW_OPERATION_THRESHOLD_MS }
 // a slow appendFileSync → dispose → logForDebugging → appendFileSync → dispose → ...
 let isLogging = false
 
-/**
+/*    *
  * Extract the first stack frame outside this file, so the DevBar warning
  * points at the actual caller instead of a useless `Object{N keys}`.
  * Only called when an operation was actually slow — never on the fast path.
- */
+     */
 export function callerFrame(stack: string | undefined): string {
   if (!stack) return ''
   for (const line of stack.split('\n')) {
@@ -66,12 +66,12 @@ export function callerFrame(stack: string | undefined): string {
   return ''
 }
 
-/**
+/*    *
  * Builds a human-readable description from tagged template arguments.
  * Only called when an operation was actually slow — never on the fast path.
  *
  * args[0] = TemplateStringsArray, args[1..n] = interpolated values
- */
+     */
 function buildDescription(args: IArguments): string {
   const strings = args[0] as TemplateStringsArray
   let result = ''
@@ -139,7 +139,7 @@ function slowLoggingExternal(): Disposable {
   return NOOP_LOGGER
 }
 
-/**
+/*    *
  * Tagged template for slow operation logging.
  *
  * In ANT builds: creates an AntSlowLogger that times the operation and logs
@@ -151,14 +151,14 @@ function slowLoggingExternal(): Disposable {
  * @example
  * using _ = slowLogging`structuredClone(${value})`
  * const result = structuredClone(value)
- */
+     */
 export const slowLogging: {
   (strings: TemplateStringsArray, ...values: unknown[]): Disposable
 } = feature('SLOW_OPERATION_LOGGING') ? slowLoggingAnt : slowLoggingExternal
 
 // --- Wrapped operations ---
 
-/**
+/*    *
  * Wrapped JSON.stringify with slow operation logging.
  * Use this instead of JSON.stringify directly to detect performance issues.
  *
@@ -166,7 +166,7 @@ export const slowLogging: {
  * import { jsonStringify } from './slowOperations.js'
  * const json = jsonStringify(data)
  * const prettyJson = jsonStringify(data, null, 2)
- */
+     */
 export function jsonStringify(
   value: unknown,
   replacer?: (this: unknown, key: string, value: unknown) => unknown,
@@ -193,14 +193,14 @@ export function jsonStringify(
   )
 }
 
-/**
+/*    *
  * Wrapped JSON.parse with slow operation logging.
  * Use this instead of JSON.parse directly to detect performance issues.
  *
  * @example
  * import { jsonParse } from './slowOperations.js'
  * const data = jsonParse(jsonString)
- */
+     */
 export const jsonParse: typeof JSON.parse = (text, reviver) => {
   using _ = slowLogging`JSON.parse(${text})`
   // V8 de-opts JSON.parse when a second argument is passed, even if undefined.
@@ -210,33 +210,33 @@ export const jsonParse: typeof JSON.parse = (text, reviver) => {
     : JSON.parse(text, reviver)
 }
 
-/**
+/*    *
  * Wrapped structuredClone with slow operation logging.
  * Use this instead of structuredClone directly to detect performance issues.
  *
  * @example
  * import { clone } from './slowOperations.js'
  * const copy = clone(originalObject)
- */
+     */
 export function clone<T>(value: T, options?: StructuredSerializeOptions): T {
   using _ = slowLogging`structuredClone(${value})`
   return structuredClone(value, options)
 }
 
-/**
+/*    *
  * Wrapped cloneDeep with slow operation logging.
  * Use this instead of lodash cloneDeep directly to detect performance issues.
  *
  * @example
  * import { cloneDeep } from './slowOperations.js'
  * const copy = cloneDeep(originalObject)
- */
+     */
 export function cloneDeep<T>(value: T): T {
   using _ = slowLogging`cloneDeep(${value})`
   return lodashCloneDeep(value)
 }
 
-/**
+/*    *
  * Wrapper around fs.writeFileSync with slow operation logging.
  * Supports flush option to ensure data is written to disk before returning.
  * @param filePath The path to the file to write to
@@ -244,7 +244,7 @@ export function cloneDeep<T>(value: T): T {
  * @param options Optional write options (encoding, mode, flag, flush)
  * @deprecated Use `fs.promises.writeFile` instead for non-blocking writes.
  * Sync file writes block the event loop and cause performance issues.
- */
+     */
 export function writeFileSync_DEPRECATED(
   filePath: string,
   data: string | NodeJS.ArrayBufferView,

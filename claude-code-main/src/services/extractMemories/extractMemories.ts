@@ -1,4 +1,4 @@
-/**
+/*    *
  * Extracts durable memories from the current session transcript
  * and writes them to the auto-memory directory (~/.claude/projects/<path>/memory/).
  *
@@ -11,7 +11,7 @@
  * State is closure-scoped inside initExtractMemories() rather than module-level,
  * following the same pattern as confidenceRating.ts. Tests call
  * initExtractMemories() in beforeEach to get a fresh closure.
- */
+     */
 
 import { feature } from 'bun:bundle'
 import { basename } from 'path'
@@ -61,20 +61,20 @@ import {
   buildExtractCombinedPrompt,
 } from './prompts.js'
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const teamMemPaths = feature('TEAMMEM')
   ? (require('../../memdir/teamMemPaths.js') as typeof import('../../memdir/teamMemPaths.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 // ============================================================================
 // Helpers
 // ============================================================================
 
-/**
+/*    *
  * Returns true if a message is visible to the model (sent in API calls).
  * Excludes progress, system, and attachment messages.
- */
+     */
 function isModelVisibleMessage(message: Message): boolean {
   return message.type === 'user' || message.type === 'assistant'
 }
@@ -109,7 +109,7 @@ function countModelVisibleMessagesSince(
   return n
 }
 
-/**
+/*    *
  * Returns true if any assistant message after the cursor UUID contains a
  * Write/Edit tool_use block targeting an auto-memory path.
  *
@@ -117,7 +117,7 @@ function countModelVisibleMessagesSince(
  * memories, the forked extraction is redundant. runExtraction skips the
  * agent and advances the cursor past this range, making the main agent
  * and the background agent mutually exclusive per turn.
- */
+     */
 function hasMemoryWritesSince(
   messages: Message[],
   sinceUuid: string | undefined,
@@ -163,11 +163,11 @@ function denyAutoMemTool(tool: Tool, reason: string) {
   }
 }
 
-/**
+/*    *
  * Creates a canUseTool function that allows Read/Grep/Glob (unrestricted),
  * read-only Bash commands, and Edit/Write only for paths within the
  * auto-memory directory. Shared by extractMemories and autoDream.
- */
+     */
 export function createAutoMemCanUseTool(memoryDir: string): CanUseToolFn {
   return async (tool: Tool, input: Record<string, unknown>) => {
     // Allow REPL — when REPL mode is enabled (ant-default), primitive tools
@@ -225,10 +225,10 @@ export function createAutoMemCanUseTool(memoryDir: string): CanUseToolFn {
 // Extract file paths from agent output
 // ============================================================================
 
-/**
+/*    *
  * Extract file_path from a tool_use block's input, if present.
  * Returns undefined when the block is not an Edit/Write tool use or has no file_path.
- */
+     */
 function getWrittenFilePath(block: {
   type: string
   name?: string
@@ -276,7 +276,7 @@ type AppendSystemMessageFn = (
   msg: Exclude<SystemMessage, SystemLocalCommandMessage>,
 ) => void
 
-/** The active extractor function, set by initExtractMemories(). */
+/*    * The active extractor function, set by initExtractMemories().     */
 let extractor:
   | ((
       context: REPLHookContext,
@@ -284,39 +284,39 @@ let extractor:
     ) => Promise<void>)
   | null = null
 
-/** The active drain function, set by initExtractMemories(). No-op until init. */
+/*    * The active drain function, set by initExtractMemories(). No-op until init.     */
 let drainer: (timeoutMs?: number) => Promise<void> = async () => {}
 
-/**
+/*    *
  * Initialize the memory extraction system.
  * Creates a fresh closure that captures all mutable state (cursor position,
  * overlap guard, pending context). Call once at startup alongside
  * initConfidenceRating/initPromptCoaching, or per-test in beforeEach.
- */
+     */
 export function initExtractMemories(): void {
   // --- Closure-scoped mutable state ---
 
-  /** Every promise handed out by the extractor that hasn't settled yet.
+  /*    * Every promise handed out by the extractor that hasn't settled yet.
    *  Coalesced calls that stash-and-return add fast-resolving promises
    *  (harmless); the call that starts real work adds a promise covering the
-   *  full trailing-run chain via runExtraction's recursive finally. */
+   *  full trailing-run chain via runExtraction's recursive finally.     */
   const inFlightExtractions = new Set<Promise<void>>()
 
-  /** UUID of the last message processed — cursor so each run only
-   *  considers messages added since the previous extraction. */
+  /*    * UUID of the last message processed — cursor so each run only
+   *  considers messages added since the previous extraction.     */
   let lastMemoryMessageUuid: string | undefined
 
-  /** One-shot flag: once we log that the gate is disabled, don't repeat. */
+  /*    * One-shot flag: once we log that the gate is disabled, don't repeat.     */
   let hasLoggedGateFailure = false
 
-  /** True while runExtraction is executing — prevents overlapping runs. */
+  /*    * True while runExtraction is executing — prevents overlapping runs.     */
   let inProgress = false
 
-  /** Counts eligible turns since the last extraction run. Resets to 0 after each run. */
+  /*    * Counts eligible turns since the last extraction run. Resets to 0 after each run.     */
   let turnsSinceLastExtraction = 0
 
-  /** When a call arrives during an in-progress run, we stash the context here
-   *  and run one trailing extraction after the current one finishes. */
+  /*    * When a call arrives during an in-progress run, we stash the context here
+   *  and run one trailing extraction after the current one finishes.     */
   let pendingContext:
     | {
         context: REPLHookContext
@@ -590,11 +590,11 @@ export function initExtractMemories(): void {
 // Public API
 // ============================================================================
 
-/**
+/*    *
  * Run memory extraction at the end of a query loop.
  * Called fire-and-forget from handleStopHooks, alongside prompt suggestion/coaching.
  * No-ops until initExtractMemories() has been called.
- */
+     */
 export async function executeExtractMemories(
   context: REPLHookContext,
   appendSystemMessage?: AppendSystemMessageFn,
@@ -602,12 +602,12 @@ export async function executeExtractMemories(
   await extractor?.(context, appendSystemMessage)
 }
 
-/**
+/*    *
  * Awaits all in-flight extractions (including trailing stashed runs) with a
  * soft timeout. Called by print.ts after the response is flushed but before
  * gracefulShutdownSync, so the forked agent completes before the 5s shutdown
  * failsafe kills it. No-op until initExtractMemories() has been called.
- */
+     */
 export async function drainPendingExtraction(
   timeoutMs?: number,
 ): Promise<void> {

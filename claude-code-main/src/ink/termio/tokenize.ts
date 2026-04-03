@@ -1,10 +1,10 @@
-/**
+/*    *
  * Input Tokenizer - Escape sequence boundary detection
  *
  * Splits terminal input into tokens: text chunks and raw escape sequences.
  * Unlike the Parser which interprets sequences semantically, this just
  * identifies boundaries for use by keyboard input parsing.
- */
+     */
 
 import { C0, ESC_TYPE, isEscFinal } from './ansi.js'
 import { isCSIFinal, isCSIIntermediate, isCSIParam } from './csi.js'
@@ -24,26 +24,26 @@ type State =
   | 'apc'
 
 export type Tokenizer = {
-  /** Feed input and get resulting tokens */
+  /*    * Feed input and get resulting tokens     */
   feed(input: string): Token[]
-  /** Flush any buffered incomplete sequences */
+  /*    * Flush any buffered incomplete sequences     */
   flush(): Token[]
-  /** Reset tokenizer state */
+  /*    * Reset tokenizer state     */
   reset(): void
-  /** Get any buffered incomplete sequence */
+  /*    * Get any buffered incomplete sequence     */
   buffer(): string
 }
 
 type TokenizerOptions = {
-  /**
+  /*    *
    * Treat `CSI M` as an X10 mouse event prefix and consume 3 payload bytes.
    * Only enable for stdin input — `\x1b[M` is also CSI DL (Delete Lines) in
    * output streams, and enabling this there swallows display text. Default false.
-   */
+       */
   x10Mouse?: boolean
 }
 
-/**
+/*    *
  * Create a streaming tokenizer for terminal input.
  *
  * Usage:
@@ -53,7 +53,7 @@ type TokenizerOptions = {
  * const tokens2 = tokenizer.feed('A')  // completes the escape sequence
  * const remaining = tokenizer.flush()  // force output incomplete sequences
  * ```
- */
+     */
 export function createTokenizer(options?: TokenizerOptions): Tokenizer {
   let currentState: State = 'ground'
   let currentBuffer = ''
@@ -208,8 +208,7 @@ function tokenize(
         // Terminals that ignore DECSET 1006 but honor 1000/1002 emit this
         // legacy encoding; without this branch the 3 payload bytes leak
         // through as text (`` `rK `` / `arK` garbage in the prompt).
-        //
-        // Gated on x10Mouse — `\x1b[M` is also CSI DL (Delete Lines) and
+        // // Gated on x10Mouse — `\x1b[M` is also CSI DL (Delete Lines) and
         // blindly consuming 3 chars corrupts output rendering (Parser/Ansi)
         // and fragments bracketed-paste PASTE_END. Only stdin enables this.
         // The ≥0x20 check on each payload slot is belt-and-suspenders: X10
@@ -217,8 +216,7 @@ function tokenize(
         // any slot means this is CSI DL adjacent to another sequence, not a
         // mouse event. Checking all three slots prevents PASTE_END's ESC
         // from being consumed when paste content ends in `\x1b[M`+0-2 chars.
-        //
-        // Known limitation: this counts JS string chars, but X10 is byte-
+        // // Known limitation: this counts JS string chars, but X10 is byte-
         // oriented and stdin uses utf8 encoding (App.tsx). At col 162-191 ×
         // row 96-159 the two coord bytes (0xC2-0xDF, 0x80-0xBF) form a valid
         // UTF-8 2-byte sequence and collapse to one char — the length check
@@ -227,7 +225,7 @@ function tokenize(
         // why SGR was invented, and no-SGR terminals at 162+ cols are rare.
         if (
           x10Mouse &&
-          code === 0x4d /* M */ &&
+          code === 0x4d /*     M     */ &&
           i - seqStart === 2 &&
           (i + 1 >= data.length || data.charCodeAt(i + 1) >= 0x20) &&
           (i + 2 >= data.length || data.charCodeAt(i + 2) >= 0x20) &&

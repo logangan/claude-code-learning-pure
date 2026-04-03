@@ -24,24 +24,24 @@ export type PostSamplingHook = (
 // Internal registry for post-sampling hooks
 const postSamplingHooks: PostSamplingHook[] = []
 
-/**
+/*    *
  * Register a post-sampling hook that will be called after model sampling completes
  * This is an internal API not exposed through settings
- */
+     */
 export function registerPostSamplingHook(hook: PostSamplingHook): void {
   postSamplingHooks.push(hook)
 }
 
-/**
+/*    *
  * Clear all registered post-sampling hooks (for testing)
- */
+     */
 export function clearPostSamplingHooks(): void {
   postSamplingHooks.length = 0
 }
 
-/**
+/*    *
  * Execute all registered post-sampling hooks
- */
+     */
 export async function executePostSamplingHooks(
   messages: Message[],
   systemPrompt: SystemPrompt,

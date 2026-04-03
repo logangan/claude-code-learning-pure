@@ -7,18 +7,18 @@ type CachedFileData = {
   mtime: number
 }
 
-/**
+/*    *
  * A simple in-memory cache for file contents with automatic invalidation based on modification time.
  * This eliminates redundant file reads in FileEditTool operations.
- */
+     */
 class FileReadCache {
   private cache = new Map<string, CachedFileData>()
   private readonly maxCacheSize = 1000
 
-  /**
+  /*    *
    * Reads a file with caching. Returns both content and encoding.
    * Cache key includes file path and modification time for automatic invalidation.
-   */
+       */
   readFile(filePath: string): { content: string; encoding: BufferEncoding } {
     const fs = getFsImplementation()
 
@@ -67,23 +67,23 @@ class FileReadCache {
     return { content, encoding }
   }
 
-  /**
+  /*    *
    * Clears the entire cache. Useful for testing or memory management.
-   */
+       */
   clear(): void {
     this.cache.clear()
   }
 
-  /**
+  /*    *
    * Removes a specific file from the cache.
-   */
+       */
   invalidate(filePath: string): void {
     this.cache.delete(filePath)
   }
 
-  /**
+  /*    *
    * Gets cache statistics for debugging/monitoring.
-   */
+       */
   getStats(): { size: number; entries: string[] } {
     return {
       size: this.cache.size,

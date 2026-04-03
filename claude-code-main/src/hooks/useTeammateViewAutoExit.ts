@@ -3,11 +3,11 @@ import { useAppState, useSetAppState } from '../state/AppState.js'
 import { exitTeammateView } from '../state/teammateViewHelpers.js'
 import { isInProcessTeammateTask } from '../tasks/InProcessTeammateTask/types.js'
 
-/**
+/*    *
  * Auto-exits teammate viewing mode when the viewed teammate
  * is killed or encounters an error. Users stay viewing completed
  * teammates so they can review the full transcript.
- */
+     */
 export function useTeammateViewAutoExit(): void {
   const setAppState = useSetAppState()
   const viewingAgentTaskId = useAppState(s => s.viewingAgentTaskId)

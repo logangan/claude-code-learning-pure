@@ -1,11 +1,11 @@
-/**
+/*    *
  * Hook for managing session backgrounding (Ctrl+B to background/foreground sessions).
  *
  * Handles:
  * - Calling onBackgroundQuery to spawn a background task for the current query
  * - Re-backgrounding foregrounded tasks
  * - Syncing foregrounded task messages/state to main view
- */
+     */
 
 import { useCallback, useEffect, useRef } from 'react'
 import { useAppState, useSetAppState } from '../state/AppState.js'
@@ -20,7 +20,7 @@ type UseSessionBackgroundingProps = {
 }
 
 type UseSessionBackgroundingResult = {
-  /** Call when user wants to background (Ctrl+B) */
+  /*    * Call when user wants to background (Ctrl+B)     */
   handleBackgroundSession: () => void
 }
 

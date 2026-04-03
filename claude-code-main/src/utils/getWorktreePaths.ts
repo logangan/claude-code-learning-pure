@@ -3,7 +3,7 @@ import { logEvent } from '../services/analytics/index.js'
 import { execFileNoThrowWithCwd } from './execFileNoThrow.js'
 import { gitExe } from './git.js'
 
-/**
+/*    *
  * Returns the paths of all worktrees for the current git repository.
  * If git is not available, not in a git repo, or only has one worktree,
  * returns an empty array.
@@ -14,7 +14,7 @@ import { gitExe } from './git.js'
  *
  * @param cwd Directory to run the command from
  * @returns Array of absolute worktree paths
- */
+     */
 export async function getWorktreePaths(cwd: string): Promise<string[]> {
   const startTime = Date.now()
 
@@ -43,8 +43,7 @@ export async function getWorktreePaths(cwd: string): Promise<string[]> {
   // worktree /Users/foo/repo
   // HEAD abc123
   // branch refs/heads/main
-  //
-  // worktree /Users/foo/repo-wt1
+  // // worktree /Users/foo/repo-wt1
   // HEAD def456
   // branch refs/heads/feature
   const worktreePaths = stdout

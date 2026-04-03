@@ -7,13 +7,13 @@ import {
   logEvent,
 } from './analytics/index.js'
 
-/**
+/*    *
  * Get the current Kubernetes namespace:
  * Returns null on laptops/local development,
  * "default" for devboxes in default namespace,
  * "ts" for devboxes in ts namespace,
  * ...
- */
+     */
 const getKubernetesNamespace = memoize(async (): Promise<string | null> => {
   if (process.env.USER_TYPE !== 'ant') {
     return null
@@ -29,9 +29,9 @@ const getKubernetesNamespace = memoize(async (): Promise<string | null> => {
   }
 })
 
-/**
+/*    *
  * Get the OCI container ID from within a running container
- */
+     */
 export const getContainerId = memoize(async (): Promise<string | null> => {
   if (process.env.USER_TYPE !== 'ant') {
     return null
@@ -65,9 +65,9 @@ export const getContainerId = memoize(async (): Promise<string | null> => {
   }
 })
 
-/**
+/*    *
  * Logs an event with the current namespace and tool permission context
- */
+     */
 export async function logPermissionContextForAnts(
   toolPermissionContext: ToolPermissionContext | null,
   moment: 'summary' | 'initialization',

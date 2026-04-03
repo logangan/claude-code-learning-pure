@@ -1,7 +1,7 @@
-/**
+/*    *
  * Frontmatter parser for markdown files
  * Extracts and parses YAML frontmatter between --- delimiters
- */
+     */
 
 import { logForDebugging } from './debug.js'
 import type { HooksSettings } from './settings/types.js'
@@ -68,8 +68,8 @@ export type ParsedMarkdown = {
 // - * is anchor/alias indicator
 // - [ ] are flow sequence indicators
 // - ': ' (colon followed by space) is key indicator — causes 'Nested mappings
-//   are not allowed in compact mappings' when it appears mid-value. Match the
-//   pattern rather than bare ':' so '12:34' times and 'https://' URLs stay unquoted.
+// are not allowed in compact mappings' when it appears mid-value. Match the
+// pattern rather than bare ':' so '12:34' times and 'https://' URLs stay unquoted.
 // - # is comment indicator
 // - & is anchor indicator
 // - ! is tag indicator
@@ -78,10 +78,10 @@ export type ParsedMarkdown = {
 // - @ ` are reserved
 const YAML_SPECIAL_CHARS = /[{}[\]*&#!|>%@`]|: /
 
-/**
+/*    *
  * Pre-processes frontmatter text to quote values that contain special YAML characters.
  * This allows glob patterns like **\/*.{ts,tsx} to be parsed correctly.
- */
+     */
 function quoteProblematicValues(frontmatterText: string): string {
   const lines = frontmatterText.split('\n')
   const result: string[] = []
@@ -122,11 +122,11 @@ function quoteProblematicValues(frontmatterText: string): string {
 
 export const FRONTMATTER_REGEX = /^---\s*\n([\s\S]*?)---\s*\n?/
 
-/**
+/*    *
  * Parses markdown content to extract frontmatter and content
  * @param markdown The raw markdown content
  * @returns Object containing parsed frontmatter and content without frontmatter
- */
+     */
 export function parseFrontmatter(
   markdown: string,
   sourcePath?: string,
@@ -174,7 +174,7 @@ export function parseFrontmatter(
   }
 }
 
-/**
+/*    *
  * Splits a comma-separated string and expands brace patterns.
  * Commas inside braces are not treated as separators.
  * Also accepts a YAML list (string array) for ergonomic frontmatter.
@@ -185,7 +185,7 @@ export function parseFrontmatter(
  * splitPathInFrontmatter("a, src/*.{ts,tsx}") // returns ["a", "src/*.ts", "src/*.tsx"]
  * splitPathInFrontmatter("{a,b}/{c,d}") // returns ["a/c", "a/d", "b/c", "b/d"]
  * splitPathInFrontmatter(["a", "src/*.{ts,tsx}"]) // returns ["a", "src/*.ts", "src/*.tsx"]
- */
+     */
 export function splitPathInFrontmatter(input: string | string[]): string[] {
   if (Array.isArray(input)) {
     return input.flatMap(splitPathInFrontmatter)
@@ -231,12 +231,12 @@ export function splitPathInFrontmatter(input: string | string[]): string[] {
     .flatMap(pattern => expandBraces(pattern))
 }
 
-/**
+/*    *
  * Expands brace patterns in a glob string.
  * @example
  * expandBraces("src/*.{ts,tsx}") // returns ["src/*.ts", "src/*.tsx"]
  * expandBraces("{a,b}/{c,d}") // returns ["a/c", "a/d", "b/c", "b/d"]
- */
+     */
 function expandBraces(pattern: string): string[] {
   // Find the first brace group
   const braceMatch = pattern.match(/^([^{]*)\{([^}]+)\}(.*)$/)
@@ -265,13 +265,13 @@ function expandBraces(pattern: string): string[] {
   return expanded
 }
 
-/**
+/*    *
  * Parses a positive integer value from frontmatter.
  * Handles both number and string representations.
  *
  * @param value The raw value from frontmatter (could be number, string, or undefined)
  * @returns The parsed positive integer, or undefined if invalid or not provided
- */
+     */
 export function parsePositiveIntFromFrontmatter(
   value: unknown,
 ): number | undefined {
@@ -288,7 +288,7 @@ export function parsePositiveIntFromFrontmatter(
   return undefined
 }
 
-/**
+/*    *
  * Validate and coerce a description value from frontmatter.
  *
  * Strings are returned as-is (trimmed). Primitive values (numbers, booleans)
@@ -300,7 +300,7 @@ export function parsePositiveIntFromFrontmatter(
  * @param value - The raw frontmatter description value
  * @param componentName - The skill/command/agent/style name for log messages
  * @param pluginName - The plugin name, if this came from a plugin
- */
+     */
 export function coerceDescriptionToString(
   value: unknown,
   componentName?: string,
@@ -325,29 +325,29 @@ export function coerceDescriptionToString(
   return null
 }
 
-/**
+/*    *
  * Parse a boolean frontmatter value.
  * Only returns true for literal true or "true" string.
- */
+     */
 export function parseBooleanFrontmatter(value: unknown): boolean {
   return value === true || value === 'true'
 }
 
-/**
+/*    *
  * Shell values accepted in `shell:` frontmatter for .md `!`-block execution.
- */
+     */
 export type FrontmatterShell = 'bash' | 'powershell'
 
 const FRONTMATTER_SHELLS: readonly FrontmatterShell[] = ['bash', 'powershell']
 
-/**
+/*    *
  * Parse and validate the `shell:` frontmatter field.
  *
  * Returns undefined for absent/null/empty (caller defaults to bash).
  * Logs a warning and returns undefined for unrecognized values — we fall
  * back to bash rather than failing the skill load, matching how `effort`
  * and other fields degrade.
- */
+     */
 export function parseShellFrontmatter(
   value: unknown,
   source: string,

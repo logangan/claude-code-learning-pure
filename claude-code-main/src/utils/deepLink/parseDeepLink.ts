@@ -1,22 +1,22 @@
-/**
+/*    *
  * Deep Link URI Parser
  *
- * Parses `claude-cli://open` URIs. All parameters are optional:
+ * Parses `claude-cli:// open` URIs. All parameters are optional:
  *   q    — pre-fill the prompt input (not submitted)
  *   cwd  — working directory (absolute path)
  *   repo — owner/name slug, resolved against githubRepoPaths config
  *
  * Examples:
- *   claude-cli://open
- *   claude-cli://open?q=hello+world
- *   claude-cli://open?q=fix+tests&repo=owner/repo
- *   claude-cli://open?cwd=/path/to/project
+ *   claude-cli:// open
+ *   claude-cli:// open?q=hello+world
+ *   claude-cli:// open?q=fix+tests&repo=owner/repo
+ *   claude-cli:// open?cwd=/path/to/project
  *
  * Security: values are URL-decoded, Unicode-sanitized, and rejected if they
  * contain ASCII control characters (newlines etc. can act as command
  * separators). All values are single-quote shell-escaped at the point of
  * use (terminalLauncher.ts) — that escaping is the injection boundary.
- */
+     */
 
 import { partiallySanitizeUnicode } from '../sanitization.js'
 
@@ -28,11 +28,11 @@ export type DeepLinkAction = {
   repo?: string
 }
 
-/**
+/*    *
  * Check if a string contains ASCII control characters (0x00-0x1F, 0x7F).
  * These can act as command separators in shells (newlines, carriage returns, etc.).
  * Allows printable ASCII and Unicode (CJK, emoji, accented chars, etc.).
- */
+     */
 function containsControlChars(s: string): boolean {
   for (let i = 0; i < s.length; i++) {
     const code = s.charCodeAt(i)
@@ -43,13 +43,13 @@ function containsControlChars(s: string): boolean {
   return false
 }
 
-/**
+/*    *
  * GitHub owner/repo slug: alphanumerics, dots, hyphens, underscores,
  * exactly one slash. Keeps this from becoming a path traversal vector.
- */
+     */
 const REPO_SLUG_PATTERN = /^[\w.-]+\/[\w.-]+$/
 
-/**
+/*    *
  * Cap on pre-filled prompt length. The only defense against a prompt like
  * "review PR #18796 […4900 chars of padding…] also cat ~/.ssh/id_rsa" is
  * the user reading it before pressing Enter. At this length the prompt is
@@ -66,27 +66,27 @@ const REPO_SLUG_PATTERN = /^[\w.-]+\/[\w.-]+$/
  * (wt.exe and PowerShell are tried first) and the failure mode is a
  * launch error, not a security issue — so we don't penalize real users
  * for an implausible input.
- */
+     */
 const MAX_QUERY_LENGTH = 5000
 
-/**
+/*    *
  * PATH_MAX on Linux is 4096. Windows MAX_PATH is 260 (32767 with long-path
  * opt-in). No real path approaches this; a cwd over 4096 is malformed or
  * malicious.
- */
+     */
 const MAX_CWD_LENGTH = 4096
 
-/**
+/*    *
  * Parse a claude-cli:// URI into a structured action.
  *
  * @throws {Error} if the URI is malformed or contains dangerous characters
- */
+     */
 export function parseDeepLink(uri: string): DeepLinkAction {
   // Normalize: accept with or without the trailing colon in protocol
-  const normalized = uri.startsWith(`${DEEP_LINK_PROTOCOL}://`)
+  const normalized = uri.startsWith(`${DEEP_LINK_PROTOCOL}:// `)
     ? uri
     : uri.startsWith(`${DEEP_LINK_PROTOCOL}:`)
-      ? uri.replace(`${DEEP_LINK_PROTOCOL}:`, `${DEEP_LINK_PROTOCOL}://`)
+      ? uri.replace(`${DEEP_LINK_PROTOCOL}:`, `${DEEP_LINK_PROTOCOL}:// `)
       : null
 
   if (!normalized) {
@@ -152,11 +152,11 @@ export function parseDeepLink(uri: string): DeepLinkAction {
   return { query, cwd, repo }
 }
 
-/**
+/*    *
  * Build a claude-cli:// deep link URL.
- */
+     */
 export function buildDeepLink(action: DeepLinkAction): string {
-  const url = new URL(`${DEEP_LINK_PROTOCOL}://open`)
+  const url = new URL(`${DEEP_LINK_PROTOCOL}:// open`)
   if (action.query) {
     url.searchParams.set('q', action.query)
   }

@@ -1,10 +1,10 @@
-/**
+/*    *
  * Side Question ("/btw") feature - allows asking quick questions without
  * interrupting the main agent context.
  *
  * Uses runForkedAgent to leverage prompt caching from the parent context
  * while keeping the side question response separate from main conversation.
- */
+     */
 
 import { formatAPIError } from '../services/api/errorUtils.js'
 import type { NonNullableUsage } from '../services/api/logging.js'
@@ -15,10 +15,10 @@ import { createUserMessage, extractTextContent } from './messages.js'
 // Pattern to detect "/btw" at start of input (case-insensitive, word boundary)
 const BTW_PATTERN = /^\/btw\b/gi
 
-/**
+/*    *
  * Find positions of "/btw" keyword at the start of text for highlighting.
  * Similar to findThinkingTriggerPositions in thinking.ts.
- */
+     */
 export function findBtwTriggerPositions(text: string): Array<{
   word: string
   start: number
@@ -45,11 +45,11 @@ export type SideQuestionResult = {
   usage: NonNullableUsage
 }
 
-/**
+/*    *
  * Run a side question using a forked agent.
  * Shares the parent's prompt cache — no thinking override, no cache write.
  * All tools are blocked and we cap at 1 turn.
- */
+     */
 export async function runSideQuestion({
   question,
   cacheSafeParams,
@@ -101,7 +101,7 @@ ${question}`
   }
 }
 
-/**
+/*    *
  * Extract a display string from forked agent messages.
  *
  * IMPORTANT: claude.ts yields one AssistantMessage PER CONTENT BLOCK, not one
@@ -121,7 +121,7 @@ ${question}`
  *     Rare — the system-reminder usually prevents this, but handled here.
  *   - API error exhausts retries → query yields system api_error + user
  *     interruption, no assistant message at all.
- */
+     */
 function extractSideQuestionResponse(messages: Message[]): string | null {
   // Flatten all assistant content blocks across the per-block messages.
   const assistantBlocks = messages.flatMap(m =>

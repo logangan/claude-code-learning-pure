@@ -1,9 +1,9 @@
-/**
+/*    *
  * Teammate-specific system prompt addendum.
  *
  * This is appended to the full main agent system prompt for teammates.
  * It explains visibility constraints and communication requirements.
- */
+     */
 
 export const TEAMMATE_SYSTEM_PROMPT_ADDENDUM = `
 # Agent Teammate Communication

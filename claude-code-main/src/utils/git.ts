@@ -85,7 +85,7 @@ const findGitRootImpl = memoizeWithLRU(
   50,
 )
 
-/**
+/*    *
  * Find the git root by walking up the directory tree.
  * Looks for a .git directory or file (worktrees/submodules use a file).
  * Returns the directory containing .git, or null if not found.
@@ -93,7 +93,7 @@ const findGitRootImpl = memoizeWithLRU(
  * Memoized per startPath with an LRU cache (max 50 entries) to prevent
  * unbounded growth — gitDiff calls this with dirname(file), so editing many
  * files across different directories would otherwise accumulate entries forever.
- */
+     */
 export const findGitRoot = createFindGitRoot()
 
 function createFindGitRoot(): {
@@ -108,7 +108,7 @@ function createFindGitRoot(): {
   return wrapper
 }
 
-/**
+/*    *
  * Resolve a git root to the canonical main repository root.
  * For a regular repo this is a no-op. For a worktree, follows the
  * `.git` file → `gitdir:` → `commondir` chain to find the main repo's
@@ -119,7 +119,7 @@ function createFindGitRoot(): {
  *
  * Memoized with a small LRU to avoid repeated file reads on the hot
  * path (permission checks, prompt building).
- */
+     */
 const resolveCanonicalRoot = memoizeWithLRU(
   (gitRoot: string): string => {
     try {
@@ -143,14 +143,13 @@ const resolveCanonicalRoot = memoizeWithLRU(
       // cloned/downloaded repo. Without validation, a malicious repo can point
       // commondir at any path the victim has trusted, bypassing the trust
       // dialog and executing hooks from .claude/settings.json on startup.
-      //
-      // Validate the structure matches what `git worktree add` creates:
-      //   1. worktreeGitDir is a direct child of <commonDir>/worktrees/
-      //      → ensures the commondir file we read lives inside the resolved
-      //        common dir, not inside the attacker's repo
-      //   2. <worktreeGitDir>/gitdir points back to <gitRoot>/.git
-      //      → ensures an attacker can't borrow a victim's existing worktree
-      //        entry by guessing its path
+      // // Validate the structure matches what `git worktree add` creates:
+      // 1. worktreeGitDir is a direct child of <commonDir>/worktrees/
+      // → ensures the commondir file we read lives inside the resolved
+      // common dir, not inside the attacker's repo
+      // 2. <worktreeGitDir>/gitdir points back to <gitRoot>/.git
+      // → ensures an attacker can't borrow a victim's existing worktree
+      // entry by guessing its path
       // Both are required: (1) alone fails if victim has a worktree of the
       // trusted repo; (2) alone fails because attacker controls worktreeGitDir.
       if (resolve(dirname(worktreeGitDir)) !== join(commonDir, 'worktrees')) {
@@ -182,7 +181,7 @@ const resolveCanonicalRoot = memoizeWithLRU(
   50,
 )
 
-/**
+/*    *
  * Find the canonical git repository root, resolving through worktrees.
  *
  * Unlike findGitRoot, which returns the worktree directory (where the `.git`
@@ -191,7 +190,7 @@ const resolveCanonicalRoot = memoizeWithLRU(
  *
  * Use this instead of findGitRoot for project-scoped state (auto-memory,
  * project config, agent memory) so worktrees share state with the main repo.
- */
+     */
 export const findCanonicalGitRoot = createFindCanonicalGitRoot()
 
 function createFindCanonicalGitRoot(): {
@@ -270,16 +269,16 @@ export const getRemoteUrl = async (): Promise<string | null> => {
   return getCachedRemoteUrl()
 }
 
-/**
+/*    *
  * Normalizes a git remote URL to a canonical form for hashing.
  * Converts SSH and HTTPS URLs to the same format: host/owner/repo (lowercase, no .git)
  *
  * Examples:
  * - git@github.com:owner/repo.git -> github.com/owner/repo
- * - https://github.com/owner/repo.git -> github.com/owner/repo
- * - ssh://git@github.com/owner/repo -> github.com/owner/repo
- * - http://local_proxy@127.0.0.1:16583/git/owner/repo -> github.com/owner/repo
- */
+ * - https:// github.com/owner/repo.git -> github.com/owner/repo
+ * - ssh:// git@github.com/owner/repo -> github.com/owner/repo
+ * - http:// local_proxy@127.0.0.1:16583/git/owner/repo -> github.com/owner/repo
+     */
 export function normalizeGitRemoteUrl(url: string): string | null {
   const trimmed = url.trim()
   if (!trimmed) return null
@@ -299,8 +298,8 @@ export function normalizeGitRemoteUrl(url: string): string | null {
     const path = urlMatch[2]
 
     // CCR git proxy URLs use format:
-    //   Legacy:  http://...@127.0.0.1:PORT/git/owner/repo       (github.com assumed)
-    //   GHE:     http://...@127.0.0.1:PORT/git/ghe.host/owner/repo (host encoded in path)
+    // Legacy:  http://...@127.0.0.1:PORT/git/owner/repo       (github.com assumed)
+    // GHE:     http://...@127.0.0.1:PORT/git/ghe.host/owner/repo (host encoded in path)
     // Strip the /git/ prefix. If the first segment contains a dot, it's a
     // hostname (GitHub org names cannot contain dots). Otherwise assume github.com.
     if (isLocalHost(host) && path.startsWith('git/')) {
@@ -320,12 +319,12 @@ export function normalizeGitRemoteUrl(url: string): string | null {
   return null
 }
 
-/**
+/*    *
  * Returns a SHA256 hash (first 16 chars) of the normalized git remote URL.
  * This provides a globally unique identifier for the repository that:
  * - Is the same regardless of SSH vs HTTPS clone
  * - Does not expose the actual repository name in logs
- */
+     */
 export async function getRepoRemoteHash(): Promise<string | null> {
   const remoteUrl = await getRemoteUrl()
   if (!remoteUrl) return null
@@ -420,12 +419,12 @@ export const getWorktreeCount = async (): Promise<number> => {
   return getWorktreeCountFromFs()
 }
 
-/**
+/*    *
  * Stashes all changes (including untracked files) to return git to a clean porcelain state
  * Important: This function stages untracked files before stashing to prevent data loss
  * @param message - Optional custom message for the stash
  * @returns Promise<boolean> - true if stash was successful, false otherwise
- */
+     */
 export const stashToCleanState = async (message?: string): Promise<boolean> => {
   try {
     const stashMessage =
@@ -520,27 +519,27 @@ export async function getGithubRepo(): Promise<string | null> {
   return null
 }
 
-/**
+/*    *
  * Preserved git state for issue submission.
  * Uses remote base (e.g., origin/main) which is rarely force-pushed,
  * unlike local commits that can be GC'd after force push.
- */
+     */
 export type PreservedGitState = {
-  /** The SHA of the merge-base with the remote branch */
+  /*    * The SHA of the merge-base with the remote branch     */
   remote_base_sha: string | null
-  /** The remote branch used (e.g., "origin/main") */
+  /*    * The remote branch used (e.g., "origin/main")     */
   remote_base: string | null
-  /** Patch from merge-base to current state (includes uncommitted changes) */
+  /*    * Patch from merge-base to current state (includes uncommitted changes)     */
   patch: string
-  /** Untracked files with their contents */
+  /*    * Untracked files with their contents     */
   untracked_files: Array<{ path: string; content: string }>
-  /** git format-patch output for committed changes between merge-base and HEAD.
+  /*    * git format-patch output for committed changes between merge-base and HEAD.
    *  Used to reconstruct the actual commit chain (author, date, message) in
-   *  replay containers. null when there are no commits between merge-base and HEAD. */
+   *  replay containers. null when there are no commits between merge-base and HEAD.     */
   format_patch: string | null
-  /** The current HEAD SHA (tip of the feature branch) */
+  /*    * The current HEAD SHA (tip of the feature branch)     */
   head_sha: string | null
-  /** The current branch name (e.g., "feat/my-feature") */
+  /*    * The current branch name (e.g., "feat/my-feature")     */
   branch_name: string | null
 }
 
@@ -555,10 +554,10 @@ const MAX_FILE_COUNT = 20000
 // purely for avoiding a second read when the file turns out to be text.
 const SNIFF_BUFFER_SIZE = 64 * 1024
 
-/**
+/*    *
  * Find the best remote branch to use as a base.
  * Priority: tracking branch > origin/main > origin/staging > origin/master
- */
+     */
 export async function findRemoteBase(): Promise<string | null> {
   // First try: get the tracking branch for the current branch
   const { stdout: trackingBranch, code: trackingCode } = await execFileNoThrow(
@@ -602,17 +601,17 @@ export async function findRemoteBase(): Promise<string | null> {
   return null
 }
 
-/**
+/*    *
  * Check if we're in a shallow clone by looking for <gitDir>/shallow.
- */
+     */
 function isShallowClone(): Promise<boolean> {
   return isShallowCloneFs()
 }
 
-/**
+/*    *
  * Capture untracked files (git diff doesn't include them).
  * Respects size limits and skips binary files.
- */
+     */
 async function captureUntrackedFiles(): Promise<
   Array<{ path: string; content: string }>
 > {
@@ -712,7 +711,7 @@ async function captureUntrackedFiles(): Promise<
   return result
 }
 
-/**
+/*    *
  * Preserve git state for issue submission.
  * Uses remote base for more stable replay capability.
  *
@@ -720,7 +719,7 @@ async function captureUntrackedFiles(): Promise<
  * - Detached HEAD: falls back to merge-base with default branch directly
  * - No remote: returns null for remote fields, uses HEAD-only mode
  * - Shallow clone: falls back to HEAD-only mode
- */
+     */
 export async function preserveGitStateForIssue(): Promise<PreservedGitState | null> {
   try {
     const isGit = await getIsGit()
@@ -852,7 +851,7 @@ function isLocalHost(host: string): boolean {
   )
 }
 
-/**
+/*    *
  * Checks if the current working directory appears to be a bare git repository
  * or has been manipulated to look like one (sandbox escape attack vector).
  *
@@ -871,8 +870,8 @@ function isLocalHost(host: string): boolean {
  * 3. When user runs 'git status', Git treats cwd as the git dir and runs the hook
  *
  * @returns true if the cwd looks like a bare/exploited git directory
- */
-/* eslint-disable custom-rules/no-sync-fs -- sync permission-eval check */
+     */
+/*     eslint-disable custom-rules/no-sync-fs -- sync permission-eval check     */
 export function isCurrentDirectoryBareGitRepo(): boolean {
   const fs = getFsImplementation()
   const cwd = getCwd()
@@ -923,4 +922,4 @@ export function isCurrentDirectoryBareGitRepo(): boolean {
   }
   return false
 }
-/* eslint-enable custom-rules/no-sync-fs */
+/*     eslint-enable custom-rules/no-sync-fs     */

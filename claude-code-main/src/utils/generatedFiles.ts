@@ -1,9 +1,9 @@
 import { basename, extname, posix, sep } from 'path'
 
-/**
+/*    *
  * File patterns that should be excluded from attribution.
  * Based on GitHub Linguist vendored patterns and common generated file patterns.
- */
+     */
 
 // Exact file name matches (case-insensitive)
 const EXCLUDED_FILENAMES = new Set([
@@ -76,12 +76,12 @@ const EXCLUDED_FILENAME_PATTERNS = [
   /^.*\.openapi\.[a-z]+$/i, // OpenAPI generated files
 ]
 
-/**
+/*    *
  * Check if a file should be excluded from attribution based on Linguist-style rules.
  *
  * @param filePath - Relative file path from repository root
  * @returns true if the file should be excluded from attribution
- */
+     */
 export function isGeneratedFile(filePath: string): boolean {
   // Normalize path separators for consistent pattern matching (patterns use posix-style /)
   const normalizedPath =
@@ -125,12 +125,12 @@ export function isGeneratedFile(filePath: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Filter a list of files to exclude generated files.
  *
  * @param files - Array of file paths
  * @returns Array of files that are not generated
- */
+     */
 export function filterGeneratedFiles(files: string[]): string[] {
   return files.filter(file => !isGeneratedFile(file))
 }

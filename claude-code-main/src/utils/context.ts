@@ -24,10 +24,10 @@ const MAX_OUTPUT_TOKENS_UPPER_LIMIT = 64_000
 export const CAPPED_DEFAULT_MAX_TOKENS = 8_000
 export const ESCALATED_MAX_TOKENS = 64_000
 
-/**
+/*    *
  * Check if 1M context is disabled via environment variable.
  * Used by C4E admins to disable 1M context for HIPAA compliance.
- */
+     */
 export function is1mContextDisabled(): boolean {
   return isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_1M_CONTEXT)
 }
@@ -111,10 +111,10 @@ export function getSonnet1mExpTreatmentEnabled(model: string): boolean {
   return getGlobalConfig().clientDataCache?.['coral_reef_sonnet'] === 'true'
 }
 
-/**
+/*    *
  * Calculate context window usage percentage from token usage data.
  * Returns used and remaining percentages, or null values if no usage data.
- */
+     */
 export function calculateContextPercentages(
   currentUsage: {
     input_tokens: number
@@ -143,9 +143,9 @@ export function calculateContextPercentages(
   }
 }
 
-/**
+/*    *
  * Returns the model's default and upper limit for max output tokens.
- */
+     */
 export function getModelMaxOutputTokens(model: string): {
   default: number
   upperLimit: number
@@ -209,13 +209,13 @@ export function getModelMaxOutputTokens(model: string): {
   return { default: defaultTokens, upperLimit }
 }
 
-/**
+/*    *
  * Returns the max thinking budget tokens for a given model. The max
  * thinking tokens should be strictly less than the max output tokens.
  *
  * Deprecated since newer models use adaptive thinking rather than a
  * strict thinking token budget.
- */
+     */
 export function getMaxThinkingTokensForModel(model: string): number {
   return getModelMaxOutputTokens(model).upperLimit - 1
 }

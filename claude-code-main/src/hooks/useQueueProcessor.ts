@@ -13,7 +13,7 @@ type UseQueueProcessorParams = {
   queryGuard: QueryGuard
 }
 
-/**
+/*    *
  * Hook that processes queued commands when conditions are met.
  *
  * Uses a single unified command queue (module-level store). Priority determines
@@ -24,7 +24,7 @@ type UseQueueProcessorParams = {
  * - No query active (queryGuard — reactive via useSyncExternalStore)
  * - Queue has items
  * - No active local JSX UI blocking input
- */
+     */
 export function useQueueProcessor({
   executeQueuedInput,
   hasActiveLocalJsxUI,

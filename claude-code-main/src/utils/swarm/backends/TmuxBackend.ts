@@ -36,10 +36,10 @@ function waitForPaneShellReady(): Promise<void> {
   return sleep(PANE_SHELL_INIT_DELAY_MS)
 }
 
-/**
+/*    *
  * Acquires a lock for pane creation, ensuring sequential execution.
  * Returns a release function that must be called when done.
- */
+     */
 function acquirePaneCreationLock(): Promise<() => void> {
   let release: () => void
   const newLock = new Promise<void>(resolve => {
@@ -52,10 +52,10 @@ function acquirePaneCreationLock(): Promise<() => void> {
   return previousLock.then(() => release!)
 }
 
-/**
+/*    *
  * Gets the tmux color name for a given agent color.
  * These are tmux's built-in color names that work with pane-border-style.
- */
+     */
 function getTmuxColorName(color: AgentColorName): string {
   const tmuxColors: Record<AgentColorName, string> = {
     red: 'red',
@@ -70,27 +70,27 @@ function getTmuxColorName(color: AgentColorName): string {
   return tmuxColors[color]
 }
 
-/**
+/*    *
  * Runs a tmux command in the user's original tmux session (no socket override).
  * Use this for operations that interact with the user's tmux panes (split-pane with leader).
- */
+     */
 function runTmuxInUserSession(
   args: string[],
 ): Promise<{ stdout: string; stderr: string; code: number }> {
   return execFileNoThrow(TMUX_COMMAND, args)
 }
 
-/**
+/*    *
  * Runs a tmux command in the external swarm socket.
  * Use this for operations in the standalone swarm session (when user is not in tmux).
- */
+     */
 function runTmuxInSwarm(
   args: string[],
 ): Promise<{ stdout: string; stderr: string; code: number }> {
   return execFileNoThrow(TMUX_COMMAND, ['-L', getSwarmSocketName(), ...args])
 }
 
-/**
+/*    *
  * TmuxBackend implements PaneBackend using tmux for pane management.
  *
  * When running INSIDE tmux (leader is in tmux):
@@ -100,32 +100,32 @@ function runTmuxInSwarm(
  * When running OUTSIDE tmux (leader is in regular terminal):
  * - Creates a claude-swarm session with a swarm-view window
  * - All teammates are equally distributed (no leader pane)
- */
+     */
 export class TmuxBackend implements PaneBackend {
   readonly type = 'tmux' as const
   readonly displayName = 'tmux'
   readonly supportsHideShow = true
 
-  /**
+  /*    *
    * Checks if tmux is installed and available.
    * Delegates to detection.ts for consistent detection logic.
-   */
+       */
   async isAvailable(): Promise<boolean> {
     return isTmuxAvailable()
   }
 
-  /**
+  /*    *
    * Checks if we're currently running inside a tmux session.
    * Delegates to detection.ts for consistent detection logic.
-   */
+       */
   async isRunningInside(): Promise<boolean> {
     return isInsideTmuxFromDetection()
   }
 
-  /**
+  /*    *
    * Creates a new teammate pane in the swarm view.
    * Uses a lock to prevent race conditions when multiple teammates are spawned in parallel.
-   */
+       */
   async createTeammatePaneInSwarmView(
     name: string,
     color: AgentColorName,
@@ -145,9 +145,9 @@ export class TmuxBackend implements PaneBackend {
     }
   }
 
-  /**
+  /*    *
    * Sends a command to a specific pane.
-   */
+       */
   async sendCommandToPane(
     paneId: PaneId,
     command: string,
@@ -163,9 +163,9 @@ export class TmuxBackend implements PaneBackend {
     }
   }
 
-  /**
+  /*    *
    * Sets the border color for a specific pane.
-   */
+       */
   async setPaneBorderColor(
     paneId: PaneId,
     color: AgentColorName,
@@ -202,9 +202,9 @@ export class TmuxBackend implements PaneBackend {
     ])
   }
 
-  /**
+  /*    *
    * Sets the title for a pane (shown in pane border if pane-border-status is set).
-   */
+       */
   async setPaneTitle(
     paneId: PaneId,
     name: string,
@@ -228,9 +228,9 @@ export class TmuxBackend implements PaneBackend {
     ])
   }
 
-  /**
+  /*    *
    * Enables pane border status for a window (shows pane titles).
-   */
+       */
   async enablePaneBorderStatus(
     windowTarget?: string,
     useExternalSession = false,
@@ -251,9 +251,9 @@ export class TmuxBackend implements PaneBackend {
     ])
   }
 
-  /**
+  /*    *
    * Rebalances panes to achieve the desired layout.
-   */
+       */
   async rebalancePanes(
     windowTarget: string,
     hasLeader: boolean,
@@ -265,19 +265,19 @@ export class TmuxBackend implements PaneBackend {
     }
   }
 
-  /**
+  /*    *
    * Kills/closes a specific pane.
-   */
+       */
   async killPane(paneId: PaneId, useExternalSession = false): Promise<boolean> {
     const runTmux = useExternalSession ? runTmuxInSwarm : runTmuxInUserSession
     const result = await runTmux(['kill-pane', '-t', paneId])
     return result.code === 0
   }
 
-  /**
+  /*    *
    * Hides a pane by moving it to a detached hidden session.
    * Creates the hidden session if it doesn't exist, then uses break-pane to move the pane there.
-   */
+       */
   async hidePane(paneId: PaneId, useExternalSession = false): Promise<boolean> {
     const runTmux = useExternalSession ? runTmuxInSwarm : runTmuxInUserSession
 
@@ -305,11 +305,11 @@ export class TmuxBackend implements PaneBackend {
     return result.code === 0
   }
 
-  /**
+  /*    *
    * Shows a previously hidden pane by joining it back into the target window.
    * Uses `tmux join-pane` to move the pane back, then reapplies main-vertical layout
    * with leader at 30%.
-   */
+       */
   async showPane(
     paneId: PaneId,
     targetWindowOrPane: string,
@@ -362,11 +362,11 @@ export class TmuxBackend implements PaneBackend {
 
   // Private helper methods
 
-  /**
+  /*    *
    * Gets the leader's pane ID.
    * Uses the TMUX_PANE env var captured at module load to ensure we always
    * get the leader's original pane, even if the user has switched panes.
-   */
+       */
   private async getCurrentPaneId(): Promise<string | null> {
     // Use the pane ID captured at startup (from TMUX_PANE env var)
     const leaderPane = getLeaderPaneId()
@@ -391,12 +391,12 @@ export class TmuxBackend implements PaneBackend {
     return result.stdout.trim()
   }
 
-  /**
+  /*    *
    * Gets the leader's window target (session:window format).
    * Uses the leader's pane ID to query for its window, ensuring we get the
    * correct window even if the user has switched to a different window.
    * Caches the result since the leader's window won't change.
-   */
+       */
   private async getCurrentWindowTarget(): Promise<string | null> {
     // Return cached value if available
     if (cachedLeaderWindowTarget) {
@@ -424,9 +424,9 @@ export class TmuxBackend implements PaneBackend {
     return cachedLeaderWindowTarget
   }
 
-  /**
+  /*    *
    * Gets the number of panes in a window.
-   */
+       */
   private async getCurrentWindowPaneCount(
     windowTarget?: string,
     useSwarmSocket = false,
@@ -453,17 +453,17 @@ export class TmuxBackend implements PaneBackend {
     return count(result.stdout.trim().split('\n'), Boolean)
   }
 
-  /**
+  /*    *
    * Checks if a tmux session exists in the swarm socket.
-   */
+       */
   private async hasSessionInSwarm(sessionName: string): Promise<boolean> {
     const result = await runTmuxInSwarm(['has-session', '-t', sessionName])
     return result.code === 0
   }
 
-  /**
+  /*    *
    * Creates the swarm session with a single window for teammates when running outside tmux.
-   */
+       */
   private async createExternalSwarmSession(): Promise<{
     windowTarget: string
     paneId: string
@@ -545,9 +545,9 @@ export class TmuxBackend implements PaneBackend {
     return { windowTarget, paneId: createResult.stdout.trim() }
   }
 
-  /**
+  /*    *
    * Creates a teammate pane when running inside tmux (with leader).
-   */
+       */
   private async createTeammatePaneWithLeader(
     teammateName: string,
     teammateColor: AgentColorName,
@@ -629,9 +629,9 @@ export class TmuxBackend implements PaneBackend {
     return { paneId, isFirstTeammate }
   }
 
-  /**
+  /*    *
    * Creates a teammate pane when running outside tmux (no leader in tmux).
-   */
+       */
   private async createTeammatePaneExternal(
     teammateName: string,
     teammateColor: AgentColorName,
@@ -701,9 +701,9 @@ export class TmuxBackend implements PaneBackend {
     return { paneId, isFirstTeammate }
   }
 
-  /**
+  /*    *
    * Rebalances panes in a window with a leader.
-   */
+       */
   private async rebalancePanesWithLeader(windowTarget: string): Promise<void> {
     const listResult = await runTmuxInUserSession([
       'list-panes',
@@ -733,9 +733,9 @@ export class TmuxBackend implements PaneBackend {
     )
   }
 
-  /**
+  /*    *
    * Rebalances panes in a window without a leader (tiled layout).
-   */
+       */
   private async rebalancePanesTiled(windowTarget: string): Promise<void> {
     const listResult = await runTmuxInSwarm([
       'list-panes',

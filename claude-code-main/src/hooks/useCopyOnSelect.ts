@@ -6,7 +6,7 @@ import { getTheme } from '../utils/theme.js'
 
 type Selection = ReturnType<typeof useSelection>
 
-/**
+/*    *
  * Auto-copy the selection to the clipboard when the user finishes dragging
  * (mouse-up with a non-empty selection) or multi-clicks to select a word/line.
  * Mirrors iTerm2's "Copy to pasteboard on selection" — the highlight is left
@@ -22,7 +22,7 @@ type Selection = ReturnType<typeof useSelection>
  * onCopied is optional — when omitted, copy is silent (clipboard is written
  * but no toast/notification fires). FleetView uses this silent mode; the
  * fullscreen REPL passes showCopiedToast for user feedback.
- */
+     */
 export function useCopyOnSelect(
   selection: Selection,
   isActive: boolean,
@@ -82,14 +82,14 @@ export function useCopyOnSelect(
   }, [isActive, selection])
 }
 
-/**
+/*    *
  * Pipe the theme's selectionBg color into the Ink StylePool so the
  * selection overlay renders a solid blue bg instead of SGR-7 inverse.
  * Ink is theme-agnostic (layering: colorize.ts "theme resolution happens
  * at component layer, not here") — this is the bridge. Fires on mount
  * (before any mouse input is possible) and again whenever /theme flips,
  * so the selection color tracks the theme live.
- */
+     */
 export function useSelectionBgColor(selection: Selection): void {
   const [themeName] = useTheme()
   useEffect(() => {

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Claude Code hints protocol.
  *
  * CLIs and SDKs running under Claude Code can emit a self-closing
@@ -13,7 +13,7 @@
  * React subscribes via useSyncExternalStore.
  *
  * See docs/claude-code-hints.md for the vendor-facing spec.
- */
+     */
 
 import { logForDebugging } from './debug.js'
 import { createSignal } from './signal.js'
@@ -21,46 +21,46 @@ import { createSignal } from './signal.js'
 export type ClaudeCodeHintType = 'plugin'
 
 export type ClaudeCodeHint = {
-  /** Spec version declared by the emitter. Unknown versions are dropped. */
+  /*    * Spec version declared by the emitter. Unknown versions are dropped.     */
   v: number
-  /** Hint discriminator. v1 defines only `plugin`. */
+  /*    * Hint discriminator. v1 defines only `plugin`.     */
   type: ClaudeCodeHintType
-  /**
+  /*    *
    * Hint payload. For `type: 'plugin'`: a `name@marketplace` slug
    * matching the form accepted by `parsePluginIdentifier`.
-   */
+       */
   value: string
-  /**
+  /*    *
    * First token of the shell command that produced this hint. Shown in the
    * install prompt so the user can spot a mismatch between the tool that
    * emitted the hint and the plugin it recommends.
-   */
+       */
   sourceCommand: string
 }
 
-/** Spec versions this harness understands. */
+/*    * Spec versions this harness understands.     */
 const SUPPORTED_VERSIONS = new Set([1])
 
-/** Hint types this harness understands at the supported versions. */
+/*    * Hint types this harness understands at the supported versions.     */
 const SUPPORTED_TYPES = new Set<string>(['plugin'])
 
-/**
+/*    *
  * Outer tag match. Anchored to whole lines (multiline mode) so that a
  * hint marker buried in a larger line — e.g. a log statement quoting the
  * tag — is ignored. Leading and trailing whitespace on the line is
  * tolerated since some SDKs pad stderr.
- */
+     */
 const HINT_TAG_RE = /^[ \t]*<claude-code-hint\s+([^>]*?)\s*\/>[ \t]*$/gm
 
-/**
+/*    *
  * Attribute matcher. Accepts `key="value"` and `key=value` (terminated by
  * whitespace or `/>` closing sequence). Values containing whitespace or `"` must use the quoted
  * form. The quoted form does not support escape sequences; raise the spec
  * version if that becomes necessary.
- */
+     */
 const ATTR_RE = /(\w+)=(?:"([^"]*)"|([^\s/>]+))/g
 
-/**
+/*    *
  * Scan shell tool output for hint tags, returning the parsed hints and
  * the output with hint lines removed. The stripped output is what the
  * model sees — hints are a harness-only side channel.
@@ -68,7 +68,7 @@ const ATTR_RE = /(\w+)=(?:"([^"]*)"|([^\s/>]+))/g
  * @param output - Raw command output (stdout with stderr interleaved).
  * @param command - The command that produced the output; its first
  *   whitespace-separated token is recorded as `sourceCommand`.
- */
+     */
 export function extractClaudeCodeHints(
   output: string,
   command: string,
@@ -135,12 +135,10 @@ function firstCommandToken(command: string): string {
 
 // ============================================================================
 // Pending-hint store (useSyncExternalStore interface)
-//
-// Single-slot: write wins if the slot is already full (a CLI that emits on
+// // Single-slot: write wins if the slot is already full (a CLI that emits on
 // every invocation would otherwise pile up). The dialog is shown at most
 // once per session; after that, setPendingHint becomes a no-op.
-//
-// Callers should gate before writing (installed? already shown? cap hit?) —
+// // Callers should gate before writing (installed? already shown? cap hit?) —
 // see maybeRecordPluginHint in hintRecommendation.ts for the plugin-type
 // gate. This module stays plugin-agnostic so future hint types can reuse
 // the same store.
@@ -151,14 +149,14 @@ let shownThisSession = false
 const pendingHintChanged = createSignal()
 const notify = pendingHintChanged.emit
 
-/** Raw store write. Callers should gate first (see module comment). */
+/*    * Raw store write. Callers should gate first (see module comment).     */
 export function setPendingHint(hint: ClaudeCodeHint): void {
   if (shownThisSession) return
   pendingHint = hint
   notify()
 }
 
-/** Clear the slot without flipping the session flag — for rejected hints. */
+/*    * Clear the slot without flipping the session flag — for rejected hints.     */
 export function clearPendingHint(): void {
   if (pendingHint !== null) {
     pendingHint = null
@@ -166,7 +164,7 @@ export function clearPendingHint(): void {
   }
 }
 
-/** Flip the once-per-session flag. Call only when a dialog is actually shown. */
+/*    * Flip the once-per-session flag. Call only when a dialog is actually shown.     */
 export function markShownThisSession(): void {
   shownThisSession = true
 }
@@ -181,7 +179,7 @@ export function hasShownHintThisSession(): boolean {
   return shownThisSession
 }
 
-/** Test-only reset. */
+/*    * Test-only reset.     */
 export function _resetClaudeCodeHintStore(): void {
   pendingHint = null
   shownThisSession = false

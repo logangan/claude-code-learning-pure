@@ -1,7 +1,7 @@
-/**
+/*    *
  * Parser for sed edit commands (-i flag substitutions)
  * Extracts file paths and substitution patterns to enable file-edit-style rendering
- */
+     */
 
 import { randomBytes } from 'crypto'
 import { tryParseShellCommand } from '../../utils/bash/shellQuote.js'
@@ -21,31 +21,31 @@ const LPAREN_PLACEHOLDER_RE = new RegExp(LPAREN_PLACEHOLDER, 'g')
 const RPAREN_PLACEHOLDER_RE = new RegExp(RPAREN_PLACEHOLDER, 'g')
 
 export type SedEditInfo = {
-  /** The file path being edited */
+  /*    * The file path being edited     */
   filePath: string
-  /** The search pattern (regex) */
+  /*    * The search pattern (regex)     */
   pattern: string
-  /** The replacement string */
+  /*    * The replacement string     */
   replacement: string
-  /** Substitution flags (g, i, etc.) */
+  /*    * Substitution flags (g, i, etc.)     */
   flags: string
-  /** Whether to use extended regex (-E or -r flag) */
+  /*    * Whether to use extended regex (-E or -r flag)     */
   extendedRegex: boolean
 }
 
-/**
+/*    *
  * Check if a command is a sed in-place edit command
  * Returns true only for simple sed -i 's/pattern/replacement/flags' file commands
- */
+     */
 export function isSedInPlaceEdit(command: string): boolean {
   const info = parseSedEditCommand(command)
   return info !== null
 }
 
-/**
+/*    *
  * Parse a sed edit command and extract the edit information
  * Returns null if the command is not a valid sed in-place edit
- */
+     */
 export function parseSedEditCommand(command: string): SedEditInfo | null {
   const trimmed = command.trim()
 
@@ -164,7 +164,7 @@ export function parseSedEditCommand(command: string): SedEditInfo | null {
 
   // Parse the substitution expression: s/pattern/replacement/flags
   // Only support / as delimiter for simplicity
-  const substMatch = expression.match(/^s\//)
+  const substMatch = expression.match(/^s\// )
   if (!substMatch) {
     return null
   }
@@ -237,10 +237,10 @@ export function parseSedEditCommand(command: string): SedEditInfo | null {
   }
 }
 
-/**
+/*    *
  * Apply a sed substitution to file content
  * Returns the new content after applying the substitution
- */
+     */
 export function applySedSubstitution(
   content: string,
   sedInfo: SedEditInfo,
@@ -266,7 +266,7 @@ export function applySedSubstitution(
   // Convert sed pattern to JavaScript regex pattern
   let jsPattern = sedInfo.pattern
     // Unescape \/ to /
-    .replace(/\\\//g, '/')
+    .replace(/\\\// g, '/')
 
   // In BRE mode (no -E flag), metacharacters have opposite escaping:
   // BRE: \+ means "one or more", + is literal
@@ -304,7 +304,7 @@ export function applySedSubstitution(
   const ESCAPED_AMP_PLACEHOLDER = `___ESCAPED_AMPERSAND_${salt}___`
   const jsReplacement = sedInfo.replacement
     // Unescape \/ to /
-    .replace(/\\\//g, '/')
+    .replace(/\\\// g, '/')
     // First escape \& to a placeholder
     .replace(/\\&/g, ESCAPED_AMP_PLACEHOLDER)
     // Convert & to $& (full match) - use $$& to get literal $& in output

@@ -10,7 +10,7 @@ async function probePath(p: string): Promise<string | null> {
   }
 }
 
-/**
+/*    *
  * Attempts to find PowerShell on the system via PATH.
  * Prefers pwsh (PowerShell Core 7+), falls back to powershell (5.1).
  *
@@ -20,7 +20,7 @@ async function probePath(p: string): Promise<string | null> {
  * subprocesses while snapd initializes confinement, but the underlying
  * binary at /opt/microsoft/powershell/7/pwsh is reliable. On
  * Windows/macOS, PATH is sufficient.
- */
+     */
 export async function findPowerShell(): Promise<string | null> {
   const pwshPath = await which('pwsh')
   if (pwshPath) {
@@ -58,10 +58,10 @@ export async function findPowerShell(): Promise<string | null> {
 
 let cachedPowerShellPath: Promise<string | null> | null = null
 
-/**
+/*    *
  * Gets the cached PowerShell path. Returns a memoized promise that
  * resolves to the PowerShell executable path or null.
- */
+     */
 export function getCachedPowerShellPath(): Promise<string | null> {
   if (!cachedPowerShellPath) {
     cachedPowerShellPath = findPowerShell()
@@ -71,7 +71,7 @@ export function getCachedPowerShellPath(): Promise<string | null> {
 
 export type PowerShellEdition = 'core' | 'desktop'
 
-/**
+/*    *
  * Infers the PowerShell edition from the binary name without spawning.
  * - `pwsh` / `pwsh.exe` → 'core' (PowerShell 7+: supports `&&`, `||`, `?:`, `??`)
  * - `powershell` / `powershell.exe` → 'desktop' (Windows PowerShell 5.1:
@@ -83,14 +83,14 @@ export type PowerShellEdition = 'core' | 'desktop'
  * Used by the tool prompt to give version-appropriate syntax guidance so
  * the model doesn't emit `cmd1 && cmd2` on 5.1 (parser error) or avoid
  * `&&` on 7+ where it's the correct short-circuiting operator.
- */
+     */
 export async function getPowerShellEdition(): Promise<PowerShellEdition | null> {
   const p = await getCachedPowerShellPath()
   if (!p) return null
   // basename without extension, case-insensitive. Covers:
-  //   C:\Program Files\PowerShell\7\pwsh.exe
-  //   /opt/microsoft/powershell/7/pwsh
-  //   C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+  // C:\Program Files\PowerShell\7\pwsh.exe
+  // /opt/microsoft/powershell/7/pwsh
+  // C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
   const base = p
     .split(/[/\\]/)
     .pop()!
@@ -99,9 +99,9 @@ export async function getPowerShellEdition(): Promise<PowerShellEdition | null> 
   return base === 'pwsh' ? 'core' : 'desktop'
 }
 
-/**
+/*    *
  * Resets the cached PowerShell path. Only for testing.
- */
+     */
 export function resetPowerShellCache(): void {
   cachedPowerShellPath = null
 }

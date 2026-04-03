@@ -2,7 +2,7 @@ import type { AddressFamily, LookupAddress as AxiosLookupAddress } from 'axios'
 import { lookup as dnsLookup } from 'dns'
 import { isIP } from 'net'
 
-/**
+/*    *
  * SSRF guard for HTTP hooks.
  *
  * Blocks private, link-local, and other non-routable address ranges to prevent
@@ -15,9 +15,9 @@ import { isIP } from 'net'
  * When a global proxy or the sandbox network proxy is in use, the guard is
  * effectively bypassed for the target host because the proxy performs DNS
  * resolution. The sandbox proxy enforces its own domain allowlist.
- */
+     */
 
-/**
+/*    *
  * Returns true if the address is in a range that HTTP hooks should not reach.
  *
  * Blocked IPv4:
@@ -38,7 +38,7 @@ import { isIP } from 'net'
  *   127.0.0.0/8      loopback (local dev hooks)
  *   ::1              loopback
  *   everything else
- */
+     */
 export function isBlockedAddress(address: string): boolean {
   const v = isIP(address)
   if (v === 4) {
@@ -124,12 +124,12 @@ function isBlockedV6(address: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Expand `::` and optional trailing dotted-decimal so an IPv6 address is
  * represented as exactly 8 hex groups. Returns null if expansion is not
  * well-formed (the caller has already validated with isIP, so this is
  * defensive).
- */
+     */
 function expandIPv6Groups(addr: string): number[] | null {
   // Handle trailing dotted-decimal IPv4 (e.g. ::ffff:169.254.169.254).
   // Replace it with its two hex groups so the rest of the expansion is uniform.
@@ -178,12 +178,12 @@ function expandIPv6Groups(addr: string): number[] | null {
   return nums.length === 8 ? nums : null
 }
 
-/**
+/*    *
  * Extract the embedded IPv4 address from an IPv4-mapped IPv6 address
  * (0:0:0:0:0:ffff:X:Y) in any valid representation — compressed, expanded,
  * hex groups, or trailing dotted-decimal. Returns null if the address is
  * not an IPv4-mapped IPv6 address.
- */
+     */
 function extractMappedIPv4(addr: string): string | null {
   const g = expandIPv6Groups(addr)
   if (!g) return null
@@ -203,7 +203,7 @@ function extractMappedIPv4(addr: string): string | null {
   return null
 }
 
-/**
+/*    *
  * A dns.lookup-compatible function that resolves a hostname and rejects
  * addresses in blocked ranges. Used as the `lookup` option in axios request
  * config so that the validated IP is the one the socket connects to — no
@@ -212,7 +212,7 @@ function extractMappedIPv4(addr: string): string | null {
  * IP literals in the hostname are validated directly without DNS.
  *
  * Signature matches axios's `lookup` config option (not Node's dns.lookup).
- */
+     */
 export function ssrfGuardedLookup(
   hostname: string,
   options: object,

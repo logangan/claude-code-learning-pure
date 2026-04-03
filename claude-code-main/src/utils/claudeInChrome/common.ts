@@ -226,9 +226,9 @@ export const BROWSER_DETECTION_ORDER: ChromiumBrowser[] = [
   'opera',
 ]
 
-/**
+/*    *
  * Get all browser data paths to check for extension installation
- */
+     */
 export function getAllBrowserDataPaths(): {
   browser: ChromiumBrowser
   path: string
@@ -274,9 +274,9 @@ export function getAllBrowserDataPaths(): {
   return paths
 }
 
-/**
+/*    *
  * Get native messaging host directories for all supported browsers
- */
+     */
 export function getAllNativeMessagingHostsDirs(): {
   browser: ChromiumBrowser
   path: string
@@ -316,9 +316,9 @@ export function getAllNativeMessagingHostsDirs(): {
   return paths
 }
 
-/**
+/*    *
  * Get Windows registry keys for all supported browsers
- */
+     */
 export function getAllWindowsRegistryKeys(): {
   browser: ChromiumBrowser
   key: string
@@ -338,10 +338,10 @@ export function getAllWindowsRegistryKeys(): {
   return keys
 }
 
-/**
+/*    *
  * Detect which browser to use for opening URLs
  * Returns the first available browser, or null if none found
- */
+     */
 export async function detectAvailableBrowser(): Promise<ChromiumBrowser | null> {
   const platform = getPlatform()
 
@@ -468,16 +468,16 @@ export async function openInChrome(url: string): Promise<boolean> {
   }
 }
 
-/**
+/*    *
  * Get the socket directory path (Unix only)
- */
+     */
 export function getSocketDir(): string {
   return `/tmp/claude-mcp-browser-bridge-${getUsername()}`
 }
 
-/**
+/*    *
  * Get the socket path (Unix) or pipe name (Windows)
- */
+     */
 export function getSecureSocketPath(): string {
   if (platform() === 'win32') {
     return `\\\\.\\pipe\\${getSocketName()}`
@@ -485,10 +485,10 @@ export function getSecureSocketPath(): string {
   return join(getSocketDir(), `${process.pid}.sock`)
 }
 
-/**
+/*    *
  * Get all socket paths including PID-based sockets in the directory
  * and legacy fallback paths
- */
+     */
 export function getAllSocketPaths(): string[] {
   // Windows uses named pipes, not Unix sockets
   if (platform() === 'win32') {

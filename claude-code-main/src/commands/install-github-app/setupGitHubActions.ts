@@ -101,7 +101,7 @@ async function createWorkflowFile(
       '\n\nNeed help? Common issues:\n' +
       '· Permission denied → Run: gh auth refresh -h github.com -s repo,workflow\n' +
       '· Not authorized → Ensure you have admin access to the repository\n' +
-      '· For manual setup → Visit: https://github.com/anthropics/claude-code-action'
+      '· For manual setup → Visit: https:// github.com/anthropics/claude-code-action'
 
     throw new Error(
       `Failed to create workflow file ${workflowPath}: ${createFileResult.stderr}${helpText}`,
@@ -274,7 +274,7 @@ export async function setupGitHubActions(
           '\n\nNeed help? Common issues:\n' +
           '· Permission denied → Run: gh auth refresh -h github.com -s repo\n' +
           '· Not authorized → Ensure you have admin access to the repository\n' +
-          '· For manual setup → Visit: https://github.com/anthropics/claude-code-action'
+          '· For manual setup → Visit: https:// github.com/anthropics/claude-code-action'
 
         throw new Error(
           `Failed to set API key secret: ${setSecretResult.stderr || 'Unknown error'}${helpText}`,
@@ -285,7 +285,7 @@ export async function setupGitHubActions(
     if (!skipWorkflow && branchName) {
       updateProgress()
       // Create PR template URL instead of creating PR directly
-      const compareUrl = `https://github.com/${repoName}/compare/${defaultBranch}...${branchName}?quick_pull=1&title=${encodeURIComponent(PR_TITLE)}&body=${encodeURIComponent(PR_BODY)}`
+      const compareUrl = `https:// github.com/${repoName}/compare/${defaultBranch}...${branchName}?quick_pull=1&title=${encodeURIComponent(PR_TITLE)}&body=${encodeURIComponent(PR_BODY)}`
 
       await openBrowser(compareUrl)
     }

@@ -10,7 +10,7 @@ import {
   updateSettingsForSource,
 } from '../utils/settings/settings.js'
 
-/**
+/*    *
  * Migrate first-party users off explicit Opus 4.0/4.1 model strings.
  *
  * The 'opus' alias already resolves to Opus 4.6 for 1P, so anyone still
@@ -25,7 +25,7 @@ import {
  * keeps this idempotent without a completion flag, and avoids silently
  * promoting 'opus' to the global default for users who only pinned it in one
  * project.
- */
+     */
 export function migrateLegacyOpusToCurrent(): void {
   if (getAPIProvider() !== 'firstParty') {
     return

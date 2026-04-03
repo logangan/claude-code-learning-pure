@@ -32,10 +32,10 @@ function shouldUseVCR(): boolean {
   return false
 }
 
-/**
+/*    *
  * Generic fixture management helper
  * Handles caching, reading, writing fixtures for any data type
- */
+     */
 async function withFixture<T>(
   input: unknown,
   fixtureName: string,

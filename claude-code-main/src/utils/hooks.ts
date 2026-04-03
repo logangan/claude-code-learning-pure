@@ -1,8 +1,8 @@
 // biome-ignore-all assist/source/organizeImports: ANT-ONLY import markers must not be reordered
-/**
+/*    *
  * Hooks are user-defined shell commands that can be executed at various points
  * in Claude Code's lifecycle.
- */
+     */
 import { basename } from 'path'
 import { spawn, type ChildProcessWithoutNullStreams } from 'child_process'
 import { pathExists } from './file.js'
@@ -165,13 +165,13 @@ import { errorMessage, getErrnoCode } from './errors.js'
 
 const TOOL_HOOK_EXECUTION_TIMEOUT_MS = 10 * 60 * 1000
 
-/**
+/*    *
  * SessionEnd hooks run during shutdown/clear and need a much tighter bound
  * than TOOL_HOOK_EXECUTION_TIMEOUT_MS. This value is used by callers as both
  * the per-hook default timeout AND the overall AbortSignal cap (hooks run in
  * parallel, so one value suffices). Overridable via env var for users whose
  * teardown scripts need more time.
- */
+     */
 const SESSION_END_HOOK_TIMEOUT_MS_DEFAULT = 1500
 export function getSessionEndHookTimeoutMs(): number {
   const raw = process.env.CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS
@@ -207,8 +207,7 @@ function executeInBackground({
     // code 2 (blocking error), enqueue as a task-notification so it wakes the
     // model via useQueueProcessor (idle) or gets injected mid-query via
     // queued_command attachments (busy).
-    //
-    // NOTE: We deliberately do NOT call shellCommand.background() here, because
+    // // NOTE: We deliberately do NOT call shellCommand.background() here, because
     // it calls taskOutput.spillToDisk() which breaks in-memory stdout/stderr
     // capture (getStderr() returns '' in disk mode). The StreamWrappers stay
     // attached and pipe data into the in-memory TaskOutput buffers. The abort
@@ -264,7 +263,7 @@ function executeInBackground({
   return true
 }
 
-/**
+/*    *
  * Checks if a hook should be skipped due to lack of workspace trust.
  *
  * ALL hooks require workspace trust because they execute arbitrary commands from
@@ -282,7 +281,7 @@ function executeInBackground({
  * - SubagentStop hooks executing when subagent completes before trust
  *
  * @returns true if hook should be skipped, false if it should execute
- */
+     */
 export function shouldSkipHookDueToTrust(): boolean {
   // In non-interactive mode (SDK), trust is implicit - always execute
   const isInteractive = !getIsNonInteractiveSession()
@@ -295,9 +294,9 @@ export function shouldSkipHookDueToTrust(): boolean {
   return !hasTrust
 }
 
-/**
+/*    *
  * Creates the base hook input that's common to all hook types
- */
+     */
 export function createBaseHookInput(
   permissionMode?: string,
   sessionId?: string,
@@ -332,7 +331,7 @@ export interface HookBlockingError {
   command: string
 }
 
-/** Re-export ElicitResult from MCP SDK as ElicitationResponse for backward compat. */
+/*    * Re-export ElicitResult from MCP SDK as ElicitationResponse for backward compat.     */
 export type ElicitationResponse = ElicitResult
 
 export interface HookResult {
@@ -375,10 +374,10 @@ export type AggregatedHookResult = {
   retry?: boolean
 }
 
-/**
+/*    *
  * Parse and validate a JSON string against the hook output Zod schema.
  * Returns the validated output or formatted validation errors.
- */
+     */
 function validateHookJson(
   jsonString: string,
 ): { json: HookJSONOutput } | { validationError: string } {
@@ -736,14 +735,14 @@ function processHookJSONOutput({
   }
 }
 
-/**
+/*    *
  * Execute a command-based hook using bash or PowerShell.
  *
  * Shell resolution: hook.shell → 'bash'. PowerShell hooks spawn pwsh
  * with -NoProfile -NonInteractive -Command and skip bash-specific prep
  * (POSIX path conversion, .sh auto-prepend, CLAUDE_CODE_SHELL_PREFIX).
  * See docs/design/ps-shell-selection.md §5.1.
- */
+     */
 async function execCommandHook(
   hook: HookCommand & { type: 'command' },
   hookEvent: HookEvent | 'StatusLine' | 'FileSuggestion',
@@ -782,8 +781,7 @@ async function execCommandHook(
   // Per-hook shell selection (phase 1 of docs/design/ps-shell-selection.md).
   // Resolution order: hook.shell → DEFAULT_HOOK_SHELL. The defaultShell
   // fallback (settings.defaultShell) is phase 2 — not wired yet.
-  //
-  // The bash path is the historical default and stays unchanged. The
+  // // The bash path is the historical default and stays unchanged. The
   // PowerShell path deliberately skips the Windows-specific bash
   // accommodations (cygpath conversion, .sh auto-prepend, POSIX-quoted
   // SHELL_PREFIX).
@@ -793,16 +791,13 @@ async function execCommandHook(
 
   // --
   // Windows bash path: hooks run via Git Bash (Cygwin), NOT cmd.exe.
-  //
-  // This means every path we put into env vars or substitute into the command
+  // // This means every path we put into env vars or substitute into the command
   // string MUST be a POSIX path (/c/Users/foo), not a Windows path
   // (C:\Users\foo or C:/Users/foo). Git Bash cannot resolve Windows paths.
-  //
-  // windowsPathToPosixPath() is pure-JS regex conversion (no cygpath shell-out):
+  // // windowsPathToPosixPath() is pure-JS regex conversion (no cygpath shell-out):
   // C:\Users\foo -> /c/Users/foo, UNC preserved, slashes flipped. Memoized
   // (LRU-500) so repeated calls are cheap.
-  //
-  // PowerShell path: use native paths — skip the conversion entirely.
+  // // PowerShell path: use native paths — skip the conversion entirely.
   // PowerShell expects Windows paths on Windows (and native paths on
   // Unix where pwsh is also available).
   const toHookPath =
@@ -939,16 +934,13 @@ async function execCommandHook(
 
   // --
   // Spawn. Two completely separate paths:
-  //
-  //   Bash: spawn(cmd, [], { shell: <gitBashPath | true> }) — the shell
-  //   option makes Node pass the whole string to the shell for parsing.
-  //
-  //   PowerShell: spawn(pwshPath, ['-NoProfile', '-NonInteractive',
-  //   '-Command', cmd]) — explicit argv, no shell option. -NoProfile
-  //   skips user profile scripts (faster, deterministic).
-  //   -NonInteractive fails fast instead of prompting.
-  //
-  // The Git Bash hard-exit in findGitBashPath() is still in place for
+  // //   Bash: spawn(cmd, [], { shell: <gitBashPath | true> }) — the shell
+  // option makes Node pass the whole string to the shell for parsing.
+  // //   PowerShell: spawn(pwshPath, ['-NoProfile', '-NonInteractive',
+  // '-Command', cmd]) — explicit argv, no shell option. -NoProfile
+  // skips user profile scripts (faster, deterministic).
+  // -NonInteractive fails fast instead of prompting.
+  // // The Git Bash hard-exit in findGitBashPath() is still in place for
   // bash hooks. PowerShell hooks never call it, so a Windows user with
   // only pwsh and shell: 'powershell' on every hook could in theory run
   // without Git Bash — but init.ts still calls setShellIfWindows() on
@@ -1334,7 +1326,7 @@ async function execCommandHook(
   }
 }
 
-/**
+/*    *
  * Check if a match query matches a hook matcher pattern
  * @param matchQuery The query to match (e.g., 'Write', 'Edit', 'Bash')
  * @param matcher The matcher pattern - can be:
@@ -1342,7 +1334,7 @@ async function execCommandHook(
  *   - Pipe-separated list for multiple exact matches (e.g., 'Write|Edit')
  *   - Regex pattern (e.g., '^Write.*', '.*', '^(Write|Edit)$')
  * @returns true if the query matches the pattern
- */
+     */
 function matchesPattern(matchQuery: string, matcher: string): boolean {
   if (!matcher || matcher === '*') {
     return true
@@ -1382,11 +1374,11 @@ function matchesPattern(matchQuery: string, matcher: string): boolean {
 
 type IfConditionMatcher = (ifCondition: string) => boolean
 
-/**
+/*    *
  * Prepare a matcher for hook `if` conditions. Expensive work (tool lookup,
  * Zod validation, tree-sitter parsing for Bash) happens once here; the
  * returned closure is called per hook. Returns undefined for non-tool events.
- */
+     */
 async function prepareIfConditionMatcher(
   hookInput: HookInput,
   tools: Tools | undefined,
@@ -1425,10 +1417,10 @@ type FunctionHookMatcher = {
   hooks: FunctionHook[]
 }
 
-/**
+/*    *
  * A hook paired with optional plugin context.
  * Used when returning matched hooks so we can apply plugin env vars at execution time.
- */
+     */
 type MatchedHook = {
   hook: HookCommand | HookCallback | FunctionHook
   pluginRoot?: string
@@ -1441,7 +1433,7 @@ function isInternalHook(matched: MatchedHook): boolean {
   return matched.hook.type === 'callback' && matched.hook.internal === true
 }
 
-/**
+/*    *
  * Build a dedup key for a matched hook, namespaced by source context.
  *
  * Settings-file hooks (no pluginRoot/skillRoot) share the '' prefix so the
@@ -1449,15 +1441,15 @@ function isInternalHook(matched: MatchedHook): boolean {
  * original intent of the dedup. Plugin/skill hooks get their root as the
  * prefix, so two plugins sharing an unexpanded `${CLAUDE_PLUGIN_ROOT}/hook.sh`
  * template don't collapse: after expansion they point to different files.
- */
+     */
 function hookDedupKey(m: MatchedHook, payload: string): string {
   return `${m.pluginRoot ?? m.skillRoot ?? ''}\0${payload}`
 }
 
-/**
+/*    *
  * Build a map of {sanitizedPluginName: hookCount} from matched hooks.
  * Only logs actual names for official marketplace plugins; others become 'third-party'.
- */
+     */
 function getPluginHookCounts(
   hooks: MatchedHook[],
 ): Record<string, number> | undefined {
@@ -1478,9 +1470,9 @@ function getPluginHookCounts(
 }
 
 
-/**
+/*    *
  * Build a map of {hookType: count} from matched hooks.
- */
+     */
 function getHookTypeCounts(hooks: MatchedHook[]): Record<string, number> {
   const counts: Record<string, number> = {}
   for (const h of hooks) {
@@ -1565,7 +1557,7 @@ function getHooksConfig(
   return hooks
 }
 
-/**
+/*    *
  * Lightweight existence check for hooks on a given event. Mirrors the sources
  * assembled by getHooksConfig() but stops at the first hit without building
  * the full merged config.
@@ -1578,7 +1570,7 @@ function getHooksConfig(
  * Used to skip createBaseHookInput (getTranscriptPathForSession path joins)
  * and getMatchingHooks on hot paths where hooks are typically unconfigured.
  * See hasInstructionsLoadedHook / hasWorktreeCreateHook for the same pattern.
- */
+     */
 function hasHookForEvent(
   hookEvent: HookEvent,
   appState: AppState | undefined,
@@ -1592,14 +1584,14 @@ function hasHookForEvent(
   return false
 }
 
-/**
+/*    *
  * Get hook commands that match the given query
  * @param appState The current app state (optional for backwards compatibility)
  * @param sessionId The current session ID (main session or agent ID)
  * @param hookEvent The hook event
  * @param hookInput The hook input for matching
  * @returns Array of matched hooks with optional plugin context
- */
+     */
 export async function getMatchingHooks(
   appState: AppState | undefined,
   sessionId: string,
@@ -1712,8 +1704,7 @@ export async function getMatchingHooks(
     // Deduplicate hooks by command/prompt/url within the same source context.
     // Key is namespaced by pluginRoot/skillRoot (see hookDedupKey above) so
     // cross-plugin template collisions don't drop hooks (gh-29724).
-    //
-    // Note: new Map(entries) keeps the LAST entry on key collision, not first.
+    // // Note: new Map(entries) keeps the LAST entry on key collision, not first.
     // For settings hooks this means the last-merged scope wins; for
     // same-plugin duplicates the pluginRoot is identical so it doesn't matter.
     // Fast-path: callback/function hooks don't need dedup (each is unique).
@@ -1873,12 +1864,12 @@ export async function getMatchingHooks(
   }
 }
 
-/**
+/*    *
  * Format a list of blocking errors from a PreTool hook's configured commands.
  * @param hookName The name of the hook (e.g., 'PreToolUse:Write', 'PreToolUse:Edit', 'PreToolUse:Bash')
  * @param blockingErrors Array of blocking errors from hooks
  * @returns Formatted blocking message
- */
+     */
 export function getPreToolHookBlockingMessage(
   hookName: string,
   blockingError: HookBlockingError,
@@ -1886,59 +1877,59 @@ export function getPreToolHookBlockingMessage(
   return `${hookName} hook error: ${blockingError.blockingError}`
 }
 
-/**
+/*    *
  * Format a list of blocking errors from a Stop hook's configured commands.
  * @param blockingErrors Array of blocking errors from hooks
  * @returns Formatted message to give feedback to the model
- */
+     */
 export function getStopHookMessage(blockingError: HookBlockingError): string {
   return `Stop hook feedback:\n${blockingError.blockingError}`
 }
 
-/**
+/*    *
  * Format a blocking error from a TeammateIdle hook.
  * @param blockingError The blocking error from the hook
  * @returns Formatted message to give feedback to the model
- */
+     */
 export function getTeammateIdleHookMessage(
   blockingError: HookBlockingError,
 ): string {
   return `TeammateIdle hook feedback:\n${blockingError.blockingError}`
 }
 
-/**
+/*    *
  * Format a blocking error from a TaskCreated hook.
  * @param blockingError The blocking error from the hook
  * @returns Formatted message to give feedback to the model
- */
+     */
 export function getTaskCreatedHookMessage(
   blockingError: HookBlockingError,
 ): string {
   return `TaskCreated hook feedback:\n${blockingError.blockingError}`
 }
 
-/**
+/*    *
  * Format a blocking error from a TaskCompleted hook.
  * @param blockingError The blocking error from the hook
  * @returns Formatted message to give feedback to the model
- */
+     */
 export function getTaskCompletedHookMessage(
   blockingError: HookBlockingError,
 ): string {
   return `TaskCompleted hook feedback:\n${blockingError.blockingError}`
 }
 
-/**
+/*    *
  * Format a list of blocking errors from a UserPromptSubmit hook's configured commands.
  * @param blockingErrors Array of blocking errors from hooks
  * @returns Formatted blocking message
- */
+     */
 export function getUserPromptSubmitHookBlockingMessage(
   blockingError: HookBlockingError,
 ): string {
   return `UserPromptSubmit operation blocked by hook:\n${blockingError.blockingError}`
 }
-/**
+/*    *
  * Common logic for executing hooks
  * @param hookInput The structured hook input that will be validated and converted to JSON
  * @param toolUseID The ID for tracking this hook execution
@@ -1948,7 +1939,7 @@ export function getUserPromptSubmitHookBlockingMessage(
  * @param toolUseContext Optional ToolUseContext for prompt-based hooks (required if using prompt hooks)
  * @param messages Optional conversation history for prompt/function hooks
  * @returns Async generator that yields progress messages and hook results
- */
+     */
 async function* executeHooks({
   hookInput,
   toolUseID,
@@ -2984,7 +2975,7 @@ export function hasBlockingResult(results: HookOutsideReplResult[]): boolean {
   return results.some(r => r.blocked)
 }
 
-/**
+/*    *
  * Execute hooks outside of the REPL (e.g. notifications, session end)
  *
  * Unlike executeHooks() which yields messages that are exposed to the model as
@@ -2999,7 +2990,7 @@ export function hasBlockingResult(results: HookOutsideReplResult[]): boolean {
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Array of HookOutsideReplResult objects containing command, succeeded, and output
- */
+     */
 async function executeHooksOutsideREPL({
   getAppState,
   hookInput,
@@ -3380,7 +3371,7 @@ async function executeHooksOutsideREPL({
   return await Promise.all(hookPromises)
 }
 
-/**
+/*    *
  * Execute pre-tool hooks if configured
  * @param toolName The name of the tool (e.g., 'Write', 'Edit', 'Bash')
  * @param toolUseID The ID of the tool use
@@ -3390,7 +3381,7 @@ async function executeHooksOutsideREPL({
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @param toolUseContext Optional ToolUseContext for prompt-based hooks
  * @returns Async generator that yields progress messages and returns blocking errors
- */
+     */
 export async function* executePreToolHooks<ToolInput>(
   toolName: string,
   toolUseID: string,
@@ -3435,7 +3426,7 @@ export async function* executePreToolHooks<ToolInput>(
   })
 }
 
-/**
+/*    *
  * Execute post-tool hooks if configured
  * @param toolName The name of the tool (e.g., 'Write', 'Edit', 'Bash')
  * @param toolUseID The ID of the tool use
@@ -3446,7 +3437,7 @@ export async function* executePreToolHooks<ToolInput>(
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Async generator that yields progress messages and blocking errors for automated feedback
- */
+     */
 export async function* executePostToolHooks<ToolInput, ToolResponse>(
   toolName: string,
   toolUseID: string,
@@ -3476,7 +3467,7 @@ export async function* executePostToolHooks<ToolInput, ToolResponse>(
   })
 }
 
-/**
+/*    *
  * Execute post-tool-use-failure hooks if configured
  * @param toolName The name of the tool (e.g., 'Write', 'Edit', 'Bash')
  * @param toolUseID The ID of the tool use
@@ -3488,7 +3479,7 @@ export async function* executePostToolHooks<ToolInput, ToolResponse>(
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Async generator that yields progress messages and blocking errors
- */
+     */
 export async function* executePostToolUseFailureHooks<ToolInput>(
   toolName: string,
   toolUseID: string,
@@ -3561,12 +3552,12 @@ export async function* executePermissionDeniedHooks<ToolInput>(
   })
 }
 
-/**
+/*    *
  * Execute notification hooks if configured
  * @param notificationData The notification data to pass to hooks
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Promise that resolves when all hooks complete
- */
+     */
 export async function executeNotificationHooks(
   notificationData: {
     message: string
@@ -3626,7 +3617,7 @@ export async function executeStopFailureHooks(
   })
 }
 
-/**
+/*    *
  * Execute stop hooks if configured
  * @param toolUseContext ToolUseContext for prompt-based hooks
  * @param permissionMode permission mode from toolPermissionContext
@@ -3635,7 +3626,7 @@ export async function executeStopFailureHooks(
  * @param isSubagent Whether the current execution context is a subagent
  * @param messages Optional conversation history for prompt/function hooks
  * @returns Async generator that yields progress messages and blocking errors
- */
+     */
 export async function* executeStopHooks(
   permissionMode?: string,
   signal?: AbortSignal,
@@ -3696,7 +3687,7 @@ export async function* executeStopHooks(
   })
 }
 
-/**
+/*    *
  * Execute TeammateIdle hooks when a teammate is about to go idle.
  * If a hook blocks (exit code 2), the teammate should continue working instead of going idle.
  * @param teammateName The name of the teammate going idle
@@ -3705,7 +3696,7 @@ export async function* executeStopHooks(
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Async generator that yields progress messages and blocking errors
- */
+     */
 export async function* executeTeammateIdleHooks(
   teammateName: string,
   teamName: string,
@@ -3728,7 +3719,7 @@ export async function* executeTeammateIdleHooks(
   })
 }
 
-/**
+/*    *
  * Execute TaskCreated hooks when a task is being created.
  * If a hook blocks (exit code 2), the task creation should be prevented and feedback returned.
  * @param taskId The ID of the task being created
@@ -3741,7 +3732,7 @@ export async function* executeTeammateIdleHooks(
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @param toolUseContext Optional ToolUseContext for resolving appState and sessionId
  * @returns Async generator that yields progress messages and blocking errors
- */
+     */
 export async function* executeTaskCreatedHooks(
   taskId: string,
   taskSubject: string,
@@ -3772,7 +3763,7 @@ export async function* executeTaskCreatedHooks(
   })
 }
 
-/**
+/*    *
  * Execute TaskCompleted hooks when a task is being marked as completed.
  * If a hook blocks (exit code 2), the task completion should be prevented and feedback returned.
  * @param taskId The ID of the task being completed
@@ -3785,7 +3776,7 @@ export async function* executeTaskCreatedHooks(
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @param toolUseContext Optional ToolUseContext for resolving appState and sessionId
  * @returns Async generator that yields progress messages and blocking errors
- */
+     */
 export async function* executeTaskCompletedHooks(
   taskId: string,
   taskSubject: string,
@@ -3816,13 +3807,13 @@ export async function* executeTaskCompletedHooks(
   })
 }
 
-/**
+/*    *
  * Execute start hooks if configured
  * @param prompt The user prompt that will be passed to the tool
  * @param permissionMode Permission mode from toolPermissionContext
  * @param toolUseContext ToolUseContext for prompt-based hooks
  * @returns Async generator that yields progress messages and hook results
- */
+     */
 export async function* executeUserPromptSubmitHooks(
   prompt: string,
   permissionMode: string,
@@ -3854,7 +3845,7 @@ export async function* executeUserPromptSubmitHooks(
   })
 }
 
-/**
+/*    *
  * Execute session start hooks if configured
  * @param source The source of the session start (startup, resume, clear)
  * @param sessionId Optional The session id to use as hook input
@@ -3863,7 +3854,7 @@ export async function* executeUserPromptSubmitHooks(
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Async generator that yields progress messages and hook results
- */
+     */
 export async function* executeSessionStartHooks(
   source: 'startup' | 'resume' | 'clear' | 'compact',
   sessionId?: string,
@@ -3891,14 +3882,14 @@ export async function* executeSessionStartHooks(
   })
 }
 
-/**
+/*    *
  * Execute setup hooks if configured
  * @param trigger The trigger type ('init' or 'maintenance')
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @param forceSyncExecution If true, async hooks will not be backgrounded
  * @returns Async generator that yields progress messages and hook results
- */
+     */
 export async function* executeSetupHooks(
   trigger: 'init' | 'maintenance',
   signal?: AbortSignal,
@@ -3921,14 +3912,14 @@ export async function* executeSetupHooks(
   })
 }
 
-/**
+/*    *
  * Execute subagent start hooks if configured
  * @param agentId The unique identifier for the subagent
  * @param agentType The type/name of the subagent being started
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Async generator that yields progress messages and hook results
- */
+     */
 export async function* executeSubagentStartHooks(
   agentId: string,
   agentType: string,
@@ -3951,13 +3942,13 @@ export async function* executeSubagentStartHooks(
   })
 }
 
-/**
+/*    *
  * Execute pre-compact hooks if configured
  * @param compactData The compact data to pass to hooks
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Object with optional newCustomInstructions and userDisplayMessage
- */
+     */
 export async function executePreCompactHooks(
   compactData: {
     trigger: 'manual' | 'auto'
@@ -4024,13 +4015,13 @@ export async function executePreCompactHooks(
   }
 }
 
-/**
+/*    *
  * Execute post-compact hooks if configured
  * @param compactData The compact data to pass to hooks, including the summary
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Object with optional userDisplayMessage
- */
+     */
 export async function executePostCompactHooks(
   compactData: {
     trigger: 'manual' | 'auto'
@@ -4088,12 +4079,12 @@ export async function executePostCompactHooks(
   }
 }
 
-/**
+/*    *
  * Execute session end hooks if configured
  * @param reason The reason for ending the session
  * @param options Optional parameters including app state functions and signal
  * @returns Promise that resolves when all hooks complete
- */
+     */
 export async function executeSessionEndHooks(
   reason: ExitReason,
   options?: {
@@ -4140,7 +4131,7 @@ export async function executeSessionEndHooks(
   }
 }
 
-/**
+/*    *
  * Execute permission request hooks if configured
  * These hooks are called when a permission dialog would be displayed to the user.
  * Hooks can approve or deny the permission request programmatically.
@@ -4153,7 +4144,7 @@ export async function executeSessionEndHooks(
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Async generator that yields progress messages and returns aggregated result
- */
+     */
 export async function* executePermissionRequestHooks<ToolInput>(
   toolName: string,
   toolUseID: string,
@@ -4198,7 +4189,7 @@ export type ConfigChangeSource =
   | 'policy_settings'
   | 'skills'
 
-/**
+/*    *
  * Execute config change hooks when configuration files change during a session.
  * Fired by file watchers when settings, skills, or commands change on disk.
  * Enables enterprise admins to audit/log configuration changes for security.
@@ -4210,7 +4201,7 @@ export type ConfigChangeSource =
  * @param source The type of config that changed
  * @param filePath Optional path to the changed file
  * @param timeoutMs Optional timeout in milliseconds for hook execution
- */
+     */
 export async function executeConfigChangeHooks(
   source: ConfigChangeSource,
   filePath?: string,
@@ -4302,7 +4293,7 @@ export type InstructionsLoadReason =
 
 export type InstructionsMemoryType = 'User' | 'Project' | 'Local' | 'Managed'
 
-/**
+/*    *
  * Check if InstructionsLoaded hooks are configured (without executing them).
  * Callers should check this before invoking executeInstructionsLoadedHooks to avoid
  * building hook inputs for every instruction file when no hook is configured.
@@ -4310,7 +4301,7 @@ export type InstructionsMemoryType = 'User' | 'Project' | 'Local' | 'Managed'
  * Checks both settings-file hooks (getHooksConfigFromSnapshot) and registered
  * hooks (plugin hooks + SDK callback hooks via registerHookCallbacks). Session-
  * derived hooks (structured output enforcement etc.) are internal and not checked.
- */
+     */
 export function hasInstructionsLoadedHook(): boolean {
   const snapshotHooks = getHooksConfigFromSnapshot()?.['InstructionsLoaded']
   if (snapshotHooks && snapshotHooks.length > 0) return true
@@ -4319,7 +4310,7 @@ export function hasInstructionsLoadedHook(): boolean {
   return false
 }
 
-/**
+/*    *
  * Execute InstructionsLoaded hooks when an instruction file (CLAUDE.md or
  * .claude/rules/*.md) is loaded into context. Fire-and-forget — this hook is
  * for observability/audit only and does not support blocking.
@@ -4331,7 +4322,7 @@ export function hasInstructionsLoadedHook(): boolean {
  * - Lazy load when Claude touches a file that triggers nested CLAUDE.md or
  *   conditional rules with paths: frontmatter (memoryFilesToAttachments in
  *   attachments.ts)
- */
+     */
 export async function executeInstructionsLoadedHooks(
   filePath: string,
   memoryType: InstructionsMemoryType,
@@ -4368,23 +4359,23 @@ export async function executeInstructionsLoadedHooks(
   })
 }
 
-/** Result of an elicitation hook execution (non-REPL path). */
+/*    * Result of an elicitation hook execution (non-REPL path).     */
 export type ElicitationHookResult = {
   elicitationResponse?: ElicitationResponse
   blockingError?: HookBlockingError
 }
 
-/** Result of an elicitation-result hook execution (non-REPL path). */
+/*    * Result of an elicitation-result hook execution (non-REPL path).     */
 export type ElicitationResultHookResult = {
   elicitationResultResponse?: ElicitationResponse
   blockingError?: HookBlockingError
 }
 
-/**
+/*    *
  * Parse elicitation-specific fields from a HookOutsideReplResult.
  * Mirrors the relevant branches of processHookJSONOutput for Elicitation
  * and ElicitationResult hook events.
- */
+     */
 function parseElicitationHookOutput(
   result: HookOutsideReplResult,
   expectedEventName: 'Elicitation' | 'ElicitationResult',
@@ -4574,13 +4565,13 @@ export async function executeElicitationResultHooks({
   return { elicitationResultResponse, blockingError }
 }
 
-/**
+/*    *
  * Execute status line command if configured
  * @param statusLineInput The structured status input that will be converted to JSON
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns The status line text to display, or undefined if no command configured
- */
+     */
 export async function executeStatusLineCommand(
   statusLineInput: StatusLineCommandInput,
   signal?: AbortSignal,
@@ -4665,13 +4656,13 @@ export async function executeStatusLineCommand(
   }
 }
 
-/**
+/*    *
  * Execute file suggestion command if configured
  * @param fileSuggestionInput The structured input that will be converted to JSON
  * @param signal Optional AbortSignal to cancel hook execution
  * @param timeoutMs Optional timeout in milliseconds for hook execution
  * @returns Array of file paths, or empty array if no command configured
- */
+     */
 export async function executeFileSuggestionCommand(
   fileSuggestionInput: FileSuggestionCommandInput,
   signal?: AbortSignal,
@@ -4895,7 +4886,7 @@ async function executeHookCallback({
   }
 }
 
-/**
+/*    *
  * Check if WorktreeCreate hooks are configured (without executing them).
  *
  * Checks both settings-file hooks (getHooksConfigFromSnapshot) and registered
@@ -4906,7 +4897,7 @@ async function executeHookCallback({
  * skipped at execution, so we must also skip them here. Otherwise this returns
  * true but executeWorktreeCreateHook() finds no matching hooks and throws,
  * blocking the git-worktree fallback.
- */
+     */
 export function hasWorktreeCreateHook(): boolean {
   const snapshotHooks = getHooksConfigFromSnapshot()?.['WorktreeCreate']
   if (snapshotHooks && snapshotHooks.length > 0) return true
@@ -4919,12 +4910,12 @@ export function hasWorktreeCreateHook(): boolean {
   )
 }
 
-/**
+/*    *
  * Execute WorktreeCreate hooks.
  * Returns the worktree path from hook stdout.
  * Throws if hooks fail or produce no output.
  * Callers should check hasWorktreeCreateHook() before calling this.
- */
+     */
 export async function executeWorktreeCreateHook(
   name: string,
 ): Promise<{ worktreePath: string }> {
@@ -4957,13 +4948,13 @@ export async function executeWorktreeCreateHook(
   return { worktreePath }
 }
 
-/**
+/*    *
  * Execute WorktreeRemove hooks if configured.
  * Returns true if hooks were configured and ran, false if no hooks are configured.
  *
  * Checks both settings-file hooks (getHooksConfigFromSnapshot) and registered
  * hooks (plugin hooks + SDK callback hooks via registerHookCallbacks).
- */
+     */
 export async function executeWorktreeRemoveHook(
   worktreePath: string,
 ): Promise<boolean> {

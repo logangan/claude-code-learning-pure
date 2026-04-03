@@ -1,13 +1,13 @@
-/* eslint-disable eslint-plugin-n/no-unsupported-features/node-builtins */
+/*     eslint-disable eslint-plugin-n/no-unsupported-features/node-builtins     */
 
 import { errorMessage } from '../utils/errors.js'
 import { jsonStringify } from '../utils/slowOperations.js'
 import type { DirectConnectConfig } from './directConnectManager.js'
 import { connectResponseSchema } from './types.js'
 
-/**
+/*    *
  * Errors thrown by createDirectConnectSession when the connection fails.
- */
+     */
 export class DirectConnectError extends Error {
   constructor(message: string) {
     super(message)
@@ -15,14 +15,14 @@ export class DirectConnectError extends Error {
   }
 }
 
-/**
+/*    *
  * Create a session on a direct-connect server.
  *
  * Posts to `${serverUrl}/sessions`, validates the response, and returns
  * a DirectConnectConfig ready for use by the REPL or headless runner.
  *
  * Throws DirectConnectError on network, HTTP, or response-parsing failures.
- */
+     */
 export async function createDirectConnectSession({
   serverUrl,
   authToken,

@@ -18,20 +18,20 @@ export function isPrActivitySubscriptionTool(name: string): boolean {
 }
 
 // Dead code elimination: conditional imports for feature-gated modules
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const coordinatorModeModule = feature('COORDINATOR_MODE')
   ? (require('../coordinator/coordinatorMode.js') as typeof import('../coordinator/coordinatorMode.js'))
   : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
-/**
+/*    *
  * Filters a tool array to the set allowed in coordinator mode.
  * Shared between the REPL path (mergeAndFilterTools) and the headless
  * path (main.tsx) so both stay in sync.
  *
  * PR activity subscription tools are always allowed since subscription
  * management is orchestration.
- */
+     */
 export function applyCoordinatorToolFilter(tools: Tools): Tools {
   return tools.filter(
     t =>
@@ -40,7 +40,7 @@ export function applyCoordinatorToolFilter(tools: Tools): Tools {
   )
 }
 
-/**
+/*    *
  * Pure function that merges tool pools and applies coordinator mode filtering.
  *
  * Lives in a React-free file so print.ts can import it without pulling
@@ -51,7 +51,7 @@ export function applyCoordinatorToolFilter(tools: Tools): Tools {
  * @param assembled - Tools from assembleToolPool (built-in + MCP, deduped).
  * @param mode - The permission context mode.
  * @returns Merged, deduplicated, and coordinator-filtered tool array.
- */
+     */
 export function mergeAndFilterTools(
   initialTools: Tools,
   assembled: Tools,

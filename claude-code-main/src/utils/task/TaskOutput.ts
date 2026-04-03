@@ -18,7 +18,7 @@ type ProgressCallback = (
   isIncomplete: boolean,
 ) => void
 
-/**
+/*    *
  * Single source of truth for a shell command's output.
  *
  * For bash commands (file mode): both stdout and stderr go directly to
@@ -28,11 +28,11 @@ type ProgressCallback = (
  *
  * For hooks (pipe mode): data flows through writeStdout()/writeStderr()
  * and is buffered in memory, spilling to disk if it exceeds the limit.
- */
+     */
 export class TaskOutput {
   readonly taskId: string
   readonly path: string
-  /** True when stdout goes to a file fd (bypassing JS). False for pipe mode (hooks). */
+  /*    * True when stdout goes to a file fd (bypassing JS). False for pipe mode (hooks).     */
   readonly stdoutToFile: boolean
   #stdoutBuffer = ''
   #stderrBuffer = ''
@@ -42,16 +42,16 @@ export class TaskOutput {
   #totalBytes = 0
   #maxMemory: number
   #onProgress: ProgressCallback | null
-  /** Set by getStdout() — true when the file was fully read (≤ maxOutputLength). */
+  /*    * Set by getStdout() — true when the file was fully read (≤ maxOutputLength).     */
   #outputFileRedundant = false
-  /** Set by getStdout() — total file size in bytes. */
+  /*    * Set by getStdout() — total file size in bytes.     */
   #outputFileSize = 0
 
   // --- Shared poller state ---
 
-  /** Registry of all file-mode TaskOutput instances with onProgress callbacks. */
+  /*    * Registry of all file-mode TaskOutput instances with onProgress callbacks.     */
   static #registry = new Map<string, TaskOutput>()
-  /** Subset of #registry currently being polled (visibility-driven by React). */
+  /*    * Subset of #registry currently being polled (visibility-driven by React).     */
   static #activePolling = new Map<string, TaskOutput>()
   static #pollInterval: ReturnType<typeof setInterval> | null = null
 
@@ -74,10 +74,10 @@ export class TaskOutput {
     }
   }
 
-  /**
+  /*    *
    * Begin polling the output file for progress. Called from React
    * useEffect when the progress component mounts.
-   */
+       */
   static startPolling(taskId: string): void {
     const instance = TaskOutput.#registry.get(taskId)
     if (!instance || !instance.#onProgress) {
@@ -90,10 +90,10 @@ export class TaskOutput {
     }
   }
 
-  /**
+  /*    *
    * Stop polling the output file. Called from React useEffect cleanup
    * when the progress component unmounts.
-   */
+       */
   static stopPolling(taskId: string): void {
     TaskOutput.#activePolling.delete(taskId)
     if (TaskOutput.#activePolling.size === 0 && TaskOutput.#pollInterval) {
@@ -102,10 +102,10 @@ export class TaskOutput {
     }
   }
 
-  /**
+  /*    *
    * Shared tick: reads the file tail for every actively-polled task.
    * Non-async body (.then) to avoid stacking if I/O is slow.
-   */
+       */
   static #tick(): void {
     for (const [, entry] of TaskOutput.#activePolling) {
       if (!entry.#onProgress) {
@@ -163,12 +163,12 @@ export class TaskOutput {
     }
   }
 
-  /** Write stdout data (pipe mode only — used by hooks). */
+  /*    * Write stdout data (pipe mode only — used by hooks).     */
   writeStdout(data: string): void {
     this.#writeBuffered(data, false)
   }
 
-  /** Write stderr data (always piped). */
+  /*    * Write stderr data (always piped).     */
   writeStderr(data: string): void {
     this.#writeBuffered(data, true)
   }
@@ -199,11 +199,11 @@ export class TaskOutput {
     }
   }
 
-  /**
+  /*    *
    * Single backward pass: count all newlines (for totalLines) and extract
    * the last few lines as flat copies (for the CircularBuffer / progress).
    * Only used in pipe mode (hooks). File mode uses the shared poller.
-   */
+       */
   #updateProgress(data: string): void {
     const MAX_PROGRESS_BYTES = 4096
     const MAX_PROGRESS_LINES = 100
@@ -275,10 +275,10 @@ export class TaskOutput {
     }
   }
 
-  /**
+  /*    *
    * Get stdout. In file mode, reads from the output file.
    * In pipe mode, returns the in-memory buffer or tail from CircularBuffer.
-   */
+       */
   async getStdout(): Promise<string> {
     if (this.stdoutToFile) {
       return this.#readStdoutFromFile()
@@ -325,7 +325,7 @@ export class TaskOutput {
     }
   }
 
-  /** Sync getter for ExecResult.stderr */
+  /*    * Sync getter for ExecResult.stderr     */
   getStderr(): string {
     if (this.#disk) {
       return ''
@@ -345,20 +345,20 @@ export class TaskOutput {
     return this.#totalBytes
   }
 
-  /**
+  /*    *
    * True after getStdout() when the output file was fully read.
    * The file content is redundant (fully in ExecResult.stdout) and can be deleted.
-   */
+       */
   get outputFileRedundant(): boolean {
     return this.#outputFileRedundant
   }
 
-  /** Total file size in bytes, set after getStdout() reads the file. */
+  /*    * Total file size in bytes, set after getStdout() reads the file.     */
   get outputFileSize(): number {
     return this.#outputFileSize
   }
 
-  /** Force all buffered content to disk. Call when backgrounding. */
+  /*    * Force all buffered content to disk. Call when backgrounding.     */
   spillToDisk(): void {
     if (!this.#disk) {
       this.#spillToDisk(null, null)
@@ -369,7 +369,7 @@ export class TaskOutput {
     await this.#disk?.flush()
   }
 
-  /** Delete the output file (fire-and-forget safe). */
+  /*    * Delete the output file (fire-and-forget safe).     */
   async deleteOutputFile(): Promise<void> {
     try {
       await unlink(this.path)

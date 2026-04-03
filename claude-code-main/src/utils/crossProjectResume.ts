@@ -20,13 +20,13 @@ export type CrossProjectResumeResult =
       projectPath: string
     }
 
-/**
+/*    *
  * Check if a log is from a different project directory and determine
  * whether it's a related worktree or a completely different project.
  *
  * For same-repo worktrees, we can resume directly without requiring cd.
  * For different projects, we generate the cd command.
- */
+     */
 export function checkCrossProjectResume(
   log: LogOption,
   showAllProjects: boolean,

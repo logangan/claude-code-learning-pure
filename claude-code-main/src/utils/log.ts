@@ -21,12 +21,12 @@ import { toError } from './errors.js'
 import { isEssentialTrafficOnly } from './privacyLevel.js'
 import { jsonParse } from './slowOperations.js'
 
-/**
+/*    *
  * Gets the display title for a log/session with fallback logic.
  * Skips firstPrompt if it starts with a tick/goal tag (autonomous mode auto-prompt).
  * Strips display-unfriendly tags (like <ide_opened_file>) from the result.
  * Falls back to a truncated session ID when no other title is available.
- */
+     */
 export function getLogDisplayTitle(
   log: LogOption,
   defaultTitle?: string,
@@ -76,9 +76,9 @@ function addToInMemoryErrorLog(errorInfo: {
   inMemoryErrorLog.push(errorInfo)
 }
 
-/**
+/*    *
  * Sink interface for the error logging backend
- */
+     */
 export type ErrorLogSink = {
   logError: (error: Error) => void
   logMCPError: (serverName: string, error: unknown) => void
@@ -98,14 +98,14 @@ const errorQueue: QueuedErrorEvent[] = []
 // Sink - initialized during app startup
 let errorLogSink: ErrorLogSink | null = null
 
-/**
+/*    *
  * Attach the error log sink that will receive all error events.
  * Queued events are drained immediately to ensure no errors are lost.
  *
  * Idempotent: if a sink is already attached, this is a no-op. This allows
  * calling from both the preAction hook (for subcommands) and setup() (for
  * the default command) without coordination.
- */
+     */
 export function attachErrorLogSink(newSink: ErrorLogSink): void {
   if (errorLogSink !== null) {
     return
@@ -133,7 +133,7 @@ export function attachErrorLogSink(newSink: ErrorLogSink): void {
   }
 }
 
-/**
+/*    *
  * Logs an error to multiple destinations for debugging and monitoring.
  *
  * This function logs errors to:
@@ -150,7 +150,7 @@ export function attachErrorLogSink(newSink: ErrorLogSink): void {
  * To view errors:
  * - Debug: Run `claude --debug` or `tail -f ~/.claude/debug/latest`
  * - In-memory: Call `getInMemoryErrors()` to get recent errors for the current session
- */
+     */
 const isHardFailMode = memoize((): boolean => {
   return process.argv.includes('--hard-fail')
 })
@@ -202,19 +202,19 @@ export function getInMemoryErrors(): { error: string; timestamp: string }[] {
   return [...inMemoryErrorLog]
 }
 
-/**
+/*    *
  * Loads the list of error logs
  * @returns List of error logs sorted by date
- */
+     */
 export function loadErrorLogs(): Promise<LogOption[]> {
   return loadLogList(CACHE_PATHS.errors())
 }
 
-/**
+/*    *
  * Gets an error log by its index
  * @param index Index in the sorted list of logs (0-based)
  * @returns Log data or null if not found
- */
+     */
 export async function getErrorLogByIndex(
   index: number,
 ): Promise<LogOption | null> {
@@ -222,12 +222,12 @@ export async function getErrorLogByIndex(
   return logs[index] || null
 }
 
-/**
+/*    *
  * Internal function to load and process logs from a specified path
  * @param path Directory containing logs
  * @returns Array of logs sorted by date
  * @private
- */
+     */
 async function loadLogList(path: string): Promise<LogOption[]> {
   let files: Awaited<ReturnType<typeof readdir>>
   try {
@@ -325,9 +325,9 @@ export function logMCPDebug(serverName: string, message: string): void {
   }
 }
 
-/**
+/*    *
  * Captures the last API request for inclusion in bug reports.
- */
+     */
 export function captureAPIRequest(
   params: BetaMessageStreamParams,
   querySource?: QuerySource,
@@ -351,10 +351,10 @@ export function captureAPIRequest(
   setLastAPIRequestMessages(process.env.USER_TYPE === 'ant' ? messages : null)
 }
 
-/**
+/*    *
  * Reset error log state for testing purposes only.
  * @internal
- */
+     */
 export function _resetErrorLogForTesting(): void {
   errorLogSink = null
   errorQueue.length = 0

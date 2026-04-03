@@ -115,10 +115,10 @@ export function filterToolsForAgent({
   })
 }
 
-/**
+/*    *
  * Resolves and validates agent tools against available tools
  * Handles wildcard expansion and validation in one place
- */
+     */
 export function resolveAgentTools(
   agentDefinition: Pick<
     AgentDefinition,
@@ -356,10 +356,10 @@ export function finalizeAgentTool(
   }
 }
 
-/**
+/*    *
  * Returns the name of the last tool_use block in an assistant message,
  * or undefined if the message is not an assistant message with tool_use.
- */
+     */
 export function getLastToolUseName(message: MessageType): string | undefined {
   if (message.type !== 'assistant') return undefined
   const block = message.message.content.findLast(b => b.type === 'tool_use')
@@ -480,11 +480,11 @@ export async function classifyHandoffIfNeeded({
   return null
 }
 
-/**
+/*    *
  * Extract a partial result string from an agent's accumulated messages.
  * Used when an async agent is killed to preserve what it accomplished.
  * Returns undefined if no text content is found.
- */
+     */
 export function extractPartialResult(
   messages: MessageType[],
 ): string | undefined {
@@ -501,10 +501,10 @@ export function extractPartialResult(
 
 type SetAppState = (f: (prev: AppState) => AppState) => void
 
-/**
+/*    *
  * Drives a background agent from spawn to terminal notification.
  * Shared between AgentTool's async-from-start path and resumeAgentBackground.
- */
+     */
 export async function runAsyncAgentLifecycle({
   taskId,
   abortController,

@@ -1,6 +1,6 @@
-/**
+/*    *
  * EXPERIMENT: Session memory compaction
- */
+     */
 
 import type { AgentId } from '../../types/ids.js'
 import type { HookResultMessage, Message } from '../../types/message.js'
@@ -41,15 +41,15 @@ import {
 import { estimateMessageTokens } from './microCompact.js'
 import { getCompactUserSummaryMessage } from './prompt.js'
 
-/**
+/*    *
  * Configuration for session memory compaction thresholds
- */
+     */
 export type SessionMemoryCompactConfig = {
-  /** Minimum tokens to preserve after compaction */
+  /*    * Minimum tokens to preserve after compaction     */
   minTokens: number
-  /** Minimum number of messages with text blocks to keep */
+  /*    * Minimum number of messages with text blocks to keep     */
   minTextBlockMessages: number
-  /** Maximum tokens to preserve after compaction (hard cap) */
+  /*    * Maximum tokens to preserve after compaction (hard cap)     */
   maxTokens: number
 }
 
@@ -68,9 +68,9 @@ let smCompactConfig: SessionMemoryCompactConfig = {
 // Track whether config has been initialized from remote
 let configInitialized = false
 
-/**
+/*    *
  * Set the session memory compact configuration
- */
+     */
 export function setSessionMemoryCompactConfig(
   config: Partial<SessionMemoryCompactConfig>,
 ): void {
@@ -80,25 +80,25 @@ export function setSessionMemoryCompactConfig(
   }
 }
 
-/**
+/*    *
  * Get the current session memory compact configuration
- */
+     */
 export function getSessionMemoryCompactConfig(): SessionMemoryCompactConfig {
   return { ...smCompactConfig }
 }
 
-/**
+/*    *
  * Reset config state (useful for testing)
- */
+     */
 export function resetSessionMemoryCompactConfig(): void {
   smCompactConfig = { ...DEFAULT_SM_COMPACT_CONFIG }
   configInitialized = false
 }
 
-/**
+/*    *
  * Initialize configuration from remote config (GrowthBook).
  * Only fetches once per session - subsequent calls return immediately.
- */
+     */
 async function initSessionMemoryCompactConfig(): Promise<void> {
   if (configInitialized) {
     return
@@ -129,9 +129,9 @@ async function initSessionMemoryCompactConfig(): Promise<void> {
   setSessionMemoryCompactConfig(config)
 }
 
-/**
+/*    *
  * Check if a message contains text blocks (text content for user/assistant interaction)
- */
+     */
 export function hasTextBlocks(message: Message): boolean {
   if (message.type === 'assistant') {
     const content = message.message.content
@@ -149,9 +149,9 @@ export function hasTextBlocks(message: Message): boolean {
   return false
 }
 
-/**
+/*    *
  * Check if a message contains tool_result blocks and return their tool_use_ids
- */
+     */
 function getToolResultIds(message: Message): string[] {
   if (message.type !== 'user') {
     return []
@@ -169,9 +169,9 @@ function getToolResultIds(message: Message): string[] {
   return ids
 }
 
-/**
+/*    *
  * Check if a message contains tool_use blocks with any of the given ids
- */
+     */
 function hasToolUseWithIds(message: Message, toolUseIds: Set<string>): boolean {
   if (message.type !== 'assistant') {
     return false
@@ -185,7 +185,7 @@ function hasToolUseWithIds(message: Message, toolUseIds: Set<string>): boolean {
   )
 }
 
-/**
+/*    *
  * Adjust the start index to ensure we don't split tool_use/tool_result pairs
  * or thinking blocks that share the same message.id with kept assistant messages.
  *
@@ -228,7 +228,7 @@ function hasToolUseWithIds(message: Message, toolUseIds: Set<string>): boolean {
  *     - After normalizeMessagesForAPI: thinking block is lost (no message to merge with)
  *
  *   Fixed code: detects that message N+1 has same message.id as N, adjusts to N.
- */
+     */
 export function adjustIndexToPreserveAPIInvariants(
   messages: Message[],
   startIndex: number,
@@ -313,14 +313,14 @@ export function adjustIndexToPreserveAPIInvariants(
   return adjustedIndex
 }
 
-/**
+/*    *
  * Calculate the starting index for messages to keep after compaction.
  * Starts from lastSummarizedMessageId, then expands backwards to meet minimums:
  * - At least config.minTokens tokens
  * - At least config.minTextBlockMessages messages with text blocks
  * Stops expanding if config.maxTokens is reached.
  * Also ensures tool_use/tool_result pairs are not split.
- */
+     */
 export function calculateMessagesToKeepIndex(
   messages: Message[],
   lastSummarizedIndex: number,
@@ -396,10 +396,10 @@ export function calculateMessagesToKeepIndex(
   return adjustIndexToPreserveAPIInvariants(messages, startIndex)
 }
 
-/**
+/*    *
  * Check if we should use session memory for compaction
  * Uses cached gate values to avoid blocking on Statsig initialization
- */
+     */
 export function shouldUseSessionMemoryCompaction(): boolean {
   // Allow env var override for eval runs and testing
   if (isEnvTruthy(process.env.ENABLE_CLAUDE_CODE_SM_COMPACT)) {
@@ -431,9 +431,9 @@ export function shouldUseSessionMemoryCompaction(): boolean {
   return shouldUse
 }
 
-/**
+/*    *
  * Create a CompactionResult from session memory
- */
+     */
 function createCompactionResultFromSessionMemory(
   messages: Message[],
   sessionMemory: string,
@@ -502,7 +502,7 @@ function createCompactionResultFromSessionMemory(
   }
 }
 
-/**
+/*    *
  * Try to use session memory for compaction instead of traditional compaction.
  * Returns null if session memory compaction cannot be used.
  *
@@ -510,7 +510,7 @@ function createCompactionResultFromSessionMemory(
  * 1. Normal case: lastSummarizedMessageId is set, keep only messages after that ID
  * 2. Resumed session: lastSummarizedMessageId is not set but session memory has content,
  *    keep all messages but use session memory as the summary
- */
+     */
 export async function trySessionMemoryCompaction(
   messages: Message[],
   agentId?: AgentId,

@@ -1,4 +1,4 @@
-/**
+/*    *
  * Environment variables that control inference routing: which provider to use,
  * which endpoint to hit, and which model IDs to send.
  *
@@ -10,7 +10,7 @@
  * @[MODEL LAUNCH]: New models usually don't need changes here —
  * VERTEX_REGION_CLAUDE_* is prefix-matched. New providers or new routing
  * config vars (endpoint, project, region, auth) do.
- */
+     */
 const PROVIDER_MANAGED_ENV_VARS = new Set([
   // The flag itself — settings can't unset it once the host set it
   'CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST',
@@ -69,9 +69,9 @@ export function isProviderManagedEnvVar(key: string): boolean {
   )
 }
 
-/**
+/*    *
  * Dangerous shell settings that can execute arbitrary shell code
- */
+     */
 export const DANGEROUS_SHELL_SETTINGS = [
   'apiKeyHelper',
   'awsAuthRefresh',
@@ -81,7 +81,7 @@ export const DANGEROUS_SHELL_SETTINGS = [
   'statusLine',
 ] as const
 
-/**
+/*    *
  * Safe environment variables that can be applied before trust dialog.
  * These are Claude Code specific settings that don't pose security risks.
  *
@@ -104,7 +104,7 @@ export const DANGEROUS_SHELL_SETTINGS = [
  * - ANTHROPIC_FOUNDRY_RESOURCE
  * - ANTHROPIC_API_KEY, ANTHROPIC_AUTH_TOKEN
  * - AWS_BEARER_TOKEN_BEDROCK
- */
+     */
 export const SAFE_ENV_VARS = new Set([
   'ANTHROPIC_CUSTOM_HEADERS',
   'ANTHROPIC_CUSTOM_MODEL_OPTION',

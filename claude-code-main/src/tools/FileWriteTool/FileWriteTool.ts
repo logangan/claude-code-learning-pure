@@ -179,7 +179,7 @@ export const FileWriteTool = buildTool({
     // SECURITY: Skip filesystem operations for UNC paths to prevent NTLM credential leaks.
     // On Windows, fs.existsSync() on UNC paths triggers SMB authentication which could
     // leak credentials to malicious servers. Let the permission check handle UNC paths.
-    if (fullFilePath.startsWith('\\\\') || fullFilePath.startsWith('//')) {
+    if (fullFilePath.startsWith('\\\\') || fullFilePath.startsWith('// ')) {
       return { result: true }
     }
 
@@ -308,7 +308,7 @@ export const FileWriteTool = buildTool({
     const lspManager = getLspServerManager()
     if (lspManager) {
       // Clear previously delivered diagnostics so new ones will be shown
-      clearDeliveredDiagnosticsForFile(`file://${fullFilePath}`)
+      clearDeliveredDiagnosticsForFile(`file:// ${fullFilePath}`)
       // didChange: Content has been modified
       lspManager.changeFile(fullFilePath, content).catch((err: Error) => {
         logForDebugging(

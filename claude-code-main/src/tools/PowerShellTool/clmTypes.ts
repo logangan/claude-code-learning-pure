@@ -1,4 +1,4 @@
-/**
+/*    *
  * PowerShell Constrained Language Mode allowed types.
  *
  * Microsoft's CLM restricts .NET type usage to this allowlist when PS runs
@@ -9,19 +9,19 @@
  * replaces enumerating individual dangerous types (named pipes, reflection,
  * process spawning, P/Invoke marshaling, etc.). Microsoft maintains the list.
  *
- * Source: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes
+ * Source: https:// learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes
  *
  * Normalization: entries stored lowercase, short AND full names where both
  * exist (PS resolves type accelerators like [int] → System.Int32 at runtime;
  * we match against what the AST emits, which is the literal text).
- */
+     */
 export const CLM_ALLOWED_TYPES: ReadonlySet<string> = new Set(
   [
     // Type accelerators (short names as they appear in AST TypeName.Name)
     // SECURITY: 'adsi' and 'adsisearcher' REMOVED. Both are Active Directory
     // Service Interface types that perform NETWORK BINDS when cast:
-    //   [adsi]'LDAP://evil.com/...' → connects to LDAP server
-    //   [adsisearcher]'(objectClass=user)' → binds to AD and queries
+    // [adsi]'LDAP://evil.com/...' → connects to LDAP server
+    // [adsisearcher]'(objectClass=user)' → binds to AD and queries
     // Microsoft's CLM allows these because it's for Windows admins in trusted
     // domains; we block them since the target isn't validated.
     'alias',
@@ -113,8 +113,8 @@ export const CLM_ALLOWED_TYPES: ReadonlySet<string> = new Set(
     // WMI type casts perform WMI queries which can target remote computers
     // (network request) and access dangerous classes like Win32_Process.
     // cimsession creates a CIM session (network connection to remote host).
-    //   [wmi]'\\evil-host\root\cimv2:Win32_Process.Handle="1"' → remote WMI
-    //   [wmisearcher]'SELECT * FROM Win32_Process' → runs WQL query
+    // [wmi]'\\evil-host\root\cimv2:Win32_Process.Handle="1"' → remote WMI
+    // [wmisearcher]'SELECT * FROM Win32_Process' → runs WQL query
     // Same rationale as adsi/adsisearcher removal above.
     'x500distinguishedname',
     'x509certificate',
@@ -187,10 +187,10 @@ export const CLM_ALLOWED_TYPES: ReadonlySet<string> = new Set(
   ].map(t => t.toLowerCase()),
 )
 
-/**
+/*    *
  * Normalize a type name from AST TypeName.FullName or TypeName.Name.
  * Handles array suffix ([]) and generic brackets.
- */
+     */
 export function normalizeTypeName(name: string): string {
   // Strip array suffix: "String[]" → "string" (arrays of allowed types are allowed)
   // Strip generic args: "List[int]" → "list" (conservative — the generic wrapper
@@ -202,10 +202,10 @@ export function normalizeTypeName(name: string): string {
     .trim()
 }
 
-/**
+/*    *
  * True if typeName (from AST) is in Microsoft's CLM allowlist.
  * Types NOT in this set trigger ask — they access system APIs CLM blocks.
- */
+     */
 export function isClmAllowedType(typeName: string): boolean {
   return CLM_ALLOWED_TYPES.has(normalizeTypeName(typeName))
 }

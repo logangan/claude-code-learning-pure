@@ -1,4 +1,4 @@
-/**
+/*    *
  * Fig-spec-driven command prefix extraction.
  *
  * Given a command name + args array + its @withfig/autocomplete spec, walks
@@ -9,11 +9,11 @@
  * Pure over (string, string[], CommandSpec) — no parser dependency. Extracted
  * from src/utils/bash/prefix.ts so PowerShell's extractor can reuse it;
  * external CLIs (git, npm, kubectl) are shell-agnostic.
- */
+     */
 
 import type { CommandSpec } from '../bash/registry.js'
 
-const URL_PROTOCOLS = ['http://', 'https://', 'ftp://']
+const URL_PROTOCOLS = ['http:// ', 'https://', 'ftp://']
 
 // Overrides for commands whose fig specs aren't available at runtime
 // (dynamic imports don't work in native/node builds). Without these,

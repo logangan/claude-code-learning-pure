@@ -1,7 +1,7 @@
-/**
+/*    *
  * Binary file extensions to skip for text-based operations.
  * These files can't be meaningfully compared as text and are often large.
- */
+     */
 export const BINARY_EXTENSIONS = new Set([
   // Images
   '.png',
@@ -111,23 +111,23 @@ export const BINARY_EXTENSIONS = new Set([
   '.data',
 ])
 
-/**
+/*    *
  * Check if a file path has a binary extension.
- */
+     */
 export function hasBinaryExtension(filePath: string): boolean {
   const ext = filePath.slice(filePath.lastIndexOf('.')).toLowerCase()
   return BINARY_EXTENSIONS.has(ext)
 }
 
-/**
+/*    *
  * Number of bytes to read for binary content detection.
- */
+     */
 const BINARY_CHECK_SIZE = 8192
 
-/**
+/*    *
  * Check if a buffer contains binary content by looking for null bytes
  * or a high proportion of non-printable characters.
- */
+     */
 export function isBinaryContent(buffer: Buffer): boolean {
   // Check first BINARY_CHECK_SIZE bytes (or full buffer if smaller)
   const checkSize = Math.min(buffer.length, BINARY_CHECK_SIZE)

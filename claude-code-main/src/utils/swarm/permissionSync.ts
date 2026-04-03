@@ -1,4 +1,4 @@
-/**
+/*    *
  * Synchronized Permission Prompts for Agent Swarms
  *
  * This module provides infrastructure for coordinating permission prompts across
@@ -16,7 +16,7 @@
  * 4. User approves/denies via the leader's UI
  * 5. Leader sends a permission_response message to the worker's mailbox
  * 6. Worker polls mailbox for responses and continues execution
- */
+     */
 
 import { mkdir, readdir, readFile, unlink, writeFile } from 'fs/promises'
 import { join } from 'path'
@@ -43,44 +43,44 @@ import {
 } from '../teammateMailbox.js'
 import { getTeamDir, readTeamFileAsync } from './teamHelpers.js'
 
-/**
+/*    *
  * Full request schema for a permission request from a worker to the leader
- */
+     */
 export const SwarmPermissionRequestSchema = lazySchema(() =>
   z.object({
-    /** Unique identifier for this request */
+    /*    * Unique identifier for this request     */
     id: z.string(),
-    /** Worker's CLAUDE_CODE_AGENT_ID */
+    /*    * Worker's CLAUDE_CODE_AGENT_ID     */
     workerId: z.string(),
-    /** Worker's CLAUDE_CODE_AGENT_NAME */
+    /*    * Worker's CLAUDE_CODE_AGENT_NAME     */
     workerName: z.string(),
-    /** Worker's CLAUDE_CODE_AGENT_COLOR */
+    /*    * Worker's CLAUDE_CODE_AGENT_COLOR     */
     workerColor: z.string().optional(),
-    /** Team name for routing */
+    /*    * Team name for routing     */
     teamName: z.string(),
-    /** Tool name requiring permission (e.g., "Bash", "Edit") */
+    /*    * Tool name requiring permission (e.g., "Bash", "Edit")     */
     toolName: z.string(),
-    /** Original toolUseID from worker's context */
+    /*    * Original toolUseID from worker's context     */
     toolUseId: z.string(),
-    /** Human-readable description of the tool use */
+    /*    * Human-readable description of the tool use     */
     description: z.string(),
-    /** Serialized tool input */
+    /*    * Serialized tool input     */
     input: z.record(z.string(), z.unknown()),
-    /** Suggested permission rules from the permission result */
+    /*    * Suggested permission rules from the permission result     */
     permissionSuggestions: z.array(z.unknown()),
-    /** Status of the request */
+    /*    * Status of the request     */
     status: z.enum(['pending', 'approved', 'rejected']),
-    /** Who resolved the request */
+    /*    * Who resolved the request     */
     resolvedBy: z.enum(['worker', 'leader']).optional(),
-    /** Timestamp when resolved */
+    /*    * Timestamp when resolved     */
     resolvedAt: z.number().optional(),
-    /** Rejection feedback message */
+    /*    * Rejection feedback message     */
     feedback: z.string().optional(),
-    /** Modified input if changed by resolver */
+    /*    * Modified input if changed by resolver     */
     updatedInput: z.record(z.string(), z.unknown()).optional(),
-    /** "Always allow" rules applied during resolution */
+    /*    * "Always allow" rules applied during resolution     */
     permissionUpdates: z.array(z.unknown()).optional(),
-    /** Timestamp when request was created */
+    /*    * Timestamp when request was created     */
     createdAt: z.number(),
   }),
 )
@@ -89,47 +89,47 @@ export type SwarmPermissionRequest = z.infer<
   ReturnType<typeof SwarmPermissionRequestSchema>
 >
 
-/**
+/*    *
  * Resolution data returned when leader/worker resolves a request
- */
+     */
 export type PermissionResolution = {
-  /** Decision: approved or rejected */
+  /*    * Decision: approved or rejected     */
   decision: 'approved' | 'rejected'
-  /** Who resolved it */
+  /*    * Who resolved it     */
   resolvedBy: 'worker' | 'leader'
-  /** Optional feedback message if rejected */
+  /*    * Optional feedback message if rejected     */
   feedback?: string
-  /** Optional updated input if the resolver modified it */
+  /*    * Optional updated input if the resolver modified it     */
   updatedInput?: Record<string, unknown>
-  /** Permission updates to apply (e.g., "always allow" rules) */
+  /*    * Permission updates to apply (e.g., "always allow" rules)     */
   permissionUpdates?: PermissionUpdate[]
 }
 
-/**
+/*    *
  * Get the base directory for a team's permission requests
  * Path: ~/.claude/teams/{teamName}/permissions/
- */
+     */
 export function getPermissionDir(teamName: string): string {
   return join(getTeamDir(teamName), 'permissions')
 }
 
-/**
+/*    *
  * Get the pending directory for a team
- */
+     */
 function getPendingDir(teamName: string): string {
   return join(getPermissionDir(teamName), 'pending')
 }
 
-/**
+/*    *
  * Get the resolved directory for a team
- */
+     */
 function getResolvedDir(teamName: string): string {
   return join(getPermissionDir(teamName), 'resolved')
 }
 
-/**
+/*    *
  * Ensure the permissions directory structure exists (async)
- */
+     */
 async function ensurePermissionDirsAsync(teamName: string): Promise<void> {
   const permDir = getPermissionDir(teamName)
   const pendingDir = getPendingDir(teamName)
@@ -140,30 +140,30 @@ async function ensurePermissionDirsAsync(teamName: string): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Get the path to a pending request file
- */
+     */
 function getPendingRequestPath(teamName: string, requestId: string): string {
   return join(getPendingDir(teamName), `${requestId}.json`)
 }
 
-/**
+/*    *
  * Get the path to a resolved request file
- */
+     */
 function getResolvedRequestPath(teamName: string, requestId: string): string {
   return join(getResolvedDir(teamName), `${requestId}.json`)
 }
 
-/**
+/*    *
  * Generate a unique request ID
- */
+     */
 export function generateRequestId(): string {
   return `perm-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
 }
 
-/**
+/*    *
  * Create a new SwarmPermissionRequest object
- */
+     */
 export function createPermissionRequest(params: {
   toolName: string
   toolUseId: string
@@ -206,12 +206,12 @@ export function createPermissionRequest(params: {
   }
 }
 
-/**
+/*    *
  * Write a permission request to the pending directory with file locking
  * Called by worker agents when they need permission approval from the leader
  *
  * @returns The written request
- */
+     */
 export async function writePermissionRequest(
   request: SwarmPermissionRequest,
 ): Promise<SwarmPermissionRequest> {
@@ -249,10 +249,10 @@ export async function writePermissionRequest(
   }
 }
 
-/**
+/*    *
  * Read all pending permission requests for a team
  * Called by the team leader to see what requests need attention
- */
+     */
 export async function readPendingPermissions(
   teamName?: string,
 ): Promise<SwarmPermissionRequest[]> {
@@ -311,12 +311,12 @@ export async function readPendingPermissions(
   return requests
 }
 
-/**
+/*    *
  * Read a resolved permission request by ID
  * Called by workers to check if their request has been resolved
  *
  * @returns The resolved request, or null if not yet resolved
- */
+     */
 export async function readResolvedPermission(
   requestId: string,
   teamName?: string,
@@ -351,12 +351,12 @@ export async function readResolvedPermission(
   }
 }
 
-/**
+/*    *
  * Resolve a permission request
  * Called by the team leader (or worker in self-resolution cases)
  *
  * Writes the resolution to resolved/, removes from pending/
- */
+     */
 export async function resolvePermission(
   requestId: string,
   resolution: PermissionResolution,
@@ -442,13 +442,13 @@ export async function resolvePermission(
   }
 }
 
-/**
+/*    *
  * Clean up old resolved permission files
  * Called periodically to prevent file accumulation
  *
  * @param teamName - Team name
  * @param maxAgeMs - Maximum age in milliseconds (default: 1 hour)
- */
+     */
 export async function cleanupOldResolutions(
   teamName?: string,
   maxAgeMs = 3600000,
@@ -516,31 +516,31 @@ export async function cleanupOldResolutions(
   return cleanedCount
 }
 
-/**
+/*    *
  * Legacy response type for worker polling
  * Used for backward compatibility with worker integration code
- */
+     */
 export type PermissionResponse = {
-  /** ID of the request this responds to */
+  /*    * ID of the request this responds to     */
   requestId: string
-  /** Decision: approved or denied */
+  /*    * Decision: approved or denied     */
   decision: 'approved' | 'denied'
-  /** Timestamp when response was created */
+  /*    * Timestamp when response was created     */
   timestamp: string
-  /** Optional feedback message if denied */
+  /*    * Optional feedback message if denied     */
   feedback?: string
-  /** Optional updated input if the resolver modified it */
+  /*    * Optional updated input if the resolver modified it     */
   updatedInput?: Record<string, unknown>
-  /** Permission updates to apply (e.g., "always allow" rules) */
+  /*    * Permission updates to apply (e.g., "always allow" rules)     */
   permissionUpdates?: unknown[]
 }
 
-/**
+/*    *
  * Poll for a permission response (worker-side convenience function)
  * Converts the resolved request into a simpler response format
  *
  * @returns The permission response, or null if not yet resolved
- */
+     */
 export async function pollForResponse(
   requestId: string,
   _agentName?: string,
@@ -563,10 +563,10 @@ export async function pollForResponse(
   }
 }
 
-/**
+/*    *
  * Remove a worker's response after processing
  * This is an alias for deleteResolvedPermission for backward compatibility
- */
+     */
 export async function removeWorkerResponse(
   requestId: string,
   _agentName?: string,
@@ -575,9 +575,9 @@ export async function removeWorkerResponse(
   await deleteResolvedPermission(requestId, teamName)
 }
 
-/**
+/*    *
  * Check if the current agent is a team leader
- */
+     */
 export function isTeamLeader(teamName?: string): boolean {
   const team = teamName || getTeamName()
   if (!team) {
@@ -590,9 +590,9 @@ export function isTeamLeader(teamName?: string): boolean {
   return !agentId || agentId === 'team-lead'
 }
 
-/**
+/*    *
  * Check if the current agent is a worker in a swarm
- */
+     */
 export function isSwarmWorker(): boolean {
   const teamName = getTeamName()
   const agentId = getAgentId()
@@ -600,10 +600,10 @@ export function isSwarmWorker(): boolean {
   return !!teamName && !!agentId && !isTeamLeader()
 }
 
-/**
+/*    *
  * Delete a resolved permission file
  * Called after a worker has processed the resolution
- */
+     */
 export async function deleteResolvedPermission(
   requestId: string,
   teamName?: string,
@@ -634,20 +634,20 @@ export async function deleteResolvedPermission(
   }
 }
 
-/**
+/*    *
  * Submit a permission request (alias for writePermissionRequest)
  * Provided for backward compatibility with worker integration code
- */
+     */
 export const submitPermissionRequest = writePermissionRequest
 
 // ============================================================================
 // Mailbox-Based Permission System
 // ============================================================================
 
-/**
+/*    *
  * Get the leader's name from the team file
  * This is needed to send permission requests to the leader's mailbox
- */
+     */
 export async function getLeaderName(teamName?: string): Promise<string | null> {
   const team = teamName || getTeamName()
   if (!team) {
@@ -666,13 +666,13 @@ export async function getLeaderName(teamName?: string): Promise<string | null> {
   return leadMember?.name || 'team-lead'
 }
 
-/**
+/*    *
  * Send a permission request to the leader via mailbox.
  * This is the new mailbox-based approach that replaces the file-based pending directory.
  *
  * @param request - The permission request to send
  * @returns true if the message was sent successfully
- */
+     */
 export async function sendPermissionRequestViaMailbox(
   request: SwarmPermissionRequest,
 ): Promise<boolean> {
@@ -721,7 +721,7 @@ export async function sendPermissionRequestViaMailbox(
   }
 }
 
-/**
+/*    *
  * Send a permission response to a worker via mailbox.
  * This is the new mailbox-based approach that replaces the file-based resolved directory.
  *
@@ -730,7 +730,7 @@ export async function sendPermissionRequestViaMailbox(
  * @param requestId - The original request ID
  * @param teamName - The team name
  * @returns true if the message was sent successfully
- */
+     */
 export async function sendPermissionResponseViaMailbox(
   workerName: string,
   resolution: PermissionResolution,
@@ -786,14 +786,14 @@ export async function sendPermissionResponseViaMailbox(
 // Sandbox Permission Mailbox System
 // ============================================================================
 
-/**
+/*    *
  * Generate a unique sandbox permission request ID
- */
+     */
 export function generateSandboxRequestId(): string {
   return `sandbox-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
 }
 
-/**
+/*    *
  * Send a sandbox permission request to the leader via mailbox.
  * Called by workers when sandbox runtime needs network access approval.
  *
@@ -801,7 +801,7 @@ export function generateSandboxRequestId(): string {
  * @param requestId - Unique ID for this request
  * @param teamName - Optional team name
  * @returns true if the message was sent successfully
- */
+     */
 export async function sendSandboxPermissionRequestViaMailbox(
   host: string,
   requestId: string,
@@ -868,7 +868,7 @@ export async function sendSandboxPermissionRequestViaMailbox(
   }
 }
 
-/**
+/*    *
  * Send a sandbox permission response to a worker via mailbox.
  * Called by the leader when approving/denying a sandbox network access request.
  *
@@ -878,7 +878,7 @@ export async function sendSandboxPermissionRequestViaMailbox(
  * @param allow - Whether the connection is allowed
  * @param teamName - Optional team name
  * @returns true if the message was sent successfully
- */
+     */
 export async function sendSandboxPermissionResponseViaMailbox(
   workerName: string,
   requestId: string,

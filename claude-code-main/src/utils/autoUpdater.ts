@@ -28,7 +28,7 @@ import {
 import { jsonParse } from './slowOperations.js'
 
 const GCS_BUCKET_URL =
-  'https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases'
+  'https:// storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases'
 
 class AutoUpdaterError extends ClaudeError {}
 
@@ -51,7 +51,7 @@ export type MaxVersionConfig = {
   ant_message?: string
 }
 
-/**
+/*    *
  * Checks if the current version meets the minimum required version from Statsig config
  * Terminates the process with an error message if the version is too old
  *
@@ -66,7 +66,7 @@ export type MaxVersionConfig = {
  *    - The UI clearly shows both versions including build metadata
  *
  * This approach keeps version comparison logic simple while maintaining traceability via the SHA.
- */
+     */
 export async function assertMinVersion(): Promise<void> {
   if (process.env.NODE_ENV === 'test') {
     return
@@ -98,13 +98,13 @@ This will ensure you have access to the latest features and improvements.
   }
 }
 
-/**
+/*    *
  * Returns the maximum allowed version for the current user type.
  * For ants, returns the `ant` field (dev version format).
  * For external users, returns the `external` field (clean semver).
  * This is used as a server-side kill switch to pause auto-updates during incidents.
  * Returns undefined if no cap is configured.
- */
+     */
 export async function getMaxVersion(): Promise<string | undefined> {
   const config = await getMaxVersionConfig()
   if (process.env.USER_TYPE === 'ant') {
@@ -113,10 +113,10 @@ export async function getMaxVersion(): Promise<string | undefined> {
   return config.external || undefined
 }
 
-/**
+/*    *
  * Returns the server-driven message explaining the known issue, if configured.
  * Shown in the warning banner when the current version exceeds the max allowed version.
- */
+     */
 export async function getMaxVersionMessage(): Promise<string | undefined> {
   const config = await getMaxVersionConfig()
   if (process.env.USER_TYPE === 'ant') {
@@ -137,11 +137,11 @@ async function getMaxVersionConfig(): Promise<MaxVersionConfig> {
   }
 }
 
-/**
+/*    *
  * Checks if a target version should be skipped due to user's minimumVersion setting.
  * This is used when switching to stable channel - the user can choose to stay on their
  * current version until stable catches up, preventing downgrades.
- */
+     */
 export function shouldSkipVersion(targetVersion: string): boolean {
   const settings = getInitialSettings()
   const minimumVersion = settings?.minimumVersion
@@ -161,18 +161,18 @@ export function shouldSkipVersion(targetVersion: string): boolean {
 // Lock file for auto-updater to prevent concurrent updates
 const LOCK_TIMEOUT_MS = 5 * 60 * 1000 // 5 minute timeout for locks
 
-/**
+/*    *
  * Get the path to the lock file
  * This is a function to ensure it's evaluated at runtime after test setup
- */
+     */
 export function getLockFilePath(): string {
   return join(getClaudeConfigHomeDir(), '.update.lock')
 }
 
-/**
+/*    *
  * Attempts to acquire a lock for auto-updater
  * @returns true if lock was acquired, false if another process holds the lock
- */
+     */
 async function acquireLock(): Promise<boolean> {
   const fs = getFsImplementation()
   const lockPath = getLockFilePath()
@@ -248,9 +248,9 @@ async function acquireLock(): Promise<boolean> {
   }
 }
 
-/**
+/*    *
  * Releases the update lock if it's held by this process
- */
+     */
 async function releaseLock(): Promise<void> {
   const fs = getFsImplementation()
   const lockPath = getLockFilePath()
@@ -348,10 +348,10 @@ export type NpmDistTags = {
   stable: string | null
 }
 
-/**
+/*    *
  * Get npm dist-tags (latest and stable versions) from the registry.
  * This is used by the doctor command to show users what versions are available.
- */
+     */
 export async function getNpmDistTags(): Promise<NpmDistTags> {
   // Run from home directory to avoid reading project-level .npmrc
   const result = await execFileNoThrowWithCwd(
@@ -377,10 +377,10 @@ export async function getNpmDistTags(): Promise<NpmDistTags> {
   }
 }
 
-/**
+/*    *
  * Get the latest version from GCS bucket for a given release channel.
  * This is used by installations that don't have npm (e.g. package manager installs).
- */
+     */
 export async function getLatestVersionFromGcs(
   channel: ReleaseChannel,
 ): Promise<string | null> {
@@ -396,10 +396,10 @@ export async function getLatestVersionFromGcs(
   }
 }
 
-/**
+/*    *
  * Get available versions from GCS bucket (for native installations).
  * Fetches both latest and stable channel pointers.
- */
+     */
 export async function getGcsDistTags(): Promise<NpmDistTags> {
   const [latest, stable] = await Promise.all([
     getLatestVersionFromGcs('latest'),
@@ -409,7 +409,7 @@ export async function getGcsDistTags(): Promise<NpmDistTags> {
   return { latest, stable }
 }
 
-/**
+/*    *
  * Get version history from npm registry (ant-only feature)
  * Returns versions sorted newest-first, limited to the specified count
  *
@@ -417,7 +417,7 @@ export async function getGcsDistTags(): Promise<NpmDistTags> {
  * 1. Native installation is the primary installation method for ant users
  * 2. Not all JS package versions have corresponding native packages
  * 3. This prevents rollback from listing versions that don't have native binaries
- */
+     */
 export async function getVersionHistory(limit: number): Promise<string[]> {
   if (process.env.USER_TYPE !== 'ant') {
     return []
@@ -532,10 +532,10 @@ To fix this issue:
   }
 }
 
-/**
+/*    *
  * Remove claude aliases from shell configuration files
  * This helps clean up old installation methods when switching to native or npm global
- */
+     */
 async function removeClaudeAliasesFromShellConfigs(): Promise<void> {
   const configMap = getShellConfigPaths()
 

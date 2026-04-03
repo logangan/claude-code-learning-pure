@@ -18,7 +18,7 @@ type BridgePermissionCallbacks = {
     blockedPath?: string,
   ): void
   sendResponse(requestId: string, response: BridgePermissionResponse): void
-  /** Cancel a pending control_request so the web app can dismiss its prompt. */
+  /*    * Cancel a pending control_request so the web app can dismiss its prompt.     */
   cancelRequest(requestId: string): void
   onResponse(
     requestId: string,
@@ -26,9 +26,9 @@ type BridgePermissionCallbacks = {
   ): () => void // returns unsubscribe
 }
 
-/** Type predicate for validating a parsed control_response payload
+/*    * Type predicate for validating a parsed control_response payload
  *  as a BridgePermissionResponse. Checks the required `behavior`
- *  discriminant rather than using an unsafe `as` cast. */
+ *  discriminant rather than using an unsafe `as` cast.     */
 function isBridgePermissionResponse(
   value: unknown,
 ): value is BridgePermissionResponse {

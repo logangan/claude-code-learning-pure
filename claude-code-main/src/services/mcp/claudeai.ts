@@ -30,12 +30,12 @@ type ClaudeAIMcpServersResponse = {
 const FETCH_TIMEOUT_MS = 5000
 const MCP_SERVERS_BETA_HEADER = 'mcp-servers-2025-12-04'
 
-/**
+/*    *
  * Fetches MCP server configurations from Claude.ai org configs.
  * These servers are managed by the organization via Claude.ai.
  *
  * Results are memoized for the session lifetime (fetch once per CLI session).
- */
+     */
 export const fetchClaudeAIMcpConfigsIfEligible = memoize(
   async (): Promise<Record<string, ScopedMcpServerConfig>> => {
     try {
@@ -133,24 +133,24 @@ export const fetchClaudeAIMcpConfigsIfEligible = memoize(
   },
 )
 
-/**
+/*    *
  * Clears the memoized cache for fetchClaudeAIMcpConfigsIfEligible.
  * Call this after login so the next fetch will use the new auth tokens.
- */
+     */
 export function clearClaudeAIMcpConfigsCache(): void {
   fetchClaudeAIMcpConfigsIfEligible.cache.clear?.()
   // Also clear the auth cache so freshly-authorized servers get re-connected
   clearMcpAuthCache()
 }
 
-/**
+/*    *
  * Record that a claude.ai connector successfully connected. Idempotent.
  *
  * Gates the "N connectors unavailable/need auth" startup notifications: a
  * connector that was working yesterday and is now failed is a state change
  * worth surfacing; an org-configured connector that's been needs-auth since
  * it showed up is one the user has demonstrably ignored.
- */
+     */
 export function markClaudeAiMcpConnected(name: string): void {
   saveGlobalConfig(current => {
     const seen = current.claudeAiMcpEverConnected ?? []

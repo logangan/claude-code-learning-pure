@@ -1,4 +1,4 @@
-/**
+/*    *
  * Vim Mode State Machine Types
  *
  * This file defines the complete state machine for vim input handling.
@@ -24,7 +24,7 @@
  *   │                              │            └─[fFtT]───► operatorFind │
  *   └──────────────────────────────┴──────────────────────────────────────┘
  * ```
- */
+     */
 
 // ============================================================================
 // Core Types
@@ -40,22 +40,22 @@ export type TextObjScope = 'inner' | 'around'
 // State Machine Types
 // ============================================================================
 
-/**
+/*    *
  * Complete vim state. Mode determines what data is tracked.
  *
  * INSERT mode: Track text being typed (for dot-repeat)
  * NORMAL mode: Track command being parsed (state machine)
- */
+     */
 export type VimState =
   | { mode: 'INSERT'; insertedText: string }
   | { mode: 'NORMAL'; command: CommandState }
 
-/**
+/*    *
  * Command state machine for NORMAL mode.
  *
  * Each state knows exactly what input it's waiting for.
  * TypeScript ensures exhaustive handling in switches.
- */
+     */
 export type CommandState =
   | { type: 'idle' }
   | { type: 'count'; digits: string }
@@ -74,10 +74,10 @@ export type CommandState =
   | { type: 'replace'; count: number }
   | { type: 'indent'; dir: '>' | '<'; count: number }
 
-/**
+/*    *
  * Persistent state that survives across commands.
  * This is the "memory" of vim - what gets recalled for repeats and pastes.
- */
+     */
 export type PersistentState = {
   lastChange: RecordedChange | null
   lastFind: { type: FindType; char: string } | null
@@ -85,10 +85,10 @@ export type PersistentState = {
   registerIsLinewise: boolean
 }
 
-/**
+/*    *
  * Recorded change for dot-repeat.
  * Captures everything needed to replay a command.
- */
+     */
 export type RecordedChange =
   | { type: 'insert'; text: string }
   | {

@@ -6,13 +6,13 @@ export type DebugFilter = {
   isExclusive: boolean
 }
 
-/**
+/*    *
  * Parse debug filter string into a filter configuration
  * Examples:
  * - "api,hooks" -> include only api and hooks categories
  * - "!1p,!file" -> exclude logging and file categories
  * - undefined/empty -> no filtering (show all)
- */
+     */
 export const parseDebugFilter = memoize(
   (filterString?: string): DebugFilter | null => {
     if (!filterString || filterString.trim() === '') {
@@ -52,7 +52,7 @@ export const parseDebugFilter = memoize(
   },
 )
 
-/**
+/*    *
  * Extract debug categories from a message
  * Supports multiple patterns:
  * - "category: message" -> ["category"]
@@ -61,7 +61,7 @@ export const parseDebugFilter = memoize(
  * - "[ANT-ONLY] 1P event: tengu_timer" -> ["ant-only", "1p"]
  *
  * Returns lowercase categories for case-insensitive matching
- */
+     */
 export function extractDebugCategories(message: string): string[] {
   const categories: string[] = []
 
@@ -107,12 +107,12 @@ export function extractDebugCategories(message: string): string[] {
   return Array.from(new Set(categories)) // Remove duplicates
 }
 
-/**
+/*    *
  * Check if debug message should be shown based on filter
  * @param categories - Categories extracted from the message
  * @param filter - Parsed filter configuration
  * @returns true if message should be shown
- */
+     */
 export function shouldShowDebugCategories(
   categories: string[],
   filter: DebugFilter | null,
@@ -138,10 +138,10 @@ export function shouldShowDebugCategories(
   }
 }
 
-/**
+/*    *
  * Main function to check if a debug message should be shown
  * Combines extraction and filtering
- */
+     */
 export function shouldShowDebugMessage(
   message: string,
   filter: DebugFilter | null,

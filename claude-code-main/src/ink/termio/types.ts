@@ -1,15 +1,15 @@
-/**
+/*    *
  * ANSI Parser - Semantic Types
  *
  * These types represent the semantic meaning of ANSI escape sequences,
  * not their string representation. Inspired by ghostty's action-based design.
- */
+     */
 
 // =============================================================================
 // Colors
 // =============================================================================
 
-/** Named colors from the 16-color palette */
+/*    * Named colors from the 16-color palette     */
 export type NamedColor =
   | 'black'
   | 'red'
@@ -28,7 +28,7 @@ export type NamedColor =
   | 'brightCyan'
   | 'brightWhite'
 
-/** Color specification - can be named, indexed (256), or RGB */
+/*    * Color specification - can be named, indexed (256), or RGB     */
 export type Color =
   | { type: 'named'; name: NamedColor }
   | { type: 'indexed'; index: number } // 0-255
@@ -39,7 +39,7 @@ export type Color =
 // Text Styles
 // =============================================================================
 
-/** Underline style variants */
+/*    * Underline style variants     */
 export type UnderlineStyle =
   | 'none'
   | 'single'
@@ -48,7 +48,7 @@ export type UnderlineStyle =
   | 'dotted'
   | 'dashed'
 
-/** Text style attributes - represents current styling state */
+/*    * Text style attributes - represents current styling state     */
 export type TextStyle = {
   bold: boolean
   dim: boolean
@@ -64,7 +64,7 @@ export type TextStyle = {
   underlineColor: Color
 }
 
-/** Create a default (reset) text style */
+/*    * Create a default (reset) text style     */
 export function defaultStyle(): TextStyle {
   return {
     bold: false,
@@ -82,7 +82,7 @@ export function defaultStyle(): TextStyle {
   }
 }
 
-/** Check if two styles are equal */
+/*    * Check if two styles are equal     */
 export function stylesEqual(a: TextStyle, b: TextStyle): boolean {
   return (
     a.bold === b.bold &&
@@ -100,7 +100,7 @@ export function stylesEqual(a: TextStyle, b: TextStyle): boolean {
   )
 }
 
-/** Check if two colors are equal */
+/*    * Check if two colors are equal     */
 export function colorsEqual(a: Color, b: Color): boolean {
   if (a.type !== b.type) return false
   switch (a.type) {
@@ -191,12 +191,12 @@ export type TitleAction =
 // Tab Status Action (OSC 21337)
 // =============================================================================
 
-/**
+/*    *
  * Per-tab chrome metadata. Tristate for each field:
  *  - property absent → not mentioned in sequence, no change
  *  - null → explicitly cleared (bare key or key= with empty value)
  *  - value → set to this
- */
+     */
 export type TabStatusAction = {
   indicator?: Color | null
   status?: string | null
@@ -207,20 +207,20 @@ export type TabStatusAction = {
 // Parsed Segments - The output of the parser
 // =============================================================================
 
-/** A segment of styled text */
+/*    * A segment of styled text     */
 export type TextSegment = {
   type: 'text'
   text: string
   style: TextStyle
 }
 
-/** A grapheme (visual character unit) with width info */
+/*    * A grapheme (visual character unit) with width info     */
 export type Grapheme = {
   value: string
   width: 1 | 2 // Display width in columns
 }
 
-/** All possible parsed actions */
+/*    * All possible parsed actions     */
 export type Action =
   | { type: 'text'; graphemes: Grapheme[]; style: TextStyle }
   | { type: 'cursor'; action: CursorAction }

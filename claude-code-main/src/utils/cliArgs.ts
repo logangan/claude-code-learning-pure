@@ -1,4 +1,4 @@
-/**
+/*    *
  * Parse a CLI flag value early, before Commander.js processes arguments.
  * Supports both space-separated (--flag value) and equals-separated (--flag=value) syntax.
  *
@@ -9,7 +9,7 @@
  * @param flagName The flag name including dashes (e.g., '--settings')
  * @param argv Optional argv array to parse (defaults to process.argv)
  * @returns The value if found, undefined otherwise
- */
+     */
 export function eagerParseCliFlag(
   flagName: string,
   argv: string[] = process.argv,
@@ -28,7 +28,7 @@ export function eagerParseCliFlag(
   return undefined
 }
 
-/**
+/*    *
  * Handle the standard Unix `--` separator convention in CLI arguments.
  *
  * When using Commander.js with `.passThroughOptions()`, the `--` separator
@@ -45,7 +45,7 @@ export function eagerParseCliFlag(
  * @param commandOrValue - The parsed positional that may be "--"
  * @param args - The remaining arguments array
  * @returns Object with corrected command and args
- */
+     */
 export function extractArgsAfterDoubleDash(
   commandOrValue: string,
   args: string[] = [],

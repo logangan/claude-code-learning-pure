@@ -1,4 +1,4 @@
-/**
+/*    *
  * Session activity tracking with refcount-based heartbeat timer.
  *
  * The transport registers its keep-alive sender via registerSessionActivityCallback().
@@ -9,7 +9,7 @@
  *
  * Sending keep-alives is gated behind CLAUDE_CODE_REMOTE_SEND_KEEPALIVES.
  * Diagnostic logging always fires to help diagnose idle gaps.
- */
+     */
 
 import { registerCleanup } from './cleanupRegistry.js'
 import { logForDiagnosticsNoPII } from './diagLogs.js'
@@ -85,10 +85,10 @@ export function isSessionActivityTrackingActive(): boolean {
   return activityCallback !== null
 }
 
-/**
+/*    *
  * Increment the activity refcount. When it transitions from 0→1 and a callback
  * is registered, start a periodic heartbeat timer.
- */
+     */
 export function startSessionActivity(reason: SessionActivityReason): void {
   refcount++
   activeReasons.set(reason, (activeReasons.get(reason) ?? 0) + 1)
@@ -114,10 +114,10 @@ export function startSessionActivity(reason: SessionActivityReason): void {
   }
 }
 
-/**
+/*    *
  * Decrement the activity refcount. When it reaches 0, stop the heartbeat timer
  * and start an idle timer that logs after 30s of inactivity.
- */
+     */
 export function stopSessionActivity(reason: SessionActivityReason): void {
   if (refcount > 0) {
     refcount--

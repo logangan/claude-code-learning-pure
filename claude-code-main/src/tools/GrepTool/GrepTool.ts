@@ -205,7 +205,7 @@ export const GrepTool = buildTool({
       const absolutePath = expandPath(path)
 
       // SECURITY: Skip filesystem operations for UNC paths to prevent NTLM credential leaks.
-      if (absolutePath.startsWith('\\\\') || absolutePath.startsWith('//')) {
+      if (absolutePath.startsWith('\\\\') || absolutePath.startsWith('// ')) {
         return { result: true }
       }
 
@@ -418,8 +418,7 @@ export const GrepTool = buildTool({
       // Note: ripgrep only applies gitignore patterns relative to the working directory
       // So for non-absolute paths, we need to prefix them with '**'
       // See: https://github.com/BurntSushi/ripgrep/discussions/2156#discussioncomment-2316335
-      //
-      // We also need to negate the pattern with `!` to exclude it
+      // // We also need to negate the pattern with `!` to exclude it
       const rgIgnorePattern = ignorePattern.startsWith('/')
         ? `!${ignorePattern}`
         : `!**/${ignorePattern}`

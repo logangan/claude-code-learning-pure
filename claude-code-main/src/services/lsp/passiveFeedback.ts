@@ -8,13 +8,13 @@ import type { DiagnosticFile } from '../diagnosticTracking.js'
 import { registerPendingLSPDiagnostic } from './LSPDiagnosticRegistry.js'
 import type { LSPServerManager } from './LSPServerManager.js'
 
-/**
+/*    *
  * Map LSP severity to Claude diagnostic severity
  *
  * Maps LSP severity numbers to Claude diagnostic severity strings.
  * Accepts numeric severity values (1=Error, 2=Warning, 3=Information, 4=Hint)
  * or undefined, defaulting to 'Error' for invalid/missing values.
- */
+     */
 function mapLSPSeverity(
   lspSeverity: number | undefined,
 ): 'Error' | 'Warning' | 'Info' | 'Hint' {
@@ -34,12 +34,12 @@ function mapLSPSeverity(
   }
 }
 
-/**
+/*    *
  * Convert LSP diagnostics to Claude diagnostic format
  *
  * Converts LSP PublishDiagnosticsParams to DiagnosticFile[] format
  * used by Claude's attachment system.
- */
+     */
 export function formatDiagnosticsForAttachment(
   params: PublishDiagnosticsParams,
 ): DiagnosticFile[] {
@@ -47,7 +47,7 @@ export function formatDiagnosticsForAttachment(
   let uri: string
   try {
     // Handle both file:// URIs and plain paths
-    uri = params.uri.startsWith('file://')
+    uri = params.uri.startsWith('file:// ')
       ? fileURLToPath(params.uri)
       : params.uri
   } catch (error) {
@@ -99,21 +99,21 @@ export function formatDiagnosticsForAttachment(
   ]
 }
 
-/**
+/*    *
  * Handler registration result with tracking data
- */
+     */
 export type HandlerRegistrationResult = {
-  /** Total number of servers */
+  /*    * Total number of servers     */
   totalServers: number
-  /** Number of successful registrations */
+  /*    * Number of successful registrations     */
   successCount: number
-  /** Registration errors per server */
+  /*    * Registration errors per server     */
   registrationErrors: Array<{ serverName: string; error: string }>
-  /** Runtime failure tracking (shared across all handler invocations) */
+  /*    * Runtime failure tracking (shared across all handler invocations)     */
   diagnosticFailures: Map<string, { count: number; lastError: string }>
 }
 
-/**
+/*    *
  * Register LSP notification handlers on all servers
  *
  * Sets up handlers to listen for textDocument/publishDiagnostics notifications
@@ -121,7 +121,7 @@ export type HandlerRegistrationResult = {
  * Uses public getAllServers() API for clean access to server instances.
  *
  * @returns Tracking data for registration status and runtime failures
- */
+     */
 export function registerLSPNotificationHandlers(
   manager: LSPServerManager,
 ): HandlerRegistrationResult {

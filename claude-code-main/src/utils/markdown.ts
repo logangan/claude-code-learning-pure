@@ -289,9 +289,9 @@ export function formatToken(
 const ISSUE_REF_PATTERN =
   /(^|[^\w./-])([A-Za-z0-9][\w-]*\/[A-Za-z0-9][\w.-]*)#(\d+)\b/g
 
-/**
+/*    *
  * Replaces owner/repo#123 references with clickable hyperlinks to GitHub.
- */
+     */
 function linkifyIssueReferences(text: string): string {
   if (!supportsHyperlinks()) {
     return text
@@ -301,7 +301,7 @@ function linkifyIssueReferences(text: string): string {
     (_match, prefix, repo, num) =>
       prefix +
       createHyperlink(
-        `https://github.com/${repo}/issues/${num}`,
+        `https:// github.com/${repo}/issues/${num}`,
         `${repo}#${num}`,
       ),
   )
@@ -358,11 +358,11 @@ function getListNumber(listDepth: number, orderedListNumber: number): string {
   }
 }
 
-/**
+/*    *
  * Pad `content` to `targetWidth` according to alignment. `displayWidth` is the
  * visible width of `content` (caller computes this, e.g. via stringWidth on
  * stripAnsi'd text, so ANSI codes in `content` don't affect padding).
- */
+     */
 export function padAligned(
   content: string,
   displayWidth: number,

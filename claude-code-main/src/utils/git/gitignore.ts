@@ -7,7 +7,7 @@ import { execFileNoThrowWithCwd } from '../execFileNoThrow.js'
 import { dirIsInGitRepo } from '../git.js'
 import { logError } from '../log.js'
 
-/**
+/*    *
  * Checks if a path is ignored by git (via `git check-ignore`).
  *
  * This consults all applicable gitignore sources: repo `.gitignore` files
@@ -19,7 +19,7 @@ import { logError } from '../log.js'
  *
  * @param filePath The path to check (absolute or relative to cwd)
  * @param cwd The working directory to run git from
- */
+     */
 export async function isPathGitignored(
   filePath: string,
   cwd: string,
@@ -36,20 +36,20 @@ export async function isPathGitignored(
   return code === 0
 }
 
-/**
+/*    *
  * Gets the path to the global gitignore file (.config/git/ignore)
  * @returns The path to the global gitignore file
- */
+     */
 export function getGlobalGitignorePath(): string {
   return join(homedir(), '.config', 'git', 'ignore')
 }
 
-/**
+/*    *
  * Adds a file pattern to the global gitignore file (.config/git/ignore)
  * if it's not already ignored by existing patterns in any gitignore file
  * @param filename The filename to add to gitignore
  * @param cwd The current working directory (optional)
- */
+     */
 export async function addFileGlobRuleToGitignore(
   filename: string,
   cwd: string = getCwd(),

@@ -1,4 +1,4 @@
-/**
+/*    *
  * REPL-specific wrapper around initBridgeCore. Owns the parts that read
  * bootstrap state — gates, cwd, session ID, git context, OAuth, title
  * derivation — then delegates to the bootstrap-free core.
@@ -11,7 +11,7 @@
  *
  * Called via dynamic import by useReplBridge (auto-start) and print.ts
  * (SDK -p mode via query.enableRemoteControl).
- */
+     */
 
 import { feature } from 'bun:bundle'
 import { hostname } from 'os'
@@ -96,13 +96,13 @@ export type InitBridgeOptions = {
   // server (duplicate UUIDs across sessions cause the WS to be killed).
   // Mutated in place — newly flushed UUIDs are added after each flush.
   previouslyFlushedUUIDs?: Set<string>
-  /** See BridgeCoreParams.perpetual. */
+  /*    * See BridgeCoreParams.perpetual.     */
   perpetual?: boolean
-  /**
+  /*    *
    * When true, the bridge only forwards events outbound (no SSE inbound
    * stream). Used by CCR mirror mode — local sessions visible on claude.ai
    * without enabling inbound control.
-   */
+       */
   outboundOnly?: boolean
   tags?: string[]
 }
@@ -192,8 +192,7 @@ export async function initReplBridge(
     // registrations hit the server with a >8h-expired token → 401 → withOAuthRetry
     // recovers, but the server logs a 401 we can avoid. VPN egress IPs observed
     // at 30:1 401:200 when many unrelated users cluster at the 8h TTL boundary.
-    //
-    // Fresh-token cost: one memoized read + one Date.now() comparison (~µs).
+    // // Fresh-token cost: one memoized read + one Date.now() comparison (~µs).
     // checkAndRefreshOAuthTokenIfNeeded clears its own cache in every path that
     // touches the keychain (refresh success, lockfile race, throw), so no
     // explicit clearOAuthTokenCache() here — that would force a blocking
@@ -208,8 +207,7 @@ export async function initReplBridge(
     // refresh fails again → retry with same stale token → 401 again.
     // Datadog 2026-03-08: single IPs generating 2,879 such 401s/day. Skip the
     // guaranteed-fail API call; useReplBridge surfaces the failure.
-    //
-    // Intentionally NOT using isOAuthTokenExpired here — that has a 5-minute
+    // // Intentionally NOT using isOAuthTokenExpired here — that has a 5-minute
     // proactive-refresh buffer, which is the right heuristic for "should
     // refresh soon" but wrong for "provably unusable". A token with 3min left
     // + transient refresh endpoint blip (5xx/timeout/wifi-reconnect) would
@@ -399,12 +397,10 @@ export async function initReplBridge(
   // poll/ack/heartbeat) and connects directly via POST /bridge → worker_jwt.
   // See server PR #292605 (renamed in #293280). REPL-only — daemon/print stay
   // on env-based.
-  //
-  // NAMING: "env-less" is distinct from "CCR v2" (the /worker/* transport).
+  // // NAMING: "env-less" is distinct from "CCR v2" (the /worker/*     transport).
   // The env-based path below can ALSO use CCR v2 via CLAUDE_CODE_USE_CCR_V2.
   // tengu_bridge_repl_v2 gates env-less (no poll loop), not transport version.
-  //
-  // perpetual (assistant-mode session continuity via bridge-pointer.json) is
+  // // perpetual (assistant-mode session continuity via bridge-pointer.json) is
   // env-coupled and not yet implemented here — fall back to env-based when set
   // so KAIROS users don't silently lose cross-restart continuity.
   if (isEnvLessBridgeEnabled() && !perpetual) {
@@ -475,10 +471,10 @@ export async function initReplBridge(
   // assistant module out of external builds entirely.
   let workerType: BridgeWorkerType = 'claude_code'
   if (feature('KAIROS')) {
-    /* eslint-disable @typescript-eslint/no-require-imports */
+    /* eslint-disable @typescript-eslint/no-require-imports     */
     const { isAssistantMode } =
       require('../assistant/index.js') as typeof import('../assistant/index.js')
-    /* eslint-enable @typescript-eslint/no-require-imports */
+    /*     eslint-enable @typescript-eslint/no-require-imports     */
     if (isAssistantMode()) {
       workerType = 'claude_code_assistant'
     }
@@ -546,12 +542,12 @@ export async function initReplBridge(
 
 const TITLE_MAX_LEN = 50
 
-/**
+/*    *
  * Quick placeholder title: strip display tags, take the first sentence,
  * collapse whitespace, truncate to 50 chars. Returns undefined if the result
  * is empty (e.g. message was only <local-command-stdout>). Replaced by
  * generateSessionTitle once Haiku resolves (~1-15s).
- */
+     */
 function deriveTitle(raw: string): string | undefined {
   // Strip <ide_opened_file>, <session-start-hook>, etc. — these appear in
   // user messages when IDE/hooks inject context. stripDisplayTagsAllowEmpty

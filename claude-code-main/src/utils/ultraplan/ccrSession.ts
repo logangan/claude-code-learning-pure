@@ -55,17 +55,17 @@ export type ScanResult =
   | { kind: 'terminated'; subtype: string }
   | { kind: 'unchanged' }
 
-/**
+/*    *
  * Pill/detail-view state derived from the event stream. Transitions:
  *   running → (turn ends, no ExitPlanMode) → needs_input
  *   needs_input → (user replies in browser) → running
  *   running → (ExitPlanMode emitted, no result yet) → plan_ready
  *   plan_ready → (rejected) → running
  *   plan_ready → (approved) → poll resolves, pill removed
- */
+     */
 export type UltraplanPhase = 'running' | 'needs_input' | 'plan_ready'
 
-/**
+/*    *
  * Pure stateful classifier for the CCR event stream. Ingests SDKMessage[]
  * batches (as delivered by pollRemoteSessionEvents) and returns the current
  * ExitPlanMode verdict. No I/O, no timers — feed it synthetic or recorded
@@ -76,7 +76,7 @@ export type UltraplanPhase = 'running' | 'needs_input' | 'plan_ready'
  * can span seconds of session activity. A batch may contain both an approved
  * tool_result AND a subsequent {type:'result'} (user approved, then remote
  * crashed). The approved plan is real and in threadstore — don't drop it.
- */
+     */
 export class ExitPlanModeScanner {
   private exitPlanCalls: string[] = []
   private results = new Map<string, ToolResultBlockParam>()
@@ -89,10 +89,10 @@ export class ExitPlanModeScanner {
     return this.rejectedIds.size
   }
 
-  /**
+  /*    *
    * True when an ExitPlanMode tool_use exists with no tool_result yet —
    * the remote is showing the approval dialog in the browser.
-   */
+       */
   get hasPendingPlan(): boolean {
     const id = this.exitPlanCalls.findLast(c => !this.rejectedIds.has(c))
     return id !== undefined && !this.results.has(id)
@@ -183,7 +183,7 @@ export class ExitPlanModeScanner {
 export type PollResult = {
   plan: string
   rejectCount: number
-  /** 'local' = user clicked teleport (execute here, archive remote). 'remote' = user approved in-CCR execution (don't archive). */
+  /*    * 'local' = user clicked teleport (execute here, archive remote). 'remote' = user approved in-CCR execution (don't archive).     */
   executionTarget: 'local' | 'remote'
 }
 

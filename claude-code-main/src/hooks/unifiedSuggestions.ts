@@ -40,9 +40,9 @@ type SuggestionSource =
   | McpResourceSuggestionSource
   | AgentSuggestionSource
 
-/**
+/*    *
  * Creates a unified suggestion item from a source
- */
+     */
 function createSuggestionFromSource(source: SuggestionSource): SuggestionItem {
   switch (source.type) {
     case 'file':

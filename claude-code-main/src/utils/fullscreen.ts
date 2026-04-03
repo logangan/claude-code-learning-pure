@@ -7,13 +7,13 @@ import { execFileNoThrow } from './execFileNoThrow.js'
 let loggedTmuxCcDisable = false
 let checkedTmuxMouseHint = false
 
-/**
+/*    *
  * Cached result from `tmux display-message -p '#{client_control_mode}'`.
  * undefined = not yet queried (or probe failed) — env heuristic stays authoritative.
- */
+     */
 let tmuxControlModeProbed: boolean | undefined
 
-/**
+/*    *
  * Env-var heuristic for iTerm2's tmux integration mode (`tmux -CC` / `tmux -2CC`).
  *
  * In `-CC` mode, iTerm2 renders tmux panes as native splits — tmux runs
@@ -25,7 +25,7 @@ let tmuxControlModeProbed: boolean | undefined
  * This heuristic has known holes (SSH often doesn't propagate TERM_PROGRAM;
  * .tmux.conf can override TERM) — probeTmuxControlModeSync() is the
  * authoritative backstop. Kept as a zero-subprocess fast path.
- */
+     */
 function isTmuxControlModeEnvHeuristic(): boolean {
   if (!process.env.TMUX) return false
   if (process.env.TERM_PROGRAM !== 'iTerm.app') return false
@@ -35,7 +35,7 @@ function isTmuxControlModeEnvHeuristic(): boolean {
   return !term.startsWith('screen') && !term.startsWith('tmux')
 }
 
-/**
+/*    *
  * Sync one-shot probe: asks tmux directly whether this client is in control
  * mode via `#{client_control_mode}`. Runs on first isTmuxControlMode() call
  * when the env heuristic can't decide; result is cached.
@@ -52,7 +52,7 @@ function isTmuxControlModeEnvHeuristic(): boolean {
  *
  * The TMUX env check MUST come first — without it, display-message would
  * query whatever tmux server happens to be running rather than our client.
- */
+     */
 function probeTmuxControlModeSync(): void {
   // Seed cache with heuristic result so early returns below don't leave it
   // undefined — isTmuxControlMode() is called 15+ times per render, and an
@@ -85,7 +85,7 @@ function probeTmuxControlModeSync(): void {
   tmuxControlModeProbed = result.stdout.trim() === '1'
 }
 
-/**
+/*    *
  * True when running under `tmux -CC` (iTerm2 integration mode).
  *
  * The alt-screen / mouse-tracking path in fullscreen mode is unrecoverable
@@ -93,7 +93,7 @@ function probeTmuxControlModeSync(): void {
  * so callers auto-disable fullscreen.
  *
  * Lazily probes tmux on first call when the env heuristic can't decide.
- */
+     */
 export function isTmuxControlMode(): boolean {
   if (tmuxControlModeProbed === undefined) probeTmuxControlModeSync()
   return tmuxControlModeProbed ?? false
@@ -104,11 +104,11 @@ export function _resetTmuxControlModeProbeForTesting(): void {
   loggedTmuxCcDisable = false
 }
 
-/**
+/*    *
  * Runtime env-var check only. Ants default to on (CLAUDE_CODE_NO_FLICKER=0
  * to opt out); external users default to off (CLAUDE_CODE_NO_FLICKER=1 to
  * opt in).
- */
+     */
 export function isFullscreenEnvEnabled(): boolean {
   // Explicit user opt-out always wins.
   if (isEnvDefinedFalsy(process.env.CLAUDE_CODE_NO_FLICKER)) return false
@@ -128,7 +128,7 @@ export function isFullscreenEnvEnabled(): boolean {
   return process.env.USER_TYPE === 'ant'
 }
 
-/**
+/*    *
  * Whether fullscreen mode should enable SGR mouse tracking (DEC 1000/1002/1006).
  * Set CLAUDE_CODE_DISABLE_MOUSE=1 to keep alt-screen + virtualized scroll
  * (keyboard PgUp/PgDn/Ctrl+Home/End still work) but skip mouse capture,
@@ -136,34 +136,34 @@ export function isFullscreenEnvEnabled(): boolean {
  *
  * Compare with CLAUDE_CODE_NO_FLICKER=0 which is all-or-nothing — it also
  * disables alt-screen and virtualized scrollback.
- */
+     */
 export function isMouseTrackingEnabled(): boolean {
   return !isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_MOUSE)
 }
 
-/**
+/*    *
  * Whether mouse click handling is disabled (clicks/drags ignored, wheel still
  * works). Set CLAUDE_CODE_DISABLE_MOUSE_CLICKS=1 to prevent accidental clicks
  * from triggering cursor positioning, text selection, or message expansion.
  *
  * Fullscreen-specific — only reachable when CLAUDE_CODE_NO_FLICKER is active.
- */
+     */
 export function isMouseClicksDisabled(): boolean {
   return isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_MOUSE_CLICKS)
 }
 
-/**
+/*    *
  * True when the fullscreen alt-screen layout is actually rendering —
  * requires an interactive REPL session AND the env var not explicitly
  * set falsy. Headless paths (--print, SDK, in-process teammates) never
  * enter fullscreen, so features that depend on alt-screen re-rendering
  * should gate on this.
- */
+     */
 export function isFullscreenActive(): boolean {
   return getIsInteractive() && isFullscreenEnvEnabled()
 }
 
-/**
+/*    *
  * One-time hint for tmux users in fullscreen with `mouse off`.
  *
  * tmux's `mouse` option is session-scoped by design — there is no
@@ -176,7 +176,7 @@ export function isFullscreenActive(): boolean {
  * Fire-and-forget from REPL startup. Returns the hint text once per
  * session if TMUX is set, fullscreen is active, and tmux's current
  * `mouse` option is off; null otherwise.
- */
+     */
 export async function maybeGetTmuxMouseHint(): Promise<string | null> {
   if (!process.env.TMUX) return null
   // tmux -CC auto-disables fullscreen above, but belt-and-suspenders.
@@ -195,7 +195,7 @@ export async function maybeGetTmuxMouseHint(): Promise<string | null> {
   return "tmux detected · scroll with PgUp/PgDn · or add 'set -g mouse on' to ~/.tmux.conf for wheel scroll"
 }
 
-/** Test-only: reset module-level once-per-session flags. */
+/*    * Test-only: reset module-level once-per-session flags.     */
 export function _resetForTesting(): void {
   loggedTmuxCcDisable = false
   checkedTmuxMouseHint = false

@@ -24,11 +24,11 @@ import { generateWordSlug } from './words.js'
 
 const MAX_SLUG_RETRIES = 10
 
-/**
+/*    *
  * Get or generate a word slug for the current session's plan.
  * The slug is generated lazily on first access and cached for the session.
  * If a plan file with the generated slug already exists, retries up to 10 times.
- */
+     */
 export function getPlanSlug(sessionId?: SessionId): string {
   const id = sessionId ?? getSessionId()
   const cache = getPlanSlugCache()
@@ -48,26 +48,26 @@ export function getPlanSlug(sessionId?: SessionId): string {
   return slug!
 }
 
-/**
+/*    *
  * Set a specific plan slug for a session (used when resuming a session)
- */
+     */
 export function setPlanSlug(sessionId: SessionId, slug: string): void {
   getPlanSlugCache().set(sessionId, slug)
 }
 
-/**
+/*    *
  * Clear the plan slug for the current session.
  * This should be called on /clear to ensure a fresh plan file is used.
- */
+     */
 export function clearPlanSlug(sessionId?: SessionId): void {
   const id = sessionId ?? getSessionId()
   getPlanSlugCache().delete(id)
 }
 
-/**
+/*    *
  * Clear ALL plan slug entries (all sessions).
  * Use this on /clear to free sub-session slug entries.
- */
+     */
 export function clearAllPlanSlugs(): void {
   getPlanSlugCache().clear()
 }
@@ -110,12 +110,12 @@ export const getPlansDirectory = memoize(function getPlansDirectory(): string {
   return plansPath
 })
 
-/**
+/*    *
  * Get the file path for a session's plan
  * @param agentId Optional agent ID for subagents. If not provided, returns main session plan.
  * For main conversation (no agentId), returns {planSlug}.md
  * For subagents (agentId provided), returns {planSlug}-agent-{agentId}.md
- */
+     */
 export function getPlanFilePath(agentId?: AgentId): string {
   const planSlug = getPlanSlug(getSessionId())
 
@@ -128,10 +128,10 @@ export function getPlanFilePath(agentId?: AgentId): string {
   return join(getPlansDirectory(), `${planSlug}-agent-${agentId}.md`)
 }
 
-/**
+/*    *
  * Get the plan content for a session
  * @param agentId Optional agent ID for subagents. If not provided, returns main session plan.
- */
+     */
 export function getPlan(agentId?: AgentId): string | null {
   const filePath = getPlanFilePath(agentId)
   try {
@@ -143,14 +143,14 @@ export function getPlan(agentId?: AgentId): string | null {
   }
 }
 
-/**
+/*    *
  * Extract the plan slug from a log's message history.
- */
+     */
 function getSlugFromLog(log: LogOption): string | undefined {
   return log.messages.find(m => m.slug)?.slug
 }
 
-/**
+/*    *
  * Restore plan slug from a resumed session.
  * Sets the slug in the session cache so getPlanSlug returns it.
  * If the plan file is missing, attempts to recover it from a file snapshot
@@ -160,7 +160,7 @@ function getSlugFromLog(log: LogOption): string | undefined {
  * @param targetSessionId The session ID to associate the plan slug with.
  *                        This should be the ORIGINAL session ID being resumed,
  *                        not the temporary session ID from before resume.
- */
+     */
 export async function copyPlanForResume(
   log: LogOption,
   targetSessionId?: SessionId,
@@ -230,12 +230,12 @@ export async function copyPlanForResume(
   }
 }
 
-/**
+/*    *
  * Copy a plan file for a forked session. Unlike copyPlanForResume (which reuses
  * the original slug), this generates a NEW slug for the forked session and
  * writes the original plan content to the new file. This prevents the original
  * and forked sessions from clobbering each other's plan files.
- */
+     */
 export async function copyPlanForFork(
   log: LogOption,
   targetSessionId: SessionId,
@@ -263,7 +263,7 @@ export async function copyPlanForFork(
   }
 }
 
-/**
+/*    *
  * Recover plan content from the message history. Plan content can appear in
  * three forms depending on what happened during the session:
  *
@@ -275,7 +275,7 @@ export async function copyPlanForFork(
  *
  * 3. plan_file_reference attachment — created by auto-compact to preserve the
  *    plan across compaction boundaries.
- */
+     */
 function recoverPlanFromMessages(log: LogOption): string | null {
   for (let i = log.messages.length - 1; i >= 0; i--) {
     const msg = log.messages[i]
@@ -325,10 +325,10 @@ function recoverPlanFromMessages(log: LogOption): string | null {
   return null
 }
 
-/**
+/*    *
  * Find a file entry in the most recent file-snapshot system message in the transcript.
  * Scans backwards to find the latest snapshot.
- */
+     */
 function findFileSnapshotEntry(
   messages: LogOption['messages'],
   key: string,
@@ -352,11 +352,11 @@ function findFileSnapshotEntry(
   return undefined
 }
 
-/**
+/*    *
  * Persist a snapshot of session files (plan, todos) to the transcript.
  * Called incrementally whenever these files change. Only active in remote
  * sessions (CCR) where local files don't persist between sessions.
- */
+     */
 export async function persistFileSnapshotIfRemote(): Promise<void> {
   if (getEnvironmentKind() === null) {
     return

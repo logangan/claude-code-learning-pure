@@ -63,12 +63,12 @@ type PermissionQueueOps = {
 type ResolveOnce<T> = {
   resolve(value: T): void
   isResolved(): boolean
-  /**
+  /*    *
    * Atomically check-and-mark as resolved. Returns true if this caller
    * won the race (nobody else has resolved yet), false otherwise.
    * Use this in async callbacks BEFORE awaiting, to close the window
    * between the `isResolved()` check and the actual `resolve()` call.
-   */
+       */
   claim(): boolean
 }
 
@@ -349,11 +349,11 @@ function createPermissionContext(
 
 type PermissionContext = ReturnType<typeof createPermissionContext>
 
-/**
+/*    *
  * Create a PermissionQueueOps backed by a React state setter.
  * This is the bridge between React's `setToolUseConfirmQueue` and the
  * generic queue interface used by PermissionContext.
- */
+     */
 function createPermissionQueueOps(
   setToolUseConfirmQueue: React.Dispatch<
     React.SetStateAction<ToolUseConfirm[]>

@@ -45,14 +45,14 @@ export type PermissionPromptTool = Tool<
 // during permission prompts or limited tool operations
 const ASK_READ_FILE_STATE_CACHE_SIZE = 10
 
-/**
+/*    *
  * Checks if the result should be considered successful based on the last message.
  * Returns true if:
  * - Last message is assistant with text/thinking content
  * - Last message is user with only tool_result blocks
  * - Last message is the user prompt but the API completed with end_turn
  *   (model chose to emit no content blocks)
- */
+     */
 export function isResultSuccessful(
   message: Message | undefined,
   stopReason: string | null = null,
@@ -285,13 +285,11 @@ export async function* handleOrphanedPermission(
 
   // Add the assistant message with tool_use to messages BEFORE executing
   // so the conversation history is complete (tool_use -> tool_result).
-  //
-  // On CCR resume, mutableMessages is seeded from the transcript and may already
+  // // On CCR resume, mutableMessages is seeded from the transcript and may already
   // contain this tool_use. Pushing again would make normalizeMessagesForAPI merge
   // same-ID assistants (concatenating content) and produce a duplicate tool_use
   // ID, which the API rejects with "tool_use ids must be unique".
-  //
-  // Check for the specific tool_use_id rather than message.id: streaming yields
+  // // Check for the specific tool_use_id rather than message.id: streaming yields
   // each content block as a separate AssistantMessage sharing one message.id, so
   // a [text, tool_use] response lands as two entries. filterUnresolvedToolUses may
   // strip the tool_use entry but keep the text one; an id-based check would then
@@ -469,8 +467,7 @@ export function extractReadFilesFromMessages(
           // tool_use input (only old_string/new_string) nor fully in the
           // result (only a snippet). Read from disk now, using actual mtime
           // so getChangedFiles's mtime check passes on the next turn.
-          //
-          // Callers seed the cache once at process start (print.ts --resume,
+          // // Callers seed the cache once at process start (print.ts --resume,
           // Cowork cold-restart per turn), so disk content at extraction time
           // IS the post-edit state. No dedup: processing every Edit preserves
           // last-wins semantics when Read/Write interleave (Edit→Read→Edit).
@@ -500,10 +497,10 @@ export function extractReadFilesFromMessages(
   return cache
 }
 
-/**
+/*    *
  * Extract the top-level CLI tools used in BashTool calls from message history.
  * Returns a deduplicated set of command names (e.g. 'vercel', 'aws', 'git').
- */
+     */
 export function extractBashToolsFromMessages(messages: Message[]): Set<string> {
   const tools = new Set<string>()
   for (const message of messages) {
@@ -535,11 +532,11 @@ export function extractBashToolsFromMessages(messages: Message[]): Set<string> {
 
 const STRIPPED_COMMANDS = new Set(['sudo'])
 
-/**
+/*    *
  * Extract the actual CLI name from a bash command string, skipping
  * env var assignments (e.g. `FOO=bar vercel` → `vercel`) and prefixes
  * in STRIPPED_COMMANDS.
- */
+     */
 function extractCliName(command: string | undefined): string | undefined {
   if (!command) return undefined
   const tokens = command.trim().split(/\s+/)

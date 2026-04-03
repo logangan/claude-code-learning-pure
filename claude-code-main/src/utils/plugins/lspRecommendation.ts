@@ -1,4 +1,4 @@
-/**
+/*    *
  * LSP Plugin Recommendation Utility
  *
  * Scans installed marketplaces for LSP plugins and recommends plugins
@@ -8,7 +8,7 @@
  * Limitation: Can only detect LSP plugins that declare their servers
  * inline in the marketplace entry. Plugins with separate .lsp.json files
  * are not detectable until after installation.
- */
+     */
 
 import { extname } from 'path'
 import { isBinaryInstalled } from '../binaryCheck.js'
@@ -24,9 +24,9 @@ import {
   type PluginMarketplaceEntry,
 } from './schemas.js'
 
-/**
+/*    *
  * LSP plugin recommendation returned to the caller
- */
+     */
 export type LspPluginRecommendation = {
   pluginId: string // "plugin-name@marketplace-name"
   pluginName: string // Human-readable plugin name
@@ -40,22 +40,22 @@ export type LspPluginRecommendation = {
 // Maximum number of times user can ignore recommendations before we stop showing
 const MAX_IGNORED_COUNT = 5
 
-/**
+/*    *
  * Check if a marketplace is official (from Anthropic)
- */
+     */
 function isOfficialMarketplace(name: string): boolean {
   return ALLOWED_OFFICIAL_MARKETPLACE_NAMES.has(name.toLowerCase())
 }
 
-/**
+/*    *
  * Internal type for LSP info extracted from plugin manifest
- */
+     */
 type LspInfo = {
   extensions: Set<string>
   command: string
 }
 
-/**
+/*    *
  * Extract LSP info (extensions and command) from inline lspServers config.
  *
  * NOTE: Can only read inline configs, not external .lsp.json files.
@@ -63,7 +63,7 @@ type LspInfo = {
  *
  * @param lspServers - The lspServers field from PluginMarketplaceEntry
  * @returns LSP info with extensions and command, or null if not extractable
- */
+     */
 function extractLspInfoFromManifest(
   lspServers: PluginMarketplaceEntry['lspServers'],
 ): LspInfo | null {
@@ -99,12 +99,12 @@ function extractLspInfoFromManifest(
   return extractFromServerConfigRecord(lspServers)
 }
 
-/**
+/*    *
  * Extract LSP info from a server config record (inline object format)
- */
-/**
+     */
+/*    *
  * Type guard to check if a value is a record object
- */
+     */
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
@@ -141,9 +141,9 @@ function extractFromServerConfigRecord(
   return { extensions, command }
 }
 
-/**
+/*    *
  * Internal type for plugin with LSP info
- */
+     */
 type LspPluginInfo = {
   entry: PluginMarketplaceEntry
   marketplaceName: string
@@ -152,11 +152,11 @@ type LspPluginInfo = {
   isOfficial: boolean
 }
 
-/**
+/*    *
  * Get all LSP plugins from all installed marketplaces
  *
  * @returns Map of pluginId to plugin info with LSP metadata
- */
+     */
 async function getLspPluginsFromMarketplaces(): Promise<
   Map<string, LspPluginInfo>
 > {
@@ -205,7 +205,7 @@ async function getLspPluginsFromMarketplaces(): Promise<
   return result
 }
 
-/**
+/*    *
  * Find matching LSP plugins for a file path.
  *
  * Returns recommendations for plugins that:
@@ -218,7 +218,7 @@ async function getLspPluginsFromMarketplaces(): Promise<
  *
  * @param filePath - Path to the file to find LSP plugins for
  * @returns Array of matching plugin recommendations (empty if none or disabled)
- */
+     */
 export async function getMatchingLspPlugins(
   filePath: string,
 ): Promise<LspPluginRecommendation[]> {
@@ -308,11 +308,11 @@ export async function getMatchingLspPlugins(
   }))
 }
 
-/**
+/*    *
  * Add a plugin to the "never suggest" list
  *
  * @param pluginId - Plugin ID to never suggest again
- */
+     */
 export function addToNeverSuggest(pluginId: string): void {
   saveGlobalConfig(currentConfig => {
     const current = currentConfig.lspRecommendationNeverPlugins ?? []
@@ -327,10 +327,10 @@ export function addToNeverSuggest(pluginId: string): void {
   logForDebugging(`[lspRecommendation] Added ${pluginId} to never suggest`)
 }
 
-/**
+/*    *
  * Increment the ignored recommendation count.
  * After MAX_IGNORED_COUNT ignores, recommendations are disabled.
- */
+     */
 export function incrementIgnoredCount(): void {
   saveGlobalConfig(currentConfig => {
     const newCount = (currentConfig.lspRecommendationIgnoredCount ?? 0) + 1
@@ -342,12 +342,12 @@ export function incrementIgnoredCount(): void {
   logForDebugging('[lspRecommendation] Incremented ignored count')
 }
 
-/**
+/*    *
  * Check if LSP recommendations are disabled.
  * Disabled when:
  * - User explicitly disabled via config
  * - User has ignored MAX_IGNORED_COUNT recommendations
- */
+     */
 export function isLspRecommendationsDisabled(): boolean {
   const config = getGlobalConfig()
   return (
@@ -356,9 +356,9 @@ export function isLspRecommendationsDisabled(): boolean {
   )
 }
 
-/**
+/*    *
  * Reset the ignored count (useful if user re-enables recommendations)
- */
+     */
 export function resetIgnoredCount(): void {
   saveGlobalConfig(currentConfig => {
     const currentCount = currentConfig.lspRecommendationIgnoredCount ?? 0

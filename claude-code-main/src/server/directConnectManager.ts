@@ -1,4 +1,4 @@
-/* eslint-disable eslint-plugin-n/no-unsupported-features/node-builtins */
+/*     eslint-disable eslint-plugin-n/no-unsupported-features/node-builtins     */
 
 import type { SDKMessage } from '../entrypoints/agentSdkTypes.js'
 import type {
@@ -166,9 +166,9 @@ export class DirectConnectSessionManager {
     this.ws.send(response)
   }
 
-  /**
+  /*    *
    * Send an interrupt signal to cancel the current request
-   */
+       */
   sendInterrupt(): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       return

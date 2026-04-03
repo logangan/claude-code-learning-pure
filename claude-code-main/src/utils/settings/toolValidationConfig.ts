@@ -1,18 +1,18 @@
-/**
+/*    *
  * Tool validation configuration
  *
  * Most tools need NO configuration - basic validation works automatically.
  * Only add your tool here if it has special pattern requirements.
- */
+     */
 
 export type ToolValidationConfig = {
-  /** Tools that accept file glob patterns (e.g., *.ts, src/**) */
+  /*    * Tools that accept file glob patterns (e.g., *.ts, src/**)     */
   filePatternTools: string[]
 
-  /** Tools that accept bash wildcard patterns (* anywhere) and legacy :* prefix syntax */
+  /*    * Tools that accept bash wildcard patterns (* anywhere) and legacy :* prefix syntax     */
   bashPrefixTools: string[]
 
-  /** Custom validation rules for specific tools */
+  /*    * Custom validation rules for specific tools     */
   customValidation: {
     [toolName: string]: (content: string) => {
       valid: boolean
@@ -55,7 +55,7 @@ export const TOOL_VALIDATION_CONFIG: ToolValidationConfig = {
     // WebFetch uses domain: prefix for hostname-based permissions
     WebFetch: content => {
       // Check if it's trying to use a URL format
-      if (content.includes('://') || content.startsWith('http')) {
+      if (content.includes(':// ') || content.startsWith('http')) {
         return {
           valid: false,
           error: 'WebFetch permissions use domain format, not URLs',

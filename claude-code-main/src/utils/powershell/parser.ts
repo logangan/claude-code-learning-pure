@@ -10,20 +10,20 @@ import { jsonParse } from '../slowOperations.js'
 // Raw internal types (RawParsedOutput etc.) are defined further below.
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * The PowerShell AST element type for pipeline elements.
  * Maps directly to CommandBaseAst derivatives in System.Management.Automation.Language.
- */
+     */
 type PipelineElementType =
   | 'CommandAst'
   | 'CommandExpressionAst'
   | 'ParenExpressionAst'
 
-/**
+/*    *
  * The AST node type for individual command elements (arguments, expressions).
  * Used to classify each element during the AST walk so TypeScript can derive
  * security flags without extra Find-AstNodes calls in PowerShell.
- */
+     */
 type CommandElementType =
   | 'ScriptBlock'
   | 'SubExpression'
@@ -34,21 +34,21 @@ type CommandElementType =
   | 'Parameter'
   | 'Other'
 
-/**
+/*    *
  * A child node of a command element (one level deep). Populated for
  * CommandParameterAst → .Argument (colon-bound parameters like
  * `-InputObject:$env:SECRET`). Consumers check `child.type` to classify
  * the bound value (Variable, StringConstant, Other) without parsing text.
- */
+     */
 export type CommandElementChild = {
   type: CommandElementType
   text: string
 }
 
-/**
+/*    *
  * The PowerShell AST statement type.
  * Maps directly to StatementAst derivatives in System.Management.Automation.Language.
- */
+     */
 type StatementType =
   | 'PipelineAst'
   | 'PipelineChainAst'
@@ -66,72 +66,72 @@ type StatementType =
   | 'DataStatementAst'
   | 'UnknownStatementAst'
 
-/**
+/*    *
  * A command invocation within a pipeline segment.
- */
+     */
 export type ParsedCommandElement = {
-  /** The command/cmdlet name (e.g., "Get-ChildItem", "git") */
+  /*    * The command/cmdlet name (e.g., "Get-ChildItem", "git")     */
   name: string
-  /** The command name type: cmdlet, application (exe), or unknown */
+  /*    * The command name type: cmdlet, application (exe), or unknown     */
   nameType: 'cmdlet' | 'application' | 'unknown'
-  /** The AST element type from PowerShell's parser */
+  /*    * The AST element type from PowerShell's parser     */
   elementType: PipelineElementType
-  /** All arguments as strings (includes flags like "-Recurse") */
+  /*    * All arguments as strings (includes flags like "-Recurse")     */
   args: string[]
-  /** The full text of this command element */
+  /*    * The full text of this command element     */
   text: string
-  /** AST node types for each element in this command (arguments, expressions, etc.) */
+  /*    * AST node types for each element in this command (arguments, expressions, etc.)     */
   elementTypes?: CommandElementType[]
-  /**
+  /*    *
    * Child nodes of each argument, aligned with `args[]` (so
    * `children[i]` ↔ `args[i]` ↔ `elementTypes[i+1]`). Only populated for
    * Parameter elements with a colon-bound argument. Undefined for elements
    * with no children. Lets consumers check `children[i].some(c => c.type
    * !== 'StringConstant')` instead of parsing the arg text for `:` + `$`.
-   */
+       */
   children?: (CommandElementChild[] | undefined)[]
-  /** Redirections on this command element (from nested commands in && / || chains) */
+  /*    * Redirections on this command element (from nested commands in && / || chains)     */
   redirections?: ParsedRedirection[]
 }
 
-/**
+/*    *
  * A redirection found in the command.
- */
+     */
 type ParsedRedirection = {
-  /** The redirection operator */
+  /*    * The redirection operator     */
   operator: '>' | '>>' | '2>' | '2>>' | '*>' | '*>>' | '2>&1'
-  /** The target (file path or stream number) */
+  /*    * The target (file path or stream number)     */
   target: string
-  /** Whether this is a merging redirection like 2>&1 */
+  /*    * Whether this is a merging redirection like 2>&1     */
   isMerging: boolean
 }
 
-/**
+/*    *
  * A parsed statement from PowerShell.
  * Can be a pipeline, assignment, control flow statement, etc.
- */
+     */
 type ParsedStatement = {
-  /** The AST statement type from PowerShell's parser */
+  /*    * The AST statement type from PowerShell's parser     */
   statementType: StatementType
-  /** Individual commands in this statement (for pipelines) */
+  /*    * Individual commands in this statement (for pipelines)     */
   commands: ParsedCommandElement[]
-  /** Redirections on this statement */
+  /*    * Redirections on this statement     */
   redirections: ParsedRedirection[]
-  /** Full text of the statement */
+  /*    * Full text of the statement     */
   text: string
-  /**
+  /*    *
    * For control flow statements (if, for, foreach, while, try, etc.),
    * commands found recursively inside the body blocks.
    * Uses FindAll() to extract ALL nested CommandAst nodes at any depth.
-   */
+       */
   nestedCommands?: ParsedCommandElement[]
-  /**
+  /*    *
    * Security-relevant AST patterns found via FindAll() on the entire statement,
    * regardless of statement type. This catches patterns that elementTypes may
    * miss (e.g. member invocations inside assignments, subexpressions in
    * non-pipeline statements). Computed in the PS1 script using instanceof
    * checks against the PowerShell AST type system.
-   */
+       */
   securityPatterns?: {
     hasMemberInvocations?: boolean
     hasSubExpressions?: boolean
@@ -140,59 +140,59 @@ type ParsedStatement = {
   }
 }
 
-/**
+/*    *
  * A variable reference found in the command.
- */
+     */
 type ParsedVariable = {
-  /** The variable path (e.g., "HOME", "env:PATH", "global:x") */
+  /*    * The variable path (e.g., "HOME", "env:PATH", "global:x")     */
   path: string
-  /** Whether this variable uses splatting (@var instead of $var) */
+  /*    * Whether this variable uses splatting (@var instead of $var)     */
   isSplatted: boolean
 }
 
-/**
+/*    *
  * A parse error from PowerShell's parser.
- */
+     */
 type ParseError = {
   message: string
   errorId: string
 }
 
-/**
+/*    *
  * The complete parsed result from the PowerShell AST parser.
- */
+     */
 export type ParsedPowerShellCommand = {
-  /** Whether the command parsed successfully (no syntax errors) */
+  /*    * Whether the command parsed successfully (no syntax errors)     */
   valid: boolean
-  /** Parse errors, if any */
+  /*    * Parse errors, if any     */
   errors: ParseError[]
-  /** Top-level statements, separated by ; or newlines */
+  /*    * Top-level statements, separated by ; or newlines     */
   statements: ParsedStatement[]
-  /** All variable references found */
+  /*    * All variable references found     */
   variables: ParsedVariable[]
-  /** Whether the token stream contains a stop-parsing (--%) token */
+  /*    * Whether the token stream contains a stop-parsing (--%) token     */
   hasStopParsing: boolean
-  /** The original command text */
+  /*    * The original command text     */
   originalCommand: string
-  /**
+  /*    *
    * All .NET type literals found anywhere in the AST (TypeExpressionAst +
    * TypeConstraintAst). TypeName.FullName — the literal text as written, NOT
    * the resolved .NET type (e.g. [int] → "int", not "System.Int32").
    * Consumed by the CLM-allowlist check in powershellSecurity.ts.
-   */
+       */
   typeLiterals?: string[]
-  /**
+  /*    *
    * Whether the command contains `using module` or `using assembly` statements.
    * These load external code (modules/assemblies) and execute their top-level
    * script body or module initializers. The using statement is a sibling of
    * the named blocks on ScriptBlockAst, not a child, so it is not visible
    * to Process-BlockStatements or any downstream command walker.
-   */
+       */
   hasUsingStatements?: boolean
-  /**
+  /*    *
    * Whether the command contains `#Requires` directives (ScriptRequirements).
    * `#Requires -Modules <name>` triggers module loading from PSModulePath.
-   */
+       */
   hasScriptRequirements?: boolean
 }
 
@@ -216,12 +216,12 @@ function getParseTimeoutMs(): number {
 // MAX_COMMAND_LENGTH is derived from PARSE_SCRIPT_BODY.length below (after the
 // script body is defined) so it cannot go stale as the script grows.
 
-/**
+/*    *
  * The PowerShell parse script inlined as a string constant.
  * This avoids needing to read from disk at runtime (the file may not exist
  * in bundled builds). The script uses the native PowerShell AST parser to
  * analyze a command and output structured JSON.
- */
+     */
 // Raw types describing PS script JSON output (exported for testing)
 export type RawCommandElement = {
   type: string // .GetType().Name e.g. "StringConstantExpressionAst"
@@ -274,7 +274,7 @@ type RawParsedOutput = {
 }
 
 // This is the canonical copy of the parse script. There is no separate .ps1 file.
-/**
+/*    *
  * The core parse logic.
  * The command is passed via Base64-encoded $EncodedCommand variable
  * to avoid here-string injection attacks.
@@ -292,8 +292,8 @@ type RawParsedOutput = {
  * on it directly rather than reusing Process-BlockStatements. We only emit a
  * statement if there is something to report, to avoid noise for plain
  * param($x) declarations. (Kept compact in-script to preserve argv budget.)
- */
-/**
+     */
+/*    *
  * PS1 parse script. Comments live here (not inline) — every char inside the
  * backticks eats into WINDOWS_MAX_COMMAND_LENGTH (argv budget).
  *
@@ -310,7 +310,7 @@ type RawParsedOutput = {
  * - Nested commands: FindAll for ALL statement types (if/for/foreach/while/
  *   switch/try/function/assignment/PipelineChainAst) — skip direct pipeline
  *   elements already in the loop
- */
+     */
 // exported for testing
 export const PARSE_SCRIPT_BODY = `
 if (-not $EncodedCommand) {
@@ -570,17 +570,15 @@ $output | ConvertTo-Json -Depth 10 -Compress
 // ---------------------------------------------------------------------------
 // Windows CreateProcess has a 32,767 char command-line limit. The encoding
 // chain is:
-//   command (N UTF-8 bytes) → Base64 (~4N/3 chars) → $EncodedCommand = '...'\n
-//   → full script (wrapper + PARSE_SCRIPT_BODY) → UTF-16LE (2× bytes)
-//   → Base64 (4/3× chars) → -EncodedCommand argv
+// command (N UTF-8 bytes) → Base64 (~4N/3 chars) → $EncodedCommand = '...'\n
+// → full script (wrapper + PARSE_SCRIPT_BODY) → UTF-16LE (2× bytes)
+// → Base64 (4/3× chars) → -EncodedCommand argv
 // Final cmdline ≈ argv_overhead + (wrapper + 4N/3 + body) × 8/3
-//
-// Solving for N (UTF-8 bytes) with a 32,767 cap:
-//   script_budget   = (32767 - argv_overhead) × 3/8
-//   cmd_b64_budget  = script_budget - PARSE_SCRIPT_BODY.length - wrapper
-//   N               = cmd_b64_budget × 3/4 - safety_margin
-//
-// SECURITY: N is a UTF-8 BYTE budget, not a UTF-16 code-unit budget. The
+// // Solving for N (UTF-8 bytes) with a 32,767 cap:
+// script_budget   = (32767 - argv_overhead) × 3/8
+// cmd_b64_budget  = script_budget - PARSE_SCRIPT_BODY.length - wrapper
+// N               = cmd_b64_budget × 3/4 - safety_margin
+// // SECURITY: N is a UTF-8 BYTE budget, not a UTF-16 code-unit budget. The
 // length gate MUST measure Buffer.byteLength(command, 'utf8'), not
 // command.length. A BMP character in U+0800–U+FFFF (CJK ideographs, most
 // non-Latin scripts) is 1 UTF-16 code unit but 3 UTF-8 bytes. With
@@ -589,14 +587,12 @@ $output | ConvertTo-Json -Depth 10 -Compress
 // base64 ≈ 4,368 chars → final argv ≈ 40K chars, overflowing 32,767 by
 // ~7.4K. CreateProcess fails → valid:false → parse-fail degradation (deny
 // rules silently downgrade to ask). Finding #36.
-//
-// COMPUTED from PARSE_SCRIPT_BODY.length so it cannot drift. The prior
+// // COMPUTED from PARSE_SCRIPT_BODY.length so it cannot drift. The prior
 // hardcoded value (4,500) was derived from a ~6K body estimate; the body is
 // actually ~11K chars, so the real ceiling was ~1,850. Commands in the
 // 1,850–4,500 range passed this gate but then failed CreateProcess on
 // Windows, returning valid=false and skipping all AST-based security checks.
-//
-// Unix argv limits are typically 2MB+ (ARG_MAX) with ~128KB per-argument
+// // Unix argv limits are typically 2MB+ (ARG_MAX) with ~128KB per-argument
 // limit (MAX_ARG_STRLEN on Linux; macOS has no per-arg limit below ARG_MAX).
 // At MAX=4,500 the -EncodedCommand argument is ~45KB — well under either.
 // Applying the Windows-derived limit on Unix would REGRESS: commands in the
@@ -604,8 +600,7 @@ $output | ConvertTo-Json -Depth 10 -Compress
 // deny loop at powershellPermissions.ts; rejecting them pre-spawn degrades
 // user-configured deny rules from deny→ask for compound commands with a
 // denied cmdlet buried mid-script. So the Windows limit is platform-gated.
-//
-// If the Windows limit becomes too restrictive, switch to -File with a temp
+// // If the Windows limit becomes too restrictive, switch to -File with a temp
 // file for large inputs.
 // ---------------------------------------------------------------------------
 const WINDOWS_ARGV_CAP = 32_767
@@ -662,10 +657,10 @@ function makeInvalidResult(
   }
 }
 
-/**
+/*    *
  * Base64-encode a string as UTF-16LE, which is the encoding required by
  * PowerShell's -EncodedCommand parameter.
- */
+     */
 function toUtf16LeBase64(text: string): string {
   if (typeof Buffer !== 'undefined') {
     return Buffer.from(text, 'utf16le').toString('base64')
@@ -679,11 +674,11 @@ function toUtf16LeBase64(text: string): string {
   return btoa(bytes.map(b => String.fromCharCode(b)).join(''))
 }
 
-/**
+/*    *
  * Build the full PowerShell script that parses a command.
  * The user command is Base64-encoded (UTF-8) and embedded in a variable
  * to prevent injection attacks.
- */
+     */
 function buildParseScript(command: string): string {
   const encoded =
     typeof Buffer !== 'undefined'
@@ -696,10 +691,10 @@ function buildParseScript(command: string): string {
   return `$EncodedCommand = '${encoded}'\n${PARSE_SCRIPT_BODY}`
 }
 
-/**
+/*    *
  * Ensure a value is an array. PowerShell 5.1's ConvertTo-Json may unwrap
  * single-element arrays into plain objects.
- */
+     */
 function ensureArray<T>(value: T | T[] | undefined | null): T[] {
   if (value === undefined || value === null) {
     return []
@@ -707,7 +702,7 @@ function ensureArray<T>(value: T | T[] | undefined | null): T[] {
   return Array.isArray(value) ? value : [value]
 }
 
-/** Map raw .NET AST type name to our StatementType union */
+/*    * Map raw .NET AST type name to our StatementType union     */
 // exported for testing
 export function mapStatementType(rawType: string): StatementType {
   switch (rawType) {
@@ -744,7 +739,7 @@ export function mapStatementType(rawType: string): StatementType {
   }
 }
 
-/** Map raw .NET AST type name to our CommandElementType union */
+/*    * Map raw .NET AST type name to our CommandElementType union     */
 // exported for testing
 export function mapElementType(
   rawType: string,
@@ -795,7 +790,7 @@ export function mapElementType(
   }
 }
 
-/** Classify command name as cmdlet, application, or unknown */
+/*    * Classify command name as cmdlet, application, or unknown     */
 // exported for testing
 export function classifyCommandName(
   name: string,
@@ -809,7 +804,7 @@ export function classifyCommandName(
   return 'unknown'
 }
 
-/** Strip module prefix from command name (e.g. "Microsoft.PowerShell.Utility\\Invoke-Expression" -> "Invoke-Expression") */
+/*    * Strip module prefix from command name (e.g. "Microsoft.PowerShell.Utility\\Invoke-Expression" -> "Invoke-Expression")     */
 // exported for testing
 export function stripModulePrefix(name: string): string {
   const idx = name.lastIndexOf('\\')
@@ -825,7 +820,7 @@ export function stripModulePrefix(name: string): string {
   return name.substring(idx + 1)
 }
 
-/** Transform a raw CommandAst pipeline element into ParsedCommandElement */
+/*    * Transform a raw CommandAst pipeline element into ParsedCommandElement     */
 // exported for testing
 export function transformCommandAst(
   raw: RawPipelineElement,
@@ -934,7 +929,7 @@ export function transformCommandAst(
   return result
 }
 
-/** Transform a non-CommandAst pipeline element into ParsedCommandElement */
+/*    * Transform a non-CommandAst pipeline element into ParsedCommandElement     */
 // exported for testing
 export function transformExpressionElement(
   raw: RawPipelineElement,
@@ -957,7 +952,7 @@ export function transformExpressionElement(
   }
 }
 
-/** Map raw redirection to ParsedRedirection */
+/*    * Map raw redirection to ParsedRedirection     */
 // exported for testing
 export function transformRedirection(raw: RawRedirection): ParsedRedirection {
   if (raw.type === 'MergingRedirectionAst') {
@@ -997,7 +992,7 @@ export function transformRedirection(raw: RawRedirection): ParsedRedirection {
   return { operator, target: raw.locationText ?? '', isMerging: false }
 }
 
-/** Transform a raw statement into ParsedStatement */
+/*    * Transform a raw statement into ParsedStatement     */
 // exported for testing
 export function transformStatement(raw: RawStatement): ParsedStatement {
   const statementType = mapStatementType(raw.type)
@@ -1026,13 +1021,12 @@ export function transformStatement(raw: RawStatement): ParsedStatement {
     }
     // SECURITY: The PS1 PipelineAst branch does a deep FindAll for
     // FileRedirectionAst to catch redirections hidden inside:
-    //  - colon-bound ParenExpressionAst args: -Name:('payload' > file)
-    //  - hashtable value statements: @{k='payload' > ~/.bashrc}
+    // - colon-bound ParenExpressionAst args: -Name:('payload' > file)
+    // - hashtable value statements: @{k='payload' > ~/.bashrc}
     // Both are invisible at the element level — the redirection's parent
     // is a child of CommandParameterAst / CommandExpressionAst, not a
     // separate pipeline element. Merge into statement-level redirections.
-    //
-    // The FindAll ALSO re-discovers direct-element redirections already
+    // // The FindAll ALSO re-discovers direct-element redirections already
     // captured in the per-element loop above. Dedupe by (operator, target)
     // so tests and consumers see the real count.
     const seen = new Set(redirections.map(r => `${r.operator}\0${r.target}`))
@@ -1063,17 +1057,14 @@ export function transformStatement(raw: RawStatement): ParsedStatement {
     // getFileRedirections → step 4.6 misses it → compound commands like
     // `Get-Process && 1 > /tmp/evil` auto-allow at step 5 (only Get-Process
     // is checked, allowlisted).
-    //
-    // Finding FileRedirectionAst DIRECTLY (rather than finding CommandExpressionAst
+    // // Finding FileRedirectionAst DIRECTLY (rather than finding CommandExpressionAst
     // and extracting .Redirections) is both simpler and more robust: it catches
     // redirections on any node type, including ones we don't know about yet.
-    //
-    // Double-counts redirections already on nested CommandAst commands (those are
+    // // Double-counts redirections already on nested CommandAst commands (those are
     // extracted at line ~395 into nestedCommands[i].redirections AND found again
     // here). Harmless: step 4.6 only checks fileRedirections.length > 0, not
     // the exact count. No code does arithmetic on redirection counts.
-    //
-    // PS1 SIZE NOTE: The full rationale lives here (TS), not in the PS1 script,
+    // // PS1 SIZE NOTE: The full rationale lives here (TS), not in the PS1 script,
     // because PS1 comments bloat the -EncodedCommand payload and push the
     // Windows CreateProcess 32K limit. Keep PS1 comments terse; point them here.
     for (const redir of ensureArray(raw.redirections)) {
@@ -1102,7 +1093,7 @@ export function transformStatement(raw: RawStatement): ParsedStatement {
   return result
 }
 
-/** Transform the complete raw PS output into ParsedPowerShellCommand */
+/*    * Transform the complete raw PS output into ParsedPowerShellCommand     */
 function transformRawOutput(raw: RawParsedOutput): ParsedPowerShellCommand {
   const result: ParsedPowerShellCommand = {
     valid: raw.valid,
@@ -1125,14 +1116,14 @@ function transformRawOutput(raw: RawParsedOutput): ParsedPowerShellCommand {
   return result
 }
 
-/**
+/*    *
  * Parse a PowerShell command using the native AST parser.
  * Spawns pwsh to parse the command and returns structured results.
  * Results are memoized by command string.
  *
  * @param command - The PowerShell command to parse
  * @returns Parsed command structure, or a result with valid=false on failure
- */
+     */
 async function parsePowerShellCommandImpl(
   command: string,
 ): Promise<ParsedPowerShellCommand> {
@@ -1297,32 +1288,32 @@ export { parsePowerShellCommandCached as parsePowerShellCommand }
 // Analysis helpers — derived from the parsed AST structure.
 // ---------------------------------------------------------------------------
 
-/**
+/*    *
  * Security-relevant flags derived from the parsed AST.
- */
+     */
 type SecurityFlags = {
-  /** Contains $(...) subexpression */
+  /*    * Contains $(...) subexpression     */
   hasSubExpressions: boolean
-  /** Contains { ... } script block expressions */
+  /*    * Contains { ... } script block expressions     */
   hasScriptBlocks: boolean
-  /** Contains @variable splatting */
+  /*    * Contains @variable splatting     */
   hasSplatting: boolean
-  /** Contains expandable strings with embedded expressions ("...$()...") */
+  /*    * Contains expandable strings with embedded expressions ("...$()...")     */
   hasExpandableStrings: boolean
-  /** Contains .NET method invocations ([Type]::Method or $obj.Method()) */
+  /*    * Contains .NET method invocations ([Type]::Method or $obj.Method())     */
   hasMemberInvocations: boolean
-  /** Contains variable assignments ($x = ...) */
+  /*    * Contains variable assignments ($x = ...)     */
   hasAssignments: boolean
-  /** Uses stop-parsing token (--%) */
+  /*    * Uses stop-parsing token (--%)     */
   hasStopParsing: boolean
 }
 
-/**
+/*    *
  * Common PowerShell aliases mapped to their canonical cmdlet names.
  * Uses Object.create(null) to prevent prototype-chain pollution — attacker-controlled
  * command names like 'constructor' or '__proto__' must return undefined, not inherited
  * Object.prototype properties.
- */
+     */
 export const COMMON_ALIASES: Record<string, string> = Object.assign(
   Object.create(null) as Record<string, string>,
   {
@@ -1423,10 +1414,10 @@ export const COMMON_ALIASES: Record<string, string> = Object.assign(
     // resolves aliases BEFORE checking safety — if we map 'sort' → 'Sort-Object'
     // but PowerShell 7/Windows actually runs sort.exe, we'd auto-allow the wrong
     // program.
-    //   'sc'   → sc.exe (Service Controller) — e.g. `sc config Svc binpath= ...`
-    //   'sort' → sort.exe — e.g. `sort /O C:\evil.txt` (arbitrary file write)
-    //   'curl' → curl.exe (shipped with Windows 10 1803+)
-    //   'wget' → wget.exe (if installed)
+    // 'sc'   → sc.exe (Service Controller) — e.g. `sc config Svc binpath= ...`
+    // 'sort' → sort.exe — e.g. `sort /O C:\evil.txt` (arbitrary file write)
+    // 'curl' → curl.exe (shipped with Windows 10 1803+)
+    // 'wget' → wget.exe (if installed)
     // Prefer to leave ambiguous aliases unmapped — users can write the full name.
     // If adding aliases that resolve to SAFE_OUTPUT_CMDLETS or
     // ACCEPT_EDITS_ALLOWED_CMDLETS, verify no native .exe collision on PS Core.
@@ -1459,10 +1450,10 @@ const DIRECTORY_CHANGE_CMDLETS = new Set([
 
 const DIRECTORY_CHANGE_ALIASES = new Set(['cd', 'sl', 'chdir', 'pushd', 'popd'])
 
-/**
+/*    *
  * Get all command names across all statements, pipeline segments, and nested commands.
  * Returns lowercased names for case-insensitive comparison.
- */
+     */
 // exported for testing
 export function getAllCommandNames(parsed: ParsedPowerShellCommand): string[] {
   const names: string[] = []
@@ -1479,10 +1470,10 @@ export function getAllCommandNames(parsed: ParsedPowerShellCommand): string[] {
   return names
 }
 
-/**
+/*    *
  * Get all pipeline segments as flat list of commands.
  * Useful for checking each command independently.
- */
+     */
 export function getAllCommands(
   parsed: ParsedPowerShellCommand,
 ): ParsedCommandElement[] {
@@ -1500,9 +1491,9 @@ export function getAllCommands(
   return commands
 }
 
-/**
+/*    *
  * Get all redirections across all statements.
- */
+     */
 // exported for testing
 export function getAllRedirections(
   parsed: ParsedPowerShellCommand,
@@ -1526,10 +1517,10 @@ export function getAllRedirections(
   return redirections
 }
 
-/**
+/*    *
  * Get all variables, optionally filtered by scope (e.g., 'env').
  * Variable paths in PowerShell can have scopes like "env:PATH", "global:x".
- */
+     */
 export function getVariablesByScope(
   parsed: ParsedPowerShellCommand,
   scope: string,
@@ -1538,10 +1529,10 @@ export function getVariablesByScope(
   return parsed.variables.filter(v => v.path.toLowerCase().startsWith(prefix))
 }
 
-/**
+/*    *
  * Check if any command in the parsed result matches a given name (case-insensitive).
  * Handles common aliases too.
- */
+     */
 export function hasCommandNamed(
   parsed: ParsedPowerShellCommand,
   name: string,
@@ -1570,10 +1561,10 @@ export function hasCommandNamed(
   return false
 }
 
-/**
+/*    *
  * Check if the command contains any directory-changing commands.
  * (Set-Location, cd, sl, chdir, Push-Location, pushd, Pop-Location, popd)
- */
+     */
 // exported for testing
 export function hasDirectoryChange(parsed: ParsedPowerShellCommand): boolean {
   for (const cmdName of getAllCommandNames(parsed)) {
@@ -1587,9 +1578,9 @@ export function hasDirectoryChange(parsed: ParsedPowerShellCommand): boolean {
   return false
 }
 
-/**
+/*    *
  * Check if the command is a single simple command (no pipes, no semicolons, no operators).
- */
+     */
 // exported for testing
 export function isSingleCommand(parsed: ParsedPowerShellCommand): boolean {
   const stmt = parsed.statements[0]
@@ -1601,10 +1592,10 @@ export function isSingleCommand(parsed: ParsedPowerShellCommand): boolean {
   )
 }
 
-/**
+/*    *
  * Check if a specific command has a given argument/flag (case-insensitive).
  * Useful for checking "-EncodedCommand", "-Recurse", etc.
- */
+     */
 export function commandHasArg(
   command: ParsedCommandElement,
   arg: string,
@@ -1613,7 +1604,7 @@ export function commandHasArg(
   return command.args.some(a => a.toLowerCase() === lowerArg)
 }
 
-/**
+/*    *
  * Tokenizer-level dash characters that PowerShell's parser accepts as
  * parameter prefixes. SpecialCharacters.IsDash (CharTraits.cs) accepts exactly
  * these four: ASCII hyphen-minus, en-dash, em-dash, horizontal bar. These are
@@ -1623,7 +1614,7 @@ export function commandHasArg(
  *
  * Extent.Text preserves the raw character; transformCommandAst uses ce.text
  * for CommandParameterAst elements, so these reach callers unchanged.
- */
+     */
 export const PS_TOKENIZER_DASH_CHARS = new Set([
   '-', // U+002D hyphen-minus (ASCII)
   '\u2013', // en-dash
@@ -1631,7 +1622,7 @@ export const PS_TOKENIZER_DASH_CHARS = new Set([
   '\u2015', // horizontal bar
 ])
 
-/**
+/*    *
  * Determines if an argument is a PowerShell parameter (flag), using the AST
  * element type as ground truth when available.
  *
@@ -1643,7 +1634,7 @@ export const PS_TOKENIZER_DASH_CHARS = new Set([
  *
  * When elementType is unavailable (backward compat / no AST detail), fall back
  * to a char check against PS_TOKENIZER_DASH_CHARS.
- */
+     */
 export function isPowerShellParameter(
   arg: string,
   elementType?: CommandElementType,
@@ -1654,12 +1645,12 @@ export function isPowerShellParameter(
   return arg.length > 0 && PS_TOKENIZER_DASH_CHARS.has(arg[0]!)
 }
 
-/**
+/*    *
  * Check if any argument on a command is an unambiguous abbreviation of a PowerShell parameter.
  * PowerShell allows parameter abbreviation as long as the prefix is unambiguous.
  * The minPrefix is the shortest unambiguous prefix for the parameter.
  * For example, minPrefix '-en' for fullParam '-encodedcommand' matches '-en', '-enc', '-enco', etc.
- */
+     */
 export function commandHasArgAbbreviation(
   command: ParsedCommandElement,
   fullParam: string,
@@ -1683,32 +1674,32 @@ export function commandHasArgAbbreviation(
   })
 }
 
-/**
+/*    *
  * Split a parsed command into its pipeline segments for per-segment permission checking.
  * Returns each pipeline's commands separately.
- */
+     */
 export function getPipelineSegments(
   parsed: ParsedPowerShellCommand,
 ): ParsedStatement[] {
   return parsed.statements
 }
 
-/**
+/*    *
  * True if a redirection target is PowerShell's `$null` automatic variable.
  * `> $null` discards output (like /dev/null) — not a filesystem write.
  * `$null` cannot be reassigned, so this is safe to treat as a no-op sink.
  * `${null}` is the same automatic variable via curly-brace syntax. Spaces
  * inside the braces (`${ null }`) name a different variable, so no regex.
- */
+     */
 export function isNullRedirectionTarget(target: string): boolean {
   const t = target.trim().toLowerCase()
   return t === '$null' || t === '${null}'
 }
 
-/**
+/*    *
  * Get output redirections (file redirections, not merging redirections).
  * Returns only redirections that write to files.
- */
+     */
 // exported for testing
 export function getFileRedirections(
   parsed: ParsedPowerShellCommand,
@@ -1718,12 +1709,12 @@ export function getFileRedirections(
   )
 }
 
-/**
+/*    *
  * Derive security-relevant flags from the parsed command structure.
  * This replaces the previous approach of computing flags in PowerShell via
  * separate Find-AstNodes calls. Instead, the PS1 script tags each element
  * with its AST node type, and this function walks those types.
- */
+     */
 // exported for testing
 export function deriveSecurityFlags(
   parsed: ParsedPowerShellCommand,

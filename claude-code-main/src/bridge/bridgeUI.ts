@@ -33,7 +33,7 @@ const QR_OPTIONS = {
   small: true,
 }
 
-/** Generate a QR code and return its lines. */
+/*    * Generate a QR code and return its lines.     */
 async function generateQr(url: string): Promise<string[]> {
   const qr = await qrToString(url, QR_OPTIONS)
   return qr.split('\n').filter((line: string) => line.length > 0)
@@ -87,11 +87,11 @@ export function createBridgeLogger(options: {
   let connectingTimer: ReturnType<typeof setInterval> | null = null
   let connectingTick = 0
 
-  /**
+  /*    *
    * Count how many visual terminal rows a string occupies, accounting for
    * line wrapping. Each `\n` is one row, and content wider than the terminal
    * wraps to additional rows.
-   */
+       */
   function countVisualLines(text: string): number {
     // eslint-disable-next-line custom-rules/prefer-use-terminal-size
     const cols = process.stdout.columns || 80 // non-React CLI context
@@ -114,13 +114,13 @@ export function createBridgeLogger(options: {
     return count
   }
 
-  /** Write a status line and track its visual line count. */
+  /*    * Write a status line and track its visual line count.     */
   function writeStatus(text: string): void {
     write(text)
     statusLineCount += countVisualLines(text)
   }
 
-  /** Clear any currently displayed status lines. */
+  /*    * Clear any currently displayed status lines.     */
   function clearStatusLines(): void {
     if (statusLineCount <= 0) return
     logForDebugging(`[bridge:ui] clearStatusLines count=${statusLineCount}`)
@@ -130,13 +130,13 @@ export function createBridgeLogger(options: {
     statusLineCount = 0
   }
 
-  /** Print a permanent log line, clearing status first and restoring after. */
+  /*    * Print a permanent log line, clearing status first and restoring after.     */
   function printLog(line: string): void {
     clearStatusLines()
     write(line)
   }
 
-  /** Regenerate the QR code with the given URL. */
+  /*    * Regenerate the QR code with the given URL.     */
   function regenerateQr(url: string): void {
     generateQr(url)
       .then(lines => {
@@ -148,7 +148,7 @@ export function createBridgeLogger(options: {
       })
   }
 
-  /** Render the connecting spinner line (shown before first updateIdleStatus). */
+  /*    * Render the connecting spinner line (shown before first updateIdleStatus).     */
   function renderConnectingLine(): void {
     clearStatusLines()
 
@@ -166,7 +166,7 @@ export function createBridgeLogger(options: {
     )
   }
 
-  /** Start the connecting spinner. Stopped by first updateIdleStatus(). */
+  /*    * Start the connecting spinner. Stopped by first updateIdleStatus().     */
   function startConnecting(): void {
     stopConnecting()
     renderConnectingLine()
@@ -176,7 +176,7 @@ export function createBridgeLogger(options: {
     }, 150)
   }
 
-  /** Stop the connecting spinner. */
+  /*    * Stop the connecting spinner.     */
   function stopConnecting(): void {
     if (connectingTimer) {
       clearInterval(connectingTimer)
@@ -184,7 +184,7 @@ export function createBridgeLogger(options: {
     }
   }
 
-  /** Render and write the current status lines based on state. */
+  /*    * Render and write the current status lines based on state.     */
   function renderStatusLine(): void {
     if (currentState === 'reconnecting' || currentState === 'failed') {
       // These states are handled separately (updateReconnectingStatus /

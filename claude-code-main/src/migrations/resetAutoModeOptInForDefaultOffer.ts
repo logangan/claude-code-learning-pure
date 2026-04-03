@@ -8,7 +8,7 @@ import {
   updateSettingsForSource,
 } from '../utils/settings/settings.js'
 
-/**
+/*    *
  * One-shot migration: clear skipAutoPermissionPrompt for users who accepted
  * the old 2-option AutoModeOptInDialog but don't have auto as their default.
  * Re-surfaces the dialog so they see the new "make it my default mode" option.
@@ -21,7 +21,7 @@ import {
  * migration would defeat itself. In practice the ~40 target ants are all
  * 'enabled' (they reached the old dialog via bare Shift+Tab, which requires
  * 'enabled'), but the guard makes it safe regardless.
- */
+     */
 export function resetAutoModeOptInForDefaultOffer(): void {
   if (feature('TRANSCRIPT_CLASSIFIER')) {
     const config = getGlobalConfig()

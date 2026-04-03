@@ -17,10 +17,10 @@ export function getTeamsDir(): string {
   return join(getClaudeConfigHomeDir(), 'teams')
 }
 
-/**
+/*    *
  * Check if NODE_OPTIONS contains a specific flag.
  * Splits on whitespace and checks for exact match to avoid false positives.
- */
+     */
 export function hasNodeOption(flag: string): boolean {
   const nodeOptions = process.env.NODE_OPTIONS
   if (!nodeOptions) {
@@ -46,7 +46,7 @@ export function isEnvDefinedFalsy(
   return ['0', 'false', 'no', 'off'].includes(normalizedValue)
 }
 
-/**
+/*    *
  * --bare / CLAUDE_CODE_SIMPLE — skip hooks, LSP, plugin sync, skill dir-walk,
  * attribution, background prefetches, and ALL keychain/credential reads.
  * Auth is strictly ANTHROPIC_API_KEY env or apiKeyHelper from --settings.
@@ -56,7 +56,7 @@ export function isEnvDefinedFalsy(
  * Checks argv directly (in addition to the env var) because several gates
  * run before main.tsx's action handler sets CLAUDE_CODE_SIMPLE=1 from --bare
  * — notably startKeychainPrefetch() at main.tsx top-level.
- */
+     */
 export function isBareMode(): boolean {
   return (
     isEnvTruthy(process.env.CLAUDE_CODE_SIMPLE) ||
@@ -64,11 +64,11 @@ export function isBareMode(): boolean {
   )
 }
 
-/**
+/*    *
  * Parses an array of environment variable strings into a key-value object
  * @param envVars Array of strings in KEY=VALUE format
  * @returns Object with key-value pairs
- */
+     */
 export function parseEnvVars(
   rawEnvArgs: string[] | undefined,
 ): Record<string, string> {
@@ -89,32 +89,32 @@ export function parseEnvVars(
   return parsedEnv
 }
 
-/**
+/*    *
  * Get the AWS region with fallback to default
  * Matches the Anthropic Bedrock SDK's region behavior
- */
+     */
 export function getAWSRegion(): string {
   return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1'
 }
 
-/**
+/*    *
  * Get the default Vertex AI region
- */
+     */
 export function getDefaultVertexRegion(): string {
   return process.env.CLOUD_ML_REGION || 'us-east5'
 }
 
-/**
+/*    *
  * Check if bash commands should maintain project working directory (reset to original after each command)
  * @returns true if CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR is set to a truthy value
- */
+     */
 export function shouldMaintainProjectWorkingDir(): boolean {
   return isEnvTruthy(process.env.CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR)
 }
 
-/**
+/*    *
  * Check if running on Homespace (ant-internal cloud environment)
- */
+     */
 export function isRunningOnHomespace(): boolean {
   return (
     process.env.USER_TYPE === 'ant' &&
@@ -122,7 +122,7 @@ export function isRunningOnHomespace(): boolean {
   )
 }
 
-/**
+/*    *
  * Conservative check for whether Claude Code is running inside a protected
  * (privileged or ASL3+) COO namespace or cluster.
  *
@@ -132,26 +132,26 @@ export function isRunningOnHomespace(): boolean {
  * at all (laptop/local dev).
  *
  * Used for telemetry to measure auto-mode usage in sensitive environments.
- */
+     */
 export function isInProtectedNamespace(): boolean {
   // USER_TYPE is build-time --define'd; in external builds this block is
   // DCE'd so the require() and namespace allowlist never appear in the bundle.
   if (process.env.USER_TYPE === 'ant') {
-    /* eslint-disable @typescript-eslint/no-require-imports */
+    /*     eslint-disable @typescript-eslint/no-require-imports     */
     return (
       require('./protectedNamespace.js') as typeof import('./protectedNamespace.js')
     ).checkProtectedNamespace()
-    /* eslint-enable @typescript-eslint/no-require-imports */
+    /*     eslint-enable @typescript-eslint/no-require-imports     */
   }
   return false
 }
 
 // @[MODEL LAUNCH]: Add a Vertex region override env var for the new model.
-/**
+/*    *
  * Model prefix → env var for Vertex region overrides.
  * Order matters: more specific prefixes must come before less specific ones
  * (e.g., 'claude-opus-4-1' before 'claude-opus-4').
- */
+     */
 const VERTEX_REGION_OVERRIDES: ReadonlyArray<[string, string]> = [
   ['claude-haiku-4-5', 'VERTEX_REGION_CLAUDE_HAIKU_4_5'],
   ['claude-3-5-haiku', 'VERTEX_REGION_CLAUDE_3_5_HAIKU'],
@@ -164,10 +164,10 @@ const VERTEX_REGION_OVERRIDES: ReadonlyArray<[string, string]> = [
   ['claude-sonnet-4', 'VERTEX_REGION_CLAUDE_4_0_SONNET'],
 ]
 
-/**
+/*    *
  * Get the Vertex AI region for a specific model.
  * Different models may be available in different regions.
- */
+     */
 export function getVertexRegionForModel(
   model: string | undefined,
 ): string | undefined {

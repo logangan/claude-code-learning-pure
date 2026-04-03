@@ -14,7 +14,7 @@ import {
   updateSettingsForSource,
 } from '../utils/settings/settings.js'
 
-/**
+/*    *
  * Migrate Pro/Max/Team Premium first-party users off explicit Sonnet 4.5
  * model strings to the 'sonnet' alias (which now resolves to Sonnet 4.6).
  *
@@ -25,7 +25,7 @@ import {
  * Reads userSettings specifically (not merged) so we only migrate what /model
  * wrote — project/local pins are left alone.
  * Idempotent: only writes if userSettings.model matches a Sonnet 4.5 string.
- */
+     */
 export function migrateSonnet45ToSonnet46(): void {
   if (getAPIProvider() !== 'firstParty') {
     return

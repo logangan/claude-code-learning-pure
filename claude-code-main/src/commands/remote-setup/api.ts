@@ -6,13 +6,13 @@ import { fetchEnvironments } from '../../utils/teleport/environments.js'
 
 const CCR_BYOC_BETA_HEADER = 'ccr-byoc-2025-07-29'
 
-/**
+/*    *
  * Wraps a raw GitHub token so that its string representation is redacted.
  * `String(token)`, template literals, `JSON.stringify(token)`, and any
  * attached error messages will show `[REDACTED:gh-token]` instead of the
  * token value. Call `.reveal()` only at the single point where the raw
  * value is placed into an HTTP body.
- */
+     */
 export class RedactedGithubToken {
   readonly #value: string
   constructor(raw: string) {
@@ -42,12 +42,12 @@ export type ImportTokenError =
   | { kind: 'server'; status: number }
   | { kind: 'network' }
 
-/**
+/*    *
  * POSTs a GitHub token to the CCR backend, which validates it against
  * GitHub's /user endpoint and stores it Fernet-encrypted in sync_user_tokens.
  * The stored token satisfies the same read paths as an OAuth token, so
  * clone/push in claude.ai/code works immediately after this succeeds.
- */
+     */
 export async function importGithubToken(
   token: RedactedGithubToken,
 ): Promise<
@@ -108,14 +108,14 @@ async function hasExistingEnvironment(): Promise<boolean> {
   }
 }
 
-/**
+/*    *
  * Best-effort default environment creation. Mirrors the web onboarding's
  * DEFAULT_CLOUD_ENVIRONMENT_REQUEST so a first-time user lands on the
  * composer instead of env-setup. Checks for existing environments first
  * so re-running /web-setup doesn't pile up duplicates. Failures are
  * non-fatal — the token import already succeeded, and the web state
  * machine falls back to env-setup on next load.
- */
+     */
 export async function createDefaultEnvironment(): Promise<boolean> {
   let accessToken: string, orgUUID: string
   try {
@@ -167,7 +167,7 @@ export async function createDefaultEnvironment(): Promise<boolean> {
   }
 }
 
-/** Returns true when the user has valid Claude OAuth credentials. */
+/*    * Returns true when the user has valid Claude OAuth credentials.     */
 export async function isSignedIn(): Promise<boolean> {
   try {
     await prepareApiRequest()

@@ -2,7 +2,7 @@ import { type DOMElement, useAnimationFrame, useTerminalFocus } from '../ink.js'
 
 const BLINK_INTERVAL_MS = 600
 
-/**
+/*    *
  * Hook for synchronized blinking animations that pause when offscreen.
  *
  * Returns a ref to attach to the animated element and the current blink state.
@@ -18,7 +18,7 @@ const BLINK_INTERVAL_MS = 600
  *   const [ref, isVisible] = useBlink(shouldAnimate)
  *   return <Box ref={ref}>{isVisible ? '●' : ' '}</Box>
  * }
- */
+     */
 export function useBlink(
   enabled: boolean,
   intervalMs: number = BLINK_INTERVAL_MS,

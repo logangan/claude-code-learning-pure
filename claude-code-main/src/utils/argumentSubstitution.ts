@@ -1,4 +1,4 @@
-/**
+/*    *
  * Utility for substituting $ARGUMENTS placeholders in skill/command prompts.
  *
  * Supports:
@@ -8,11 +8,11 @@
  * - Named arguments (e.g., $foo, $bar) - when argument names are defined in frontmatter
  *
  * Arguments are parsed using shell-quote for proper shell argument handling.
- */
+     */
 
 import { tryParseShellCommand } from './bash/shellQuote.js'
 
-/**
+/*    *
  * Parse an arguments string into an array of individual arguments.
  * Uses shell-quote for proper shell argument parsing including quoted strings.
  *
@@ -20,7 +20,7 @@ import { tryParseShellCommand } from './bash/shellQuote.js'
  * - "foo bar baz" => ["foo", "bar", "baz"]
  * - 'foo "hello world" baz' => ["foo", "hello world", "baz"]
  * - "foo 'hello world' baz" => ["foo", "hello world", "baz"]
- */
+     */
 export function parseArguments(args: string): string[] {
   if (!args || !args.trim()) {
     return []
@@ -39,14 +39,14 @@ export function parseArguments(args: string): string[] {
   )
 }
 
-/**
+/*    *
  * Parse argument names from the frontmatter 'arguments' field.
  * Accepts either a space-separated string or an array of strings.
  *
  * Examples:
  * - "foo bar baz" => ["foo", "bar", "baz"]
  * - ["foo", "bar", "baz"] => ["foo", "bar", "baz"]
- */
+     */
 export function parseArgumentNames(
   argumentNames: string | string[] | undefined,
 ): string[] {
@@ -67,12 +67,12 @@ export function parseArgumentNames(
   return []
 }
 
-/**
+/*    *
  * Generate argument hint showing remaining unfilled args.
  * @param argNames - Array of argument names from frontmatter
  * @param typedArgs - Arguments the user has typed so far
  * @returns Hint string like "[arg2] [arg3]" or undefined if all filled
- */
+     */
 export function generateProgressiveArgumentHint(
   argNames: string[],
   typedArgs: string[],
@@ -82,7 +82,7 @@ export function generateProgressiveArgumentHint(
   return remaining.map(name => `[${name}]`).join(' ')
 }
 
-/**
+/*    *
  * Substitute $ARGUMENTS placeholders in content with actual argument values.
  *
  * @param content - The content containing placeholders
@@ -90,7 +90,7 @@ export function generateProgressiveArgumentHint(
  * @param appendIfNoPlaceholder - If true and no placeholders are found, appends "ARGUMENTS: {args}" to content
  * @param argumentNames - Optional array of named arguments (e.g., ["foo", "bar"]) that map to indexed positions
  * @returns The content with placeholders substituted
- */
+     */
 export function substituteArguments(
   content: string,
   args: string | undefined,

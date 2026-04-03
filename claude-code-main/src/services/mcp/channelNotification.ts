@@ -1,4 +1,4 @@
-/**
+/*    *
  * Channel notifications — lets an MCP server push user messages into the
  * conversation. A "channel" (Discord, Slack, SMS, etc.) is just an MCP server
  * that:
@@ -14,7 +14,7 @@
  * Requires claude.ai OAuth auth — API key users are blocked until
  * console gets a channelsEnabled admin surface. Teams/Enterprise orgs
  * must explicitly opt in via channelsEnabled: true in managed settings.
- */
+     */
 
 import type { ServerCapabilities } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod/v4'
@@ -46,7 +46,7 @@ export const ChannelMessageNotificationSchema = lazySchema(() =>
   }),
 )
 
-/**
+/*    *
  * Structured permission reply from a channel server. Servers that support
  * this declare `capabilities.experimental['claude/channel/permission']` and
  * emit this event INSTEAD of relaying "yes tbxkq" as text via
@@ -58,7 +58,7 @@ export const ChannelMessageNotificationSchema = lazySchema(() =>
  * pending map. Unlike the regex-intercept approach, text in the general
  * channel can never accidentally match — approval requires the server
  * to deliberately emit this specific event.
- */
+     */
 export const CHANNEL_PERMISSION_METHOD =
   'notifications/claude/channel/permission'
 export const ChannelPermissionNotificationSchema = lazySchema(() =>
@@ -71,7 +71,7 @@ export const ChannelPermissionNotificationSchema = lazySchema(() =>
   }),
 )
 
-/**
+/*    *
  * Outbound: CC → server. Fired from interactiveHandler.ts when a
  * permission dialog opens and the server has declared the permission
  * capability. Server formats the message for its platform (Telegram
@@ -81,26 +81,26 @@ export const ChannelPermissionNotificationSchema = lazySchema(() =>
  *
  * Not a zod schema — CC SENDS this, doesn't validate it. A type here
  * keeps both halves of the protocol documented side by side.
- */
+     */
 export const CHANNEL_PERMISSION_REQUEST_METHOD =
   'notifications/claude/channel/permission_request'
 export type ChannelPermissionRequestParams = {
   request_id: string
   tool_name: string
   description: string
-  /** JSON-stringified tool input, truncated to 200 chars with …. Full
+  /*    * JSON-stringified tool input, truncated to 200 chars with …. Full
    *  input is in the local terminal dialog; this is a phone-sized
-   *  preview. Server decides whether/how to show it. */
+   *  preview. Server decides whether/how to show it.     */
   input_preview: string
 }
 
-/**
+/*    *
  * Meta keys become XML attribute NAMES — a crafted key like
  * `x="" injected="y` would break out of the attribute structure. Only
  * accept keys that look like plain identifiers. This is stricter than
  * the XML spec (which allows `:`, `.`, `-`) but channel servers only
  * send `chat_id`, `user`, `thread_ts`, `message_id` in practice.
- */
+     */
 const SAFE_META_KEY = /^[a-zA-Z_][a-zA-Z0-9_]*$/
 
 export function wrapChannelMessage(
@@ -115,7 +115,7 @@ export function wrapChannelMessage(
   return `<${CHANNEL_TAG} source="${escapeXmlAttr(serverName)}"${attrs}>\n${content}\n</${CHANNEL_TAG}>`
 }
 
-/**
+/*    *
  * Effective allowlist for the current session. Team/enterprise orgs can set
  * allowedChannelPlugins in managed settings — when set, it REPLACES the
  * GrowthBook ledger (admin owns the trust decision). Undefined falls back
@@ -123,7 +123,7 @@ export function wrapChannelMessage(
  *
  * Callers already read sub/policy for the policy gate — pass them in to
  * avoid double-reading getSettingsForSource (uncached).
- */
+     */
 export function getEffectiveChannelAllowlist(
   sub: ReturnType<typeof getSubscriptionType>,
   orgList: ChannelAllowlistEntry[] | undefined,
@@ -152,12 +152,12 @@ export type ChannelGateResult =
       reason: string
     }
 
-/**
+/*    *
  * Match a connected MCP server against the user's parsed --channels entries.
  * server-kind is exact match on bare name; plugin-kind matches on the second
  * segment of plugin:X:Y. Returns the matching entry so callers can read its
  * kind — that's the user's trust declaration, not inferred from runtime shape.
- */
+     */
 export function findChannelEntry(
   serverName: string,
   channels: readonly ChannelEntry[],
@@ -172,7 +172,7 @@ export function findChannelEntry(
   )
 }
 
-/**
+/*    *
  * Gate an MCP server's channel-notification path. Caller checks
  * feature('KAIROS') || feature('KAIROS_CHANNELS') first (build-time
  * elimination). Gate order: capability → runtime gate (tengu_harbor) →
@@ -187,7 +187,7 @@ export function findChannelEntry(
  *
  * Which servers can connect at all is governed by allowedMcpServers —
  * this gate only decides whether the notification handler registers.
- */
+     */
 export function gateChannelServer(
   serverName: string,
   capabilities: ServerCapabilities | undefined,

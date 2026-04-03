@@ -100,10 +100,10 @@ export function abortPromptSuggestion(): void {
   }
 }
 
-/**
+/*    *
  * Returns a suppression reason if suggestions should not be generated,
  * or null if generation is allowed. Shared by main and pipelined paths.
- */
+     */
 export function getSuggestionSuppressReason(appState: AppState): string | null {
   if (!appState.promptSuggestionEnabled) return 'disabled'
   if (appState.pendingWorkerRequest || appState.pendingSandboxRequest)
@@ -118,10 +118,10 @@ export function getSuggestionSuppressReason(appState: AppState): string | null {
   return null
 }
 
-/**
+/*    *
  * Shared guard + generation logic used by both CLI TUI and SDK push paths.
  * Returns the suggestion with metadata, or null if suppressed/filtered.
- */
+     */
 export async function tryGenerateSuggestion(
   abortController: AbortController,
   messages: Message[],
@@ -312,10 +312,10 @@ export async function generateSuggestion(
   // or maxOutputTokens on the fork (even via output_config or getAppState)
   // busts cache. PR #18143 tried effort:'low' and caused a 45x spike in cache
   // writes (92.7% → 61% hit rate). The only safe overrides are:
-  //   - abortController (not sent to API)
-  //   - skipTranscript (client-side only)
-  //   - skipCacheWrite (controls cache_control markers, not the cache key)
-  //   - canUseTool (client-side permission check)
+  // - abortController (not sent to API)
+  // - skipTranscript (client-side only)
+  // - skipCacheWrite (controls cache_control markers, not the cache key)
+  // - canUseTool (client-side permission check)
   const result = await runForkedAgent({
     promptMessages: [createUserMessage({ content: prompt })],
     cacheSafeParams, // Don't override tools/thinking settings - busts cache
@@ -455,10 +455,10 @@ export function shouldFilterSuggestion(
   return false
 }
 
-/**
+/*    *
  * Log acceptance/ignoring of a prompt suggestion. Used by the SDK push path
  * to track outcomes when the next user message arrives.
- */
+     */
 export function logSuggestionOutcome(
   suggestion: string,
   userInput: string,

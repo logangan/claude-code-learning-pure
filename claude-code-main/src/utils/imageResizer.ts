@@ -31,9 +31,9 @@ const ERROR_TYPE_TIMEOUT = 6
 const ERROR_TYPE_VIPS = 7
 const ERROR_TYPE_PERMISSION = 8
 
-/**
+/*    *
  * Error thrown when image resizing fails and the image exceeds the API limit.
- */
+     */
 export class ImageResizeError extends Error {
   constructor(message: string) {
     super(message)
@@ -41,12 +41,12 @@ export class ImageResizeError extends Error {
   }
 }
 
-/**
+/*    *
  * Classifies image processing errors for analytics.
  *
  * Uses error codes when available (Node.js module errors), falls back to
  * message matching for libraries like sharp that don't expose error codes.
- */
+     */
 function classifyImageError(error: unknown): number {
   // Check for Node.js error codes first (more reliable than string matching)
   if (error instanceof Error) {
@@ -123,10 +123,10 @@ function classifyImageError(error: unknown): number {
   return ERROR_TYPE_UNKNOWN
 }
 
-/**
+/*    *
  * Computes a simple numeric hash of a string for analytics grouping.
  * Uses djb2 algorithm, returning a 32-bit unsigned integer.
- */
+     */
 function hashString(str: string): number {
   let hash = 5381
   for (let i = 0; i < str.length; i++) {
@@ -162,10 +162,10 @@ interface CompressedImageResult {
   originalSize: number
 }
 
-/**
+/*    *
  * Extracted from FileReadTool's readImage function
  * Resizes image buffer to meet size and dimension constraints
- */
+     */
 export async function maybeResizeAndDownsampleImageBuffer(
   imageBuffer: Buffer,
   originalSize: number,
@@ -437,11 +437,11 @@ export interface ImageBlockWithDimensions {
   dimensions?: ImageDimensions
 }
 
-/**
+/*    *
  * Resizes an image content block if needed
  * Takes an image ImageBlockParam and returns a resized version if necessary
  * Also returns dimension information for coordinate mapping
- */
+     */
 export async function maybeResizeAndDownsampleImageBlock(
   imageBlock: ImageBlockParam,
 ): Promise<ImageBlockWithDimensions> {
@@ -480,7 +480,7 @@ export async function maybeResizeAndDownsampleImageBlock(
   }
 }
 
-/**
+/*    *
  * Compresses an image buffer to fit within a maximum byte size.
  *
  * Uses a multi-strategy fallback approach because simple compression often fails for
@@ -494,7 +494,7 @@ export async function maybeResizeAndDownsampleImageBlock(
  * 3. Last resort: Convert to JPEG with aggressive compression
  *
  * This ensures images fit within context windows while maintaining format when possible.
- */
+     */
 export async function compressImageBuffer(
   imageBuffer: Buffer,
   maxBytes: number = IMAGE_TARGET_RAW_SIZE,
@@ -576,10 +576,10 @@ export async function compressImageBuffer(
   }
 }
 
-/**
+/*    *
  * Compresses an image buffer to fit within a token limit.
  * Converts tokens to bytes using the formula: maxBytes = (maxTokens / 0.125) * 0.75
- */
+     */
 export async function compressImageBufferWithTokenLimit(
   imageBuffer: Buffer,
   maxTokens: number,
@@ -593,10 +593,10 @@ export async function compressImageBufferWithTokenLimit(
   return compressImageBuffer(imageBuffer, maxBytes, originalMediaType)
 }
 
-/**
+/*    *
  * Compresses an image block to fit within a maximum byte size.
  * Wrapper around compressImageBuffer for ImageBlockParam.
- */
+     */
 export async function compressImageBlock(
   imageBlock: ImageBlockParam,
   maxBytes: number = IMAGE_TARGET_RAW_SIZE,
@@ -761,11 +761,11 @@ async function createUltraCompressedJPEG(
   )
 }
 
-/**
+/*    *
  * Detect image format from a buffer using magic bytes
  * @param buffer Buffer containing image data
  * @returns Media type string (e.g., 'image/png', 'image/jpeg') or 'image/png' as default
- */
+     */
 export function detectImageFormatFromBuffer(buffer: Buffer): ImageMediaType {
   if (buffer.length < 4) return 'image/png' // default
 
@@ -811,11 +811,11 @@ export function detectImageFormatFromBuffer(buffer: Buffer): ImageMediaType {
   return 'image/png'
 }
 
-/**
+/*    *
  * Detect image format from base64 data using magic bytes
  * @param base64Data Base64 encoded image data
  * @returns Media type string (e.g., 'image/png', 'image/jpeg') or 'image/png' as default
- */
+     */
 export function detectImageFormatFromBase64(
   base64Data: string,
 ): ImageMediaType {
@@ -828,10 +828,10 @@ export function detectImageFormatFromBase64(
   }
 }
 
-/**
+/*    *
  * Creates a text description of image metadata including dimensions and source path.
  * Returns null if no useful metadata is available.
- */
+     */
 export function createImageMetadataText(
   dims: ImageDimensions,
   sourcePath?: string,

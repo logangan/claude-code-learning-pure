@@ -1,4 +1,4 @@
-/**
+/*    *
  * Settings Sync Service
  *
  * Syncs user settings and memory files across Claude Code environments.
@@ -7,7 +7,7 @@
  * - CCR: Downloads remote settings to local before plugin installation
  *
  * Backend API: anthropic/anthropic#218817
- */
+     */
 
 import { feature } from 'bun:bundle'
 import axios from 'axios'
@@ -52,11 +52,11 @@ const SETTINGS_SYNC_TIMEOUT_MS = 10000 // 10 seconds
 const DEFAULT_MAX_RETRIES = 3
 const MAX_FILE_SIZE_BYTES = 500 * 1024 // 500 KB per file (matches backend limit)
 
-/**
+/*    *
  * Upload local settings to remote (interactive CLI only).
  * Called from main.tsx preAction.
  * Runs in background - caller should not await unless needed.
- */
+     */
 export async function uploadUserSettingsInBackground(): Promise<void> {
   try {
     if (
@@ -114,18 +114,18 @@ export async function uploadUserSettingsInBackground(): Promise<void> {
 // installPluginsAndApplyMcpInBackground share one fetch.
 let downloadPromise: Promise<boolean> | null = null
 
-/** Test-only: clear the cached download promise between tests. */
+/*    * Test-only: clear the cached download promise between tests.     */
 export function _resetDownloadPromiseForTesting(): void {
   downloadPromise = null
 }
 
-/**
+/*    *
  * Download settings from remote for CCR mode.
  * Fired fire-and-forget at the top of print.ts runHeadless(); awaited in
  * installPluginsAndApplyMcpInBackground before plugin install. First call
  * starts the fetch; subsequent calls join it.
  * Returns true if settings were applied, false otherwise.
- */
+     */
 export function downloadUserSettings(): Promise<boolean> {
   if (downloadPromise) {
     return downloadPromise
@@ -134,7 +134,7 @@ export function downloadUserSettings(): Promise<boolean> {
   return downloadPromise
 }
 
-/**
+/*    *
  * Force a fresh download, bypassing the cached startup promise.
  * Called by /reload-plugins in CCR so mid-session settings changes
  * (enabledPlugins, extraKnownMarketplaces) pushed from the user's local
@@ -148,7 +148,7 @@ export function downloadUserSettings(): Promise<boolean> {
  * to suppress detection (correct for startup, but mid-session needs
  * applySettingsChange to run). Kept out of this module to avoid the
  * settingsSync → changeDetector cycle edge.
- */
+     */
 export function redownloadUserSettings(): Promise<boolean> {
   downloadPromise = doDownloadUserSettings(0)
   return downloadPromise
@@ -201,14 +201,14 @@ async function doDownloadUserSettings(
   return false
 }
 
-/**
+/*    *
  * Check if user is authenticated with first-party OAuth.
  * Required for settings sync in both CLI (upload) and CCR (download) modes.
  *
  * Only checks user:inference (not user:profile) — CCR's file-descriptor token
  * hardcodes scopes to ['user:inference'] only, so requiring profile would make
  * download a no-op there. Upload is independently guarded by getIsInteractive().
- */
+     */
 function isUsingOAuth(): boolean {
   if (getAPIProvider() !== 'firstParty' || !isFirstPartyAnthropicBaseUrl()) {
     return false
@@ -391,10 +391,10 @@ async function uploadUserSettings(
   }
 }
 
-/**
+/*    *
  * Try to read a file for sync, with size limit and error handling.
  * Returns null if file doesn't exist, is empty, or exceeds size limit.
- */
+     */
 async function tryReadFileForSync(filePath: string): Promise<string | null> {
   try {
     const stats = await stat(filePath)
@@ -477,14 +477,14 @@ async function writeFileForSync(
   }
 }
 
-/**
+/*    *
  * Apply remote entries to local files (CCR pull pattern).
  * Only writes files that match expected keys.
  *
  * After writing, invalidates relevant caches:
  * - resetSettingsCache() for settings files
  * - clearMemoryFileCaches() for memory files (CLAUDE.md)
- */
+     */
 async function applyRemoteEntriesToLocal(
   entries: Record<string, string>,
   projectId: string | null,

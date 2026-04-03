@@ -31,7 +31,7 @@ import {
 import { getChromeSystemPrompt } from './prompt.js'
 import { isChromeExtensionInstalledPortable } from './setupPortable.js'
 
-const CHROME_EXTENSION_RECONNECT_URL = 'https://clau.de/chrome/reconnect'
+const CHROME_EXTENSION_RECONNECT_URL = 'https:// clau.de/chrome/reconnect'
 
 const NATIVE_HOST_IDENTIFIER = 'com.anthropic.claude_code_browser_extension'
 const NATIVE_HOST_MANIFEST_NAME = `${NATIVE_HOST_IDENTIFIER}.json`
@@ -83,11 +83,11 @@ export function shouldAutoEnableClaudeInChrome(): boolean {
   return shouldAutoEnable
 }
 
-/**
+/*    *
  * Setup Claude in Chrome MCP server and tools
  *
  * @returns MCP config and allowed tools, or throws an error if platform is unsupported
- */
+     */
 export function setupClaudeInChrome(): {
   mcpConfig: Record<string, ScopedMcpServerConfig>
   allowedTools: string[]
@@ -170,10 +170,10 @@ export function setupClaudeInChrome(): {
   }
 }
 
-/**
+/*    *
  * Get native messaging hosts directories for all supported browsers
  * Returns an array of directories where the native host manifest should be installed
- */
+     */
 function getNativeMessagingHostsDirs(): string[] {
   const platform = getPlatform()
 
@@ -202,11 +202,11 @@ export async function installChromeNativeHostManifest(
     path: manifestBinaryPath,
     type: 'stdio',
     allowed_origins: [
-      `chrome-extension://fcoeoabgfenejglbffodgkkbkcdhcgfn/`, // PROD_EXTENSION_ID
+      `chrome-extension:// fcoeoabgfenejglbffodgkkbkcdhcgfn/`, // PROD_EXTENSION_ID
       ...(process.env.USER_TYPE === 'ant'
         ? [
-            'chrome-extension://dihbgbndebgnbjfmelmegjepbnkhlgni/', // DEV_EXTENSION_ID
-            'chrome-extension://dngcpimnedloihjnnfngkgjoidhnaolf/', // ANT_EXTENSION_ID
+            'chrome-extension:// dihbgbndebgnbjfmelmegjepbnkhlgni/', // DEV_EXTENSION_ID
+            'chrome-extension:// dngcpimnedloihjnnfngkgjoidhnaolf/', // ANT_EXTENSION_ID
           ]
         : []),
     ],
@@ -265,9 +265,9 @@ export async function installChromeNativeHostManifest(
   }
 }
 
-/**
+/*    *
  * Register the native host in Windows registry for all supported browsers
- */
+     */
 function registerWindowsNativeHosts(manifestPath: string): void {
   const registryKeys = getAllWindowsRegistryKeys()
 
@@ -298,13 +298,13 @@ function registerWindowsNativeHosts(manifestPath: string): void {
   }
 }
 
-/**
+/*    *
  * Create a wrapper script in ~/.claude/chrome/ that invokes the given command. This is
  * necessary because Chrome's native host manifest "path" field cannot contain arguments.
  *
  * @param command - The full command to execute (e.g., "/path/to/claude --chrome-native-host")
  * @returns The path to the wrapper script
- */
+     */
 async function createWrapperScript(command: string): Promise<string> {
   const platform = getPlatform()
   const chromeDir = join(getClaudeConfigHomeDir(), 'chrome')
@@ -345,7 +345,7 @@ exec ${command}
   return wrapperPath
 }
 
-/**
+/*    *
  * Get cached value of whether Chrome extension is installed. Returns
  * from disk cache immediately, updates cache in background.
  *
@@ -358,7 +358,7 @@ exec ${command}
  * shares ~/.claude.json but has no local Chrome (e.g. a remote dev
  * environment using the bridge), and caching it would permanently poison
  * auto-enable for every session on every machine that reads that config.
- */
+     */
 function isChromeExtensionInstalled_CACHED_MAY_BE_STALE(): boolean {
   // Update cache in background without blocking
   void isChromeExtensionInstalled().then(isInstalled => {
@@ -382,12 +382,12 @@ function isChromeExtensionInstalled_CACHED_MAY_BE_STALE(): boolean {
   return cached ?? false
 }
 
-/**
+/*    *
  * Detects if the Claude in Chrome extension is installed by checking the Extensions
  * directory across all supported Chromium-based browsers and their profiles.
  *
  * @returns Object with isInstalled boolean and the browser where the extension was found
- */
+     */
 export async function isChromeExtensionInstalled(): Promise<boolean> {
   const browserPaths = getAllBrowserDataPaths()
   if (browserPaths.length === 0) {

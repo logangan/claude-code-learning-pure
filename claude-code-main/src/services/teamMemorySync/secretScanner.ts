@@ -1,14 +1,14 @@
-/**
+/*    *
  * Client-side secret scanner for team memory (PSR M22174).
  *
  * Scans content for credentials before upload so secrets never leave the
  * user's machine. Uses a curated subset of high-confidence rules from
- * gitleaks (https://github.com/gitleaks/gitleaks, MIT license) — only
+ * gitleaks (https:// github.com/gitleaks/gitleaks, MIT license) — only
  * rules with distinctive prefixes that have near-zero false-positive
  * rates are included. Generic keyword-context rules are omitted.
  *
  * Rule IDs and regexes sourced directly from the public gitleaks config:
- * https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
+ * https:// github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
  *
  * JS regex notes:
  *   - gitleaks uses Go regex; inline (?i) and mode groups (?-i:...) are
@@ -16,23 +16,23 @@
  *     character classes ([a-zA-Z0-9] instead of (?i)[a-z0-9]).
  *   - Trailing boundary alternations like (?:[\x60'"\s;]|\\[nr]|$) from
  *     Go regex are kept (JS $ matches end-of-string in default mode).
- */
+     */
 
 import { capitalize } from '../../utils/stringUtils.js'
 
 type SecretRule = {
-  /** Gitleaks rule ID (kebab-case), used in labels and analytics */
+  /*    * Gitleaks rule ID (kebab-case), used in labels and analytics     */
   id: string
-  /** Regex source, lazily compiled on first scan */
+  /*    * Regex source, lazily compiled on first scan     */
   source: string
-  /** Optional JS regex flags (most rules are case-sensitive by default) */
+  /*    * Optional JS regex flags (most rules are case-sensitive by default)     */
   flags?: string
 }
 
 export type SecretMatch = {
-  /** Gitleaks rule ID that matched (e.g., "github-pat", "aws-access-token") */
+  /*    * Gitleaks rule ID that matched (e.g., "github-pat", "aws-access-token")     */
   ruleId: string
-  /** Human-readable label derived from the rule ID */
+  /*    * Human-readable label derived from the rule ID     */
   label: string
 }
 
@@ -236,10 +236,10 @@ function getCompiledRules(): Array<{ id: string; re: RegExp }> {
   return compiledRules
 }
 
-/**
+/*    *
  * Convert a gitleaks rule ID (kebab-case) to a human-readable label.
  * e.g., "github-pat" → "GitHub PAT", "aws-access-token" → "AWS Access Token"
- */
+     */
 function ruleIdToLabel(ruleId: string): string {
   // Words where the canonical capitalization differs from title case
   const specialCase: Record<string, string> = {
@@ -267,13 +267,13 @@ function ruleIdToLabel(ruleId: string): string {
     .join(' ')
 }
 
-/**
+/*    *
  * Scan a string for potential secrets.
  *
  * Returns one match per rule that fired (deduplicated by rule ID). The
  * actual matched text is intentionally NOT returned — we never log or
  * display secret values.
- */
+     */
 export function scanForSecrets(content: string): SecretMatch[] {
   const matches: SecretMatch[] = []
   const seen = new Set<string>()
@@ -294,19 +294,19 @@ export function scanForSecrets(content: string): SecretMatch[] {
   return matches
 }
 
-/**
+/*    *
  * Get a human-readable label for a gitleaks rule ID.
  * Falls back to kebab-to-Title conversion for unknown IDs.
- */
+     */
 export function getSecretLabel(ruleId: string): string {
   return ruleIdToLabel(ruleId)
 }
 
-/**
+/*    *
  * Redact any matched secrets in-place with [REDACTED].
  * Unlike scanForSecrets, this returns the content with spans replaced
  * so the surrounding text can still be written to disk safely.
- */
+     */
 let redactRules: RegExp[] | null = null
 
 export function redactSecrets(content: string): string {

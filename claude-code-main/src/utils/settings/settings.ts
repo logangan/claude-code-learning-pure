@@ -52,14 +52,14 @@ import {
   type ValidationError,
 } from './validation.js'
 
-/**
+/*    *
  * Get the path to the managed settings file based on the current platform
- */
+     */
 function getManagedSettingsFilePath(): string {
   return join(getManagedFilePath(), 'managed-settings.json')
 }
 
-/**
+/*    *
  * Load file-based managed settings: managed-settings.json + managed-settings.d/*.json.
  *
  * managed-settings.json is merged first (lowest precedence / base), then drop-in
@@ -70,7 +70,7 @@ function getManagedSettingsFilePath(): string {
  * coordinating edits to a single admin-owned file.
  *
  * Exported for testing.
- */
+     */
 export function loadManagedFileSettings(): {
   settings: SettingsJson | null
   errors: ValidationError[]
@@ -120,10 +120,10 @@ export function loadManagedFileSettings(): {
   return { settings: found ? merged : null, errors }
 }
 
-/**
+/*    *
  * Check which file-based managed settings sources are present.
  * Used by /status to show "(file)", "(drop-ins)", or "(file + drop-ins)".
- */
+     */
 export function getManagedFileSettingsPresence(): {
   hasBase: boolean
   hasDropIns: boolean
@@ -149,11 +149,11 @@ export function getManagedFileSettingsPresence(): {
   return { hasBase, hasDropIns }
 }
 
-/**
+/*    *
  * Handles file system errors appropriately
  * @param error The error to handle
  * @param path The file path that caused the error
- */
+     */
 function handleFileSystemError(error: unknown, path: string): void {
   if (
     typeof error === 'object' &&
@@ -169,12 +169,12 @@ function handleFileSystemError(error: unknown, path: string): void {
   }
 }
 
-/**
+/*    *
  * Parses a settings file into a structured format
  * @param path The path to the permissions file
  * @param source The source of the settings (optional, for error reporting)
  * @returns Parsed settings data and validation errors
- */
+     */
 export function parseSettingsFile(path: string): {
   settings: SettingsJson | null
   errors: ValidationError[]
@@ -230,12 +230,12 @@ function parseSettingsFileUncached(path: string): {
   }
 }
 
-/**
+/*    *
  * Get the absolute path to the associated file root for a given settings source
  * (e.g. for $PROJ_DIR/.claude/settings.json, returns $PROJ_DIR)
  * @param source The source of the settings
  * @returns The root path of the settings file
- */
+     */
 export function getSettingsRootPathForSource(source: SettingSource): string {
   switch (source) {
     case 'userSettings':
@@ -252,7 +252,7 @@ export function getSettingsRootPathForSource(source: SettingSource): string {
   }
 }
 
-/**
+/*    *
  * Get the user settings filename based on cowork mode.
  * Returns 'cowork_settings.json' when in cowork mode, 'settings.json' otherwise.
  *
@@ -260,7 +260,7 @@ export function getSettingsRootPathForSource(source: SettingSource): string {
  * 1. Session state (set by CLI flag --cowork)
  * 2. Environment variable CLAUDE_CODE_USE_COWORK_PLUGINS
  * 3. Default: 'settings.json'
- */
+     */
 function getUserSettingsFilePath(): string {
   if (
     getUseCoworkPlugins() ||
@@ -367,11 +367,11 @@ function getSettingsForSourceUncached(
   return fileSettings
 }
 
-/**
+/*    *
  * Get the origin of the highest-priority active policy settings source.
  * Uses "first source wins" — returns the first source that has content.
  * Priority: remote > plist/hklm > file (managed-settings.json) > hkcu
- */
+     */
 export function getPolicySettingsOrigin():
   | 'remote'
   | 'plist'
@@ -406,13 +406,13 @@ export function getPolicySettingsOrigin():
   return null
 }
 
-/**
+/*    *
  * Merges `settings` into the existing settings for `source` using lodash mergeWith.
  *
  * To delete a key from a record field (e.g. enabledPlugins, extraKnownMarketplaces),
  * set it to `undefined` — do NOT use `delete`. mergeWith only detects deletion when
  * the key is present with an explicit `undefined` value.
- */
+     */
 export function updateSettingsForSource(
   source: EditableSettingSource,
   settings: SettingsJson,
@@ -523,18 +523,18 @@ export function updateSettingsForSource(
   return { error: null }
 }
 
-/**
+/*    *
  * Custom merge function for arrays - concatenate and deduplicate
- */
+     */
 function mergeArrays<T>(targetArray: T[], sourceArray: T[]): T[] {
   return uniq([...targetArray, ...sourceArray])
 }
 
-/**
+/*    *
  * Custom merge function for lodash mergeWith when merging settings.
  * Arrays are concatenated and deduplicated; other values use default lodash merge behavior.
  * Exported for testing.
- */
+     */
 export function settingsMergeCustomizer(
   objValue: unknown,
   srcValue: unknown,
@@ -546,7 +546,7 @@ export function settingsMergeCustomizer(
   return undefined
 }
 
-/**
+/*    *
  * Get a list of setting keys from managed settings for logging purposes.
  * For certain nested settings (permissions, sandbox, hooks), expands to show
  * one level of nesting (e.g., "permissions.allow"). For other settings,
@@ -554,7 +554,7 @@ export function settingsMergeCustomizer(
  *
  * @param settings The settings object to extract keys from
  * @returns Sorted array of key paths
- */
+     */
 export function getManagedSettingsKeysForLogging(
   settings: SettingsJson,
 ): string[] {
@@ -638,10 +638,10 @@ export function getManagedSettingsKeysForLogging(
 // Flag to prevent infinite recursion when loading settings
 let isLoadingSettings = false
 
-/**
+/*    *
  * Load settings from disk without using cache
  * This is the original implementation that actually reads from files
- */
+     */
 function loadSettingsFromDisk(): SettingsWithErrors {
   // Prevent recursive calls to loadSettingsFromDisk
   if (isLoadingSettings) {
@@ -795,7 +795,7 @@ function loadSettingsFromDisk(): SettingsWithErrors {
   }
 }
 
-/**
+/*    *
  * Get merged settings from all sources in priority order
  * Settings are merged from lowest to highest priority:
  * userSettings -> projectSettings -> localSettings -> policySettings
@@ -808,31 +808,31 @@ function loadSettingsFromDisk(): SettingsWithErrors {
  * Cache is invalidated when settings files change via resetSettingsCache().
  *
  * @returns Merged settings from all available sources (always returns at least empty object)
- */
+     */
 export function getInitialSettings(): SettingsJson {
   const { settings } = getSettingsWithErrors()
   return settings || {}
 }
 
-/**
+/*    *
  * @deprecated Use getInitialSettings() instead. This alias exists for backwards compatibility.
- */
+     */
 export const getSettings_DEPRECATED = getInitialSettings
 
 export type SettingsWithSources = {
   effective: SettingsJson
-  /** Ordered low-to-high priority — later entries override earlier ones. */
+  /*    * Ordered low-to-high priority — later entries override earlier ones.     */
   sources: Array<{ source: SettingSource; settings: SettingsJson }>
 }
 
-/**
+/*    *
  * Get the effective merged settings alongside the raw per-source settings,
  * in merge-priority order. Only includes sources that are enabled and have
  * non-empty content.
  *
  * Always reads fresh from disk — resets the session cache so that `effective`
  * and `sources` are consistent even if the change detector hasn't fired yet.
- */
+     */
 export function getSettingsWithSources(): SettingsWithSources {
   // Reset both caches so getSettingsForSource (per-source cache) and
   // getInitialSettings (session cache) agree on the current disk state.
@@ -847,12 +847,12 @@ export function getSettingsWithSources(): SettingsWithSources {
   return { effective: getInitialSettings(), sources }
 }
 
-/**
+/*    *
  * Get merged settings and validation errors from all sources
  * This function now uses session-level caching to avoid repeated file I/O.
  * Settings changes require Claude Code restart, so cache is valid for entire session.
  * @returns Merged settings and all validation errors encountered
- */
+     */
 export function getSettingsWithErrors(): SettingsWithErrors {
   // Use cached result if available
   const cached = getSessionSettingsCache()
@@ -867,18 +867,18 @@ export function getSettingsWithErrors(): SettingsWithErrors {
   return result
 }
 
-/**
+/*    *
  * Check if any raw settings file contains a specific key, regardless of validation.
  * This is useful for detecting user intent even when settings validation fails.
  * For example, if a user set cleanupPeriodDays but has validation errors elsewhere,
  * we can detect they explicitly configured cleanup and skip cleanup rather than
  * falling back to defaults.
- */
-/**
+     */
+/*    *
  * Returns true if any trusted settings source has accepted the bypass
  * permissions mode dialog. projectSettings is intentionally excluded —
  * a malicious project could otherwise auto-bypass the dialog (RCE risk).
- */
+     */
 export function hasSkipDangerousModePermissionPrompt(): boolean {
   return !!(
     getSettingsForSource('userSettings')?.skipDangerousModePermissionPrompt ||
@@ -888,11 +888,11 @@ export function hasSkipDangerousModePermissionPrompt(): boolean {
   )
 }
 
-/**
+/*    *
  * Returns true if any trusted settings source has accepted the auto
  * mode opt-in dialog. projectSettings is intentionally excluded —
  * a malicious project could otherwise auto-bypass the dialog (RCE risk).
- */
+     */
 export function hasAutoModeOptIn(): boolean {
   if (feature('TRANSCRIPT_CLASSIFIER')) {
     const user = getSettingsForSource('userSettings')?.skipAutoPermissionPrompt
@@ -910,11 +910,11 @@ export function hasAutoModeOptIn(): boolean {
   return false
 }
 
-/**
+/*    *
  * Returns whether plan mode should use auto mode semantics. Default true
  * (opt-out). Returns false if any trusted source explicitly sets false.
  * projectSettings is excluded so a malicious project can't control this.
- */
+     */
 export function getUseAutoModeDuringPlan(): boolean {
   if (feature('TRANSCRIPT_CLASSIFIER')) {
     return (
@@ -927,12 +927,12 @@ export function getUseAutoModeDuringPlan(): boolean {
   return true
 }
 
-/**
+/*    *
  * Returns the merged autoMode config from trusted settings sources.
  * Only available when TRANSCRIPT_CLASSIFIER is active; returns undefined otherwise.
  * projectSettings is intentionally excluded — a malicious project could
  * otherwise inject classifier allow/deny rules (RCE risk).
- */
+     */
 export function getAutoModeConfig():
   | { allow?: string[]; soft_deny?: string[]; environment?: string[] }
   | undefined {

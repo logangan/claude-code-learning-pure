@@ -30,16 +30,16 @@ import { get3PModelCapabilityOverride } from './model/modelSupportOverrides.js'
 import { getAPIProvider } from './model/providers.js'
 import { getInitialSettings } from './settings/settings.js'
 
-/**
+/*    *
  * SDK-provided betas that are allowed for API key users.
  * Only betas in this list can be passed via SDK options.
- */
+     */
 const ALLOWED_SDK_BETAS = [CONTEXT_1M_BETA_HEADER]
 
-/**
+/*    *
  * Filter betas to only include those in the allowlist.
  * Returns allowed and disallowed betas separately.
- */
+     */
 function partitionBetasByAllowlist(betas: string[]): {
   allowed: string[]
   disallowed: string[]
@@ -56,11 +56,11 @@ function partitionBetasByAllowlist(betas: string[]): {
   return { allowed, disallowed }
 }
 
-/**
+/*    *
  * Filter SDK betas to only include allowed ones.
  * Warns about disallowed betas and subscriber restrictions.
  * Returns undefined if no valid betas remain or if user is a subscriber.
- */
+     */
 export function filterAllowedSdkBetas(
   sdkBetas: string[] | undefined,
 ): string[] | undefined {
@@ -194,11 +194,11 @@ export function modelSupportsAutoMode(model: string): boolean {
   return false
 }
 
-/**
+/*    *
  * Get the correct tool search beta header for the current API provider.
  * - Claude API / Foundry: advanced-tool-use-2025-11-20
  * - Vertex AI / Bedrock: tool-search-tool-2025-10-19
- */
+     */
 export function getToolSearchBetaHeader(): string {
   const provider = getAPIProvider()
   if (provider === 'vertex' || provider === 'bedrock') {
@@ -207,11 +207,11 @@ export function getToolSearchBetaHeader(): string {
   return TOOL_SEARCH_BETA_HEADER_1P
 }
 
-/**
+/*    *
  * Check if experimental betas should be included.
  * These are betas that are only available on firstParty provider
  * and may not be supported by proxies or other providers.
- */
+     */
 export function shouldIncludeFirstPartyOnlyBetas(): boolean {
   return (
     (getAPIProvider() === 'firstParty' || getAPIProvider() === 'foundry') &&
@@ -219,11 +219,11 @@ export function shouldIncludeFirstPartyOnlyBetas(): boolean {
   )
 }
 
-/**
+/*    *
  * Global-scope prompt caching is firstParty only. Foundry is excluded because
  * GrowthBook never bucketed Foundry users into the rollout experiment — the
  * treatment data is firstParty-only.
- */
+     */
 export function shouldUseGlobalCacheScope(): boolean {
   return (
     getAPIProvider() === 'firstParty' &&
@@ -282,8 +282,7 @@ export const getAllModelBetas = memoize((model: string): string[] => {
   // turns — same mechanism as thinking blocks. Ant-only while we measure
   // TTFT/TTLT/capacity; betas already flow to tengu_api_success for splitting.
   // Backend independently requires Capability.ANTHROPIC_INTERNAL_RESEARCH.
-  //
-  // USE_CONNECTOR_TEXT_SUMMARIZATION is tri-state: =1 forces on (opt-in even
+  // // USE_CONNECTOR_TEXT_SUMMARIZATION is tri-state: =1 forces on (opt-in even
   // if GB is off), =0 forces off (opt-out of a GB rollout you were bucketed
   // into), unset defers to GB.
   if (
@@ -383,7 +382,7 @@ export const getBedrockExtraBodyParamsBetas = memoize(
   },
 )
 
-/**
+/*    *
  * Merge SDK-provided betas with auto-detected model betas.
  * SDK betas are read from global state (set via setSdkBetas in main.tsx).
  * The betas are pre-filtered by filterAllowedSdkBetas which handles
@@ -393,7 +392,7 @@ export const getBedrockExtraBodyParamsBetas = memoize(
  *   for agentic queries are present. For non-Haiku models these are already
  *   included by getAllModelBetas(); for Haiku they're excluded since
  *   non-agentic calls (compaction, classifiers, token estimation) don't need them.
- */
+     */
 export function getMergedBetas(
   model: string,
   options?: { isAgenticQuery?: boolean },

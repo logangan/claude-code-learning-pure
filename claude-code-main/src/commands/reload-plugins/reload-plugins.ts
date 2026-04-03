@@ -13,13 +13,11 @@ export const call: LocalCommandCall = async (_args, context) => {
   // take effect. Non-CCR headless (e.g. vscode SDK subprocess) shares disk
   // with whoever writes settings — the file watcher delivers changes, no
   // re-pull needed there.
-  //
-  // Managed settings intentionally NOT re-fetched: it already polls hourly
+  // // Managed settings intentionally NOT re-fetched: it already polls hourly
   // (POLLING_INTERVAL_MS), and policy enforcement is eventually-consistent
   // by design (stale-cache fallback on fetch failure). Interactive
   // /reload-plugins has never re-fetched it either.
-  //
-  // No retries: user-initiated command, one attempt + fail-open. The user
+  // // No retries: user-initiated command, one attempt + fail-open. The user
   // can re-run /reload-plugins to retry. Startup path keeps its retries.
   if (
     feature('DOWNLOAD_USER_SETTINGS') &&

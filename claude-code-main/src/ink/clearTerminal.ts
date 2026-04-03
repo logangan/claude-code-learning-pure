@@ -1,7 +1,7 @@
-/**
+/*    *
  * Cross-platform terminal clearing with scrollback support.
  * Detects modern terminals that support ESC[3J for clearing scrollback.
- */
+     */
 
 import {
   CURSOR_HOME,
@@ -52,10 +52,10 @@ function isModernWindowsTerminal(): boolean {
   return false
 }
 
-/**
+/*    *
  * Returns the ANSI escape sequence to clear the terminal including scrollback.
  * Automatically detects terminal capabilities.
- */
+     */
 export function getClearTerminalSequence(): string {
   if (process.platform === 'win32') {
     if (isModernWindowsTerminal()) {
@@ -68,7 +68,7 @@ export function getClearTerminalSequence(): string {
   return ERASE_SCREEN + ERASE_SCROLLBACK + CURSOR_HOME
 }
 
-/**
+/*    *
  * Clears the terminal screen. On supported terminals, also clears scrollback.
- */
+     */
 export const clearTerminal = getClearTerminalSequence()

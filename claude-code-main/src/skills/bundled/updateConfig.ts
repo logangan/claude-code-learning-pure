@@ -3,10 +3,10 @@ import { SettingsSchema } from '../../utils/settings/types.js'
 import { jsonStringify } from '../../utils/slowOperations.js'
 import { registerBundledSkill } from '../bundledSkills.js'
 
-/**
+/*    *
  * Generate JSON Schema from the settings Zod schema.
  * This keeps the skill prompt in sync with the actual types.
- */
+     */
 function generateSettingsSchema(): string {
   const jsonSchema = toJSONSchema(SettingsSchema(), { io: 'input' })
   return jsonStringify(jsonSchema, null, 2)

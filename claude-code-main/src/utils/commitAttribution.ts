@@ -17,7 +17,7 @@ import { logError } from './log.js'
 import { getCanonicalName, type ModelName } from './model/model.js'
 import { sequential } from './sequential.js'
 
-/**
+/*    *
  * List of repos where internal model names are allowed in trailers.
  * Includes both SSH and HTTPS URL formats.
  *
@@ -26,7 +26,7 @@ import { sequential } from './sequential.js'
  * (e.g. anthropics/claude-code, anthropic-experimental/sandbox-runtime).
  * Undercover mode must stay ON in those to prevent codename leaks.
  * Only add repos here that are confirmed PRIVATE.
- */
+     */
 const INTERNAL_MODEL_REPOS = [
   'github.com:anthropics/claude-cli-internal',
   'github.com/anthropics/claude-cli-internal',
@@ -74,12 +74,12 @@ const INTERNAL_MODEL_REPOS = [
   'github.com/anthropics/mobile-apps',
 ]
 
-/**
+/*    *
  * Get the repo root for attribution operations.
  * Uses getCwd() which respects agent worktree overrides (AsyncLocalStorage),
  * then resolves to git root to handle `cd subdir` case.
  * Falls back to getOriginalCwd() if git root can't be determined.
- */
+     */
 export function getAttributionRepoRoot(): string {
   const cwd = getCwd()
   return findGitRoot(cwd) ?? getOriginalCwd()
@@ -91,26 +91,26 @@ export function getAttributionRepoRoot(): string {
 // 'none'     = no remote URL (not a git repo, or no remote configured)
 let repoClassCache: 'internal' | 'external' | 'none' | null = null
 
-/**
+/*    *
  * Synchronously return the cached repo classification.
  * Returns null if the async check hasn't run yet.
- */
+     */
 export function getRepoClassCached(): 'internal' | 'external' | 'none' | null {
   return repoClassCache
 }
 
-/**
+/*    *
  * Synchronously return the cached result of isInternalModelRepo().
  * Returns false if the check hasn't run yet (safe default: don't leak).
- */
+     */
 export function isInternalModelRepoCached(): boolean {
   return repoClassCache === 'internal'
 }
 
-/**
+/*    *
  * Check if the current repo is in the allowlist for internal model names.
  * Memoized - only checks once per process.
- */
+     */
 export const isInternalModelRepo = sequential(async (): Promise<boolean> => {
   if (repoClassCache !== null) {
     return repoClassCache === 'internal'
@@ -128,10 +128,10 @@ export const isInternalModelRepo = sequential(async (): Promise<boolean> => {
   return isInternal
 })
 
-/**
+/*    *
  * Sanitize a surface key to use public model names.
  * Converts internal model variants to their public equivalents.
- */
+     */
 export function sanitizeSurfaceKey(surfaceKey: string): string {
   // Split surface key into surface and model parts (e.g., "cli/opus-4-5-fast" -> ["cli", "opus-4-5-fast"])
   const slashIndex = surfaceKey.lastIndexOf('/')
@@ -147,10 +147,10 @@ export function sanitizeSurfaceKey(surfaceKey: string): string {
 }
 
 // @[MODEL LAUNCH]: Add a mapping for the new model ID so git commit trailers show the public name.
-/**
+/*    *
  * Sanitize a model name to its public equivalent.
  * Maps internal variants to their public names based on model family.
- */
+     */
 export function sanitizeModelName(shortName: string): string {
   // Map internal variants to public equivalents based on model family
   if (shortName.includes('opus-4-6')) return 'claude-opus-4-6'
@@ -167,9 +167,9 @@ export function sanitizeModelName(shortName: string): string {
   return 'claude'
 }
 
-/**
+/*    *
  * Attribution state for tracking Claude's contributions to files.
- */
+     */
 export type AttributionState = {
   // File states keyed by relative path (from cwd)
   fileStates: Map<string, FileAttributionState>
@@ -191,9 +191,9 @@ export type AttributionState = {
   escapeCountAtLastCommit: number
 }
 
-/**
+/*    *
  * Summary of Claude's contribution for a commit.
- */
+     */
 export type AttributionSummary = {
   claudePercent: number
   claudeChars: number
@@ -201,9 +201,9 @@ export type AttributionSummary = {
   surfaces: string[]
 }
 
-/**
+/*    *
  * Per-file attribution details for git notes.
- */
+     */
 export type FileAttribution = {
   claudeChars: number
   humanChars: number
@@ -211,9 +211,9 @@ export type FileAttribution = {
   surface: string
 }
 
-/**
+/*    *
  * Full attribution data for git notes JSON.
- */
+     */
 export type AttributionData = {
   version: 1
   summary: AttributionSummary
@@ -223,32 +223,32 @@ export type AttributionData = {
   sessions: string[]
 }
 
-/**
+/*    *
  * Get the current client surface from environment.
- */
+     */
 export function getClientSurface(): string {
   return process.env.CLAUDE_CODE_ENTRYPOINT ?? 'cli'
 }
 
-/**
+/*    *
  * Build a surface key that includes the model name.
  * Format: "surface/model" (e.g., "cli/claude-sonnet")
- */
+     */
 export function buildSurfaceKey(surface: string, model: ModelName): string {
   return `${surface}/${getCanonicalName(model)}`
 }
 
-/**
+/*    *
  * Compute SHA-256 hash of content.
- */
+     */
 export function computeContentHash(content: string): string {
   return createHash('sha256').update(content).digest('hex')
 }
 
-/**
+/*    *
  * Normalize file path to relative path from cwd for consistent tracking.
  * Resolves symlinks to handle /tmp vs /private/tmp on macOS.
- */
+     */
 export function normalizeFilePath(filePath: string): string {
   const fs = getFsImplementation()
   const cwd = getAttributionRepoRoot()
@@ -290,9 +290,9 @@ export function normalizeFilePath(filePath: string): string {
   return filePath
 }
 
-/**
+/*    *
  * Expand a relative path to absolute path.
- */
+     */
 export function expandFilePath(filePath: string): string {
   if (isAbsolute(filePath)) {
     return filePath
@@ -300,9 +300,9 @@ export function expandFilePath(filePath: string): string {
   return join(getAttributionRepoRoot(), filePath)
 }
 
-/**
+/*    *
  * Create an empty attribution state for a new session.
- */
+     */
 export function createEmptyAttributionState(): AttributionState {
   return {
     fileStates: new Map(),
@@ -318,10 +318,10 @@ export function createEmptyAttributionState(): AttributionState {
   }
 }
 
-/**
+/*    *
  * Compute the character contribution for a file modification.
  * Returns the FileAttributionState to store, or null if tracking failed.
- */
+     */
 function computeFileModificationState(
   existingFileStates: Map<string, FileAttributionState>,
   filePath: string,
@@ -379,11 +379,11 @@ function computeFileModificationState(
   }
 }
 
-/**
+/*    *
  * Get a file's modification time (mtimeMs), falling back to Date.now() if
  * the file doesn't exist. This is async so it can be precomputed before
  * entering a sync setAppState callback.
- */
+     */
 export async function getFileMtime(filePath: string): Promise<number> {
   const normalizedPath = normalizeFilePath(filePath)
   const absPath = expandFilePath(normalizedPath)
@@ -395,10 +395,10 @@ export async function getFileMtime(filePath: string): Promise<number> {
   }
 }
 
-/**
+/*    *
  * Track a file modification by Claude.
  * Called after Edit/Write tool completes.
- */
+     */
 export function trackFileModification(
   state: AttributionState,
   filePath: string,
@@ -432,10 +432,10 @@ export function trackFileModification(
   }
 }
 
-/**
+/*    *
  * Track a file creation by Claude (e.g., via bash command).
  * Used when Claude creates a new file through a non-tracked mechanism.
- */
+     */
 export function trackFileCreation(
   state: AttributionState,
   filePath: string,
@@ -446,10 +446,10 @@ export function trackFileCreation(
   return trackFileModification(state, filePath, '', content, false, mtime)
 }
 
-/**
+/*    *
  * Track a file deletion by Claude (e.g., via bash rm command).
  * Used when Claude deletes a file through a non-tracked mechanism.
- */
+     */
 export function trackFileDeletion(
   state: AttributionState,
   filePath: string,
@@ -481,11 +481,11 @@ export function trackFileDeletion(
 
 // --
 
-/**
+/*    *
  * Track multiple file changes in bulk, mutating a single Map copy.
  * This avoids the O(n²) cost of copying the Map per file when processing
  * large git diffs (e.g., jj operations that touch hundreds of thousands of files).
- */
+     */
 export function trackBulkFileChanges(
   state: AttributionState,
   changes: ReadonlyArray<{
@@ -541,10 +541,10 @@ export function trackBulkFileChanges(
   }
 }
 
-/**
+/*    *
  * Calculate final attribution for staged files.
  * Compares session baseline to committed state.
- */
+     */
 export async function calculateCommitAttribution(
   states: AttributionState[],
   stagedFiles: string[],
@@ -742,12 +742,12 @@ export async function calculateCommitAttribution(
   }
 }
 
-/**
+/*    *
  * Get the size of changes for a file from git diff.
  * Returns the number of characters added/removed (absolute difference).
  * For new files, returns the total file size.
  * For deleted files, returns the size of the deleted content.
- */
+     */
 export async function getGitDiffSize(filePath: string): Promise<number> {
   const cwd = getAttributionRepoRoot()
 
@@ -787,9 +787,9 @@ export async function getGitDiffSize(filePath: string): Promise<number> {
   }
 }
 
-/**
+/*    *
  * Check if a file was deleted in the staged changes.
- */
+     */
 export async function isFileDeleted(filePath: string): Promise<boolean> {
   const cwd = getAttributionRepoRoot()
 
@@ -811,9 +811,9 @@ export async function isFileDeleted(filePath: string): Promise<boolean> {
   return false
 }
 
-/**
+/*    *
  * Get staged files from git.
- */
+     */
 export async function getStagedFiles(): Promise<string[]> {
   const cwd = getAttributionRepoRoot()
 
@@ -837,9 +837,9 @@ export async function getStagedFiles(): Promise<string[]> {
 // formatAttributionTrailer moved to attributionTrailer.ts for tree-shaking
 // (contains excluded strings that should not be in external builds)
 
-/**
+/*    *
  * Check if we're in a transient git state (rebase, merge, cherry-pick).
- */
+     */
 export async function isGitTransientState(): Promise<boolean> {
   const gitDir = await resolveGitDir(getAttributionRepoRoot())
   if (!gitDir) return false
@@ -866,9 +866,9 @@ export async function isGitTransientState(): Promise<boolean> {
   return results.some(exists => exists)
 }
 
-/**
+/*    *
  * Convert attribution state to snapshot message for persistence.
- */
+     */
 export function stateToSnapshotMessage(
   state: AttributionState,
   messageId: UUID,
@@ -893,9 +893,9 @@ export function stateToSnapshotMessage(
   }
 }
 
-/**
+/*    *
  * Restore attribution state from snapshot messages.
- */
+     */
 export function restoreAttributionStateFromSnapshots(
   snapshots: AttributionSnapshotMessage[],
 ): AttributionState {
@@ -928,9 +928,9 @@ export function restoreAttributionStateFromSnapshots(
   return state
 }
 
-/**
+/*    *
  * Restore attribution state from log snapshots on session resume.
- */
+     */
 export function attributionRestoreStateFromLog(
   attributionSnapshots: AttributionSnapshotMessage[],
   onUpdateState: (newState: AttributionState) => void,
@@ -939,14 +939,14 @@ export function attributionRestoreStateFromLog(
   onUpdateState(state)
 }
 
-/**
+/*    *
  * Increment promptCount and save an attribution snapshot.
  * Used to persist the prompt count across compaction.
  *
  * @param attribution - Current attribution state
  * @param saveSnapshot - Function to save the snapshot (allows async handling by caller)
  * @returns New attribution state with incremented promptCount
- */
+     */
 export function incrementPromptCount(
   attribution: AttributionState,
   saveSnapshot: (snapshot: AttributionSnapshotMessage) => void,

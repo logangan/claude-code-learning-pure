@@ -28,12 +28,12 @@ export type BackgroundTaskState =
   | MonitorMcpTaskState
   | DreamTaskState
 
-/**
+/*    *
  * Check if a task should be shown in the background tasks indicator.
  * A task is considered a background task if:
  * 1. It is running or pending
  * 2. It has been explicitly backgrounded (not a foreground task)
- */
+     */
 export function isBackgroundTask(task: TaskState): task is BackgroundTaskState {
   if (task.status !== 'running' && task.status !== 'pending') {
     return false

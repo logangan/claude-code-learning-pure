@@ -2,12 +2,12 @@ import { feature } from 'bun:bundle'
 import type { PartialCompactDirection } from '../../types/message.js'
 
 // Dead code elimination: conditional import for proactive mode
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const proactiveModule =
   feature('PROACTIVE') || feature('KAIROS')
     ? (require('../../proactive/index.js') as typeof import('../../proactive/index.js'))
     : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 // Aggressive no-tools preamble. The cache-sharing fork path inherits the
 // parent's full tool set (required for cache-key match), and on Sonnet 4.6+
@@ -302,12 +302,12 @@ export function getCompactPrompt(customInstructions?: string): string {
   return prompt
 }
 
-/**
+/*    *
  * Formats the compact summary by stripping the <analysis> drafting scratchpad
  * and replacing <summary> XML tags with readable section headers.
  * @param summary The raw summary string potentially containing <analysis> and <summary> XML tags
  * @returns The formatted summary with analysis stripped and summary tags replaced by headers
- */
+     */
 export function formatCompactSummary(summary: string): string {
   let formattedSummary = summary
 

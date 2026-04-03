@@ -1,6 +1,5 @@
 // React hook for hold-to-talk voice input using Anthropic voice_stream STT.
-//
-// Hold the keybinding to record; release to stop and submit.  Auto-repeat
+// // Hold the keybinding to record; release to stop and submit.  Auto-repeat
 // key events reset an internal timer — when no keypress arrives within
 // RELEASE_TIMEOUT_MS the recording stops automatically.  Uses the native
 // audio module (macOS) or SoX for recording, and Anthropic's voice_stream
@@ -33,8 +32,7 @@ const DEFAULT_STT_LANGUAGE = 'en'
 
 // Maps language names (English and native) to BCP-47 codes supported by
 // the voice_stream Deepgram backend.  Keys must be lowercase.
-//
-// This list must be a SUBSET of the server-side supported_language_codes
+// // This list must be a SUBSET of the server-side supported_language_codes
 // allowlist (GrowthBook: speech_to_text_voice_stream_config).
 // If the CLI sends a code the server rejects, the WebSocket closes with
 // 1008 "Unsupported language" and voice breaks.  Unsupported languages
@@ -163,8 +161,7 @@ const RELEASE_TIMEOUT_MS = 200
 // macOS default key repeat delay is ~500ms; 600ms gives headroom.
 // If the user tapped and released before auto-repeat started, this
 // ensures the release timer gets armed and recording stops.
-//
-// For modifier-combo first-press activation (handleKeyEvent called at
+// // For modifier-combo first-press activation (handleKeyEvent called at
 // t=0, before any auto-repeat), callers should pass FIRST_PRESS_FALLBACK_MS
 // instead — the gap to the next keypress is the OS initial repeat *delay*
 // (up to ~2s on macOS with slider at "Long"), not the repeat *rate*.
@@ -463,8 +460,7 @@ export function useVoice({
         // + recordingDurationMs>2000 = the bug backend PR #287008 fixes.
         // focusFlushedCharsRef makes transcriptChars accurate for focus mode
         // (where each final is injected immediately and accumulatedRef reset).
-        //
-        // NOTE: this fires only on the finishRecording() path. The onError
+        // // NOTE: this fires only on the finishRecording() path. The onError
         // fallthrough and !conn (no-OAuth) paths bypass this → don't compute
         // COUNT(completed)/COUNT(started) as a success rate; the silent-drop
         // denominator (completed events only) is internally consistent.
@@ -641,8 +637,8 @@ export function useVoice({
     // Transition to 'recording' synchronously, BEFORE any await. Callers
     // read state synchronously right after `void startRecordingSession()`:
     // - useVoiceIntegration.tsx space-hold guard reads voiceState from the
-    //   store immediately — if it sees 'idle' it clears isSpaceHoldActiveRef
-    //   and space auto-repeat leaks into the text input (100% repro)
+    // store immediately — if it sees 'idle' it clears isSpaceHoldActiveRef
+    // and space auto-repeat leaks into the text input (100% repro)
     // - handleKeyEvent's `currentState === 'idle'` re-entry check below
     // If an await runs first, both see stale 'idle'. See PR #20873 review.
     updateState('recording')
@@ -922,8 +918,7 @@ export function useVoice({
             // Flush all audio chunks that were buffered while the WebSocket
             // was connecting.  This is safe because onReady fires from the
             // WebSocket 'open' event, guaranteeing send() will not be dropped.
-            //
-            // Coalesce into ~1s slices rather than one ws.send per chunk
+            // // Coalesce into ~1s slices rather than one ws.send per chunk
             // — fewer WS frames means less overhead on both ends.
             const SLICE_TARGET_BYTES = 32_000 // ~1s at 16kHz/16-bit/mono
             if (audioBuffer.length > 0) {
@@ -1014,8 +1009,7 @@ export function useVoice({
   // Called on every keypress (including terminal auto-repeats while
   // the key is held).  A gap longer than RELEASE_TIMEOUT_MS between
   // events is interpreted as key release.
-  //
-  // Recording starts immediately on the first keypress to eliminate
+  // // Recording starts immediately on the first keypress to eliminate
   // startup delay.  The release timer is only armed after auto-repeat
   // is detected (to avoid false releases during the OS key repeat
   // delay of ~500ms on macOS).

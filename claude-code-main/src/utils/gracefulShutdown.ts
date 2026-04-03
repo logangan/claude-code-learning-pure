@@ -44,7 +44,7 @@ import { getCurrentSessionTitle, sessionIdExists } from './sessionStorage.js'
 import { sleep } from './sleep.js'
 import { profileReport } from './startupProfiler.js'
 
-/**
+/*    *
  * Clean up terminal modes synchronously before process exit.
  * This ensures terminal escape sequences (Kitty keyboard, focus reporting, etc.)
  * are properly disabled even if React's componentWillUnmount doesn't run in time.
@@ -54,8 +54,8 @@ import { profileReport } from './startupProfiler.js'
  * 1. Terminal detection may not always work correctly (e.g., in tmux, screen)
  * 2. These sequences are no-ops on terminals that don't support them
  * 3. Failing to disable leaves the terminal in a broken state
- */
-/* eslint-disable custom-rules/no-sync-fs -- must be sync to flush before process.exit */
+     */
+/*     eslint-disable custom-rules/no-sync-fs -- must be sync to flush before process.exit     */
 function cleanupTerminalModes(): void {
   if (!process.stdout.isTTY) {
     return
@@ -70,17 +70,16 @@ function cleanupTerminalModes(): void {
     writeSync(1, DISABLE_MOUSE_TRACKING)
     // Exit alt screen FIRST so printResumeHint() (and all sequences below)
     // land on the main buffer.
-    //
-    // Unmount Ink directly rather than writing EXIT_ALT_SCREEN ourselves.
+    // // Unmount Ink directly rather than writing EXIT_ALT_SCREEN ourselves.
     // Ink registered its unmount with signal-exit, so it will otherwise run
     // AGAIN inside forceExit() → process.exit(). Two problems with letting
     // that happen:
-    //   1. If we write 1049l here and unmount writes it again later, the
-    //      second one triggers another DECRC — the cursor jumps back over
-    //      the resume hint and the shell prompt lands on the wrong line.
-    //   2. unmount()'s onRender() must run with altScreenActive=true (alt-
-    //      screen cursor math) AND on the alt buffer. Exiting alt-screen
-    //      here first makes onRender() scribble a REPL frame onto main.
+    // 1. If we write 1049l here and unmount writes it again later, the
+    // second one triggers another DECRC — the cursor jumps back over
+    // the resume hint and the shell prompt lands on the wrong line.
+    // 2. unmount()'s onRender() must run with altScreenActive=true (alt-
+    // screen cursor math) AND on the alt buffer. Exiting alt-screen
+    // here first makes onRender() scribble a REPL frame onto main.
     // Calling unmount() now does the final render on the alt buffer,
     // unsubscribes from signal-exit, and writes 1049l exactly once.
     const inst = instances.get(process.stdout)
@@ -137,10 +136,10 @@ function cleanupTerminalModes(): void {
 
 let resumeHintPrinted = false
 
-/**
+/*    *
  * Print a hint about how to resume the session.
  * Only shown for interactive sessions with persistence enabled.
- */
+     */
 function printResumeHint(): void {
   // Only print once (failsafe timer may call this again after normal shutdown)
   if (resumeHintPrinted) {
@@ -182,14 +181,14 @@ function printResumeHint(): void {
     }
   }
 }
-/* eslint-enable custom-rules/no-sync-fs */
+/*     eslint-enable custom-rules/no-sync-fs     */
 
-/**
+/*    *
  * Force process exit, handling the case where the terminal is gone.
  * When the terminal/PTY is closed (e.g., SIGHUP), process.exit() can throw
  * EIO errors because Bun tries to flush stdout to a dead file descriptor.
  * In that case, fall back to SIGKILL which always works.
- */
+     */
 function forceExit(exitCode: number): never {
   // Clear failsafe timer since we're exiting now
   if (failsafeTimer !== undefined) {
@@ -231,22 +230,20 @@ function forceExit(exitCode: number): never {
   return undefined as never
 }
 
-/**
+/*    *
  * Set up global signal handlers for graceful shutdown
- */
+     */
 export const setupGracefulShutdown = memoize(() => {
   // Work around a Bun bug where process.removeListener(sig, fn) resets the
   // kernel sigaction for that signal even when other JS listeners remain —
   // the signal then falls back to its default action (terminate) and our
   // process.on('SIGTERM') handler never runs.
-  //
-  // Trigger: any short-lived signal-exit v4 subscriber (e.g. execa per child
+  // // Trigger: any short-lived signal-exit v4 subscriber (e.g. execa per child
   // process, or an Ink instance that unmounts). When its unsubscribe runs and
   // it was the last v4 subscriber, v4.unload() calls removeListener on every
   // signal in its list (SIGTERM, SIGINT, SIGHUP, …), tripping the Bun bug and
   // nuking our handlers at the kernel level.
-  //
-  // Fix: pin signal-exit v4 loaded by registering a no-op onExit callback that
+  // // Fix: pin signal-exit v4 loaded by registering a no-op onExit callback that
   // is never unsubscribed. This keeps v4's internal emitter count > 0 so
   // unload() never runs and removeListener is never called. Harmless under
   // Node.js — the pin also ensures signal-exit's process.exit hook stays
@@ -363,12 +360,12 @@ let failsafeTimer: ReturnType<typeof setTimeout> | undefined
 let orphanCheckInterval: ReturnType<typeof setInterval> | undefined
 let pendingShutdown: Promise<void> | undefined
 
-/** Check if graceful shutdown is in progress */
+/*    * Check if graceful shutdown is in progress     */
 export function isShuttingDown(): boolean {
   return shutdownInProgress
 }
 
-/** Reset shutdown state - only for use in tests */
+/*    * Reset shutdown state - only for use in tests     */
 export function resetShutdownState(): void {
   shutdownInProgress = false
   resumeHintPrinted = false
@@ -379,10 +376,10 @@ export function resetShutdownState(): void {
   pendingShutdown = undefined
 }
 
-/**
+/*    *
  * Returns the in-flight shutdown promise, if any. Only for use in tests
  * to await completion before restoring mocks.
- */
+     */
 export function getPendingShutdownForTesting(): Promise<void> | undefined {
   return pendingShutdown
 }
@@ -394,7 +391,7 @@ export async function gracefulShutdown(
   options?: {
     getAppState?: () => AppState
     setAppState?: (f: (prev: AppState) => AppState) => void
-    /** Printed to stderr after alt-screen exit, before forceExit. */
+    /*    * Printed to stderr after alt-screen exit, before forceExit.     */
     finalMessage?: string
   },
 ): Promise<void> {

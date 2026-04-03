@@ -14,9 +14,9 @@ import { getModelStrings } from './modelStrings.js'
 // Cache valid models to avoid repeated API calls
 const validModelCache = new Map<string, boolean>()
 
-/**
+/*    *
  * Validates a model by attempting an actual API call.
- */
+     */
 export async function validateModel(
   model: string,
 ): Promise<{ valid: boolean; error?: string }> {
@@ -138,9 +138,9 @@ function handleValidationError(
 }
 
 // @[MODEL LAUNCH]: Add a fallback suggestion chain for the new model → previous version
-/**
+/*    *
  * Suggest a fallback model for 3P users when the selected model is unavailable.
- */
+     */
 function get3PFallbackSuggestion(model: string): string | undefined {
   if (getAPIProvider() === 'firstParty') {
     return undefined

@@ -1,11 +1,11 @@
-/**
+/*    *
  * Team Memory File Watcher
  *
  * Watches the team memory directory for changes and triggers
  * a debounced push to the server when files are modified.
  * Performs an initial pull on startup, then starts a directory-level
  * fs.watch so first-time writes to a fresh repo get picked up.
- */
+     */
 
 import { feature } from 'bun:bundle'
 import { type FSWatcher, watch } from 'fs'
@@ -50,14 +50,14 @@ let watcherStarted = false
 // suppression persisting until session restart is correct.
 let pushSuppressedReason: string | null = null
 
-/**
+/*    *
  * Permanent = retry without user action will fail the same way.
  * - no_oauth / no_repo: pre-request client checks, no status code
  * - 4xx except 409/429: client error (404 missing repo, 413 too many
  *   entries, 403 permission). 409 is a transient conflict — server state
  *   changed under us, a fresh push after next pull can succeed. 429 is a
  *   rate limit — watcher-driven backoff is fine.
- */
+     */
 export function isPermanentFailure(r: TeamMemorySyncPushResult): boolean {
   if (r.errorType === 'no_oauth' || r.errorType === 'no_repo') return true
   if (
@@ -75,12 +75,12 @@ export function isPermanentFailure(r: TeamMemorySyncPushResult): boolean {
 // Sync state owned by the watcher — shared across all sync operations.
 let syncState: SyncState | null = null
 
-/**
+/*    *
  * Execute the push and track its lifecycle.
  * Push is read-only on disk (delta+probe, no merge writes), so no event
  * suppression is needed — edits arriving mid-push hit schedulePush() and
  * the debounce re-arms after this push completes.
- */
+     */
 async function executePush(): Promise<void> {
   if (!syncState) {
     return
@@ -126,9 +126,9 @@ async function executePush(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Debounced push: waits for writes to settle, then pushes once.
- */
+     */
 function schedulePush(): void {
   if (pushSuppressedReason !== null) return
   hasPendingChanges = true
@@ -144,7 +144,7 @@ function schedulePush(): void {
   }, DEBOUNCE_MS)
 }
 
-/**
+/*    *
  * Start watching the team memory directory for changes.
  *
  * Uses `fs.watch({recursive: true})` on the directory (not chokidar).
@@ -163,7 +163,7 @@ function schedulePush(): void {
  * (user deletes files), we stat the filename on each event: ENOENT → treat as
  * unlink.  For `no_oauth` suppression this is correct: no_oauth users don't
  * delete team memory files to recover, they restart with auth.
- */
+     */
 async function startFileWatcher(teamDir: string): Promise<void> {
   if (watcherStarted) {
     return
@@ -228,7 +228,7 @@ async function startFileWatcher(teamDir: string): Promise<void> {
   registerCleanup(async () => stopTeamMemoryWatcher())
 }
 
-/**
+/*    *
  * Start the team memory sync system.
  *
  * Returns early (before creating any state) if:
@@ -248,7 +248,7 @@ async function startFileWatcher(teamDir: string): Promise<void> {
  * depends entirely on PostToolUse hooks firing notifyTeamMemoryWrite,
  * which is a chicken-and-egg: Claude's write rate is low enough that
  * a fresh partner can sit in the bootstrap dead zone for days.
- */
+     */
 export async function startTeamMemoryWatcher(): Promise<void> {
   if (!feature('TEAMMEM')) {
     return
@@ -304,13 +304,13 @@ export async function startTeamMemoryWatcher(): Promise<void> {
   })
 }
 
-/**
+/*    *
  * Call this when a team memory file is written (e.g. from PostToolUse hooks).
  * Schedules a push explicitly in case fs.watch misses the write —
  * a file written in the same tick the watcher starts may not fire an
  * event, and some platforms coalesce rapid successive writes.
  * If the watcher does fire, the debounce timer just resets.
- */
+     */
 export async function notifyTeamMemoryWrite(): Promise<void> {
   if (!syncState) {
     return
@@ -318,12 +318,12 @@ export async function notifyTeamMemoryWrite(): Promise<void> {
   schedulePush()
 }
 
-/**
+/*    *
  * Stop the file watcher and flush pending changes.
  * Note: runs within the 2s graceful shutdown budget, so the flush
  * is best-effort — if the HTTP PUT doesn't complete in time,
  * process.exit() will kill it.
- */
+     */
 export async function stopTeamMemoryWatcher(): Promise<void> {
   if (debounceTimer) {
     clearTimeout(debounceTimer)
@@ -351,7 +351,7 @@ export async function stopTeamMemoryWatcher(): Promise<void> {
   }
 }
 
-/**
+/*    *
  * Test-only: reset module state and optionally seed syncState.
  * The feature('TEAMMEM') gate at the top of startTeamMemoryWatcher() is
  * always false in bun test, so tests can't set syncState through the normal
@@ -361,7 +361,7 @@ export async function stopTeamMemoryWatcher(): Promise<void> {
  * `skipWatcher: true` marks the watcher as already-started without actually
  * starting it. Tests that only exercise the schedulePush/flush path don't
  * need a real watcher.
- */
+     */
 export function _resetWatcherStateForTesting(opts?: {
   syncState?: SyncState
   skipWatcher?: boolean
@@ -377,11 +377,11 @@ export function _resetWatcherStateForTesting(opts?: {
   syncState = opts?.syncState ?? null
 }
 
-/**
+/*    *
  * Test-only: start the real fs.watch on a specified directory.
  * Used by the fd-count regression test — startTeamMemoryWatcher() is gated
  * by feature('TEAMMEM') which is false under bun test.
- */
+     */
 export function _startFileWatcherForTesting(dir: string): Promise<void> {
   return startFileWatcher(dir)
 }

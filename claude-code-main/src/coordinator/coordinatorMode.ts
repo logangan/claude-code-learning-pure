@@ -40,12 +40,12 @@ export function isCoordinatorMode(): boolean {
   return false
 }
 
-/**
+/*    *
  * Checks if the current coordinator mode matches the session's stored mode.
  * If mismatched, flips the environment variable so isCoordinatorMode() returns
  * the correct value for the resumed session. Returns a warning message if
  * the mode was switched, or undefined if no switch was needed.
- */
+     */
 export function matchSessionMode(
   sessionMode: 'coordinator' | 'normal' | undefined,
 ): string | undefined {

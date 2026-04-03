@@ -67,9 +67,9 @@ function isExecutable(shellPath: string): boolean {
   }
 }
 
-/**
+/*    *
  * Determines the best available shell to use.
- */
+     */
 export async function findSuitableShell(): Promise<string> {
   // Check for explicit shell override first
   const shellOverride = process.env.CLAUDE_CODE_SHELL
@@ -170,14 +170,14 @@ export type ExecOptions = {
   preventCwdChanges?: boolean
   shouldUseSandbox?: boolean
   shouldAutoBackground?: boolean
-  /** When provided, stdout is piped (not sent to file) and this callback fires on each data chunk. */
+  /*    * When provided, stdout is piped (not sent to file) and this callback fires on each data chunk.     */
   onStdout?: (data: string) => void
 }
 
-/**
+/*    *
  * Execute a shell command using the environment snapshot
  * Creates a new shell process for each command execution
- */
+     */
 export async function exec(
   command: string,
   abortSignal: AbortSignal,
@@ -247,11 +247,11 @@ export async function exec(
   // Sandboxed PowerShell: wrapWithSandbox hardcodes `<binShell> -c '<cmd>'` —
   // using pwsh there would lose -NoProfile -NonInteractive (profile load
   // inside sandbox → delays, stray output, may hang on prompts). Instead:
-  //   • powershellProvider.buildExecCommand (useSandbox) pre-wraps as
-  //     `pwsh -NoProfile -NonInteractive -EncodedCommand <base64>` — base64
-  //     survives the runtime's shellquote.quote() layer
-  //   • pass /bin/sh as the sandbox's inner shell to exec that invocation
-  //   • outer spawn is also /bin/sh -c to parse the runtime's POSIX output
+  // • powershellProvider.buildExecCommand (useSandbox) pre-wraps as
+  // `pwsh -NoProfile -NonInteractive -EncodedCommand <base64>` — base64
+  // survives the runtime's shellquote.quote() layer
+  // • pass /bin/sh as the sandbox's inner shell to exec that invocation
+  // • outer spawn is also /bin/sh -c to parse the runtime's POSIX output
   // /bin/sh exists on every platform where sandbox is supported.
   const isSandboxedPowerShell = shouldUseSandbox && shellType === 'powershell'
   const sandboxBinShell = isSandboxedPowerShell ? '/bin/sh' : binShell
@@ -441,9 +441,9 @@ export async function exec(
   }
 }
 
-/**
+/*    *
  * Set the current working directory
- */
+     */
 export function setCwd(path: string, relativeTo?: string): void {
   const resolved = isAbsolute(path)
     ? path

@@ -1,11 +1,11 @@
-/**
+/*    *
  * SDK Control Schemas - Zod schemas for the control protocol.
  *
  * These schemas define the control protocol between SDK implementations and the CLI.
  * Used by SDK builders (e.g., Python SDK) to communicate with the CLI process.
  *
  * SDK consumers should use coreSchemas.ts instead.
- */
+     */
 
 import { z } from 'zod/v4'
 import { lazySchema } from '../../utils/lazySchema.js'

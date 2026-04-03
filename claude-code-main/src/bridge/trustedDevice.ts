@@ -12,7 +12,7 @@ import { isEssentialTrafficOnly } from '../utils/privacyLevel.js'
 import { getSecureStorage } from '../utils/secureStorage/index.js'
 import { jsonStringify } from '../utils/slowOperations.js'
 
-/**
+/*    *
  * Trusted device token source for bridge (remote-control) sessions.
  *
  * Bridge sessions have SecurityTier=ELEVATED on the server (CCR v2).
@@ -28,7 +28,7 @@ import { jsonStringify } from '../utils/slowOperations.js'
  *
  * See anthropics/anthropic#274559 (spec), #310375 (B1b tenant RPCs),
  * #295987 (B2 Python routes), #307150 (C1' CCR v2 gate).
- */
+     */
 
 const TRUSTED_DEVICE_GATE = 'tengu_sessions_elevated_auth_enforcement'
 
@@ -39,8 +39,7 @@ function isGateEnabled(): boolean {
 // Memoized — secureStorage.read() spawns a macOS `security` subprocess (~40ms).
 // bridgeApi.ts calls this from getHeaders() on every poll/heartbeat/ack.
 // Cache cleared after enrollment (below) and on logout (clearAuthRelatedCaches).
-//
-// Only the storage read is memoized — the GrowthBook gate is checked live so
+// // Only the storage read is memoized — the GrowthBook gate is checked live so
 // that a gate flip after GrowthBook refresh takes effect without a restart.
 const readStoredToken = memoize((): string | undefined => {
   // Env var takes precedence for testing/canary.
@@ -62,13 +61,13 @@ export function clearTrustedDeviceTokenCache(): void {
   readStoredToken.cache?.clear?.()
 }
 
-/**
+/*    *
  * Clear the stored trusted device token from secure storage and the memo cache.
  * Called before enrollTrustedDevice() during /login so a stale token from the
  * previous account isn't sent as X-Trusted-Device-Token while enrollment is
  * in-flight (enrollTrustedDevice is async — bridge API calls between login and
  * enrollment completion would otherwise still read the old cached token).
- */
+     */
 export function clearTrustedDeviceToken(): void {
   if (!isGateEnabled()) {
     return
@@ -86,7 +85,7 @@ export function clearTrustedDeviceToken(): void {
   readStoredToken.cache?.clear?.()
 }
 
-/**
+/*    *
  * Enroll this device via POST /auth/trusted_devices and persist the token
  * to keychain. Best-effort — logs and returns on failure so callers
  * (post-login hooks) don't block the login flow.
@@ -94,7 +93,7 @@ export function clearTrustedDeviceToken(): void {
  * The server gates enrollment on account_session.created_at < 10min, so
  * this must be called immediately after a fresh /login. Calling it later
  * (e.g. lazy enrollment on /bridge 403) will fail with 403 stale_session.
- */
+     */
 export async function enrollTrustedDevice(): Promise<void> {
   try {
     // checkGate_CACHED_OR_BLOCKING awaits any in-flight GrowthBook re-init
@@ -118,10 +117,10 @@ export async function enrollTrustedDevice(): Promise<void> {
     // Lazy require — utils/auth.ts transitively pulls ~1300 modules
     // (config → file → permissions → sessionStorage → commands). Daemon callers
     // of getTrustedDeviceToken() don't need this; only /login does.
-    /* eslint-disable @typescript-eslint/no-require-imports */
+    /*     eslint-disable @typescript-eslint/no-require-imports     */
     const { getClaudeAIOAuthTokens } =
       require('../utils/auth.js') as typeof import('../utils/auth.js')
-    /* eslint-enable @typescript-eslint/no-require-imports */
+    /*     eslint-enable @typescript-eslint/no-require-imports     */
     const accessToken = getClaudeAIOAuthTokens()?.accessToken
     if (!accessToken) {
       logForDebugging('[trusted-device] No OAuth token, skipping enrollment')

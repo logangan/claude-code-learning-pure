@@ -3,7 +3,7 @@ import { ClockContext } from '../components/ClockContext.js'
 import type { DOMElement } from '../dom.js'
 import { useTerminalViewport } from './use-terminal-viewport.js'
 
-/**
+/*    *
  * Hook for synchronized animations that pause when offscreen.
  *
  * Returns a ref to attach to the animated element and the current animation time.
@@ -26,7 +26,7 @@ import { useTerminalViewport } from './use-terminal-viewport.js'
  *
  * The clock automatically slows when the terminal is blurred,
  * so consumers don't need to handle focus state.
- */
+     */
 export function useAnimationFrame(
   intervalMs: number | null = 16,
 ): [ref: (element: DOMElement | null) => void, time: number] {

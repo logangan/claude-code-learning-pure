@@ -1,4 +1,4 @@
-/**
+/*    *
  * Bidirectional text reordering for terminal rendering.
  *
  * Terminals on Windows do not implement the Unicode Bidi Algorithm,
@@ -8,12 +8,12 @@
  *
  * On macOS terminals (Terminal.app, iTerm2) bidi works natively.
  * Windows Terminal (including WSL) does not implement bidi
- * (https://github.com/microsoft/terminal/issues/538).
+ * (https:// github.com/microsoft/terminal/issues/538).
  *
  * Detection: Windows Terminal sets WT_SESSION; native Windows cmd/conhost
  * also lacks bidi. We enable bidi reordering when running on Windows or
  * inside Windows Terminal (covers WSL).
- */
+     */
 import bidiFactory from 'bidi-js'
 
 type ClusteredChar = {
@@ -43,13 +43,13 @@ function getBidi() {
   return bidiInstance
 }
 
-/**
+/*    *
  * Reorder an array of ClusteredChars from logical order to visual order
  * using the Unicode Bidi Algorithm. Active on terminals that lack native
  * bidi support (Windows Terminal, conhost, WSL).
  *
  * Returns the same array on bidi-capable terminals (no-op).
- */
+     */
 export function reorderBidi(characters: ClusteredChar[]): ClusteredChar[] {
   if (!needsBidi() || characters.length === 0) {
     return characters
@@ -124,10 +124,10 @@ function reverseRangeNumbers(arr: number[], start: number, end: number): void {
   }
 }
 
-/**
+/*    *
  * Quick check for RTL characters (Hebrew, Arabic, and related scripts).
  * Avoids running the full bidi algorithm on pure-LTR text.
- */
+     */
 function hasRTLCharacters(text: string): boolean {
   // Hebrew: U+0590-U+05FF, U+FB1D-U+FB4F
   // Arabic: U+0600-U+06FF, U+0750-U+077F, U+08A0-U+08FF, U+FB50-U+FDFF, U+FE70-U+FEFF

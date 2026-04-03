@@ -77,10 +77,10 @@ let lastGitIndexMtime: number | null = null
 let loadedTrackedSignature: string | null = null
 let loadedMergedSignature: string | null = null
 
-/**
+/*    *
  * Clear all file suggestion caches.
  * Call this when resuming a session to ensure fresh file discovery.
- */
+     */
 export function clearFileSuggestionCaches(): void {
   fileIndex = null
   fileListRefreshPromise = null
@@ -98,7 +98,7 @@ export function clearFileSuggestionCaches(): void {
   loadedMergedSignature = null
 }
 
-/**
+/*    *
  * Content hash of a path list. A length|first|last sample misses renames of
  * middle files (same length, same endpoints → stale entry stuck in nucleo).
  *
@@ -107,7 +107,7 @@ export function clearFileSuggestionCaches(): void {
  * add/rm) while running in <1ms. A single mid-list rename that happens to
  * fall between samples will miss the rebuild, but the 5s refresh floor picks
  * it up on the next cycle.
- */
+     */
 export function pathListSignature(paths: string[]): string {
   const n = paths.length
   const stride = Math.max(1, Math.floor(n / 500))
@@ -130,11 +130,11 @@ export function pathListSignature(paths: string[]): string {
   return `${n}:${(h >>> 0).toString(16)}`
 }
 
-/**
+/*    *
  * Stat .git/index to detect git state changes without spawning git ls-files.
  * Returns null for worktrees (.git is a file → ENOTDIR), fresh repos with no
  * index yet (ENOENT), and non-git dirs — caller falls back to time throttle.
- */
+     */
 function getGitIndexMtime(): number | null {
   const repoRoot = findGitRoot(getCwd())
   if (!repoRoot) return null
@@ -146,9 +146,9 @@ function getGitIndexMtime(): number | null {
   }
 }
 
-/**
+/*    *
  * Normalize git paths relative to originalCwd
- */
+     */
 function normalizeGitPaths(
   files: string[],
   repoRoot: string,
@@ -163,9 +163,9 @@ function normalizeGitPaths(
   })
 }
 
-/**
+/*    *
  * Merge already-normalized untracked files into the cache
- */
+     */
 async function mergeUntrackedIntoNormalizedCache(
   normalizedUntracked: string[],
 ): Promise<void> {
@@ -194,11 +194,11 @@ async function mergeUntrackedIntoNormalizedCache(
   )
 }
 
-/**
+/*    *
  * Load ripgrep-specific ignore patterns from .ignore or .rgignore files
  * Returns an ignore instance if patterns were found, null otherwise
  * Results are cached per repoRoot:cwd combination
- */
+     */
 async function loadRipgrepIgnorePatterns(
   repoRoot: string,
   cwd: string,
@@ -237,14 +237,14 @@ async function loadRipgrepIgnorePatterns(
   return result
 }
 
-/**
+/*    *
  * Get files using git ls-files (much faster than ripgrep for git repos)
  * Returns tracked files immediately, fetches untracked in background
  * @param respectGitignore If true, excludes gitignored files from untracked results
  *
  * Note: Unlike ripgrep --follow, git ls-files doesn't follow symlinks.
  * This is intentional as git tracks symlinks as symlinks.
- */
+     */
 async function getFilesUsingGit(
   abortSignal: AbortSignal,
   respectGitignore: boolean,
@@ -382,24 +382,24 @@ async function getFilesUsingGit(
   }
 }
 
-/**
+/*    *
  * This function collects all parent directories for each file path
  * and returns a list of unique directory names with a trailing separator.
  * For example, if the input is ['src/index.js', 'src/utils/helpers.js'],
  * the output will be ['src/', 'src/utils/'].
  * @param files An array of file paths
  * @returns An array of unique directory names with a trailing separator
- */
+     */
 export function getDirectoryNames(files: string[]): string[] {
   const directoryNames = new Set<string>()
   collectDirectoryNames(files, 0, files.length, directoryNames)
   return [...directoryNames].map(d => d + path.sep)
 }
 
-/**
+/*    *
  * Async variant: yields every ~10k files so 270k+ file lists don't block
  * the main thread for >10ms at a time.
- */
+     */
 export async function getDirectoryNamesAsync(
   files: string[],
 ): Promise<string[]> {
@@ -439,9 +439,9 @@ function collectDirectoryNames(
   }
 }
 
-/**
+/*    *
  * Gets additional files from Claude config directories
- */
+     */
 async function getClaudeConfigFiles(cwd: string): Promise<string[]> {
   const markdownFileArrays = await Promise.all(
     CLAUDE_CONFIG_DIRECTORIES.map(subdir =>
@@ -453,9 +453,9 @@ async function getClaudeConfigFiles(cwd: string): Promise<string[]> {
   )
 }
 
-/**
+/*    *
  * Gets project files using git ls-files (fast) or ripgrep (fallback)
- */
+     */
 async function getProjectFiles(
   abortSignal: AbortSignal,
   respectGitignore: boolean,
@@ -515,11 +515,11 @@ async function getProjectFiles(
   return relativePaths
 }
 
-/**
+/*    *
  * Gets both files and their directory paths for providing path suggestions
  * Uses git ls-files for git repos (fast) or ripgrep as fallback
  * Returns a FileIndex populated for fast fuzzy search
- */
+     */
 export async function getPathsForSuggestions(): Promise<FileIndex> {
   const signal = AbortSignal.timeout(10_000)
   const index = getFileIndex()
@@ -569,9 +569,9 @@ export async function getPathsForSuggestions(): Promise<FileIndex> {
   return index
 }
 
-/**
+/*    *
  * Finds the common prefix between two strings
- */
+     */
 function findCommonPrefix(a: string, b: string): string {
   const minLength = Math.min(a.length, b.length)
   let i = 0
@@ -581,9 +581,9 @@ function findCommonPrefix(a: string, b: string): string {
   return a.substring(0, i)
 }
 
-/**
+/*    *
  * Finds the longest common prefix among an array of suggestion items
- */
+     */
 export function findLongestCommonPrefix(suggestions: SuggestionItem[]): string {
   if (suggestions.length === 0) return ''
 
@@ -597,9 +597,9 @@ export function findLongestCommonPrefix(suggestions: SuggestionItem[]): string {
   return prefix
 }
 
-/**
+/*    *
  * Creates a file suggestion item
- */
+     */
 function createFileSuggestionItem(
   filePath: string,
   score?: number,
@@ -611,9 +611,9 @@ function createFileSuggestionItem(
   }
 }
 
-/**
+/*    *
  * Find matching files and folders for a given query using the TS file index
- */
+     */
 const MAX_SUGGESTIONS = 15
 function findMatchingFiles(
   fileIndex: FileIndex,
@@ -625,13 +625,13 @@ function findMatchingFiles(
   )
 }
 
-/**
+/*    *
  * Starts a background refresh of the file index cache if not already in progress.
  *
  * Throttled: when a cache already exists, we skip the refresh unless git state
  * has actually changed. This prevents every keystroke from spawning git ls-files
  * and rebuilding the nucleo index.
- */
+     */
 const REFRESH_THROTTLE_MS = 5_000
 export function startBackgroundCacheRefresh(): void {
   if (fileListRefreshPromise) return
@@ -685,10 +685,10 @@ export function startBackgroundCacheRefresh(): void {
     })
 }
 
-/**
+/*    *
  * Gets the top-level files and directories in the current working directory
  * @returns Array of file/directory paths in the current directory
- */
+     */
 async function getTopLevelPaths(): Promise<string[]> {
   const fs = getFsImplementation()
   const cwd = getCwd()
@@ -707,11 +707,11 @@ async function getTopLevelPaths(): Promise<string[]> {
   }
 }
 
-/**
+/*    *
  * Generate file suggestions for the current input and cursor position
  * @param partialPath The partial file path to match
  * @param showOnEmpty Whether to show suggestions even if partialPath is empty (used for @ symbol)
- */
+     */
 export async function generateFileSuggestions(
   partialPath: string,
   showOnEmpty = false,
@@ -783,9 +783,9 @@ export async function generateFileSuggestions(
   }
 }
 
-/**
+/*    *
  * Apply a file suggestion to the input
- */
+     */
 export function applyFileSuggestion(
   suggestion: string | SuggestionItem,
   input: string,

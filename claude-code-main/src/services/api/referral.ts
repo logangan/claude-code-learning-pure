@@ -65,9 +65,9 @@ export async function fetchReferralRedemptions(
   return response.data
 }
 
-/**
+/*    *
  * Prechecks for if user can access guest passes feature
- */
+     */
 function shouldCheckForPasses(): boolean {
   return !!(
     getOauthAccountInfo()?.organizationUuid &&
@@ -76,10 +76,10 @@ function shouldCheckForPasses(): boolean {
   )
 }
 
-/**
+/*    *
  * Check cached passes eligibility from GlobalConfig
  * Returns current cached state and cache status
- */
+     */
 export function checkCachedPassesEligibility(): {
   eligible: boolean
   needsRefresh: boolean
@@ -143,10 +143,10 @@ export function formatCreditAmount(reward: ReferrerRewardInfo): string {
   return `${symbol}${formatted}`
 }
 
-/**
+/*    *
  * Get cached referrer reward info from eligibility cache
  * Returns the reward info if the user is in a v1 campaign, null otherwise
- */
+     */
 export function getCachedReferrerReward(): ReferrerRewardInfo | null {
   const orgId = getOauthAccountInfo()?.organizationUuid
   if (!orgId) return null
@@ -155,10 +155,10 @@ export function getCachedReferrerReward(): ReferrerRewardInfo | null {
   return cachedEntry?.referrer_reward ?? null
 }
 
-/**
+/*    *
  * Get the cached remaining passes count from eligibility cache
  * Returns the number of remaining passes, or null if not available
- */
+     */
 export function getCachedRemainingPasses(): number | null {
   const orgId = getOauthAccountInfo()?.organizationUuid
   if (!orgId) return null
@@ -167,10 +167,10 @@ export function getCachedRemainingPasses(): number | null {
   return cachedEntry?.remaining_passes ?? null
 }
 
-/**
+/*    *
  * Fetch passes eligibility and store in GlobalConfig
  * Returns the fetched response or null on error
- */
+     */
 export async function fetchAndStorePassesEligibility(): Promise<ReferralEligibilityResponse | null> {
   // Return existing promise if fetch is already in progress
   if (fetchInProgress) {
@@ -220,14 +220,14 @@ export async function fetchAndStorePassesEligibility(): Promise<ReferralEligibil
   return fetchInProgress
 }
 
-/**
+/*    *
  * Get cached passes eligibility data or fetch if needed
  * Main entry point for all eligibility checks
  *
  * This function never blocks on network - it returns cached data immediately
  * and fetches in the background if needed. On cold start (no cache), it returns
  * null and the passes command won't be available until the next session.
- */
+     */
 export async function getCachedOrFetchPassesEligibility(): Promise<ReferralEligibilityResponse | null> {
   if (!shouldCheckForPasses()) {
     return null
@@ -268,9 +268,9 @@ export async function getCachedOrFetchPassesEligibility(): Promise<ReferralEligi
   return response as ReferralEligibilityResponse
 }
 
-/**
+/*    *
  * Prefetch passes eligibility on startup
- */
+     */
 export async function prefetchPassesEligibility(): Promise<void> {
   // Skip network requests if nonessential traffic is disabled
   if (isEssentialTrafficOnly()) {

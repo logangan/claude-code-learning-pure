@@ -68,10 +68,10 @@ function formatPathLink(filePath: string): string {
   return `\x1b]8;;${fileUrl}\x07${filePath}\x1b]8;;\x07`
 }
 
-/**
+/*    *
  * Generate and cache the completion script, then add a source line to the
  * shell's rc file. Returns a user-facing status message.
- */
+     */
 export async function setupShellCompletion(theme: ThemeName): Promise<string> {
   const shell = detectShell()
   if (!shell) {
@@ -133,10 +133,10 @@ export async function setupShellCompletion(theme: ThemeName): Promise<string> {
   }
 }
 
-/**
+/*    *
  * Regenerate cached shell completion scripts in ~/.claude/.
  * Called after `claude update` so completions stay in sync with the new binary.
- */
+     */
 export async function regenerateCompletionCache(): Promise<void> {
   const shell = detectShell()
   if (!shell) {

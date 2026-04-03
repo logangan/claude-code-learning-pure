@@ -1,4 +1,4 @@
-/**
+/*    *
  * Headless mode profiling utility for measuring per-turn latency in -p (print) mode.
  *
  * Tracks key timing phases per turn:
@@ -10,7 +10,7 @@
  * Sampled logging: 100% of ant users, 5% of external users.
  *
  * Set CLAUDE_CODE_PROFILE_STARTUP=1 for detailed logging output.
- */
+     */
 
 import { getIsNonInteractiveSession } from '../bootstrap/state.js'
 import {
@@ -42,9 +42,9 @@ const MARK_PREFIX = 'headless_'
 // Track current turn number (auto-incremented by headlessProfilerStartTurn)
 let currentTurnNumber = -1
 
-/**
+/*    *
  * Clear all headless profiler marks from performance timeline
- */
+     */
 function clearHeadlessMarks(): void {
   const perf = getPerformance()
   const allMarks = perf.getEntriesByType('mark')
@@ -55,10 +55,10 @@ function clearHeadlessMarks(): void {
   }
 }
 
-/**
+/*    *
  * Start a new turn for profiling. Clears previous marks, increments turn number,
  * and records turn_start. Call this at the beginning of each user message processing.
- */
+     */
 export function headlessProfilerStartTurn(): void {
   // Only profile in headless/non-interactive mode
   if (!getIsNonInteractiveSession()) return
@@ -76,10 +76,10 @@ export function headlessProfilerStartTurn(): void {
   }
 }
 
-/**
+/*    *
  * Record a checkpoint with the given name.
  * Only records if in headless mode and profiling is enabled.
- */
+     */
 export function headlessProfilerCheckpoint(name: string): void {
   // Only profile in headless/non-interactive mode
   if (!getIsNonInteractiveSession()) return
@@ -96,10 +96,10 @@ export function headlessProfilerCheckpoint(name: string): void {
   }
 }
 
-/**
+/*    *
  * Log headless latency metrics for the current turn to Statsig.
  * Call this at the end of each turn (before processing next user message).
- */
+     */
 export function logHeadlessProfilerTurn(): void {
   // Only log in headless mode
   if (!getIsNonInteractiveSession()) return

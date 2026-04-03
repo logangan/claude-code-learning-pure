@@ -22,9 +22,9 @@ let hotReloadSubscribed = false
 // Snapshot of enabledPlugins for change detection in hot reload
 let lastPluginSettingsSnapshot: string | undefined
 
-/**
+/*    *
  * Convert plugin hooks configuration to native matchers with plugin context
- */
+     */
 function convertPluginHooksToMatchers(
   plugin: LoadedPlugin,
 ): Record<HookEvent, PluginHookMatcher[]> {
@@ -85,9 +85,9 @@ function convertPluginHooksToMatchers(
   return pluginMatchers
 }
 
-/**
+/*    *
  * Load and register hooks from all enabled plugins
- */
+     */
 export const loadPluginHooks = memoize(async (): Promise<void> => {
   const { enabled } = await loadAllPluginsCacheOnly()
   const allPluginHooks: Record<HookEvent, PluginHookMatcher[]> = {
@@ -166,7 +166,7 @@ export function clearPluginHookCache(): void {
   loadPluginHooks.cache?.clear?.()
 }
 
-/**
+/*    *
  * Remove hooks from plugins no longer in the enabled set, without adding
  * hooks from newly-enabled plugins. Called from clearAllCaches() so
  * uninstalled/disabled plugins stop firing hooks immediately (gh-36995),
@@ -175,7 +175,7 @@ export function clearPluginHookCache(): void {
  *
  * The full swap (clear + register all) still happens via loadPluginHooks(),
  * which /reload-plugins awaits.
- */
+     */
 export async function pruneRemovedPluginHooks(): Promise<void> {
   // Early return when nothing to prune — avoids seeding the loadAllPluginsCacheOnly
   // memoize in test/preload.ts beforeEach (which clears registeredHooks).
@@ -206,15 +206,15 @@ export async function pruneRemovedPluginHooks(): Promise<void> {
   registerHookCallbacks(survivors)
 }
 
-/**
+/*    *
  * Reset hot reload subscription state. Only for testing.
- */
+     */
 export function resetHotReloadState(): void {
   hotReloadSubscribed = false
   lastPluginSettingsSnapshot = undefined
 }
 
-/**
+/*    *
  * Build a stable string snapshot of the settings that feed into
  * `loadAllPluginsCacheOnly()` for change detection. Sorts keys so comparison is
  * deterministic regardless of insertion order.
@@ -227,7 +227,7 @@ export function resetHotReloadState(): void {
  * would never diff, the listener would skip, and the memoized result
  * would retain the pre-remote marketplace allow/blocklist.
  * See #23085 / #23152 poisoned-cache discussion (Slack C09N89L3VNJ).
- */
+     */
 // Exported for testing — the listener at setupPluginHookHotReload uses this
 // for change detection; tests verify it diffs on the fields that matter.
 export function getPluginAffectingSettingsSnapshot(): string {
@@ -246,12 +246,12 @@ export function getPluginAffectingSettingsSnapshot(): string {
   })
 }
 
-/**
+/*    *
  * Set up hot reload for plugin hooks when remote settings change.
  * When policySettings changes (e.g., from remote managed settings),
  * compares the plugin-affecting settings snapshot and only reloads if it
  * actually changed.
- */
+     */
 export function setupPluginHookHotReload(): void {
   if (hotReloadSubscribed) {
     return

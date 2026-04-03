@@ -1,6 +1,6 @@
 import type { Message } from '../../types/message.js'
 
-/**
+/*    *
  * Groups messages at API-round boundaries: one group per API round-trip.
  * A boundary fires when a NEW assistant response begins (different
  * message.id from the prior assistant). For well-formed conversations
@@ -18,7 +18,7 @@ import type { Message } from '../../types/message.js'
  * Extracted to its own file to break the compact.ts ↔ compactMessages.ts
  * cycle (CC-1180) — the cycle shifted module-init order enough to surface
  * a latent ws CJS/ESM resolution race in CI shard-2.
- */
+     */
 export function groupMessagesByApiRound(messages: Message[]): Message[][] {
   const groups: Message[][] = []
   let current: Message[] = []

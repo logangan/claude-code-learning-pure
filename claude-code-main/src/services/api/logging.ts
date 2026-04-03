@@ -259,14 +259,14 @@ export function logAPIError({
   durationMsIncludingRetries: number
   attempt: number
   requestId?: string | null
-  /** Client-generated ID sent as x-client-request-id header (survives timeouts) */
+  /*    * Client-generated ID sent as x-client-request-id header (survives timeouts)     */
   clientRequestId?: string
   didFallBackToNonStreaming?: boolean
   promptCategory?: string
   headers?: globalThis.Headers
   queryTracking?: QueryChainTracking
   querySource?: string
-  /** The span from startLLMRequestSpan - pass this to correctly match responses to requests */
+  /*    * The span from startLLMRequestSpan - pass this to correctly match responses to requests     */
   llmSpan?: Span
   fastMode?: boolean
   previousRequestId?: string | null
@@ -622,19 +622,19 @@ export function logAPISuccessAndDuration({
   costUSD: number
   queryTracking?: QueryChainTracking
   permissionMode?: PermissionMode
-  /** Assistant messages from the response - used to extract model_output and thinking_output
-   *  when beta tracing is enabled */
+  /*    * Assistant messages from the response - used to extract model_output and thinking_output
+   *  when beta tracing is enabled     */
   newMessages?: AssistantMessage[]
-  /** The span from startLLMRequestSpan - pass this to correctly match responses to requests */
+  /*    * The span from startLLMRequestSpan - pass this to correctly match responses to requests     */
   llmSpan?: Span
-  /** Strategy used for global prompt caching: 'tool_based', 'system_prompt', or 'none' */
+  /*    * Strategy used for global prompt caching: 'tool_based', 'system_prompt', or 'none'     */
   globalCacheStrategy?: GlobalCacheStrategy
-  /** Time spent in pre-request setup before the successful attempt */
+  /*    * Time spent in pre-request setup before the successful attempt     */
   requestSetupMs?: number
-  /** Timestamps (Date.now()) of each attempt start — used for retry sub-spans in Perfetto */
+  /*    * Timestamps (Date.now()) of each attempt start — used for retry sub-spans in Perfetto     */
   attemptStartTimes?: number[]
   fastMode?: boolean
-  /** Request ID from the previous API call in this session */
+  /*    * Request ID from the previous API call in this session     */
   previousRequestId?: string | null
   betas?: string[]
 }): void {

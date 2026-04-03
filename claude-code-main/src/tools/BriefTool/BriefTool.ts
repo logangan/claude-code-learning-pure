@@ -66,7 +66,7 @@ export type Output = z.infer<OutputSchema>
 
 const KAIROS_BRIEF_REFRESH_MS = 5 * 60 * 1000
 
-/**
+/*    *
  * Entitlement check — is the user ALLOWED to use Brief? Combines build-time
  * flags with runtime GB gate + assistant-mode passthrough. No opt-in check
  * here — this decides whether opt-in should be HONORED, not whether the user
@@ -84,7 +84,7 @@ const KAIROS_BRIEF_REFRESH_MS = 5 * 60 * 1000
  * bypasses the GB gate so you can test without being enrolled. Still
  * requires an opt-in action to activate (--brief, defaultView, etc.), but
  * the env var alone also sets userMsgOptIn via maybeActivateBrief().
- */
+     */
 export function isBriefEntitled(): boolean {
   // Positive ternary — see docs/feature-gating.md. Negative early-return
   // would not eliminate the GB gate string from external builds.
@@ -99,7 +99,7 @@ export function isBriefEntitled(): boolean {
     : false
 }
 
-/**
+/*    *
  * Unified activation gate for the Brief tool. Governs model-facing behavior
  * as a unit: tool availability, system prompt section (getBriefSection),
  * tool-deferral bypass (isDeferredTool), and todo-nag suppression.
@@ -122,7 +122,7 @@ export function isBriefEntitled(): boolean {
  * Called from Tool.isEnabled() (lazy, post-init), never at module scope.
  * getKairosActive() and getUserMsgOptIn() are set in main.tsx before any
  * caller reaches here.
- */
+     */
 export function isBriefEnabled(): boolean {
   // Top-level feature() guard is load-bearing for DCE: Bun can constant-fold
   // the ternary to `false` in external builds and then dead-code the BriefTool

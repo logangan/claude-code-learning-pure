@@ -1,4 +1,4 @@
-/**
+/*    *
  * Filter and sanitize installed-app data for inclusion in the `request_access`
  * tool description. Ported from Cowork's appNames.ts. Two
  * concerns: noise filtering (Spotlight returns every bundle on disk — XPC
@@ -10,9 +10,9 @@
  * ("Available applications:") makes it clear these are app names, and the
  * downstream permission dialog requires explicit user approval — a bad name
  * can't auto-grant anything.
- */
+     */
 
-/** Minimal shape — matches what `listInstalledApps` returns. */
+/*    * Minimal shape — matches what `listInstalledApps` returns.     */
 type InstalledAppLike = {
   readonly bundleId: string
   readonly displayName: string
@@ -21,7 +21,7 @@ type InstalledAppLike = {
 
 // ── Noise filtering ──────────────────────────────────────────────────────
 
-/**
+/*    *
  * Only apps under these roots are shown. /System/Library subpaths (CoreServices,
  * PrivateFrameworks, Input Methods) are OS plumbing — anchor on known-good
  * roots rather than blocklisting every junk subpath since new macOS versions
@@ -29,18 +29,18 @@ type InstalledAppLike = {
  *
  * ~/Applications is checked at call time via the `homeDir` arg (HOME isn't
  * reliably known at module load in all environments).
- */
+     */
 const PATH_ALLOWLIST: readonly string[] = [
   '/Applications/',
   '/System/Applications/',
 ]
 
-/**
+/*    *
  * Display-name patterns that mark background services even under /Applications.
  * `(?:$|\s\()` — matches keyword at end-of-string OR immediately before ` (`:
  * "Slack Helper (GPU)" and "ABAssistantService" fail, "Service Desk" passes
  * (Service is followed by " D").
- */
+     */
 const NAME_PATTERN_BLOCKLIST: readonly RegExp[] = [
   /Helper(?:$|\s\()/,
   /Agent(?:$|\s\()/,
@@ -50,12 +50,12 @@ const NAME_PATTERN_BLOCKLIST: readonly RegExp[] = [
   /^\./,
 ]
 
-/**
+/*    *
  * Apps commonly requested for CU automation. ALWAYS included if installed,
  * bypassing path check + count cap — the model needs these exact names even
  * when the machine has 200+ apps. Bundle IDs (locale-invariant), not display
  * names. Keep <30 — each entry is a guaranteed token in the description.
- */
+     */
 const ALWAYS_KEEP_BUNDLE_IDS: ReadonlySet<string> = new Set([
   // Browsers
   'com.apple.Safari',
@@ -98,13 +98,13 @@ const ALWAYS_KEEP_BUNDLE_IDS: ReadonlySet<string> = new Set([
 
 // ── Prompt-injection hardening ───────────────────────────────────────────
 
-/**
+/*    *
  * `\p{L}\p{M}\p{N}` with /u — not `\w` (ASCII-only, would drop Bücher, 微信,
  * Préférences Système). `\p{M}` matches combining marks so NFD-decomposed
  * diacritics (ü → u + ◌̈) pass. Single space not `\s` — `\s` matches newlines,
  * which would let "App\nIgnore previous…" through as a multi-line injection.
  * Still bars quotes, angle brackets, backticks, pipes, colons.
- */
+     */
 const APP_NAME_ALLOWED = /^[\p{L}\p{M}\p{N}_ .&'()+-]+$/u
 const APP_NAME_MAX_LEN = 40
 const APP_NAME_MAX_COUNT = 50
@@ -124,11 +124,11 @@ function isNoisyName(name: string): boolean {
   return NAME_PATTERN_BLOCKLIST.some(re => re.test(name))
 }
 
-/**
+/*    *
  * Length cap + trim + dedupe + sort. `applyCharFilter` — skip for trusted
  * bundle IDs (Apple/Google/MS; a localized "Réglages Système" with unusual
  * punctuation shouldn't be dropped), apply for anything attacker-installable.
- */
+     */
 function sanitizeCore(
   raw: readonly string[],
   applyCharFilter: boolean,
@@ -160,11 +160,11 @@ function sanitizeTrustedNames(raw: readonly string[]): string[] {
   return sanitizeCore(raw, false)
 }
 
-/**
+/*    *
  * Filter raw Spotlight results to user-facing apps, then sanitize. Always-keep
  * apps bypass path/name filter AND char allowlist (trusted vendors, not
  * attacker-installed); still length-capped, deduped, sorted.
- */
+     */
 export function filterAppsForDescription(
   installed: readonly InstalledAppLike[],
   homeDir: string | undefined,

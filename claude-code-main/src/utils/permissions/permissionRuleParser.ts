@@ -6,14 +6,14 @@ import type { PermissionRuleValue } from './PermissionRule.js'
 
 // Dead code elimination: ant-only tool names are conditionally required so
 // their strings don't leak into external builds. Static imports always bundle.
-/* eslint-disable @typescript-eslint/no-require-imports */
+/*     eslint-disable @typescript-eslint/no-require-imports     */
 const BRIEF_TOOL_NAME: string | null =
   feature('KAIROS') || feature('KAIROS_BRIEF')
     ? (
         require('../../tools/BriefTool/prompt.js') as typeof import('../../tools/BriefTool/prompt.js')
       ).BRIEF_TOOL_NAME
     : null
-/* eslint-enable @typescript-eslint/no-require-imports */
+/*     eslint-enable @typescript-eslint/no-require-imports     */
 
 // Maps legacy tool names to their current canonical names.
 // When a tool is renamed, add old → new here so permission rules,
@@ -40,7 +40,7 @@ export function getLegacyToolNames(canonicalName: string): string[] {
   return result
 }
 
-/**
+/*    *
  * Escapes special characters in rule content for safe storage in permission rules.
  * Permission rules use the format "Tool(content)", so parentheses in content must be escaped.
  *
@@ -51,7 +51,7 @@ export function getLegacyToolNames(canonicalName: string): string[] {
  * @example
  * escapeRuleContent('psycopg2.connect()') // => 'psycopg2.connect\\(\\)'
  * escapeRuleContent('echo "test\\nvalue"') // => 'echo "test\\\\nvalue"'
- */
+     */
 export function escapeRuleContent(content: string): string {
   return content
     .replace(/\\/g, '\\\\') // Escape backslashes first
@@ -59,7 +59,7 @@ export function escapeRuleContent(content: string): string {
     .replace(/\)/g, '\\)') // Escape closing parentheses
 }
 
-/**
+/*    *
  * Unescapes special characters in rule content after parsing from permission rules.
  * This reverses the escaping done by escapeRuleContent.
  *
@@ -70,7 +70,7 @@ export function escapeRuleContent(content: string): string {
  * @example
  * unescapeRuleContent('psycopg2.connect\\(\\)') // => 'psycopg2.connect()'
  * unescapeRuleContent('echo "test\\\\nvalue"') // => 'echo "test\\nvalue"'
- */
+     */
 export function unescapeRuleContent(content: string): string {
   return content
     .replace(/\\\(/g, '(') // Unescape opening parentheses
@@ -78,7 +78,7 @@ export function unescapeRuleContent(content: string): string {
     .replace(/\\\\/g, '\\') // Unescape backslashes last
 }
 
-/**
+/*    *
  * Parses a permission rule string into its components.
  * Handles escaped parentheses in the content portion.
  *
@@ -89,7 +89,7 @@ export function unescapeRuleContent(content: string): string {
  * permissionRuleValueFromString('Bash') // => { toolName: 'Bash' }
  * permissionRuleValueFromString('Bash(npm install)') // => { toolName: 'Bash', ruleContent: 'npm install' }
  * permissionRuleValueFromString('Bash(python -c "print\\(1\\)")') // => { toolName: 'Bash', ruleContent: 'python -c "print(1)"' }
- */
+     */
 export function permissionRuleValueFromString(
   ruleString: string,
 ): PermissionRuleValue {
@@ -132,7 +132,7 @@ export function permissionRuleValueFromString(
   return { toolName: normalizeLegacyToolName(toolName), ruleContent }
 }
 
-/**
+/*    *
  * Converts a permission rule value to its string representation.
  * Escapes parentheses in the content to prevent parsing issues.
  *
@@ -140,7 +140,7 @@ export function permissionRuleValueFromString(
  * permissionRuleValueToString({ toolName: 'Bash' }) // => 'Bash'
  * permissionRuleValueToString({ toolName: 'Bash', ruleContent: 'npm install' }) // => 'Bash(npm install)'
  * permissionRuleValueToString({ toolName: 'Bash', ruleContent: 'python -c "print(1)"' }) // => 'Bash(python -c "print\\(1\\)")'
- */
+     */
 export function permissionRuleValueToString(
   ruleValue: PermissionRuleValue,
 ): string {
@@ -151,10 +151,10 @@ export function permissionRuleValueToString(
   return `${ruleValue.toolName}(${escapedContent})`
 }
 
-/**
+/*    *
  * Find the index of the first unescaped occurrence of a character.
  * A character is escaped if preceded by an odd number of backslashes.
- */
+     */
 function findFirstUnescapedChar(str: string, char: string): number {
   for (let i = 0; i < str.length; i++) {
     if (str[i] === char) {
@@ -174,10 +174,10 @@ function findFirstUnescapedChar(str: string, char: string): number {
   return -1
 }
 
-/**
+/*    *
  * Find the index of the last unescaped occurrence of a character.
  * A character is escaped if preceded by an odd number of backslashes.
- */
+     */
 function findLastUnescapedChar(str: string, char: string): number {
   for (let i = str.length - 1; i >= 0; i--) {
     if (str[i] === char) {

@@ -1,8 +1,8 @@
-/**
+/*    *
  * Random word slug generator for plan IDs
- * Inspired by https://github.com/nas5w/random-word-slugs
+ * Inspired by https:// github.com/nas5w/random-word-slugs
  * with Claude-flavored words
- */
+     */
 import { randomBytes } from 'crypto'
 
 // Adjectives for slug generation - whimsical and delightful
@@ -761,9 +761,9 @@ const VERBS = [
   'zooming',
 ] as const
 
-/**
+/*    *
  * Generate a cryptographically random integer in the range [0, max)
- */
+     */
 function randomInt(max: number): number {
   // Use crypto.randomBytes for better randomness than Math.random
   const bytes = randomBytes(4)
@@ -771,17 +771,17 @@ function randomInt(max: number): number {
   return value % max
 }
 
-/**
+/*    *
  * Pick a random element from an array
- */
+     */
 function pickRandom<T>(array: readonly T[]): T {
   return array[randomInt(array.length)]!
 }
 
-/**
+/*    *
  * Generate a random word slug in the format "adjective-verb-noun"
  * Example: "gleaming-brewing-phoenix", "cosmic-pondering-lighthouse"
- */
+     */
 export function generateWordSlug(): string {
   const adjective = pickRandom(ADJECTIVES)
   const verb = pickRandom(VERBS)
@@ -789,10 +789,10 @@ export function generateWordSlug(): string {
   return `${adjective}-${verb}-${noun}`
 }
 
-/**
+/*    *
  * Generate a shorter random word slug in the format "adjective-noun"
  * Example: "graceful-unicorn", "cosmic-lighthouse"
- */
+     */
 export function generateShortWordSlug(): string {
   const adjective = pickRandom(ADJECTIVES)
   const noun = pickRandom(NOUNS)

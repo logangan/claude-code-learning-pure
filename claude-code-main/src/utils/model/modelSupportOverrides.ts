@@ -23,10 +23,10 @@ const TIERS = [
   },
 ] as const
 
-/**
+/*    *
  * Check whether a 3p model capability override is set for a model that matches one of
  * the pinned ANTHROPIC_DEFAULT_*_MODEL env vars.
- */
+     */
 export const get3PModelCapabilityOverride = memoize(
   (model: string, capability: ModelCapabilityOverride): boolean | undefined => {
     if (getAPIProvider() === 'firstParty') {

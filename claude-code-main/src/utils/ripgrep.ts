@@ -79,11 +79,11 @@ export function ripgrepCommand(): {
 
 const MAX_BUFFER_SIZE = 20_000_000 // 20MB; large monorepos can have 200k+ files
 
-/**
+/*    *
  * Check if an error is EAGAIN (resource temporarily unavailable).
  * This happens in resource-constrained environments (Docker, CI) when
  * ripgrep tries to spawn too many threads.
- */
+     */
 function isEagainError(stderr: string): boolean {
   return (
     stderr.includes('os error 11') ||
@@ -91,10 +91,10 @@ function isEagainError(stderr: string): boolean {
   )
 }
 
-/**
+/*    *
  * Custom error class for ripgrep timeouts.
  * This allows callers to distinguish between "no matches" and "timed out".
- */
+     */
 export class RipgrepTimeoutError extends Error {
   constructor(
     message: string,
@@ -231,7 +231,7 @@ function ripGrepRaw(
   )
 }
 
-/**
+/*    *
  * Stream-count lines from `rg --files` without buffering stdout.
  *
  * On large repos (e.g. 247k files, 16MB of paths), calling `ripGrep()` just
@@ -242,7 +242,7 @@ function ripGrepRaw(
  * Intentionally minimal: the only caller is telemetry (countFilesRoundedRg),
  * which swallows all errors. No EAGAIN retry, no stderr capture, no internal
  * timeout (callers pass AbortSignal.timeout; spawn's signal option kills rg).
- */
+     */
 async function ripGrepFileCount(
   args: string[],
   target: string,
@@ -280,7 +280,7 @@ async function ripGrepFileCount(
   })
 }
 
-/**
+/*    *
  * Stream lines from ripgrep as they arrive, calling `onLines` per stdout chunk.
  *
  * Unlike `ripGrep()` which buffers the entire stdout, this flushes complete
@@ -291,7 +291,7 @@ async function ripGrepFileCount(
  * Callers that want to stop early (e.g. after N matches) should abort the
  * signal — spawn's signal option kills rg. No EAGAIN retry, no internal
  * timeout, stderr is ignored; interactive callers own recovery.
- */
+     */
 export async function ripGrepStream(
   args: string[],
   target: string,
@@ -462,7 +462,7 @@ export async function ripGrep(
   })
 }
 
-/**
+/*    *
  * Count files in a directory recursively using ripgrep and round to the nearest power of 10 for privacy
  *
  * This is much more efficient than using native Node.js methods for counting files
@@ -472,7 +472,7 @@ export async function ripGrep(
  * @param abortSignal AbortSignal to cancel the operation
  * @param ignorePatterns Optional additional patterns to ignore (beyond .gitignore)
  * @returns Approximate file count rounded to the nearest power of 10
- */
+     */
 export const countFilesRoundedRg = memoize(
   async (
     dirPath: string,
@@ -528,10 +528,10 @@ let ripgrepStatus: {
   config: RipgrepConfig
 } | null = null
 
-/**
+/*    *
  * Get ripgrep status and configuration info
  * Returns current configuration immediately, with working status if available
- */
+     */
 export function getRipgrepStatus(): {
   mode: 'system' | 'builtin' | 'embedded'
   path: string
@@ -545,9 +545,9 @@ export function getRipgrepStatus(): {
   }
 }
 
-/**
+/*    *
  * Test ripgrep availability on first use and cache the result
- */
+     */
 const testRipgrepOnFirstUse = memoize(async (): Promise<void> => {
   // Already tested
   if (ripgrepStatus !== null) {

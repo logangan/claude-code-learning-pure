@@ -6,11 +6,11 @@ import {
   tryParseShellCommand,
 } from './shellQuote.js'
 
-/**
+/*    *
  * Rearranges a command with pipes to place stdin redirect after the first command.
  * This fixes an issue where eval treats the entire piped command as a single unit,
  * causing the stdin redirect to apply to eval itself rather than the first command.
- */
+     */
 export function rearrangePipeCommand(command: string): string {
   // Skip if command has backticks - shell-quote doesn't handle them well
   if (command.includes('`')) {
@@ -99,9 +99,9 @@ export function rearrangePipeCommand(command: string): string {
   return singleQuoteForEval(parts.join(' '))
 }
 
-/**
+/*    *
  * Finds the index of the first pipe operator in parsed shell command
- */
+     */
 function findFirstPipeOperator(parsed: ParseEntry[]): number {
   for (let i = 0; i < parsed.length; i++) {
     const entry = parsed[i]
@@ -112,10 +112,10 @@ function findFirstPipeOperator(parsed: ParseEntry[]): number {
   return -1
 }
 
-/**
+/*    *
  * Builds command parts from parsed entries, handling strings and operators.
  * Special handling for file descriptor redirections to preserve them as single units.
- */
+     */
 function buildCommandParts(
   parsed: ParseEntry[],
   start: number,
@@ -211,26 +211,26 @@ function buildCommandParts(
   return parts
 }
 
-/**
+/*    *
  * Checks if a string is an environment variable assignment (VAR=value)
  * Environment variable names must start with letter or underscore,
  * followed by letters, numbers, or underscores
- */
+     */
 function isEnvironmentVariableAssignment(str: string): boolean {
   return /^[A-Za-z_][A-Za-z0-9_]*=/.test(str)
 }
 
-/**
+/*    *
  * Checks if an operator is a command separator that starts a new command context.
  * After these operators, environment variable assignments are valid again.
- */
+     */
 function isCommandSeparator(op: string): boolean {
   return op === '&&' || op === '||' || op === ';'
 }
 
-/**
+/*    *
  * Type guard to check if a parsed entry is an operator
- */
+     */
 function isOperator(entry: unknown, op?: string): entry is { op: string } {
   if (!entry || typeof entry !== 'object' || !('op' in entry)) {
     return false
@@ -238,17 +238,17 @@ function isOperator(entry: unknown, op?: string): entry is { op: string } {
   return op ? entry.op === op : true
 }
 
-/**
+/*    *
  * Checks if a command contains bash control structures that shell-quote cannot parse.
  * These include for/while/until/if/case/select loops and conditionals.
  * We match keywords followed by whitespace to avoid false positives with commands
  * or arguments that happen to contain these words.
- */
+     */
 function containsControlStructure(command: string): boolean {
   return /\b(for|while|until|if|case|select)\s/.test(command)
 }
 
-/**
+/*    *
  * Quotes a command and adds `< /dev/null` as a shell redirect on eval, rather than
  * as an eval argument. This is critical for pipe commands where we can't parse the
  * pipe boundary (e.g., commands with $(), backticks, or control structures).
@@ -258,28 +258,28 @@ function containsControlStructure(command: string): boolean {
  *
  * The previous approach `quote([cmd, '<', '/dev/null'])` produced: eval 'cmd' \< /dev/null
  *   → eval concatenates args to 'cmd < /dev/null', redirect applies to LAST pipe command
- */
+     */
 function quoteWithEvalStdinRedirect(command: string): string {
   return singleQuoteForEval(command) + ' < /dev/null'
 }
 
-/**
+/*    *
  * Single-quote a string for use as an eval argument. Escapes embedded single
  * quotes via '"'"' (close-sq, literal-sq-in-dq, reopen-sq). Used instead of
  * shell-quote's quote() which switches to double-quote mode when the input
  * contains single quotes and then escapes ! -> \!, corrupting jq/awk filters
  * like `select(.x != .y)` into `select(.x \!= .y)`.
- */
+     */
 function singleQuoteForEval(s: string): string {
   return "'" + s.replace(/'/g, `'"'"'`) + "'"
 }
 
-/**
+/*    *
  * Joins shell continuation lines (backslash-newline) into a single line.
  * Only joins when there's an odd number of backslashes before the newline
  * (the last one escapes the newline). Even backslashes pair up as escape
  * sequences and the newline remains a separator.
- */
+     */
 function joinContinuationLines(command: string): string {
   return command.replace(/\\+\n/g, match => {
     const backslashCount = match.length - 1 // -1 for the newline

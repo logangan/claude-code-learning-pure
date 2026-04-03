@@ -1,4 +1,4 @@
-/**
+/*    *
  * Session Tracing for Claude Code using OpenTelemetry (BETA)
  *
  * This module provides a high-level API for creating and managing spans
@@ -8,7 +8,7 @@
  * Requirements:
  * - Enhanced telemetry is enabled via feature('ENHANCED_TELEMETRY_BETA')
  * - Configure OTEL_TRACES_EXPORTER (console, otlp, etc.)
- */
+     */
 
 import { feature } from 'bun:bundle'
 import { context as otelContext, type Span, trace } from '@opentelemetry/api'
@@ -82,7 +82,7 @@ function getSpanId(span: Span): string {
   return span.spanContext().spanId || ''
 }
 
-/**
+/*    *
  * Lazily start a background interval that evicts orphaned spans from activeSpans.
  *
  * Normal teardown calls endInteractionSpan / endToolSpan, which delete spans
@@ -96,7 +96,7 @@ function getSpanId(span: Span): string {
  * interval from running in processes that never start a span.
  * unref() prevents the timer from keeping the process alive after all other
  * work is done.
- */
+     */
 function ensureCleanupInterval(): void {
   if (_cleanupIntervalStarted) return
   _cleanupIntervalStarted = true
@@ -119,10 +119,10 @@ function ensureCleanupInterval(): void {
   }
 }
 
-/**
+/*    *
  * Check if enhanced telemetry is enabled.
  * Priority: env var override > ant build > GrowthBook gate
- */
+     */
 export function isEnhancedTelemetryEnabled(): boolean {
   if (feature('ENHANCED_TELEMETRY_BETA')) {
     const env =
@@ -142,9 +142,9 @@ export function isEnhancedTelemetryEnabled(): boolean {
   return false
 }
 
-/**
+/*    *
  * Check if any tracing is enabled (either standard enhanced telemetry OR beta tracing)
- */
+     */
 function isAnyTracingEnabled(): boolean {
   return isEnhancedTelemetryEnabled() || isBetaTracingEnabled()
 }
@@ -168,11 +168,11 @@ function createSpanAttributes(
   return attributes
 }
 
-/**
+/*    *
  * Start an interaction span. This wraps a user request -> Claude response cycle.
  * This is now a root span that includes all session-level attributes.
  * Sets the interaction context for all subsequent operations.
- */
+     */
 export function startInteractionSpan(userPrompt: string): Span {
   ensureCleanupInterval()
 
@@ -339,7 +339,7 @@ export function startLLMRequestSpan(
   return span
 }
 
-/**
+/*    *
  * End an LLM request span and attach response metadata.
  *
  * @param span - Optional. The exact span returned by startLLMRequestSpan().
@@ -349,7 +349,7 @@ export function startLLMRequestSpan(
  *   incorrectly attached to whichever span happens to be "last" in the activeSpans map.
  *
  *   If not provided, falls back to finding the most recent llm_request span (legacy behavior).
- */
+     */
 export function endLLMRequestSpan(
   span?: Span,
   metadata?: {
@@ -362,17 +362,17 @@ export function endLLMRequestSpan(
     error?: string
     attempt?: number
     modelResponse?: string
-    /** Text output from the model (non-thinking content) */
+    /*    * Text output from the model (non-thinking content)     */
     modelOutput?: string
-    /** Thinking/reasoning output from the model */
+    /*    * Thinking/reasoning output from the model     */
     thinkingOutput?: string
-    /** Whether the output included tool calls (look at tool spans for details) */
+    /*    * Whether the output included tool calls (look at tool spans for details)     */
     hasToolCall?: boolean
-    /** Time to first token in milliseconds */
+    /*    * Time to first token in milliseconds     */
     ttftMs?: number
-    /** Time spent in pre-request setup before the successful attempt */
+    /*    * Time spent in pre-request setup before the successful attempt     */
     requestSetupMs?: number
-    /** Timestamps (Date.now()) of each attempt start — used to emit retry sub-spans */
+    /*    * Timestamps (Date.now()) of each attempt start — used to emit retry sub-spans     */
     attemptStartTimes?: number[]
   },
 ): void {
@@ -739,11 +739,11 @@ function isToolContentLoggingEnabled(): boolean {
   return isEnvTruthy(process.env.OTEL_LOG_TOOL_CONTENT)
 }
 
-/**
+/*    *
  * Add a span event with tool content/output data.
  * Only logs if OTEL_LOG_TOOL_CONTENT=1 is set.
  * Truncates content if it exceeds MAX_CONTENT_SIZE.
- */
+     */
 export function addToolContentEvent(
   eventName: string,
   attributes: Record<string, string | number | boolean>,
@@ -832,7 +832,7 @@ export async function executeInSpan<T>(
   }
 }
 
-/**
+/*    *
  * Start a hook execution span.
  * Only creates a span when beta tracing is enabled.
  * @param hookEvent The hook event type (e.g., 'PreToolUse', 'PostToolUse')
@@ -840,7 +840,7 @@ export async function executeInSpan<T>(
  * @param numHooks The number of hooks being executed
  * @param hookDefinitions JSON string of hook definitions for tracing
  * @returns The span (or a dummy span if tracing is disabled)
- */
+     */
 export function startHookSpan(
   hookEvent: string,
   hookName: string,
@@ -878,12 +878,12 @@ export function startHookSpan(
   return span
 }
 
-/**
+/*    *
  * End a hook execution span with outcome metadata.
  * Only does work when beta tracing is enabled.
  * @param span The span to end (returned from startHookSpan)
  * @param metadata The outcome metadata for the hook execution
- */
+     */
 export function endHookSpan(
   span: Span,
   metadata?: {

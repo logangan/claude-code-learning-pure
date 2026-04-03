@@ -3,7 +3,7 @@
 // that only typecheck because this file's `typeof import('highlight.js')` pulls
 // lib.dom in. tsconfig has lib: ["ESNext"] only — fixing the actual DOM-type
 // deps is a separate sweep; this ref preserves the status quo.
-/// <reference lib="dom" />
+// / <reference lib="dom" />
 
 import { extname } from 'path'
 
@@ -40,12 +40,12 @@ export function getCliHighlightPromise(): Promise<CliHighlight | null> {
   return cliHighlightPromise
 }
 
-/**
+/*    *
  * eg. "foo/bar.ts" → "TypeScript". Awaits the shared cli-highlight load,
  * then reads highlight.js's language registry. All callers are telemetry
  * (OTel counter attributes, permission-dialog unary events) — none block
  * on this, they fire-and-forget or the consumer already handles Promise<string>.
- */
+     */
 export async function getLanguageName(file_path: string): Promise<string> {
   await getCliHighlightPromise()
   const ext = extname(file_path).slice(1)

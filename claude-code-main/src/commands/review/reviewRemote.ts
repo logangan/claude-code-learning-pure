@@ -1,4 +1,4 @@
-/**
+/*    *
  * Teleported /ultrareview execution. Creates a CCR session with the current repo,
  * sends the review prompt as the initial message, and registers a
  * RemoteAgentTask so the polling loop pipes results back into the local
@@ -7,7 +7,7 @@
  * TODO(#22051): pass useBundleMode once landed so local-only / uncommitted
  * repo state is captured. The GitHub-clone path (current) only works for
  * pushed branches on repos with the Claude GitHub app installed.
- */
+     */
 
 import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/messages.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../../services/analytics/growthbook.js'
@@ -45,10 +45,10 @@ export type OverageGate =
   | { kind: 'low-balance'; available: number }
   | { kind: 'needs-confirm' }
 
-/**
+/*    *
  * Determine whether the user can launch an ultrareview and under what
  * billing terms. Fetches quota and utilization in parallel.
- */
+     */
 export async function checkOverageGate(): Promise<OverageGate> {
   // Team and Enterprise plans include ultrareview — no free-review quota
   // or Extra Usage dialog. The quota endpoint is scoped to consumer plans
@@ -112,7 +112,7 @@ export async function checkOverageGate(): Promise<OverageGate> {
   }
 }
 
-/**
+/*    *
  * Launch a teleported review session. Returns ContentBlockParam[] describing
  * the launch outcome for injection into the local conversation (model is then
  * queried with this content, so it can narrate the launch to the user).
@@ -124,7 +124,7 @@ export async function checkOverageGate(): Promise<OverageGate> {
  *
  * Caller must run checkOverageGate() BEFORE calling this function
  * (ultrareviewCommand.tsx handles the dialog).
- */
+     */
 export async function launchRemoteReview(
   args: string,
   context: ToolUseContext,
@@ -170,8 +170,7 @@ export async function launchRemoteReview(
   // the only tuning surface — without them, run_hunt.sh's bash defaults
   // apply (60min, 120s agent timeout), and 120s kills verifiers mid-run
   // which causes infinite respawn.
-  //
-  // total_wallclock must stay below RemoteAgentTask's 30min poll timeout
+  // // total_wallclock must stay below RemoteAgentTask's 30min poll timeout
   // with headroom for finalization (~3min synthesis). Per-field guards
   // match autoDream.ts — GB cache can return stale wrong-type values.
   const raw = getFeatureValue_CACHED_MAY_BE_STALE<Record<

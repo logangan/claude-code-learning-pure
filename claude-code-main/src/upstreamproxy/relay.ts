@@ -1,5 +1,5 @@
-/* eslint-disable eslint-plugin-n/no-unsupported-features/node-builtins */
-/**
+/*     eslint-disable eslint-plugin-n/no-unsupported-features/node-builtins     */
+/*    *
  * CONNECT-over-WebSocket relay for CCR upstreamproxy.
  *
  * Listens on localhost TCP, accepts HTTP CONNECT from curl/gh/kubectl/etc,
@@ -14,7 +14,7 @@
  * Protocol: bytes are wrapped in UpstreamProxyChunk protobuf messages
  * (`message UpstreamProxyChunk { bytes data = 1; }`) for compatibility with
  * gateway.NewWebSocketStreamAdapter on the server side.
- */
+     */
 
 import { createServer, type Socket as NodeSocket } from 'node:net'
 import { logForDebugging } from '../utils/debug.js'
@@ -53,7 +53,7 @@ const MAX_CHUNK_BYTES = 512 * 1024
 // Sidecar idle timeout is 50s; ping well inside that.
 const PING_INTERVAL_MS = 30_000
 
-/**
+/*    *
  * Encode an UpstreamProxyChunk protobuf message by hand.
  *
  * For `message UpstreamProxyChunk { bytes data = 1; }` the wire format is:
@@ -62,7 +62,7 @@ const PING_INTERVAL_MS = 30_000
  *
  * protobufjs would be the general answer; for a single-field bytes message
  * the hand encoding is 10 lines and avoids a runtime dep in the hot path.
- */
+     */
 export function encodeChunk(data: Uint8Array): Uint8Array {
   const len = data.length
   // varint encoding of length — most chunks fit in 1–3 length bytes
@@ -80,10 +80,10 @@ export function encodeChunk(data: Uint8Array): Uint8Array {
   return out
 }
 
-/**
+/*    *
  * Decode an UpstreamProxyChunk. Returns the data field, or null if malformed.
  * Tolerates the server sending a zero-length chunk (keepalive semantics).
- */
+     */
 export function decodeChunk(buf: Uint8Array): Uint8Array | null {
   if (buf.length === 0) return new Uint8Array(0)
   if (buf[0] !== 0x0a) return null
@@ -126,12 +126,12 @@ type ConnState = {
   closed: boolean
 }
 
-/**
+/*    *
  * Minimal socket abstraction so the CONNECT parser and WS tunnel plumbing
  * are runtime-agnostic. Implementations handle write backpressure internally:
  * Bun's sock.write() does partial writes and needs explicit tail-queueing;
  * Node's net.Socket buffers unconditionally and never drops bytes.
- */
+     */
 type ClientSocket = {
   write: (data: Uint8Array | string) => void
   end: () => void
@@ -147,11 +147,11 @@ function newConnState(): ConnState {
   }
 }
 
-/**
+/*    *
  * Start the relay. Returns the ephemeral port it bound and a stop function.
  * Uses Bun.listen when available, otherwise Node's net.createServer — the CCR
  * container runs the CLI under Node, not Bun.
- */
+     */
 export async function startUpstreamProxyRelay(opts: {
   wsUrl: string
   sessionId: string
@@ -288,10 +288,10 @@ export async function startNodeRelay(
   })
 }
 
-/**
+/*    *
  * Shared per-connection data handler. Phase 1 accumulates the CONNECT request;
  * phase 2 forwards client bytes over the WS tunnel.
- */
+     */
 function handleData(
   sock: ClientSocket,
   st: ConnState,

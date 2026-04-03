@@ -1,4 +1,4 @@
-/**
+/*    *
  * PID-Based Version Locking
  *
  * This module provides PID-based locking for running Claude Code versions.
@@ -7,7 +7,7 @@
  *
  * Lock files contain JSON with the PID and metadata, and staleness is determined
  * by checking if the process is still alive.
- */
+     */
 
 import { basename, join } from 'path'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../../services/analytics/growthbook.js'
@@ -23,7 +23,7 @@ import {
   writeFileSync_DEPRECATED,
 } from '../slowOperations.js'
 
-/**
+/*    *
  * Check if PID-based version locking is enabled.
  * When disabled, falls back to mtime-based locking (30-day timeout).
  *
@@ -31,7 +31,7 @@ import {
  * - Set ENABLE_PID_BASED_VERSION_LOCKING=true to force-enable
  * - Set ENABLE_PID_BASED_VERSION_LOCKING=false to force-disable
  * - If unset, GrowthBook gate (tengu_pid_based_version_locking) controls rollout
- */
+     */
 export function isPidBasedLockingEnabled(): boolean {
   const envVar = process.env.ENABLE_PID_BASED_VERSION_LOCKING
   // If env var is explicitly set, respect it
@@ -48,9 +48,9 @@ export function isPidBasedLockingEnabled(): boolean {
   )
 }
 
-/**
+/*    *
  * Content stored in a version lock file
- */
+     */
 export type VersionLockContent = {
   pid: number
   version: string
@@ -58,9 +58,9 @@ export type VersionLockContent = {
   acquiredAt: number // timestamp when lock was acquired
 }
 
-/**
+/*    *
  * Information about a lock for diagnostic purposes
- */
+     */
 export type LockInfo = {
   version: string
   pid: number
@@ -75,10 +75,10 @@ export type LockInfo = {
 // for edge cases like network filesystems where PID check might fail
 const FALLBACK_STALE_MS = 2 * 60 * 60 * 1000
 
-/**
+/*    *
  * Check if a process with the given PID is currently running
  * Uses signal 0 which doesn't actually send a signal but checks if we can
- */
+     */
 export function isProcessRunning(pid: number): boolean {
   // PID 0 is special - it refers to the current process group, not a real process
   // PID 1 is init/systemd and is always running but shouldn't be considered for locks
@@ -94,10 +94,10 @@ export function isProcessRunning(pid: number): boolean {
   }
 }
 
-/**
+/*    *
  * Validate that a running process is actually a Claude process
  * This helps mitigate PID reuse issues
- */
+     */
 function isClaudeProcess(pid: number, expectedExecPath: string): boolean {
   if (!isProcessRunning(pid)) {
     return false
@@ -131,9 +131,9 @@ function isClaudeProcess(pid: number, expectedExecPath: string): boolean {
   }
 }
 
-/**
+/*    *
  * Read and parse a lock file's content
- */
+     */
 export function readLockContent(
   lockFilePath: string,
 ): VersionLockContent | null {
@@ -158,9 +158,9 @@ export function readLockContent(
   }
 }
 
-/**
+/*    *
  * Check if a lock file represents an active lock (process still running)
- */
+     */
 export function isLockActive(lockFilePath: string): boolean {
   const content = readLockContent(lockFilePath)
 
@@ -204,9 +204,9 @@ export function isLockActive(lockFilePath: string): boolean {
   return true
 }
 
-/**
+/*    *
  * Write lock content to a file atomically
- */
+     */
 function writeLockFile(
   lockFilePath: string,
   content: VersionLockContent,
@@ -231,10 +231,10 @@ function writeLockFile(
   }
 }
 
-/**
+/*    *
  * Try to acquire a lock on a version file
  * Returns a release function if successful, null if the lock is already held
- */
+     */
 export async function tryAcquireLock(
   versionPath: string,
   lockFilePath: string,
@@ -292,10 +292,10 @@ export async function tryAcquireLock(
   }
 }
 
-/**
+/*    *
  * Acquire a lock and hold it for the lifetime of the process
  * This is used for locking the currently running version
- */
+     */
 export async function acquireProcessLifetimeLock(
   versionPath: string,
   lockFilePath: string,
@@ -323,10 +323,10 @@ export async function acquireProcessLifetimeLock(
   return true
 }
 
-/**
+/*    *
  * Execute a callback while holding a lock
  * Returns true if the callback executed, false if lock couldn't be acquired
- */
+     */
 export async function withLock(
   versionPath: string,
   lockFilePath: string,
@@ -346,9 +346,9 @@ export async function withLock(
   }
 }
 
-/**
+/*    *
  * Get information about all version locks for diagnostics
- */
+     */
 export function getAllLockInfo(locksDir: string): LockInfo[] {
   const fs = getFsImplementation()
   const lockInfos: LockInfo[] = []
@@ -383,14 +383,14 @@ export function getAllLockInfo(locksDir: string): LockInfo[] {
   return lockInfos
 }
 
-/**
+/*    *
  * Clean up stale locks (locks where the process is no longer running)
  * Returns the number of locks cleaned up
  *
  * Handles both:
  * - PID-based locks (files containing JSON with PID)
  * - Legacy proper-lockfile locks (directories created by mtime-based locking)
- */
+     */
 export function cleanupStaleLocks(locksDir: string): number {
   const fs = getFsImplementation()
   let cleanedCount = 0

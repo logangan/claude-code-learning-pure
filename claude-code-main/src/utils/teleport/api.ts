@@ -18,9 +18,9 @@ const MAX_TELEPORT_RETRIES = TELEPORT_RETRY_DELAYS.length
 
 export const CCR_BYOC_BETA = 'ccr-byoc-2025-07-29'
 
-/**
+/*    *
  * Checks if an axios error is a transient network error that should be retried
- */
+     */
 export function isTransientNetworkError(error: unknown): boolean {
   if (!axios.isAxiosError(error)) {
     return false
@@ -40,10 +40,10 @@ export function isTransientNetworkError(error: unknown): boolean {
   return false
 }
 
-/**
+/*    *
  * Makes an axios GET request with automatic retry for transient network errors
  * Uses exponential backoff: 2s, 4s, 8s, 16s (4 retries = 5 total attempts)
- */
+     */
 export async function axiosGetWithRetry<T>(
   url: string,
   config?: AxiosRequestConfig,
@@ -174,10 +174,10 @@ export const CodeSessionSchema = lazySchema(() =>
 // Export the inferred type from the Zod schema
 export type CodeSession = z.infer<ReturnType<typeof CodeSessionSchema>>
 
-/**
+/*    *
  * Validates and prepares for API requests
  * @returns Object containing access token and organization UUID
- */
+     */
 export async function prepareApiRequest(): Promise<{
   accessToken: string
   orgUUID: string
@@ -197,10 +197,10 @@ export async function prepareApiRequest(): Promise<{
   return { accessToken, orgUUID }
 }
 
-/**
+/*    *
  * Fetches code sessions from the new Sessions API (/v1/sessions)
  * @returns Array of code sessions
- */
+     */
 export async function fetchCodeSessionsFromSessionsAPI(): Promise<
   CodeSession[]
 > {
@@ -268,11 +268,11 @@ export async function fetchCodeSessionsFromSessionsAPI(): Promise<
   }
 }
 
-/**
+/*    *
  * Creates OAuth headers for API requests
  * @param accessToken The OAuth access token
  * @returns Headers object with Authorization, Content-Type, and anthropic-version
- */
+     */
 export function getOAuthHeaders(accessToken: string): Record<string, string> {
   return {
     Authorization: `Bearer ${accessToken}`,
@@ -281,11 +281,11 @@ export function getOAuthHeaders(accessToken: string): Record<string, string> {
   }
 }
 
-/**
+/*    *
  * Fetches a single session by ID from the Sessions API
  * @param sessionId The session ID to fetch
  * @returns The session resource
- */
+     */
 export async function fetchSession(
   sessionId: string,
 ): Promise<SessionResource> {
@@ -326,11 +326,11 @@ export async function fetchSession(
   return response.data
 }
 
-/**
+/*    *
  * Extracts the first branch name from a session's git repository outcomes
  * @param session The session resource to extract from
  * @returns The first branch name, or undefined if none found
- */
+     */
 export function getBranchFromSession(
   session: SessionResource,
 ): string | undefined {
@@ -341,23 +341,23 @@ export function getBranchFromSession(
   return gitOutcome?.git_info?.branches[0]
 }
 
-/**
+/*    *
  * Content for a remote session message.
  * Accepts a plain string or an array of content blocks (text, image, etc.)
  * following the Anthropic API messages spec.
- */
+     */
 export type RemoteMessageContent =
   | string
   | Array<{ type: string; [key: string]: unknown }>
 
-/**
+/*    *
  * Sends a user message event to an existing remote session via the Sessions API
  * @param sessionId The session ID to send the event to
  * @param messageContent The user message content (string or content blocks)
  * @param opts.uuid Optional UUID for the event — callers that added a local
  *   UserMessage first should pass its UUID so echo filtering can dedup
  * @returns Promise<boolean> True if successful, false otherwise
- */
+     */
 export async function sendEventToRemoteSession(
   sessionId: string,
   messageContent: RemoteMessageContent,
@@ -416,12 +416,12 @@ export async function sendEventToRemoteSession(
   }
 }
 
-/**
+/*    *
  * Updates the title of an existing remote session via the Sessions API
  * @param sessionId The session ID to update
  * @param title The new title for the session
  * @returns Promise<boolean> True if successful, false otherwise
- */
+     */
 export async function updateSessionTitle(
   sessionId: string,
   title: string,

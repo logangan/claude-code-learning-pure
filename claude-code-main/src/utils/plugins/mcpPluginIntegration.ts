@@ -27,10 +27,10 @@ import {
   substituteUserConfigVariables,
 } from './pluginOptionsStorage.js'
 
-/**
+/*    *
  * Load MCP servers from an MCPB file
  * Handles downloading, extracting, and converting DXT manifest to MCP config
- */
+     */
 async function loadMcpServersFromMcpb(
   plugin: LoadedPlugin,
   mcpbPath: string,
@@ -123,11 +123,11 @@ async function loadMcpServersFromMcpb(
   }
 }
 
-/**
+/*    *
  * Load MCP servers from a plugin's manifest
  * This function loads MCP server configurations from various sources within the plugin
  * including manifest entries, .mcp.json files, and .mcpb files
- */
+     */
 export async function loadPluginMcpServers(
   plugin: LoadedPlugin,
   errors: PluginError[] = [],
@@ -211,11 +211,11 @@ export async function loadPluginMcpServers(
   return Object.keys(servers).length > 0 ? servers : undefined
 }
 
-/**
+/*    *
  * Load MCP servers from a JSON file within a plugin
  * This is a simplified version that doesn't expand environment variables
  * and is specifically for plugin MCP configs
- */
+     */
 async function loadMcpServersFromFile(
   pluginPath: string,
   relativePath: string,
@@ -265,17 +265,17 @@ async function loadMcpServersFromFile(
   }
 }
 
-/**
+/*    *
  * A channel entry from a plugin's manifest whose userConfig has not yet been
  * filled in (required fields are missing from saved settings).
- */
+     */
 export type UnconfiguredChannel = {
   server: string
   displayName: string
   configSchema: UserConfigSchema
 }
 
-/**
+/*    *
  * Find channel entries in a plugin's manifest whose required userConfig
  * fields are not yet saved. Pure function — no React, no prompting.
  * ManagePlugins.tsx calls this after a plugin is enabled to decide whether
@@ -286,7 +286,7 @@ export type UnconfiguredChannel = {
  * skipped. The `configSchema` in the return value is structurally a
  * `UserConfigSchema` because the Zod schema in schemas.ts matches
  * `McpbUserConfigurationOption` field-for-field.
- */
+     */
 export function getUnconfiguredChannels(
   plugin: LoadedPlugin,
 ): UnconfiguredChannel[] {
@@ -317,12 +317,12 @@ export function getUnconfiguredChannels(
   return unconfigured
 }
 
-/**
+/*    *
  * Look up saved user config for a server, if this server is declared as a
  * channel in the plugin's manifest. Returns undefined for non-channel servers
  * or channels without a userConfig schema — resolvePluginMcpEnvironment will
  * then skip ${user_config.X} substitution for that server.
- */
+     */
 function loadChannelUserConfig(
   plugin: LoadedPlugin,
   serverName: string,
@@ -334,10 +334,10 @@ function loadChannelUserConfig(
   return loadMcpServerUserConfig(plugin.repository, serverName) ?? undefined
 }
 
-/**
+/*    *
  * Add plugin scope to MCP server configs
  * This adds a prefix to server names to avoid conflicts between plugins
- */
+     */
 export function addPluginScopeToServers(
   servers: Record<string, McpServerConfig>,
   pluginName: string,
@@ -359,10 +359,10 @@ export function addPluginScopeToServers(
   return scopedServers
 }
 
-/**
+/*    *
  * Extract all MCP servers from loaded plugins
  * NOTE: Resolves environment variables for all servers before returning
- */
+     */
 export async function extractMcpServersFromPlugins(
   plugins: LoadedPlugin[],
   errors: PluginError[] = [],
@@ -428,7 +428,7 @@ export async function extractMcpServersFromPlugins(
   return allServers
 }
 
-/**
+/*    *
  * Build the userConfig map for a single MCP server by merging the plugin's
  * top-level manifest.userConfig values with the channel-specific per-server
  * config (assistant-mode channels). Channel-specific wins on collision so
@@ -436,7 +436,7 @@ export async function extractMcpServersFromPlugins(
  *
  * Returns undefined when neither source has anything — resolvePluginMcpEnvironment
  * skips substituteUserConfigVariables in that case.
- */
+     */
 function buildMcpUserConfig(
   plugin: LoadedPlugin,
   serverName: string,
@@ -457,11 +457,11 @@ function buildMcpUserConfig(
   return { ...topLevel, ...channelSpecific }
 }
 
-/**
+/*    *
  * Resolve environment variables for plugin MCP servers
  * Handles ${CLAUDE_PLUGIN_ROOT}, ${user_config.X}, and general ${VAR} substitution
  * Tracks missing environment variables for error reporting
- */
+     */
 export function resolvePluginMcpEnvironment(
   config: McpServerConfig,
   plugin: { path: string; source: string },
@@ -581,11 +581,11 @@ export function resolvePluginMcpEnvironment(
   return resolved
 }
 
-/**
+/*    *
  * Get MCP servers from a specific plugin with environment variable resolution and scoping
  * This function is called when the MCP servers need to be activated and ensures they have
  * the proper environment variables and scope applied
- */
+     */
 export async function getPluginMcpServers(
   plugin: LoadedPlugin,
   errors: PluginError[] = [],

@@ -4,7 +4,7 @@ import { getErrnoCode } from '../errors.js'
 import { getFsImplementation } from '../fsOperations.js'
 import type { MarketplaceSource } from './schemas.js'
 
-/**
+/*    *
  * Parses a marketplace input string and returns the appropriate marketplace source type.
  * Handles various input formats:
  * - Git SSH URLs (user@host:path or user@host:path.git)
@@ -19,7 +19,7 @@ import type { MarketplaceSource } from './schemas.js'
  *
  * @param input The marketplace source input string
  * @returns MarketplaceSource object, error object, or null if format is unrecognized
- */
+     */
 export async function parseMarketplaceInput(
   input: string,
 ): Promise<MarketplaceSource | { error: string } | null> {
@@ -39,7 +39,7 @@ export async function parseMarketplaceInput(
   }
 
   // Handle URLs
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+  if (trimmed.startsWith('http:// ') || trimmed.startsWith('https://')) {
     // Extract fragment (ref) from URL if present
     const fragmentMatch = trimmed.match(/^([^#]+)(#(.+))?$/)
     const urlWithoutFragment = fragmentMatch?.[1] || trimmed

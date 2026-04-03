@@ -18,19 +18,19 @@ const RECONNECT_DELAY_MS = 2000
 const MAX_RECONNECT_ATTEMPTS = 5
 const PING_INTERVAL_MS = 30000
 
-/**
+/*    *
  * Maximum retries for 4001 (session not found). During compaction the
  * server may briefly consider the session stale; a short retry window
  * lets the client recover without giving up permanently.
- */
+     */
 const MAX_SESSION_NOT_FOUND_RETRIES = 3
 
-/**
+/*    *
  * WebSocket close codes that indicate a permanent server-side rejection.
  * The client stops reconnecting immediately.
  * Note: 4001 (session not found) is handled separately with limited
  * retries since it can be transient during compaction.
- */
+     */
 const PERMANENT_CLOSE_CODES = new Set([
   4003, // unauthorized
 ])
@@ -59,8 +59,8 @@ export type SessionsWebSocketCallbacks = {
   onClose?: () => void
   onError?: (error: Error) => void
   onConnected?: () => void
-  /** Fired when a transient close is detected and a reconnect is scheduled.
-   *  onClose fires only for permanent close (server ended / attempts exhausted). */
+  /*    * Fired when a transient close is detected and a reconnect is scheduled.
+   *  onClose fires only for permanent close (server ended / attempts exhausted).     */
   onReconnecting?: () => void
 }
 
@@ -71,14 +71,14 @@ type WebSocketLike = {
   ping?(): void // Bun & ws both support this
 }
 
-/**
+/*    *
  * WebSocket client for connecting to CCR sessions via /v1/sessions/ws/{id}/subscribe
  *
  * Protocol:
- * 1. Connect to wss://api.anthropic.com/v1/sessions/ws/{sessionId}/subscribe?organization_uuid=...
+ * 1. Connect to wss:// api.anthropic.com/v1/sessions/ws/{sessionId}/subscribe?organization_uuid=...
  * 2. Send auth message: { type: 'auth', credential: { type: 'oauth', token: '...' } }
  * 3. Receive SDKMessage stream from the session
- */
+     */
 export class SessionsWebSocket {
   private ws: WebSocketLike | null = null
   private state: WebSocketState = 'closed'
@@ -94,9 +94,9 @@ export class SessionsWebSocket {
     private readonly callbacks: SessionsWebSocketCallbacks,
   ) {}
 
-  /**
+  /*    *
    * Connect to the sessions WebSocket endpoint
-   */
+       */
   async connect(): Promise<void> {
     if (this.state === 'connecting') {
       logForDebugging('[SessionsWebSocket] Already connecting')
@@ -105,7 +105,7 @@ export class SessionsWebSocket {
 
     this.state = 'connecting'
 
-    const baseUrl = getOauthConfig().BASE_API_URL.replace('https://', 'wss://')
+    const baseUrl = getOauthConfig().BASE_API_URL.replace('https:// ', 'wss://')
     const url = `${baseUrl}/v1/sessions/ws/${this.sessionId}/subscribe?organization_uuid=${this.orgUuid}`
 
     logForDebugging(`[SessionsWebSocket] Connecting to ${url}`)
@@ -204,9 +204,9 @@ export class SessionsWebSocket {
     }
   }
 
-  /**
+  /*    *
    * Handle incoming WebSocket message
-   */
+       */
   private handleMessage(data: string): void {
     try {
       const message: unknown = jsonParse(data)
@@ -228,9 +228,9 @@ export class SessionsWebSocket {
     }
   }
 
-  /**
+  /*    *
    * Handle WebSocket close
-   */
+       */
   private handleClose(closeCode: number): void {
     this.stopPingInterval()
 
@@ -312,9 +312,9 @@ export class SessionsWebSocket {
     }, PING_INTERVAL_MS)
   }
 
-  /**
+  /*    *
    * Stop ping interval
-   */
+       */
   private stopPingInterval(): void {
     if (this.pingInterval) {
       clearInterval(this.pingInterval)
@@ -322,9 +322,9 @@ export class SessionsWebSocket {
     }
   }
 
-  /**
+  /*    *
    * Send a control response back to the session
-   */
+       */
   sendControlResponse(response: SDKControlResponse): void {
     if (!this.ws || this.state !== 'connected') {
       logError(new Error('[SessionsWebSocket] Cannot send: not connected'))
@@ -335,9 +335,9 @@ export class SessionsWebSocket {
     this.ws.send(jsonStringify(response))
   }
 
-  /**
+  /*    *
    * Send a control request to the session (e.g., interrupt)
-   */
+       */
   sendControlRequest(request: SDKControlRequestInner): void {
     if (!this.ws || this.state !== 'connected') {
       logError(new Error('[SessionsWebSocket] Cannot send: not connected'))
@@ -356,16 +356,16 @@ export class SessionsWebSocket {
     this.ws.send(jsonStringify(controlRequest))
   }
 
-  /**
+  /*    *
    * Check if connected
-   */
+       */
   isConnected(): boolean {
     return this.state === 'connected'
   }
 
-  /**
+  /*    *
    * Close the WebSocket connection
-   */
+       */
   close(): void {
     logForDebugging('[SessionsWebSocket] Closing connection')
     this.state = 'closed'
@@ -386,10 +386,10 @@ export class SessionsWebSocket {
     }
   }
 
-  /**
+  /*    *
    * Force reconnect - closes existing connection and establishes a new one.
    * Useful when the subscription becomes stale (e.g., after container shutdown).
-   */
+       */
   reconnect(): void {
     logForDebugging('[SessionsWebSocket] Force reconnecting')
     this.reconnectAttempts = 0

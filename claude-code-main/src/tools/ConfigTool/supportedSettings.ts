@@ -9,7 +9,7 @@ import { getModelOptions } from '../../utils/model/modelOptions.js'
 import { validateModel } from '../../utils/model/validateModel.js'
 import { THEME_NAMES, THEME_SETTINGS } from '../../utils/theme.js'
 
-/** AppState keys that can be synced for immediate UI effect */
+/*    * AppState keys that can be synced for immediate UI effect     */
 type SyncableAppStateKey = 'verbose' | 'mainLoopModel' | 'thinkingEnabled'
 
 type SettingConfig = {
@@ -20,9 +20,9 @@ type SettingConfig = {
   options?: readonly string[]
   getOptions?: () => string[]
   appStateKey?: SyncableAppStateKey
-  /** Async validation called when writing/setting a value */
+  /*    * Async validation called when writing/setting a value     */
   validateOnWrite?: (v: unknown) => Promise<{ valid: boolean; error?: string }>
-  /** Format value when reading/getting for display */
+  /*    * Format value when reading/getting for display     */
   formatOnRead?: (v: unknown) => unknown
 }
 

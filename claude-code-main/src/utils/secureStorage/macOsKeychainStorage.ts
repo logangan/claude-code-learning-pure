@@ -197,7 +197,7 @@ async function doReadAsync(): Promise<SecureStorageData | null> {
 
 let keychainLockedCache: boolean | undefined
 
-/**
+/*    *
  * Checks if the macOS keychain is locked.
  * Returns true if on macOS and keychain is locked (exit code 36 from security show-keychain-info).
  * This commonly happens in SSH sessions where the keychain isn't automatically unlocked.
@@ -207,7 +207,7 @@ let keychainLockedCache: boolean | undefined
  * During virtual-scroll remounts on sessions with "Not logged in" messages,
  * each remount re-spawned security(1), adding 27ms/message to the commit.
  * Keychain lock state doesn't change during a CLI session.
- */
+     */
 export function isMacOsKeychainLocked(): boolean {
   if (keychainLockedCache !== undefined) return keychainLockedCache
   // Only check on macOS

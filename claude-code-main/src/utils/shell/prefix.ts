@@ -1,11 +1,11 @@
-/**
+/*    *
  * Shared command prefix extraction using Haiku LLM
  *
  * This module provides a factory for creating command prefix extractors
  * that can be used by different shell tools. The core logic
  * (Haiku query, response validation) is shared, while tool-specific
  * aspects (examples, pre-checks) are configurable.
- */
+     */
 
 import chalk from 'chalk'
 import type { QuerySource } from '../../constants/querySource.js'
@@ -20,11 +20,11 @@ import { memoizeWithLRU } from '../memoize.js'
 import { jsonStringify } from '../slowOperations.js'
 import { asSystemPrompt } from '../systemPromptType.js'
 
-/**
+/*    *
  * Shell executables that must never be accepted as bare prefixes.
  * Allowing e.g. "bash:*" would let any command through, defeating
  * the permission system. Includes Unix shells and Windows equivalents.
- */
+     */
 const DANGEROUS_SHELL_PREFIXES = new Set([
   'sh',
   'bash',
@@ -43,41 +43,41 @@ const DANGEROUS_SHELL_PREFIXES = new Set([
   'bash.exe',
 ])
 
-/**
+/*    *
  * Result of command prefix extraction
- */
+     */
 export type CommandPrefixResult = {
-  /** The detected command prefix, or null if no prefix could be determined */
+  /*    * The detected command prefix, or null if no prefix could be determined     */
   commandPrefix: string | null
 }
 
-/**
+/*    *
  * Result including subcommand prefixes for compound commands
- */
+     */
 export type CommandSubcommandPrefixResult = CommandPrefixResult & {
   subcommandPrefixes: Map<string, CommandPrefixResult>
 }
 
-/**
+/*    *
  * Configuration for creating a command prefix extractor
- */
+     */
 export type PrefixExtractorConfig = {
-  /** Tool name for logging and warning messages */
+  /*    * Tool name for logging and warning messages     */
   toolName: string
 
-  /** The policy spec containing examples for Haiku */
+  /*    * The policy spec containing examples for Haiku     */
   policySpec: string
-  /** Analytics event name for logging */
+  /*    * Analytics event name for logging     */
   eventName: string
 
-  /** Query source identifier for the API call */
+  /*    * Query source identifier for the API call     */
   querySource: QuerySource
 
-  /** Optional pre-check function that can short-circuit the Haiku call */
+  /*    * Optional pre-check function that can short-circuit the Haiku call     */
   preCheck?: (command: string) => CommandPrefixResult | null
 }
 
-/**
+/*    *
  * Creates a memoized command prefix extractor function.
  *
  * Uses two-layer memoization: the outer memoized function creates the promise
@@ -88,7 +88,7 @@ export type PrefixExtractorConfig = {
  *
  * @param config - Configuration for the extractor
  * @returns A memoized async function that extracts command prefixes
- */
+     */
 export function createCommandPrefixExtractor(config: PrefixExtractorConfig) {
   const { toolName, policySpec, eventName, querySource, preCheck } = config
 
@@ -125,7 +125,7 @@ export function createCommandPrefixExtractor(config: PrefixExtractorConfig) {
   return memoized
 }
 
-/**
+/*    *
  * Creates a memoized function to get prefixes for compound commands with subcommands.
  *
  * Uses the same two-layer memoization pattern as createCommandPrefixExtractor:
@@ -134,7 +134,7 @@ export function createCommandPrefixExtractor(config: PrefixExtractorConfig) {
  * @param getPrefix - The single-command prefix extractor (from createCommandPrefixExtractor)
  * @param splitCommand - Function to split a compound command into subcommands
  * @returns A memoized async function that extracts prefixes for the main command and all subcommands
- */
+     */
 export function createSubcommandPrefixExtractor(
   getPrefix: ReturnType<typeof createCommandPrefixExtractor>,
   splitCommand: (command: string) => string[] | Promise<string[]>,

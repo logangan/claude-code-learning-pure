@@ -6,16 +6,16 @@ import useStdin from './use-stdin.js'
 type Handler = (input: string, key: Key, event: InputEvent) => void
 
 type Options = {
-  /**
+  /*    *
    * Enable or disable capturing of user input.
    * Useful when there are multiple useInput hooks used at once to avoid handling the same input several times.
    *
    * @default true
-   */
+       */
   isActive?: boolean
 }
 
-/**
+/*    *
  * This hook is used for handling user input.
  * It's a more convenient alternative to using `StdinContext` and listening to `data` events.
  * The callback you pass to `useInput` is called for each character when user enters any input.
@@ -38,7 +38,7 @@ type Options = {
  *   return …
  * };
  * ```
- */
+     */
 const useInput = (inputHandler: Handler, options: Options = {}) => {
   const { setRawMode, internal_exitOnCtrlC, internal_eventEmitter } = useStdin()
 

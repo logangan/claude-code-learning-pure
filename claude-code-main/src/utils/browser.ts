@@ -17,10 +17,10 @@ function validateUrl(url: string): void {
   }
 }
 
-/**
+/*    *
  * Open a file or folder path using the system's default handler.
  * Uses `open` on macOS, `explorer` on Windows, `xdg-open` on Linux.
- */
+     */
 export async function openPath(path: string): Promise<boolean> {
   try {
     const platform = process.platform

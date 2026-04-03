@@ -14,12 +14,12 @@ import {
   getSettingsForSource,
 } from './settings/settings.js'
 
-/**
+/*    *
  * `claude ssh` remote: ANTHROPIC_UNIX_SOCKET routes auth through a -R forwarded
  * socket to a local proxy, and the launcher sets a handful of placeholder auth
  * env vars that the remote's ~/.claude settings.env MUST NOT clobber (see
  * isAnthropicAuthEnabled). Strip them from any settings-sourced env object.
- */
+     */
 function withoutSSHTunnelVars(
   env: Record<string, string> | undefined,
 ): Record<string, string> {
@@ -35,13 +35,13 @@ function withoutSSHTunnelVars(
   return rest
 }
 
-/**
+/*    *
  * When the host owns inference routing (sets
  * CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST in spawn env), strip
  * provider-selection / model-default vars from settings-sourced env so a
  * user's ~/.claude/settings.json can't redirect requests away from the
  * host-configured provider.
- */
+     */
 function withoutHostManagedProviderVars(
   env: Record<string, string> | undefined,
 ): Record<string, string> {
@@ -58,14 +58,14 @@ function withoutHostManagedProviderVars(
   return out
 }
 
-/**
+/*    *
  * Snapshot of env keys present before any settings.env is applied — for CCD,
  * these are the keys the desktop host set to orchestrate the subprocess.
  * Settings must not override them (OTEL_LOGS_EXPORTER=console would corrupt
  * the stdio JSON-RPC transport). Keys added LATER by user/project settings
  * are not in this set, so mid-session settings.json changes still apply.
  * Lazy-captured on first applySafeConfigEnvironmentVariables() call.
- */
+     */
 let ccdSpawnEnvKeys: Set<string> | null | undefined
 
 function withoutCcdSpawnEnvKeys(
@@ -79,9 +79,9 @@ function withoutCcdSpawnEnvKeys(
   return out
 }
 
-/**
+/*    *
  * Compose the strip filters applied to every settings-sourced env object.
- */
+     */
 function filterSettingsEnv(
   env: Record<string, string> | undefined,
 ): Record<string, string> {
@@ -90,7 +90,7 @@ function filterSettingsEnv(
   )
 }
 
-/**
+/*    *
  * Trusted setting sources whose env vars can be applied before the trust dialog.
  *
  * - userSettings (~/.claude/settings.json): controlled by the user, not project-specific
@@ -101,14 +101,14 @@ function filterSettingsEnv(
  * Project-scoped sources (projectSettings, localSettings) are excluded because they live
  * inside the project directory and could be committed by a malicious actor to redirect
  * traffic (e.g., ANTHROPIC_BASE_URL) to an attacker-controlled server.
- */
+     */
 const TRUSTED_SETTING_SOURCES = [
   'userSettings',
   'flagSettings',
   'policySettings',
 ] as const
 
-/**
+/*    *
  * Apply environment variables from trusted sources to process.env.
  * Called before the trust dialog so that user/enterprise env vars like
  * ANTHROPIC_BASE_URL take effect during first-run/onboarding.
@@ -120,7 +120,7 @@ const TRUSTED_SETTING_SOURCES = [
  * For project-scoped sources (projectSettings, localSettings), only safe env vars
  * from the SAFE_ENV_VARS allowlist are applied. These are applied after trust is
  * fully established via applyConfigEnvironmentVariables().
- */
+     */
 export function applySafeConfigEnvironmentVariables(): void {
   // Capture CCD spawn-env keys before any settings.env is applied (once).
   if (ccdSpawnEnvKeys === undefined) {
@@ -177,13 +177,13 @@ export function applySafeConfigEnvironmentVariables(): void {
   }
 }
 
-/**
+/*    *
  * Apply environment variables from settings to process.env.
  * This applies ALL environment variables (except provider-routing vars when
  * CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST is set — see filterSettingsEnv) and
  * should only be called after trust is established. This applies potentially
  * dangerous environment variables such as LD_PRELOAD, PATH, etc.
- */
+     */
 export function applyConfigEnvironmentVariables(): void {
   Object.assign(process.env, filterSettingsEnv(getGlobalConfig().env))
 

@@ -1,6 +1,6 @@
-/**
+/*    *
  * HTTP utility constants and helpers
- */
+     */
 
 import axios from 'axios'
 import { OAUTH_BETA_HEADER } from '../constants/oauth.js'
@@ -54,7 +54,7 @@ export function getMCPUserAgent(): string {
 // operators match in robots.txt); the claude-code suffix lets them distinguish
 // local CLI traffic from claude.ai server-side fetches.
 export function getWebFetchUserAgent(): string {
-  return `Claude-User (${getClaudeCodeUserAgent()}; +https://support.anthropic.com/)`
+  return `Claude-User (${getClaudeCodeUserAgent()}; +https:// support.anthropic.com/)`
 }
 
 export type AuthHeaders = {
@@ -62,10 +62,10 @@ export type AuthHeaders = {
   error?: string
 }
 
-/**
+/*    *
  * Get authentication headers for API requests
  * Returns either OAuth headers for Max/Pro users or API key headers for regular users
- */
+     */
 export function getAuthHeaders(): AuthHeaders {
   if (isClaudeAISubscriber()) {
     const oauthTokens = getClaudeAIOAuthTokens()
@@ -98,7 +98,7 @@ export function getAuthHeaders(): AuthHeaders {
   }
 }
 
-/**
+/*    *
  * Wrapper that handles OAuth 401 errors by force-refreshing the token and
  * retrying once. Addresses clock drift scenarios where the local expiration
  * check disagrees with the server.
@@ -111,7 +111,7 @@ export function getAuthHeaders(): AuthHeaders {
  *
  * @param opts.also403Revoked - Also retry on 403 with "OAuth token has been
  *   revoked" body (some endpoints signal revocation this way instead of 401).
- */
+     */
 export async function withOAuth401Retry<T>(
   request: () => Promise<T>,
   opts?: { also403Revoked?: boolean },

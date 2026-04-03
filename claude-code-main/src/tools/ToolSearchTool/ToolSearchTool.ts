@@ -49,9 +49,9 @@ export type Output = z.infer<OutputSchema>
 // Track deferred tool names to detect when cache should be cleared
 let cachedDeferredToolNames: string | null = null
 
-/**
+/*    *
  * Get a cache key representing the current set of deferred tools.
- */
+     */
 function getDeferredToolsCacheKey(deferredTools: Tools): string {
   return deferredTools
     .map(t => t.name)
@@ -59,10 +59,10 @@ function getDeferredToolsCacheKey(deferredTools: Tools): string {
     .join(',')
 }
 
-/**
+/*    *
  * Get tool description, memoized by tool name.
  * Used for keyword search scoring.
- */
+     */
 const getToolDescriptionMemoized = memoize(
   async (toolName: string, tools: Tools): Promise<string> => {
     const tool = findToolByName(tools, toolName)
@@ -85,9 +85,9 @@ const getToolDescriptionMemoized = memoize(
   (toolName: string) => toolName,
 )
 
-/**
+/*    *
  * Invalidate the description cache if deferred tools have changed.
- */
+     */
 function maybeInvalidateCache(deferredTools: Tools): void {
   const currentKey = getDeferredToolsCacheKey(deferredTools)
   if (cachedDeferredToolNames !== currentKey) {
@@ -104,9 +104,9 @@ export function clearToolSearchDescriptionCache(): void {
   cachedDeferredToolNames = null
 }
 
-/**
+/*    *
  * Build the search result output structure.
- */
+     */
 function buildSearchResult(
   matches: string[],
   query: string,
@@ -125,10 +125,10 @@ function buildSearchResult(
   }
 }
 
-/**
+/*    *
  * Parse tool name into searchable parts.
  * Handles both MCP tools (mcp__server__action) and regular tools (CamelCase).
- */
+     */
 function parseToolName(name: string): {
   parts: string[]
   full: string
@@ -160,10 +160,10 @@ function parseToolName(name: string): {
   }
 }
 
-/**
+/*    *
  * Pre-compile word-boundary regexes for all search terms.
  * Called once per search instead of tools×terms×2 times.
- */
+     */
 function compileTermPatterns(terms: string[]): Map<string, RegExp> {
   const patterns = new Map<string, RegExp>()
   for (const term of terms) {
@@ -174,7 +174,7 @@ function compileTermPatterns(terms: string[]): Map<string, RegExp> {
   return patterns
 }
 
-/**
+/*    *
  * Keyword-based search over tool names and descriptions.
  * Handles both MCP tools (mcp__server__action) and regular tools (CamelCase).
  *
@@ -182,7 +182,7 @@ function compileTermPatterns(terms: string[]): Map<string, RegExp> {
  * - Server names when it knows the integration (e.g., "slack", "github")
  * - Action words when looking for functionality (e.g., "read", "list", "create")
  * - Tool-specific terms (e.g., "notebook", "shell", "kill")
- */
+     */
 async function searchToolsWithKeywords(
   query: string,
   deferredTools: Tools,
@@ -436,11 +436,11 @@ export const ToolSearchTool = buildTool({
     return null
   },
   userFacingName: () => '',
-  /**
+  /*    *
    * Returns a tool_result with tool_reference blocks.
    * This format works on 1P/Foundry. Bedrock/Vertex may not support
    * client-side tool_reference expansion yet.
-   */
+       */
   mapToolResultToToolResultBlockParam(
     content: Output,
     toolUseID: string,

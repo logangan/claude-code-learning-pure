@@ -7,36 +7,36 @@ import {
 } from '../../../utils/execFileNoThrow.js'
 import { logError } from '../../../utils/log.js'
 
-/**
+/*    *
  * Package manager types for installing it2.
  * Listed in order of preference.
- */
+     */
 export type PythonPackageManager = 'uvx' | 'pipx' | 'pip'
 
-/**
+/*    *
  * Result of attempting to install it2.
- */
+     */
 export type It2InstallResult = {
   success: boolean
   error?: string
   packageManager?: PythonPackageManager
 }
 
-/**
+/*    *
  * Result of verifying it2 setup.
- */
+     */
 export type It2VerifyResult = {
   success: boolean
   error?: string
   needsPythonApiEnabled?: boolean
 }
 
-/**
+/*    *
  * Detects which Python package manager is available on the system.
  * Checks in order of preference: uvx, pipx, pip.
  *
  * @returns The detected package manager, or null if none found
- */
+     */
 export async function detectPythonPackageManager(): Promise<PythonPackageManager | null> {
   // Check uv first (preferred for isolated environments)
   // We check for 'uv' since 'uv tool install' is the install command
@@ -71,22 +71,22 @@ export async function detectPythonPackageManager(): Promise<PythonPackageManager
   return null
 }
 
-/**
+/*    *
  * Checks if the it2 CLI tool is installed and accessible.
  *
  * @returns true if it2 is available
- */
+     */
 export async function isIt2CliAvailable(): Promise<boolean> {
   const result = await execFileNoThrow('which', ['it2'])
   return result.code === 0
 }
 
-/**
+/*    *
  * Installs the it2 CLI tool using the detected package manager.
  *
  * @param packageManager - The package manager to use for installation
  * @returns Result indicating success or failure
- */
+     */
 export async function installIt2(
   packageManager: PythonPackageManager,
 ): Promise<It2InstallResult> {
@@ -143,12 +143,12 @@ export async function installIt2(
   }
 }
 
-/**
+/*    *
  * Verifies that it2 is properly configured and can communicate with iTerm2.
  * This tests the Python API connection by running a simple it2 command.
  *
  * @returns Result indicating success or the specific failure reason
- */
+     */
 export async function verifyIt2Setup(): Promise<It2VerifyResult> {
   logForDebugging('[it2Setup] Verifying it2 setup...')
 
@@ -194,9 +194,9 @@ export async function verifyIt2Setup(): Promise<It2VerifyResult> {
   }
 }
 
-/**
+/*    *
  * Returns instructions for enabling the Python API in iTerm2.
- */
+     */
 export function getPythonApiInstructions(): string[] {
   return [
     'Almost done! Enable the Python API in iTerm2:',
@@ -207,10 +207,10 @@ export function getPythonApiInstructions(): string[] {
   ]
 }
 
-/**
+/*    *
  * Marks that it2 setup has been completed successfully.
  * This prevents showing the setup prompt again.
- */
+     */
 export function markIt2SetupComplete(): void {
   const config = getGlobalConfig()
   if (config.iterm2It2SetupComplete !== true) {
@@ -222,10 +222,10 @@ export function markIt2SetupComplete(): void {
   }
 }
 
-/**
+/*    *
  * Marks that the user prefers to use tmux over iTerm2 split panes.
  * This prevents showing the setup prompt when in iTerm2.
- */
+     */
 export function setPreferTmuxOverIterm2(prefer: boolean): void {
   const config = getGlobalConfig()
   if (config.preferTmuxOverIterm2 !== prefer) {
@@ -237,9 +237,9 @@ export function setPreferTmuxOverIterm2(prefer: boolean): void {
   }
 }
 
-/**
+/*    *
  * Checks if the user prefers tmux over iTerm2 split panes.
- */
+     */
 export function getPreferTmuxOverIterm2(): boolean {
   return getGlobalConfig().preferTmuxOverIterm2 === true
 }

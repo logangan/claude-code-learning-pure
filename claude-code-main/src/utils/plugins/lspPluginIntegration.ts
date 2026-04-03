@@ -21,10 +21,10 @@ import {
 } from './pluginOptionsStorage.js'
 import { LspServerConfigSchema } from './schemas.js'
 
-/**
+/*    *
  * Validate that a resolved path stays within the plugin directory.
  * Prevents path traversal attacks via .. or absolute paths.
- */
+     */
 function validatePathWithinPlugin(
   pluginPath: string,
   relativePath: string,
@@ -44,7 +44,7 @@ function validatePathWithinPlugin(
   return resolvedFilePath
 }
 
-/**
+/*    *
  * Load LSP server configurations from a plugin.
  * Checks for:
  * 1. .lsp.json file in plugin directory
@@ -53,7 +53,7 @@ function validatePathWithinPlugin(
  * @param plugin - The loaded plugin
  * @param errors - Array to collect any errors encountered
  * @returns Record of server name to config, or undefined if no servers
- */
+     */
 export async function loadPluginLspServers(
   plugin: LoadedPlugin,
   errors: PluginError[] = [],
@@ -121,9 +121,9 @@ export async function loadPluginLspServers(
   return Object.keys(servers).length > 0 ? servers : undefined
 }
 
-/**
+/*    *
  * Load LSP servers from manifest declaration (handles multiple formats).
- */
+     */
 async function loadLspServersFromManifest(
   declaration:
     | string
@@ -221,11 +221,11 @@ async function loadLspServersFromManifest(
   return Object.keys(servers).length > 0 ? servers : undefined
 }
 
-/**
+/*    *
  * Resolve environment variables for plugin LSP servers.
  * Handles ${CLAUDE_PLUGIN_ROOT}, ${user_config.X}, and general ${VAR}
  * substitution. Tracks missing environment variables for error reporting.
- */
+     */
 export function resolvePluginLspEnvironment(
   config: LspServerConfig,
   plugin: { path: string; source: string },
@@ -291,10 +291,10 @@ export function resolvePluginLspEnvironment(
   return resolved
 }
 
-/**
+/*    *
  * Add plugin scope to LSP server configs
  * This adds a prefix to server names to avoid conflicts between plugins
- */
+     */
 export function addPluginScopeToLspServers(
   servers: Record<string, LspServerConfig>,
   pluginName: string,
@@ -314,11 +314,11 @@ export function addPluginScopeToLspServers(
   return scopedServers
 }
 
-/**
+/*    *
  * Get LSP servers from a specific plugin with environment variable resolution and scoping
  * This function is called when the LSP servers need to be activated and ensures they have
  * the proper environment variables and scope applied
- */
+     */
 export async function getPluginLspServers(
   plugin: LoadedPlugin,
   errors: PluginError[] = [],
@@ -357,9 +357,9 @@ export async function getPluginLspServers(
   return addPluginScopeToLspServers(resolvedServers, plugin.name)
 }
 
-/**
+/*    *
  * Extract all LSP servers from loaded plugins
- */
+     */
 export async function extractLspServersFromPlugins(
   plugins: LoadedPlugin[],
   errors: PluginError[] = [],

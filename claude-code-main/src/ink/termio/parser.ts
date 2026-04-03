@@ -1,4 +1,4 @@
-/**
+/*    *
  * ANSI Parser - Semantic Action Generator
  *
  * A streaming parser for ANSI escape sequences that produces semantic actions.
@@ -9,7 +9,7 @@
  * - Streaming: can process input incrementally
  * - Semantic output: produces structured actions, not string tokens
  * - Style tracking: maintains current text style state
- */
+     */
 
 import { getGraphemeSegmenter } from '../../utils/intl.js'
 import { C0 } from './ansi.js'
@@ -83,7 +83,7 @@ function parseCSIParams(paramStr: string): number[] {
   return paramStr.split(/[;:]/).map(s => (s === '' ? 0 : parseInt(s, 10)))
 }
 
-/** Parse a raw CSI sequence (e.g., "\x1b[31m") into an action */
+/*    * Parse a raw CSI sequence (e.g., "\x1b[31m") into an action     */
 function parseCSI(rawSequence: string): Action | null {
   const inner = rawSequence.slice(2)
   if (inner.length === 0) return null
@@ -239,9 +239,9 @@ function parseCSI(rawSequence: string): Action | null {
   return { type: 'unknown', sequence: rawSequence }
 }
 
-/**
+/*    *
  * Identify the type of escape sequence from its raw form.
- */
+     */
 function identifySequence(
   seq: string,
 ): 'csi' | 'osc' | 'esc' | 'ss3' | 'unknown' {
@@ -259,7 +259,7 @@ function identifySequence(
 // Main Parser
 // =============================================================================
 
-/**
+/*    *
  * Parser class - maintains state for streaming/incremental parsing
  *
  * Usage:
@@ -268,7 +268,7 @@ function identifySequence(
  * const actions1 = parser.feed('partial\x1b[')
  * const actions2 = parser.feed('31mred')  // state maintained internally
  * ```
- */
+     */
 export class Parser {
   private tokenizer: Tokenizer = createTokenizer()
 
@@ -283,7 +283,7 @@ export class Parser {
     this.linkUrl = undefined
   }
 
-  /** Feed input and get resulting actions */
+  /*    * Feed input and get resulting actions     */
   feed(input: string): Action[] {
     const tokens = this.tokenizer.feed(input)
     const actions: Action[] = []

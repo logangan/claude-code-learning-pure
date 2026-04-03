@@ -1,4 +1,4 @@
-/**
+/*    *
  * Beta Session Tracing for Claude Code
  *
  * This module contains beta tracing features enabled when
@@ -23,7 +23,7 @@
  * - System prompt logging (once per unique hash)
  * - Hook execution spans
  * - Detailed new_context attributes for LLM requests
- */
+     */
 
 import type { Span } from '@opentelemetry/api'
 import { createHash } from 'crypto'
@@ -38,16 +38,16 @@ import { logOTelEvent } from './events.js'
 // Message type for API calls (UserMessage or AssistantMessage)
 type APIMessage = UserMessage | AssistantMessage
 
-/**
+/*    *
  * Track hashes we've already logged this session (system prompts, tools, etc).
  *
  * WHY: System prompts and tool schemas are large and rarely change within a session.
  * Sending full content on every request would be wasteful. Instead, we hash and
  * only log the full content once per unique hash.
- */
+     */
 const seenHashes = new Set<string>()
 
-/**
+/*    *
  * Track the last reported message hash per querySource (agent) for incremental context.
  *
  * WHY: When debugging traces, we want to see what NEW information was added each turn,
@@ -55,13 +55,13 @@ const seenHashes = new Set<string>()
  * we reported per agent, we can compute and send only the delta (new messages since
  * the last request). This is tracked per-agent (querySource) because different agents
  * (main thread, subagents, warmup requests) have independent conversation contexts.
- */
+     */
 const lastReportedMessageHash = new Map<string, string>()
 
-/**
+/*    *
  * Clear tracking state after compaction.
  * Old hashes are irrelevant once messages have been replaced.
- */
+     */
 export function clearBetaTracingState(): void {
   seenHashes.clear()
   lastReportedMessageHash.clear()
@@ -69,12 +69,12 @@ export function clearBetaTracingState(): void {
 
 const MAX_CONTENT_SIZE = 60 * 1024 // 60KB (Honeycomb limit is 64KB, staying safe)
 
-/**
+/*    *
  * Check if beta detailed tracing is enabled.
  * - Requires ENABLE_BETA_TRACING_DETAILED=1 and BETA_TRACING_ENDPOINT
  * - For external users, enabled in SDK/headless mode OR when org is
  *   allowlisted via the tengu_trace_lantern GrowthBook gate
- */
+     */
 export function isBetaTracingEnabled(): boolean {
   const baseEnabled =
     isEnvTruthy(process.env.ENABLE_BETA_TRACING_DETAILED) &&
@@ -97,9 +97,9 @@ export function isBetaTracingEnabled(): boolean {
   return true
 }
 
-/**
+/*    *
  * Truncate content to fit within Honeycomb limits.
- */
+     */
 export function truncateContent(
   content: string,
   maxSize: number = MAX_CONTENT_SIZE,
@@ -116,23 +116,23 @@ export function truncateContent(
   }
 }
 
-/**
+/*    *
  * Generate a short hash (first 12 hex chars of SHA-256).
- */
+     */
 function shortHash(content: string): string {
   return createHash('sha256').update(content).digest('hex').slice(0, 12)
 }
 
-/**
+/*    *
  * Generate a hash for a system prompt.
- */
+     */
 function hashSystemPrompt(systemPrompt: string): string {
   return `sp_${shortHash(systemPrompt)}`
 }
 
-/**
+/*    *
  * Generate a hash for a message based on its content.
- */
+     */
 function hashMessage(message: APIMessage): string {
   const content = jsonStringify(message.message.content)
   return `msg_${shortHash(content)}`
@@ -142,27 +142,27 @@ function hashMessage(message: APIMessage): string {
 const SYSTEM_REMINDER_REGEX =
   /^<system-reminder>\n?([\s\S]*?)\n?<\/system-reminder>$/
 
-/**
+/*    *
  * Check if text is entirely a system reminder (wrapped in <system-reminder> tags).
  * Returns the inner content if it is, null otherwise.
- */
+     */
 function extractSystemReminderContent(text: string): string | null {
   const match = text.trim().match(SYSTEM_REMINDER_REGEX)
   return match && match[1] ? match[1].trim() : null
 }
 
-/**
+/*    *
  * Result of formatting messages - separates regular content from system reminders.
- */
+     */
 interface FormattedMessages {
   contextParts: string[]
   systemReminders: string[]
 }
 
-/**
+/*    *
  * Format user messages for new_context display, separating system reminders.
  * Only handles user messages (assistant messages are filtered out before this is called).
- */
+     */
 function formatMessagesForContext(messages: UserMessage[]): FormattedMessages {
   const contextParts: string[] = []
   const systemReminders: string[] = []
@@ -208,18 +208,18 @@ function formatMessagesForContext(messages: UserMessage[]): FormattedMessages {
 }
 
 export interface LLMRequestNewContext {
-  /** System prompt (typically only on first request or if changed) */
+  /*    * System prompt (typically only on first request or if changed)     */
   systemPrompt?: string
-  /** Query source identifying the agent/purpose (e.g., 'repl_main_thread', 'agent:builtin') */
+  /*    * Query source identifying the agent/purpose (e.g., 'repl_main_thread', 'agent:builtin')     */
   querySource?: string
-  /** Tool schemas sent with the request */
+  /*    * Tool schemas sent with the request     */
   tools?: string
 }
 
-/**
+/*    *
  * Add beta attributes to an interaction span.
  * Adds new_context with the user prompt.
- */
+     */
 export function addBetaInteractionAttributes(
   span: Span,
   userPrompt: string,
@@ -240,10 +240,10 @@ export function addBetaInteractionAttributes(
   })
 }
 
-/**
+/*    *
  * Add beta attributes to an LLM request span.
  * Handles system prompt logging and new_context computation.
- */
+     */
 export function addBetaLLMRequestAttributes(
   span: Span,
   newContext?: LLMRequestNewContext,
@@ -399,10 +399,10 @@ export function addBetaLLMRequestAttributes(
   }
 }
 
-/**
+/*    *
  * Add beta attributes to endLLMRequestSpan.
  * Handles model_output and thinking_output truncation.
- */
+     */
 export function addBetaLLMResponseAttributes(
   endAttributes: Record<string, string | number | boolean>,
   metadata?: {
@@ -442,10 +442,10 @@ export function addBetaLLMResponseAttributes(
   }
 }
 
-/**
+/*    *
  * Add beta attributes to startToolSpan.
  * Adds tool_input with the serialized tool input.
- */
+     */
 export function addBetaToolInputAttributes(
   span: Span,
   toolName: string,
@@ -467,10 +467,10 @@ export function addBetaToolInputAttributes(
   })
 }
 
-/**
+/*    *
  * Add beta attributes to endToolSpan.
  * Adds new_context with the tool result.
- */
+     */
 export function addBetaToolResultAttributes(
   endAttributes: Record<string, string | number | boolean>,
   toolName: string | number | boolean,

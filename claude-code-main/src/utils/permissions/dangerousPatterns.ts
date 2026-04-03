@@ -1,4 +1,4 @@
-/**
+/*    *
  * Pattern lists for dangerous shell-tool allow-rule prefixes.
  *
  * An allow rule like `Bash(python:*)` or `PowerShell(node:*)` lets the model
@@ -9,12 +9,12 @@
  * The matcher in each predicate handles the rule-shape variants (exact, `:*`,
  * trailing `*`, ` *`, ` -…*`). PS-specific cmdlet strings live in
  * isDangerousPowerShellPermission (permissionSetup.ts).
- */
+     */
 
-/**
+/*    *
  * Cross-platform code-execution entry points present on both Unix and Windows.
  * Shared to prevent the two lists drifting apart on interpreter additions.
- */
+     */
 export const CROSS_PLATFORM_CODE_EXEC = [
   // Interpreters
   'python',

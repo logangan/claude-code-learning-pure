@@ -49,9 +49,9 @@ export const CUSTOM_AGENT_DISALLOWED_TOOLS = new Set([
   ...ALL_AGENT_DISALLOWED_TOOLS,
 ])
 
-/*
+/*    
  * Async Agent Tool Availability Status (Source of Truth)
- */
+     */
 export const ASYNC_AGENT_ALLOWED_TOOLS = new Set([
   FILE_READ_TOOL_NAME,
   WEB_SEARCH_TOOL_NAME,
@@ -69,11 +69,11 @@ export const ASYNC_AGENT_ALLOWED_TOOLS = new Set([
   ENTER_WORKTREE_TOOL_NAME,
   EXIT_WORKTREE_TOOL_NAME,
 ])
-/**
+/*    *
  * Tools allowed only for in-process teammates (not general async agents).
  * These are injected by inProcessRunner.ts and allowed through filterToolsForAgent
  * via isInProcessTeammate() check.
- */
+     */
 export const IN_PROCESS_TEAMMATE_ALLOWED_TOOLS = new Set([
   TASK_CREATE_TOOL_NAME,
   TASK_GET_TOOL_NAME,
@@ -87,7 +87,7 @@ export const IN_PROCESS_TEAMMATE_ALLOWED_TOOLS = new Set([
     : []),
 ])
 
-/*
+/*    
  * BLOCKED FOR ASYNC AGENTS:
  * - AgentTool: Blocked to prevent recursion
  * - TaskOutputTool: Blocked to prevent recursion
@@ -99,11 +99,11 @@ export const IN_PROCESS_TEAMMATE_ALLOWED_TOOLS = new Set([
  * - MCPTool: TBD
  * - ListMcpResourcesTool: TBD
  * - ReadMcpResourceTool: TBD
- */
+     */
 
-/**
+/*    *
  * Tools allowed in coordinator mode - only output and agent management tools for the coordinator
- */
+     */
 export const COORDINATOR_MODE_ALLOWED_TOOLS = new Set([
   AGENT_TOOL_NAME,
   TASK_STOP_TOOL_NAME,

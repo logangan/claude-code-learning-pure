@@ -10,27 +10,27 @@ import type { HooksSettings } from '../utils/settings/types.js'
 
 export type { PluginAuthor, PluginManifest, CommandMetadata }
 
-/**
+/*    *
  * Definition for a built-in plugin that ships with the CLI.
  * Built-in plugins appear in the /plugin UI and can be enabled/disabled by
  * users (persisted to user settings).
- */
+     */
 export type BuiltinPluginDefinition = {
-  /** Plugin name (used in `{name}@builtin` identifier) */
+  /*    * Plugin name (used in `{name}@builtin` identifier)     */
   name: string
-  /** Description shown in the /plugin UI */
+  /*    * Description shown in the /plugin UI     */
   description: string
-  /** Optional version string */
+  /*    * Optional version string     */
   version?: string
-  /** Skills provided by this plugin */
+  /*    * Skills provided by this plugin     */
   skills?: BundledSkillDefinition[]
-  /** Hooks provided by this plugin */
+  /*    * Hooks provided by this plugin     */
   hooks?: HooksSettings
-  /** MCP servers provided by this plugin */
+  /*    * MCP servers provided by this plugin     */
   mcpServers?: Record<string, McpServerConfig>
-  /** Whether this plugin is available (e.g. based on system capabilities). Unavailable plugins are hidden entirely. */
+  /*    * Whether this plugin is available (e.g. based on system capabilities). Unavailable plugins are hidden entirely.     */
   isAvailable?: () => boolean
-  /** Default enabled state before the user sets a preference (defaults to true) */
+  /*    * Default enabled state before the user sets a preference (defaults to true)     */
   defaultEnabled?: boolean
 }
 
@@ -76,7 +76,7 @@ export type PluginComponent =
   | 'hooks'
   | 'output-styles'
 
-/**
+/*    *
  * Discriminated union of plugin error types.
  * Each error type has specific contextual data for better debugging and user guidance.
  *
@@ -97,7 +97,7 @@ export type PluginComponent =
  * These unused types support UI formatting and provide a clear roadmap for
  * improving error specificity. They can be incrementally implemented as
  * error creation sites are refactored.
- */
+     */
 export type PluginError =
   | {
       type: 'path-not-found'
@@ -288,10 +288,10 @@ export type PluginLoadResult = {
   errors: PluginError[]
 }
 
-/**
+/*    *
  * Helper function to get a display message from any PluginError
  * Useful for logging and simple error displays
- */
+     */
 export function getPluginErrorMessage(error: PluginError): string {
   switch (error.type) {
     case 'generic-error':

@@ -28,7 +28,7 @@ export const getGlobalClaudeFile = memoize((): string => {
 const hasInternetAccess = memoize(async (): Promise<boolean> => {
   try {
     const { default: axiosClient } = await import('axios')
-    await axiosClient.head('http://1.1.1.1', {
+    await axiosClient.head('http:// 1.1.1.1', {
       signal: AbortSignal.timeout(1000),
     })
     return true
@@ -66,10 +66,10 @@ const detectRuntimes = memoize(async (): Promise<string[]> => {
   return runtimes
 })
 
-/**
+/*    *
  * Checks if we're running in a WSL environment
  * @returns true if running in WSL, false otherwise
- */
+     */
 const isWslEnvironment = memoize((): boolean => {
   try {
     // Check for WSLInterop file which is a reliable indicator of WSL
@@ -82,10 +82,10 @@ const isWslEnvironment = memoize((): boolean => {
   }
 })
 
-/**
+/*    *
  * Checks if the npm executable is located in the Windows filesystem within WSL
  * @returns true if npm is from Windows (starts with /mnt/c/), false otherwise
- */
+     */
 const isNpmFromWindowsPath = memoize((): boolean => {
   try {
     // Only relevant in WSL environment
@@ -104,10 +104,10 @@ const isNpmFromWindowsPath = memoize((): boolean => {
   }
 })
 
-/**
+/*    *
  * Checks if we're running via Conductor
  * @returns true if running via Conductor, false otherwise
- */
+     */
 function isConductor(): boolean {
   return process.env.__CFBundleIdentifier === 'com.conductor.app'
 }
@@ -233,10 +233,10 @@ function detectTerminal(): string | null {
   return null
 }
 
-/**
+/*    *
  * Detects the deployment environment/platform based on environment variables
  * @returns The deployment platform name, or 'unknown' if not detected
- */
+     */
 export const detectDeploymentEnvironment = memoize((): string => {
   // Cloud development environments
   if (isEnvTruthy(process.env.CODESPACES)) return 'codespaces'
@@ -332,12 +332,12 @@ export const env = {
   detectDeploymentEnvironment,
 }
 
-/**
+/*    *
  * Returns the host platform for analytics reporting.
  * If CLAUDE_CODE_HOST_PLATFORM is set to a valid platform value, that overrides
  * the detected platform. This is useful for container/remote environments where
  * process.platform reports the container OS but the actual host platform differs.
- */
+     */
 export function getHostPlatformForAnalytics(): Platform {
   const override = process.env.CLAUDE_CODE_HOST_PLATFORM
   if (override === 'win32' || override === 'darwin' || override === 'linux') {

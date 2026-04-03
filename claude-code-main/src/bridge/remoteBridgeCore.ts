@@ -1,5 +1,5 @@
 // biome-ignore-all assist/source/organizeImports: ANT-ONLY import markers must not be reordered
-/**
+/*    *
  * Env-less Remote Control bridge core.
  *
  * "Env-less" = no Environments API layer. Distinct from "CCR v2" (the
@@ -26,7 +26,7 @@
  *
  * Gated by `tengu_bridge_repl_v2` GrowthBook flag in initReplBridge.ts.
  * REPL-only — daemon/print stay on env-based.
- */
+     */
 
 import { feature } from 'bun:bundle'
 import axios from 'axios'
@@ -92,17 +92,17 @@ export type EnvLessBridgeParams = {
   title: string
   getAccessToken: () => string | undefined
   onAuth401?: (staleAccessToken: string) => Promise<boolean>
-  /**
+  /*    *
    * Converts internal Message[] → SDKMessage[] for writeMessages() and the
    * initial-flush/drain paths. Injected rather than imported — mappers.ts
    * transitively pulls in src/commands.ts (entire command registry + React
    * tree) which would bloat bundles that don't already have it.
-   */
+       */
   toSDKMessages: (messages: Message[]) => SDKMessage[]
   initialHistoryCap: number
   initialMessages?: Message[]
   onInboundMessage?: (msg: SDKMessage) => void | Promise<void>
-  /**
+  /*    *
    * Fired on each title-worthy user message seen in writeMessages() until
    * the callback returns true (done). Mirrors replBridge.ts's onUserMessage —
    * caller derives a title and PATCHes /v1/sessions/{id} so auto-started
@@ -110,7 +110,7 @@ export type EnvLessBridgeParams = {
    * derive-at-count-1-and-3 policy; the transport just keeps calling until
    * told to stop. sessionId is the raw cse_* — updateBridgeSessionTitle
    * retags internally.
-   */
+       */
   onUserMessage?: (text: string, sessionId: string) => boolean
   onPermissionResponse?: (response: SDKControlResponse) => void
   onInterrupt?: () => void
@@ -120,23 +120,23 @@ export type EnvLessBridgeParams = {
     mode: PermissionMode,
   ) => { ok: true } | { ok: false; error: string }
   onStateChange?: (state: BridgeState, detail?: string) => void
-  /**
+  /*    *
    * When true, skip opening the SSE read stream — only the CCRClient write
    * path is activated. Threaded to createV2ReplTransport and
    * handleServerControlRequest.
-   */
+       */
   outboundOnly?: boolean
-  /** Free-form tags for session categorization (e.g. ['ccr-mirror']). */
+  /*    * Free-form tags for session categorization (e.g. ['ccr-mirror']).     */
   tags?: string[]
 }
 
-/**
+/*    *
  * Create a session, fetch a worker JWT, connect the v2 transport.
  *
  * Returns null on any pre-flight failure (session create failed, /bridge
  * failed, transport setup failed). Caller (initReplBridge) surfaces this
  * as a generic "initialization failed" state.
- */
+     */
 export async function initEnvLessBridgeCore(
   params: EnvLessBridgeParams,
 ): Promise<ReplBridgeHandle | null> {
@@ -658,9 +658,9 @@ export async function initEnvLessBridgeCore(
   // ── 9. Teardown ───────────────────────────────────────────────────────────
   // On SIGINT/SIGTERM/⁠/exit, gracefulShutdown races runCleanupFunctions()
   // against a 2s cap before forceExit kills the process. Budget accordingly:
-  //   - archive: teardown_archive_timeout_ms (default 1500, cap 2000)
-  //   - result write: fire-and-forget, archive latency covers the drain
-  //   - 401 retry: only if first archive 401s, shares the same budget
+  // - archive: teardown_archive_timeout_ms (default 1500, cap 2000)
+  // - result write: fire-and-forget, archive latency covers the drain
+  // - 401 retry: only if first archive 401s, shares the same budget
   async function teardown(): Promise<void> {
     if (tornDown) return
     tornDown = true
@@ -888,7 +888,7 @@ export async function initEnvLessBridgeCore(
 
 // ─── Session API (v2 /code/sessions, no env) ─────────────────────────────────
 
-/** Retry an async init call with exponential backoff + jitter. */
+/*    * Retry an async init call with exponential backoff + jitter.     */
 async function withRetry<T>(
   fn: () => Promise<T | null>,
   label: string,
@@ -972,8 +972,7 @@ async function archiveSession(
   // compat.parseSessionID only accepts TagSession (session_*), so retag cse_*.
   // anthropic-beta + x-organization-uuid are required — without them the
   // compat gateway 404s before reaching the handler.
-  //
-  // Unlike bridgeMain.ts (which caches compatId in sessionCompatIds to keep
+  // // Unlike bridgeMain.ts (which caches compatId in sessionCompatIds to keep
   // in-memory titledSessions/logger keys consistent across a mid-session
   // gate flip), this compatId is only a server URL path segment — no
   // in-memory state. Fresh compute matches whatever the server currently

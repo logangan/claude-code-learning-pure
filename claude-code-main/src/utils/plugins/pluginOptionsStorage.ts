@@ -1,4 +1,4 @@
-/**
+/*    *
  * Plugin option storage and substitution.
  *
  * Plugins declare user-configurable options in `manifest.userConfig` — a record
@@ -10,7 +10,7 @@
  * `loadPluginOptions` reads and merges both. The substitution helpers are also
  * here (moved from mcpPluginIntegration.ts) so hooks/LSP/skills don't all
  * import from MCP-specific code.
- */
+     */
 
 import memoize from 'lodash-es/memoize.js'
 import type { LoadedPlugin } from '../../types/plugin.js'
@@ -31,7 +31,7 @@ import { getPluginDataDir } from './pluginDirectories.js'
 export type PluginOptionValues = UserConfigValues
 export type PluginOptionSchema = UserConfigSchema
 
-/**
+/*    *
  * Canonical storage key for a plugin's options in both `settings.pluginConfigs`
  * and `secureStorage.pluginSecrets`. Today this is `plugin.source` — always
  * `"${name}@${marketplace}"` (pluginLoader.ts:1400). `plugin.repository` is
@@ -40,19 +40,19 @@ export type PluginOptionSchema = UserConfigSchema
  * produces the same key by convention — see PluginOptionsFlow, ManagePlugins.
  *
  * Exists so there's exactly one place to change if the key format ever drifts.
- */
+     */
 export function getPluginStorageId(plugin: LoadedPlugin): string {
   return plugin.source
 }
 
-/**
+/*    *
  * Load saved option values for a plugin, merging non-sensitive (from settings)
  * with sensitive (from secureStorage). SecureStorage wins on key collision.
  *
  * Memoized per-pluginId because hooks can fire per-tool-call and each call
  * would otherwise do a settings read + keychain spawn. Cache cleared via
  * `clearPluginOptionsCache` when settings change or plugins reload.
- */
+     */
 export const loadPluginOptions = memoize(
   (pluginId: string): PluginOptionValues => {
     const settings = getSettings_DEPRECATED()
@@ -80,13 +80,13 @@ export function clearPluginOptionsCache(): void {
   loadPluginOptions.cache?.clear?.()
 }
 
-/**
+/*    *
  * Save option values, splitting by `schema[key].sensitive`. Non-sensitive go
  * to userSettings; sensitive go to secureStorage. Writes are skipped if nothing
  * in that category is present.
  *
  * Clears the load cache on success so the next `loadPluginOptions` sees fresh.
- */
+     */
 export function savePluginOptions(
   pluginId: string,
   values: PluginOptionValues,
@@ -152,8 +152,7 @@ export function savePluginOptions(
 
   // settings.json AFTER secureStorage — scrub sensitive keys via explicit
   // undefined (mergeWith deletion pattern).
-  //
-  // TODO: getSettings_DEPRECATED returns MERGED settings across all scopes.
+  // // TODO: getSettings_DEPRECATED returns MERGED settings across all scopes.
   // Mutating that and writing to userSettings can leak project-scope
   // pluginConfigs into ~/.claude/settings.json. Same pattern exists in
   // saveMcpServerUserConfig. Safe today since pluginConfigs is only ever
@@ -193,7 +192,7 @@ export function savePluginOptions(
   clearPluginOptionsCache()
 }
 
-/**
+/*    *
  * Delete all stored option values for a plugin — both the non-sensitive
  * `settings.pluginConfigs[pluginId]` entry and the sensitive
  * `secureStorage.pluginSecrets[pluginId]` entry.
@@ -206,12 +205,11 @@ export function savePluginOptions(
  * Best-effort: keychain write failure is logged but doesn't throw, since
  * the uninstall itself succeeded and we don't want to surface a confusing
  * "uninstall failed" message for a cleanup side-effect.
- */
+     */
 export function deletePluginOptions(pluginId: string): void {
   // Settings side — also wipes the legacy mcpServers sub-key (same story:
   // orphaned on uninstall, never cleaned up before this PR).
-  //
-  // Use `undefined` (not `delete`) because `updateSettingsForSource` merges
+  // // Use `undefined` (not `delete`) because `updateSettingsForSource` merges
   // via `mergeWith` — absent keys are ignored, only `undefined` triggers
   // removal. Cast is deliberate (CLAUDE.md's 10% case): adding z.undefined()
   // to the schema instead (like enabledPlugins:466 does) leaks
@@ -272,13 +270,13 @@ export function deletePluginOptions(pluginId: string): void {
   clearPluginOptionsCache()
 }
 
-/**
+/*    *
  * Find option keys whose saved values don't satisfy the schema — i.e., what to
  * prompt for. Returns the schema slice for those keys, or empty if everything
  * validates. Empty manifest.userConfig → empty result.
  *
  * Used by PluginOptionsFlow to decide whether to show the prompt after enable.
- */
+     */
 export function getUnconfiguredOptions(
   plugin: LoadedPlugin,
 ): PluginOptionSchema {
@@ -309,7 +307,7 @@ export function getUnconfiguredOptions(
   return unconfigured
 }
 
-/**
+/*    *
  * Substitute ${CLAUDE_PLUGIN_ROOT} and ${CLAUDE_PLUGIN_DATA} with their paths.
  * On Windows, normalizes backslashes to forward slashes so shell commands
  * don't interpret them as escape characters.
@@ -322,7 +320,7 @@ export function getUnconfiguredOptions(
  * getPluginDataDir (which lazily mkdirs) only runs when actually present.
  *
  * Used in MCP/LSP server command/args/env, hook commands, skill/agent content.
- */
+     */
 export function substitutePluginVariables(
   value: string,
   plugin: { path: string; source?: string },
@@ -343,7 +341,7 @@ export function substitutePluginVariables(
   return out
 }
 
-/**
+/*    *
  * Substitute ${user_config.KEY} with saved option values.
  *
  * Throws on missing keys — callers pass this only after `validateUserConfig`
@@ -352,7 +350,7 @@ export function substitutePluginVariables(
  *
  * Use `substituteUserConfigInContent` for skill/agent prose — it handles
  * missing keys and sensitive-filtering instead of throwing.
- */
+     */
 export function substituteUserConfigVariables(
   value: string,
   userConfig: PluginOptionValues,
@@ -369,7 +367,7 @@ export function substituteUserConfigVariables(
   })
 }
 
-/**
+/*    *
  * Content-safe variant for skill/agent prose. Differences from
  * `substituteUserConfigVariables`:
  *
@@ -381,7 +379,7 @@ export function substituteUserConfigVariables(
  *
  * A ref to a sensitive key produces obvious-looking output so plugin authors
  * notice and move the ref into a hook/MCP env instead.
- */
+     */
 export function substituteUserConfigInContent(
   content: string,
   options: PluginOptionValues,

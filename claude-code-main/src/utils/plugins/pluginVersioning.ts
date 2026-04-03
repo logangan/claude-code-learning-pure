@@ -1,4 +1,4 @@
-/**
+/*    *
  * Plugin Version Calculation Module
  *
  * Handles version calculation for plugins from various sources.
@@ -8,14 +8,14 @@
  * 1. Explicit version from plugin.json
  * 2. Git commit SHA (for git/github sources)
  * 3. Fallback timestamp for local sources
- */
+     */
 
 import { createHash } from 'crypto'
 import { logForDebugging } from '../debug.js'
 import { getHeadForDir } from '../git/gitFilesystem.js'
 import type { PluginManifest, PluginSource } from './schemas.js'
 
-/**
+/*    *
  * Calculate the version for a plugin based on its source.
  *
  * Version sources (in order of priority):
@@ -32,7 +32,7 @@ import type { PluginManifest, PluginSource } from './schemas.js'
  * @param gitCommitSha - Optional pre-resolved git SHA (for sources like
  *   git-subdir where the clone is discarded and the install path has no .git)
  * @returns Version string (semver, short SHA, or 'unknown')
- */
+     */
 export async function calculatePluginVersion(
   pluginId: string,
   source: PluginSource,
@@ -65,16 +65,15 @@ export async function calculatePluginVersion(
       // marketplace.json's `path` changes but the monorepo SHA doesn't.
       // Without this, two plugins at different subdirs of the same commit
       // collide at cache/<m>/<p>/<sha>/ and serve each other's trees.
-      //
-      // Normalization MUST match the squashfs cron byte-for-byte:
-      //   1. backslash → forward slash
-      //   2. strip one leading `./`
-      //   3. strip all trailing `/`
-      //   4. UTF-8 sha256, first 8 hex chars
+      // // Normalization MUST match the squashfs cron byte-for-byte:
+      // 1. backslash → forward slash
+      // 2. strip one leading `./`
+      // 3. strip all trailing `/`
+      // 4. UTF-8 sha256, first 8 hex chars
       // See api/…/plugins_official_squashfs/job.py _validate_subdir().
       const normPath = source.path
         .replace(/\\/g, '/')
-        .replace(/^\.\//, '')
+        .replace(/^\.\// , '')
         .replace(/\/+$/, '')
       const pathHash = createHash('sha256')
         .update(normPath)
@@ -105,17 +104,17 @@ export async function calculatePluginVersion(
   return 'unknown'
 }
 
-/**
+/*    *
  * Get the git commit SHA for a directory.
  *
  * @param dirPath - Path to directory (should be a git repository)
  * @returns Full commit SHA or null if not a git repo
- */
+     */
 export function getGitCommitSha(dirPath: string): Promise<string | null> {
   return getHeadForDir(dirPath)
 }
 
-/**
+/*    *
  * Extract version from a versioned cache path.
  *
  * Given a path like `~/.claude/plugins/cache/marketplace/plugin/1.0.0`,
@@ -123,7 +122,7 @@ export function getGitCommitSha(dirPath: string): Promise<string | null> {
  *
  * @param installPath - Full path to plugin installation
  * @returns Version string from path, or null if not a versioned path
- */
+     */
 export function getVersionFromPath(installPath: string): string | null {
   // Versioned paths have format: .../plugins/cache/marketplace/plugin/version/
   const parts = installPath.split('/').filter(Boolean)
@@ -146,12 +145,12 @@ export function getVersionFromPath(installPath: string): string | null {
   return null
 }
 
-/**
+/*    *
  * Check if a path is a versioned plugin path.
  *
  * @param path - Path to check
  * @returns True if path follows versioned structure
- */
+     */
 export function isVersionedPath(path: string): boolean {
   return getVersionFromPath(path) !== null
 }

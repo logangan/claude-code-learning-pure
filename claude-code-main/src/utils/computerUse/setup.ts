@@ -8,7 +8,7 @@ import { isInBundledMode } from '../bundledMode.js'
 import { CLI_CU_CAPABILITIES, COMPUTER_USE_MCP_SERVER_NAME } from './common.js'
 import { getChicagoCoordinateMode } from './gates.js'
 
-/**
+/*    *
  * Build the dynamic MCP config + allowed tool names. Mirror of
  * `setupClaudeInChrome`. The `mcp__computer-use__*` tools are added to
  * `allowedTools` so they bypass the normal permission prompt — the package's
@@ -19,7 +19,7 @@ import { getChicagoCoordinateMode } from './gates.js'
  * (COMPUTER_USE_MCP_AVAILABILITY_HINT in the anthropic repo). Built-in tools
  * with different names wouldn't trigger it. Cowork uses the same names for the
  * same reason (apps/desktop/src/main/local-agent-mode/systemPrompt.ts:314).
- */
+     */
 export function setupComputerUseMCP(): {
   mcpConfig: Record<string, ScopedMcpServerConfig>
   allowedTools: string[]
